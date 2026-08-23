@@ -72,9 +72,9 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onEnterApp }) => {
 
           {/* Center 3D Logo */}
           <img
-            src="/welcome_poster.png"
-            alt="Welcome to Syllabus Tracker"
-            className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,210,255,0.35)] scale-110 hover:scale-115 transition-transform duration-500"
+            src="/logo.png"
+            alt="SYLLABUS 3D Logo"
+            className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,210,255,0.4)] scale-105 hover:scale-110 transition-transform duration-500"
           />
         </div>
 
