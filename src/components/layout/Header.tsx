@@ -22,18 +22,19 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 w-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-3 sm:px-6 md:px-8 flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+    <header className="sticky top-0 z-30 h-16 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-3 sm:px-6 md:px-8 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <img
           src="/logo.png"
           alt="SYLLABUS 3D"
-          className="md:hidden w-8 h-8 rounded-xl object-cover shadow-sm shadow-brand-500/20 shrink-0"
+          className="md:hidden w-8 h-8 rounded-xl object-cover shadow-sm shadow-brand-500/25 shrink-0"
         />
-        <div className="relative min-w-0">
+
+        <div className="relative inline-flex items-center">
           <select
             value={profile.selectedExamId}
             onChange={e => setSelectedExamId(e.target.value)}
-            className="appearance-none pl-2.5 sm:pl-3.5 pr-6 sm:pr-8 py-1 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 truncate max-w-[130px] sm:max-w-full"
+            className="appearance-none pl-3 pr-8 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 w-auto"
           >
             {exams.map(e => (
               <option key={e.id} value={e.id}>
@@ -41,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+          <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         </div>
 
         {currentExam && currentExam.examDate && (
@@ -54,22 +55,22 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
       {/* Desktop Search Bar */}
       <button
         onClick={onOpenSearch}
-        className="hidden md:flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all w-64 lg:w-80 group"
+        className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all w-64 xl:w-80 group"
       >
         <Search className="w-4 h-4 group-hover:text-brand-500" />
         <span className="text-xs font-medium flex-1 text-left">
           Quick search topics...
         </span>
-        <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
+        <kbd className="px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
           Ctrl+K
         </kbd>
       </button>
 
-      <div className="flex items-center gap-1.5 sm:gap-2.5">
-        {/* Mobile Quick Search Button */}
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Mobile / Tablet Search Button */}
         <button
           onClick={onOpenSearch}
-          className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+          className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
           title="Search Syllabus"
         >
           <Search className="w-4 h-4" />
@@ -78,14 +79,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
         {onOpenAddTopic && (
           <button
             onClick={onOpenAddTopic}
-            className="md:hidden p-2 rounded-xl bg-brand-500 text-white shadow-sm"
+            className="md:hidden p-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-sm"
             title="Add Topic"
           >
             <Plus className="w-4 h-4" />
           </button>
         )}
 
-        <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-600 dark:text-orange-400">
+        <div className="flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-600 dark:text-orange-400">
           <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-orange-500 animate-pulse" />
           <span className="text-[11px] sm:text-xs font-bold">
             {profile.currentStreak}d
