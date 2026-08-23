@@ -18,7 +18,8 @@ import { AddTopicModal } from './components/modals/AddTopicModal';
 import { Topic } from './types/syllabus';
 
 export const App: React.FC = () => {
-  const [isLanding, setIsLanding] = useState(false);
+  // App opens with the welcome poster screen first
+  const [isLanding, setIsLanding] = useState(true);
   const [activeView, setActiveView] = useState<AppView>('overview');
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);

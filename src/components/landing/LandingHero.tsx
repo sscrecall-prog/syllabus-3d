@@ -1,125 +1,138 @@
 import React from 'react';
-import { ProgressOrb } from '../3d/ProgressOrb';
-import { ArrowRight, ShieldCheck, RotateCw, Flame, TrendingUp } from 'lucide-react';
-import { useSyllabus } from '../../context/SyllabusContext';
+import { Target, RotateCw, BarChart3, Trophy, ArrowRight, ShieldCheck } from 'lucide-react';
+import { soundManager } from '../../utils/soundEffects';
 
 interface LandingHeroProps {
   onEnterApp: () => void;
 }
 
 export const LandingHero: React.FC<LandingHeroProps> = ({ onEnterApp }) => {
-  const { overallStats } = useSyllabus();
+  const handleStart = () => {
+    soundManager.playClick();
+    onEnterApp();
+  };
+
+  const featureCards = [
+    {
+      title: 'Track Progress',
+      desc: 'Monitor your syllabus completion.',
+      icon: Target,
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-500/15 border-purple-500/30'
+    },
+    {
+      title: 'Smart Revisions',
+      desc: 'Revise smarter with spaced repetition.',
+      icon: RotateCw,
+      color: 'text-cyan-400',
+      bgColor: 'bg-cyan-500/15 border-cyan-500/30'
+    },
+    {
+      title: 'Detailed Analytics',
+      desc: 'Analyze performance and improve.',
+      icon: BarChart3,
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-500/15 border-blue-500/30'
+    },
+    {
+      title: 'Stay Consistent',
+      desc: 'Build consistency and crack your exam.',
+      icon: Trophy,
+      color: 'text-pink-400',
+      bgColor: 'bg-pink-500/15 border-pink-500/30'
+    }
+  ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col justify-between">
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-70 pointer-events-none" />
+    <div className="relative min-h-screen w-full bg-[#050814] text-white flex flex-col items-center justify-center px-4 py-8 overflow-x-hidden selection:bg-brand-500/30">
+      {/* Background Ambient Glows */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-b from-cyan-500/15 via-purple-600/15 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      <header className="relative z-10 w-full px-6 py-6 max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      {/* Main Poster Container */}
+      <div className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center text-center">
+        {/* 3D Glowing Neon 'S' Logo Area */}
+        <div className="relative w-48 h-48 sm:w-56 sm:h-56 mb-4 flex items-center justify-center">
+          {/* Animated Ambient Ring */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-xl animate-pulse" />
+          
+          {/* Floating Feature Micro-Badges */}
+          <div className="absolute -left-2 top-8 p-2 rounded-full bg-slate-900/80 border border-purple-500/30 shadow-lg text-purple-400">
+            <Target className="w-4 h-4" />
+          </div>
+          <div className="absolute -right-2 top-10 p-2 rounded-full bg-slate-900/80 border border-cyan-500/30 shadow-lg text-cyan-400">
+            <RotateCw className="w-4 h-4" />
+          </div>
+          <div className="absolute -left-1 bottom-8 p-2 rounded-full bg-slate-900/80 border border-blue-500/30 shadow-lg text-blue-400">
+            <BarChart3 className="w-4 h-4" />
+          </div>
+          <div className="absolute -right-1 bottom-10 p-2 rounded-full bg-slate-900/80 border border-pink-500/30 shadow-lg text-pink-400">
+            <Trophy className="w-4 h-4" />
+          </div>
+
+          {/* Center 3D Logo */}
           <img
-            src="/logo.png"
-            alt="SYLLABUS 3D Logo"
-            className="w-10 h-10 object-contain drop-shadow-md hover:scale-105 transition-transform"
+            src="/welcome_poster.png"
+            alt="Welcome to Syllabus Tracker"
+            className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,210,255,0.35)] scale-110 hover:scale-115 transition-transform duration-500"
           />
-          <div>
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
-              SYLLABUS <span className="text-brand-500">3D</span>
-            </h1>
-            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-              Competitive Exam Intelligence
-            </p>
-          </div>
         </div>
 
+        {/* Headings */}
+        <span className="text-sm font-semibold tracking-wider text-slate-300 mb-1">
+          Welcome to
+        </span>
+
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">
+          <span className="bg-gradient-to-r from-[#00d2ff] via-[#a855f7] to-[#ec4899] bg-clip-text text-transparent">
+            Syllabus Tracker
+          </span>
+        </h1>
+
+        <h2 className="text-sm font-semibold text-slate-300 tracking-wide mb-2">
+          Track. Master. Succeed.
+        </h2>
+
+        <p className="text-xs text-slate-400 max-w-xs sm:max-w-sm mb-6 leading-relaxed">
+          Your all-in-one study companion to track syllabus, manage revisions, and achieve your exam goals.
+        </p>
+
+        {/* 4 Poster Feature Cards */}
+        <div className="w-full grid grid-cols-2 gap-2.5 sm:gap-3 mb-6">
+          {featureCards.map((feat, i) => {
+            const IconComp = feat.icon;
+            return (
+              <div
+                key={i}
+                className="p-3 sm:p-3.5 rounded-2xl bg-[#0c1228]/90 border border-slate-800/80 text-left flex flex-col justify-between shadow-md hover:border-slate-700 transition-all group"
+              >
+                <div className={`w-8 h-8 rounded-xl ${feat.bgColor} border flex items-center justify-center ${feat.color} mb-2.5`}>
+                  <IconComp className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-white mb-0.5">{feat.title}</h3>
+                  <p className="text-[10px] text-slate-400 leading-snug">{feat.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Big Glow CTA Button */}
         <button
-          onClick={onEnterApp}
-          className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold hover:scale-105 active:scale-95 transition-all shadow-md"
+          onClick={handleStart}
+          className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#0066ff] via-[#8b5cf6] to-[#d946ef] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:shadow-[0_0_40px_rgba(217,70,239,0.7)] active:scale-[0.98] transition-all mb-4 group cursor-pointer"
         >
-          Launch Tracker
+          <span>Let&apos;s get started</span>
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
-      </header>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-7 flex flex-col items-start text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-600 dark:text-brand-400 text-xs font-semibold mb-6">
-            <Flame className="w-4 h-4 fill-brand-500" />
-            <span>Premium 3D Syllabus Tracking System</span>
-          </div>
-
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[tight] tracking-tighter mb-6">
-            Track. Complete.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-purple-500 to-emerald-500">
-              Revise. Master.
-            </span>
-          </h2>
-
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mb-8 leading-relaxed">
-            Stop studying blindly. Visualize your entire SSC CGL, Banking, Railway & UPSC exam preparation in an interactive 3D productivity environment with spaced repetition and mistake diagnostics.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 w-full sm:w-auto">
-            <button
-              onClick={onEnterApp}
-              className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-sm font-bold shadow-md transition-all"
-            >
-              <span>Open Your Dashboard</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-brand-500" />
-              <span>Weak Area Diagnostics</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <RotateCw className="w-4 h-4 text-amber-500" />
-              <span>Spaced Repetition</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <span>120-Day Heatmap</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="lg:col-span-5 flex flex-col items-center justify-center">
-          <div className="relative p-8 rounded-3xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl flex flex-col items-center">
-            <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-600 dark:text-brand-400 text-xs font-bold">
-              Interactive 3D Model
-            </div>
-
-            <div className="my-4">
-              <ProgressOrb percentage={overallStats.completionPercentage} size="lg" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 w-full text-center pt-6 border-t border-slate-100 dark:border-slate-800/80">
-              <div>
-                <span className="text-base font-extrabold text-slate-900 dark:text-white">
-                  {overallStats.totalTopics}
-                </span>
-                <p className="text-[10px] text-slate-500">Topics</p>
-              </div>
-              <div>
-                <span className="text-base font-extrabold text-brand-500">
-                  {overallStats.completedCount}
-                </span>
-                <p className="text-[10px] text-slate-500">Mastered</p>
-              </div>
-              <div>
-                <span className="text-base font-extrabold text-emerald-500">
-                  {overallStats.completionPercentage}%
-                </span>
-                <p className="text-[10px] text-slate-500">Ready</p>
-              </div>
-            </div>
-          </div>
+        {/* Security / Trust Footer Tag */}
+        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+          <ShieldCheck className="w-4 h-4 text-cyan-400" />
+          <span>Your journey to success starts here.</span>
         </div>
       </div>
-
-      <footer className="relative z-10 w-full px-6 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
-        <p>SSC CGL 2026 · Banking IBPS | SBI · Railway NTPC · UPSC CSE</p>
-      </footer>
     </div>
   );
 };
