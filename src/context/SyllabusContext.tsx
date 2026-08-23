@@ -61,7 +61,6 @@ interface SyllabusContextType {
   addTopic: (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => void;
   addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
 
-  // Full Edit & Delete Methods
   editSubject: (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => void;
   deleteSubject: (subjectId: string) => void;
   editChapter: (subjectId: string, chapterId: string, updates: { name?: string; description?: string }) => void;
@@ -73,6 +72,7 @@ interface SyllabusContextType {
 
   logStudySession: (minutes: number) => void;
   resetToDemo: () => void;
+  clearAllDemoData: () => void;
   exportData: () => string;
   importData: (jsonData: string) => boolean;
 }
@@ -164,6 +164,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [revisions]);
 
   const currentExam = useMemo(() => {
+    if (exams.length === 0) return undefined;
     return exams.find(e => e.id === profile.selectedExamId) || exams[0];
   }, [exams, profile.selectedExamId]);
 
@@ -242,7 +243,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       weeklyCompletedCount: 7,
       weeklyTargetPercentage: 88,
       totalStudyHours: Math.round((totalMins / 60) * 10) / 10,
-      averageAccuracy: accuracyCount > 0 ? Math.round(totalAccuracy / accuracyCount) : 78
+      averageAccuracy: accuracyCount > 0 ? Math.round(totalAccuracy / accuracyCount) : 0
     };
   }, [currentExam, allTopics]);
 
@@ -555,8 +556,6 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
-  // ==================== EDIT & DELETE METHODS ====================
-
   const editSubject = (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => {
     setExams(prev => prev.map(exam => ({
       ...exam,
@@ -722,6 +721,62 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setProfile(INITIAL_PROFILE);
     setAchievements(INITIAL_ACHIEVEMENTS);
     setActivityHistory(INITIAL_ACTIVITY_HISTORY);
+
+    const initRevs: RevisionRecord[] = [];
+    const ssc = INITIAL_EXAMS[0];
+    ssc.subjects.forEach(s => {
+      s.chapters.forEach(ch => {
+        ch.topics.forEach(t => {
+          if (t.status === 'completed' || t.status === 'revision_due' || t.status === 'weak') {
+            const cDate = t.lastStudied || '2026-08-15';
+            const rList = calculateInitialRevisions(t.id, t.name, s.id, s.name, ch.id, ch.name, cDate);
+            initRevs.push(...rList);
+          }
+        });
+      });
+    });
+    setRevisions(initRevs);
+    soundManager.playCompleteChime();
+  };
+
+  // CLEAR ALL DEMO DATA TO GET A 100% CLEAN & BLANK APP
+  const clearAllDemoData = () => {
+    const blankExam: Exam = {
+      id: 'custom_exam_blank',
+      name: 'My Exam 2026',
+      code: 'MY_EXAM',
+      targetYear: 2026,
+      examDate: '2026-10-15',
+      subjects: []
+    };
+
+    setExams([blankExam]);
+    setRevisions([]);
+    setActivityHistory([]);
+    setProfile({
+      ...profile,
+      selectedExamId: 'custom_exam_blank',
+      xp: 0,
+      level: 1,
+      levelTitle: 'Novice Scholar',
+      currentStreak: 0,
+      longestStreak: 0
+    });
+
+    localStorage.setItem('syllabus3d_exams', JSON.stringify([blankExam]));
+    localStorage.setItem('syllabus3d_revisions', JSON.stringify([]));
+    localStorage.setItem('syllabus3d_activity', JSON.stringify([]));
+    localStorage.setItem('syllabus3d_profile', JSON.stringify({
+      ...profile,
+      selectedExamId: 'custom_exam_blank',
+      xp: 0,
+      level: 1,
+      levelTitle: 'Novice Scholar',
+      currentStreak: 0,
+      longestStreak: 0
+    }));
+
+    soundManager.playClick();
   };
 
   const exportData = () => {
@@ -783,6 +838,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deleteSubtopic,
         logStudySession,
         resetToDemo,
+        clearAllDemoData,
         exportData,
         importData
       }}
