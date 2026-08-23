@@ -11,12 +11,31 @@ import {
   UserProgressProfile,
   DailyActivity,
   OverallStats,
-  SubjectStats
+  SubjectStats,
+  DifficultyLevel
 } from '../types/syllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
 import { soundManager } from '../utils/soundEffects';
 import confetti from 'canvas-confetti';
+
+export interface CreateCustomTopicPayload {
+  isNewSubject: boolean;
+  subjectId?: string;
+  newSubjectName?: string;
+  newSubjectColor?: string;
+  newSubjectIcon?: string;
+
+  isNewChapter: boolean;
+  chapterId?: string;
+  newChapterName?: string;
+  newChapterDescription?: string;
+
+  topicName: string;
+  difficulty: DifficultyLevel;
+  weightage: number;
+  subtopics: string[];
+}
 
 interface SyllabusContextType {
   exams: Exam[];
@@ -40,6 +59,7 @@ interface SyllabusContextType {
   resolveTopicMistake: (topicId: string, mistakeId: string) => void;
   completeRevisionCard: (revisionId: string, grade: 'again' | 'hard' | 'good' | 'easy') => void;
   addTopic: (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => void;
+  addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
   logStudySession: (minutes: number) => void;
   resetToDemo: () => void;
   exportData: () => string;
@@ -441,6 +461,89 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     })));
   };
 
+  const addCustomTopicWithHierarchy = (payload: CreateCustomTopicPayload) => {
+    const newTopic: Topic = {
+      id: 'top_' + Math.random().toString(36).substr(2, 9),
+      name: payload.topicName.trim(),
+      subtopics: payload.subtopics && payload.subtopics.length > 0 ? payload.subtopics : ['Core Concepts'],
+      status: 'not_started' as TopicStatus,
+      completionPercentage: 0,
+      studyTimeMinutes: 0,
+      lastStudied: null,
+      nextRevision: null,
+      accuracy: 0,
+      mockAttempts: 0,
+      difficulty: payload.difficulty || 'Medium',
+      isWeak: false,
+      weightage: payload.weightage || 3,
+      notes: '',
+      mistakes: []
+    };
+
+    setExams(prevExams => prevExams.map(exam => {
+      if (exam.id !== profile.selectedExamId) return exam;
+
+      let subjects = [...exam.subjects];
+
+      // 1. Determine Subject
+      let targetSubjectId = payload.subjectId;
+      if (payload.isNewSubject || !targetSubjectId) {
+        const newSubId = 'sub_' + Math.random().toString(36).substr(2, 9);
+        targetSubjectId = newSubId;
+        const newSubject: Subject = {
+          id: newSubId,
+          name: payload.newSubjectName?.trim() || 'Custom Subject',
+          icon: payload.newSubjectIcon || 'BookOpen',
+          color: payload.newSubjectColor || '#6366f1',
+          totalChapters: 1,
+          chapters: []
+        };
+        subjects.push(newSubject);
+      }
+
+      // 2. Determine Chapter inside Subject
+      subjects = subjects.map(subj => {
+        if (subj.id !== targetSubjectId) return subj;
+
+        let chapters = [...subj.chapters];
+        let targetChapterId = payload.chapterId;
+
+        if (payload.isNewChapter || !targetChapterId || payload.isNewSubject) {
+          const newChId = 'ch_' + Math.random().toString(36).substr(2, 9);
+          targetChapterId = newChId;
+          const newChapter: Chapter = {
+            id: newChId,
+            name: payload.newChapterName?.trim() || 'General Concepts',
+            description: payload.newChapterDescription?.trim() || 'Custom study unit',
+            topics: [newTopic]
+          };
+          chapters.push(newChapter);
+        } else {
+          chapters = chapters.map(ch => {
+            if (ch.id !== targetChapterId) return ch;
+            return {
+              ...ch,
+              topics: [...ch.topics, newTopic]
+            };
+          });
+        }
+
+        return {
+          ...subj,
+          totalChapters: chapters.length,
+          chapters
+        };
+      });
+
+      return {
+        ...exam,
+        subjects
+      };
+    }));
+
+    soundManager.playClick();
+  };
+
   const logStudySession = (minutes: number) => {
     const today = getTodayDateString();
     setActivityHistory(prev => {
@@ -512,6 +615,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         resolveTopicMistake,
         completeRevisionCard,
         addTopic,
+        addCustomTopicWithHierarchy,
         logStudySession,
         resetToDemo,
         exportData,
