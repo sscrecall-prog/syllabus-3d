@@ -1,0 +1,64 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 9px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60dew,
+    transparent, 
+    rgba(255, 255, 255, 0.08), 
+    transparent
+  );
+  transform: rotate(30deg);
+  transition: 0.75s all ease;
+  opacity: 0;
+}
+
+.shine-effect7hover::after {
+  opacity: 1;
+  transform: rotate(30deg) translateY(-50px);
+}

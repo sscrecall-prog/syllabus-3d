@@ -1,0 +1,135 @@
+export type TopicStatus = 'completed' | 'in_progress' | 'not_started' | 'revision_due' | 'weak';
+export type DifficultyLevel = 'Easy' | 'Medium' | 'Hard';
+export type MistakeType = 'conceptual' | 'calculation' | 'formula' | 'silly' | 'time_pressure';
+
+export interface MistakeRecord {
+  id: string;
+  topicId: string;
+  questionDescription: string;
+  mistakeType: MistakeType;
+  correctApproach: string;
+  dateLogged: string;
+  resolved: boolean;
+}
+
+export interface Topic {
+  id: string;
+  name: string;
+  subtopics: string[];
+  status: TopicStatus;
+  completionPercentage: number;
+  studyTimeMinutes: number;
+  lastStudied: string | null;
+  nextRevision: string | null;
+  accuracy: number;
+  mockAttempts: number;
+  difficulty: DifficultyLevel;
+  isWeak: boolean;
+  weightage: number;
+  notes: string;
+  mistakes: MistakeRecord[];
+}
+
+export interface Chapter {
+  id: string;
+  name: string;
+  description: string;
+  topics: Topic[];
+}
+
+export interface Subject {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  totalChapters: number;
+  chapters: Chapter[];
+}
+
+export interface Exam {
+  id: string;
+  name: string;
+  code: string;
+  targetYear: number;
+  examDate: string;
+  subjects: Subject[];
+}
+
+export interface RevisionRecord {
+  id: string;
+  topicId: string;
+  topicName: string;
+  subjectId: string;
+  subjectName: string;
+  chapterId: string;
+  chapterName: string;
+  stage: number;
+  intervalDays: number;
+  scheduledDate: string;
+  completedDate: string | null;
+  status: 'pending' | 'completed' | 'overdue';
+  history: Array<{
+    date: string;
+    grade: 'again' | 'hard' | 'good' | 'easy';
+    nextIntervalDays: number;
+  }>;
+}
+
+export interface AchievementBadge {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum';
+  unlocked: boolean;
+  unlockedAt: string | null;
+  progress: number;
+  maxProgress: number;
+}
+
+export interface DailyActivity {
+  date: string;
+  studyMinutes: number;
+  topicsCompleted: number;
+  revisionsCompleted: number;
+}
+
+export interface UserProgressProfile {
+  name: string;
+  targetExamDate: string;
+  currentStreak: number;
+  longestStreak: number;
+  level: number;
+  levelTitle: string;
+  xp: number;
+  soundEnabled: boolean;
+  selectedExamId: string;
+}
+
+export interface OverallStats {
+  totalTopics: number;
+  completedCount: number;
+  inProgressCount: number;
+  notStartedCount: number;
+  revisionDueCount: number;
+  weakCount: number;
+  completionPercentage: number;
+  weeklyCompletedCount: number;
+  weeklyTargetPercentage: number;
+  totalStudyHours: number;
+  averageAccuracy: number;
+}
+
+export interface SubjectStats {
+  subjectId: string;
+  subjectName: string;
+  color: string;
+  icon: string;
+  completedTopics: number;
+  totalTopics: number;
+  percentage: number;
+  avgAccuracy: number;
+  totalStudyHours: number;
+  weakCount: number;
+  lastStudied: string | null;
+}
