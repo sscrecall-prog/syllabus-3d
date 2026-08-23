@@ -156,7 +156,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
               <span className="block text-center text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-2.5">
                 How well did you remember this topic?
               </span>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <button
                   onClick={() => handleGrade('again')}
                   className="p-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-center transition-all"

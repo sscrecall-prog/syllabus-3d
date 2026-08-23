@@ -1,6 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppView } from './Sidebar';
-import { LayoutDashboard, FolderTree, RotateCw, AlertTriangle, Calendar } from 'lucide-react';
+import {
+  LayoutDashboard,
+  FolderTree,
+  RotateCw,
+  AlertTriangle,
+  MoreHorizontal,
+  BookOpen,
+  BarChart3,
+  Calendar,
+  Settings,
+  X
+} from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 
 interface MobileNavProps {
@@ -10,38 +21,119 @@ interface MobileNavProps {
 
 export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }) => {
   const { dueRevisions, weakTopics } = useSyllabus();
+  const [showMoreSheet, setShowMoreSheet] = useState(false);
 
-  const navItems = [
+  const primaryItems = [
     { id: 'overview', label: 'Home', icon: LayoutDashboard },
-    { id: 'syllabus', label: 'Syllabus', icon: FolderTree },
-    { id: 'revision', label: 'Revise', icon: RotateCw, badge: dueRevisions.length },
-    { id: 'weak', label: 'Weak', icon: AlertTriangle, badge: weakTopics.length },
-    { id: 'heatmap', label: 'Activity', icon: Calendar }
+    { id: 'syllabus', label: 'Explorer', icon: FolderTree },
+    { id: 'revision', label: 'Revise', icon: RotateCw, badge: dueRevisions.length, badgeColor: 'bg-amber-500' },
+    { id: 'weak', label: 'Weak', icon: AlertTriangle, badge: weakTopics.length, badgeColor: 'bg-rose-500' },
   ];
 
+  const moreItems = [
+    { id: 'subjects', label: 'Subjects', icon: BookOpen, desc: 'Quant, Reasoning, English, GA' },
+    { id: 'analytics', label: 'Analytics & Medals', icon: BarChart3, desc: 'XP, Levels, 3D Medals & Readiness' },
+    { id: 'heatmap', label: 'Study Heatmap', icon: Calendar, desc: '120-day consistency grid' },
+    { id: 'settings', label: 'Settings', icon: Settings, desc: 'Profile, data backup & reset' }
+  ];
+
+  const isMoreActive = moreItems.some(i => i.id === activeView);
+
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 flex items-center justify-around">
-      {navItems.map(item => {
-        const IconComponent = item.icon;
-        const isActive = activeView === item.id;
-        return (
-          <button
-            key={item.id}
-            onClick={() => onSelectView(item.id as AppView)}
-            className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl ${isActive ? 'text-brand-500' : 'text-slate-500'}`}
-          >
-            <div className="relative">
-              <IconComponent className="w-5 h-5" />
-              {item.badge !== undefined && item.badge > 0 && (
-                <span className="absolute -top-1 -right-2 w-3.5 h-3.5 rounded-full bg-rose-500 text-white text-[8px] font-bold flex items-center justify-center">
-                  {item.badge}
-                </span>
-              )}
+    <>
+      {showMoreSheet && (
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex flex-col justify-end">
+          <div className="relative w-full bg-white dark:bg-slate-900 rounded-t-3xl p-6 pb-24 border-t border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 mx-auto mb-5" />
+            
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
+                Additional Modules
+              </h4>
+              <button 
+                onClick={() => setShowMoreSheet(false)}
+                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <span className="text-[10px] font-semibold">{item.label}</span>
-          </button>
-        );
-      })}
-    </nav>
+
+            <div className="space-y-2.5">
+              {moreItems.map(item => {
+                const IconComponent = item.icon;
+                const isSel = activeView === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onSelectView(item.id as AppView);
+                      setShowMoreSheet(false);
+                    }}
+                    className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left transition-all ${
+                      isSel
+                        ? 'bg-brand-500/10 border border-brand-500/30 text-brand-600 dark:text-brand-400'
+                        : 'bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white'
+                    }`}
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                      isSel ? 'bg-brand-500 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}>
+                      <IconComponent className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-bold">{item.label}</h5>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{item.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 flex items-center justify-around shadow-lg">
+        {primaryItems.map(item => {
+          const IconComponent = item.icon;
+          const isActive = activeView === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                onSelectView(item.id as AppView);
+                setShowMoreSheet(false);
+              }}
+              className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] ${
+                isActive
+                  ? 'text-brand-500 bg-brand-500/10 font-bold'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              <div className="relative">
+                <IconComponent className="w-5 h-5" />
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className={`absolute -top-1.5 -right-2.5 px-1 min-w-[16px] h-4 rounded-full ${item.badgeColor} text-white text-[9px] font-bold flex items-center justify-center shadow-sm`}>
+                    {item.badge}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] font-semibold mt-0.5">{item.label}</span>
+            </button>
+          );
+        })}
+
+        <button
+          onClick={() => setShowMoreSheet(prev => !prev)}
+          className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] ${
+            isMoreActive || showMoreSheet
+              ? 'text-brand-500 bg-brand-500/10 font-bold'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
+          }`}
+        >
+          <MoreHorizontal className="w-5 h-5" />
+          <span className="text-[10px] font-semibold mt-0.5">More</span>
+        </button>
+      </nav>
+    </>
   );
 };

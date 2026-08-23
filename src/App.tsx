@@ -55,9 +55,10 @@ export const App: React.FC = () => {
         <Header
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenSettings={() => setActiveView('settings')}
+          onOpenAddTopic={() => setIsAddTopicOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-6 max-w-7xl w-full mx-auto">
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 pb-24 md:pb-8 max-w-7xl w-full mx-auto">
           {activeView === 'overview' && (
             <OverviewView
               onNavigate={view => setActiveView(view)}
