@@ -2,9 +2,23 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { ProgressRing } from '../common/ProgressRing';
-import { Topic, TopicStatus } from '../../types/syllabus';
-import { Search, ChevronDown, ChevronRight, Plus, Calculator, BrainCircuit, BookOpen, Globe } from 'lucide-react';
+import { Topic, TopicStatus, Chapter, Subject } from '../../types/syllabus';
+import {
+  Search,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  Calculator,
+  BrainCircuit,
+  BookOpen,
+  Globe,
+  Edit2,
+  Trash2,
+  MoreVertical
+} from 'lucide-react';
 import { formatTimeAgo } from '../../utils/dateUtils';
+import { EditSubjectModal } from '../modals/EditSubjectModal';
+import { EditChapterModal } from '../modals/EditChapterModal';
 
 interface SyllabusViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
@@ -15,16 +29,22 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onOpenTopicDrawer,
   onOpenAddTopic,
 }) => {
-  const { currentExam } = useSyllabus();
+  const { currentExam, deleteTopic } = useSyllabus();
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<TopicStatus | 'all'>('all');
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
 
+  // Modals for editing subject & chapter
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [editingChapter, setEditingChapter] = useState<{ subjectId: string; chapter: Chapter } | null>(null);
+
   useEffect(() => {
-    if (currentExam && currentExam.subjects.length > 0 && !selectedSubjectId) {
-      setSelectedSubjectId(currentExam.subjects[0].id);
+    if (currentExam && currentExam.subjects.length > 0) {
+      if (!selectedSubjectId || !currentExam.subjects.some(s => s.id === selectedSubjectId)) {
+        setSelectedSubjectId(currentExam.subjects[0].id);
+      }
     }
   }, [currentExam, selectedSubjectId]);
 
@@ -84,44 +104,57 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             Syllabus Explorer
           </h2>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-            Subjects, chapters, and topic completion tracker.
+            Manage subjects, chapters, topics, and subtopics.
           </p>
         </div>
 
         <button
           onClick={onOpenAddTopic}
-          className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md transition-all shrink-0"
+          className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md transition-all shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span className="hidden xs:inline">Add Topic</span>
+          <span className="hidden xs:inline">Add Topic / Subject</span>
         </button>
       </div>
 
-      {/* Swipeable Subject Picker */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1.5 -mx-1 px-1">
-        {currentExam.subjects.map(subj => {
-          const isActive = activeSubject.id === subj.id;
-          const IconComponent = iconMap[subj.icon] || BookOpen;
-          return (
-            <button
-              key={subj.id}
-              onClick={() => setSelectedSubjectId(subj.id)}
-              className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border text-xs font-semibold transition-all whitespace-nowrap ${
-                isActive
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 shadow-sm'
-                  : 'bg-slate-100/80 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 border-transparent'
-              }`}
-            >
-              <div
-                className="w-5 h-5 rounded-md flex items-center justify-center"
-                style={{ backgroundColor: `${subj.color}20`, color: subj.color }}
+      {/* Swipeable Subject Picker with Quick Edit */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1.5 -mx-1 px-1 flex-1">
+          {currentExam.subjects.map(subj => {
+            const isActive = activeSubject.id === subj.id;
+            const IconComponent = iconMap[subj.icon] || BookOpen;
+            return (
+              <button
+                key={subj.id}
+                onClick={() => setSelectedSubjectId(subj.id)}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border text-xs font-semibold transition-all whitespace-nowrap ${
+                  isActive
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 shadow-sm'
+                    : 'bg-slate-100/80 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 border-transparent'
+                }`}
               >
-                <IconComponent className="w-3 h-3" />
-              </div>
-              <span>{subj.name}</span>
-            </button>
-          );
-        })}
+                <div
+                  className="w-5 h-5 rounded-md flex items-center justify-center"
+                  style={{ backgroundColor: `${subj.color}20`, color: subj.color }}
+                >
+                  <IconComponent className="w-3 h-3" />
+                </div>
+                <span>{subj.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Subject Settings Button */}
+        {activeSubject && (
+          <button
+            onClick={() => setEditingSubject(activeSubject)}
+            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors shrink-0"
+            title="Edit Active Subject"
+          >
+            <Edit2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Filter & Search Bar */}
@@ -173,11 +206,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               key={chapter.id}
               className="rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden"
             >
-              <div
-                onClick={() => toggleChapter(chapter.id)}
-                className="p-3.5 sm:p-5 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
-              >
-                <div className="flex items-center gap-2.5 sm:gap-3.5">
+              <div className="p-3.5 sm:p-5 flex items-center justify-between gap-3 bg-slate-50/40 dark:bg-slate-800/20">
+                <div
+                  onClick={() => toggleChapter(chapter.id)}
+                  className="flex items-center gap-2.5 sm:gap-3.5 flex-1 min-w-0 cursor-pointer"
+                >
                   <div className="p-1 sm:p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">
                     {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </div>
@@ -191,7 +224,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                   <div className="hidden sm:flex flex-col items-end">
                     <span className="text-xs font-semibold text-slate-900 dark:text-white">
                       {chCompleted} / {chapter.topics.length} Topics
@@ -204,6 +237,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     </div>
                   </div>
                   <ProgressRing progress={chPercent} size={40} strokeWidth={3.5} color={activeSubject.color} />
+
+                  <button
+                    onClick={() => setEditingChapter({ subjectId: activeSubject.id, chapter })}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
+                    title="Edit Chapter"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
 
@@ -246,19 +287,30 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 shrink-0">
+                        <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 shrink-0">
                           {topic.lastStudied && (
                             <span className="text-[10px] text-slate-400">
                               {formatTimeAgo(topic.lastStudied)}
                             </span>
                           )}
                           <StatusBadge status={topic.status} size="sm" />
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteTopic(topic.id);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all"
+                            title="Delete Topic"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     ))
                   ) : (
                     <div className="p-5 text-center text-xs text-slate-400">
-                      No topics match this filter.
+                      No topics in this chapter. Click &quot;Add Topic&quot; above to add concepts.
                     </div>
                   )}
                 </div>
@@ -267,6 +319,21 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           );
         })}
       </div>
+
+      {/* Edit Subject Modal */}
+      <EditSubjectModal
+        subject={editingSubject}
+        isOpen={Boolean(editingSubject)}
+        onClose={() => setEditingSubject(null)}
+      />
+
+      {/* Edit Chapter Modal */}
+      <EditChapterModal
+        subjectId={editingChapter?.subjectId || ''}
+        chapter={editingChapter?.chapter || null}
+        isOpen={Boolean(editingChapter)}
+        onClose={() => setEditingChapter(null)}
+      />
     </div>
   );
 };

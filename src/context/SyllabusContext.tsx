@@ -60,6 +60,17 @@ interface SyllabusContextType {
   completeRevisionCard: (revisionId: string, grade: 'again' | 'hard' | 'good' | 'easy') => void;
   addTopic: (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => void;
   addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
+
+  // Full Edit & Delete Methods
+  editSubject: (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => void;
+  deleteSubject: (subjectId: string) => void;
+  editChapter: (subjectId: string, chapterId: string, updates: { name?: string; description?: string }) => void;
+  deleteChapter: (subjectId: string, chapterId: string) => void;
+  editTopic: (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[] }) => void;
+  deleteTopic: (topicId: string) => void;
+  addSubtopic: (topicId: string, subtopicName: string) => void;
+  deleteSubtopic: (topicId: string, subtopicIndex: number) => void;
+
   logStudySession: (minutes: number) => void;
   resetToDemo: () => void;
   exportData: () => string;
@@ -544,6 +555,152 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  // ==================== EDIT & DELETE METHODS ====================
+
+  const editSubject = (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => {
+        if (subj.id !== subjectId) return subj;
+        return {
+          ...subj,
+          name: updates.name !== undefined ? updates.name.trim() : subj.name,
+          color: updates.color !== undefined ? updates.color : subj.color,
+          icon: updates.icon !== undefined ? updates.icon : subj.icon
+        };
+      })
+    })));
+    soundManager.playClick();
+  };
+
+  const deleteSubject = (subjectId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.filter(subj => subj.id !== subjectId)
+    })));
+    setRevisions(prev => prev.filter(r => r.subjectId !== subjectId));
+    soundManager.playClick();
+  };
+
+  const editChapter = (subjectId: string, chapterId: string, updates: { name?: string; description?: string }) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => {
+        if (subj.id !== subjectId) return subj;
+        return {
+          ...subj,
+          chapters: subj.chapters.map(ch => {
+            if (ch.id !== chapterId) return ch;
+            return {
+              ...ch,
+              name: updates.name !== undefined ? updates.name.trim() : ch.name,
+              description: updates.description !== undefined ? updates.description.trim() : ch.description
+            };
+          })
+        };
+      })
+    })));
+    soundManager.playClick();
+  };
+
+  const deleteChapter = (subjectId: string, chapterId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => {
+        if (subj.id !== subjectId) return subj;
+        const newChapters = subj.chapters.filter(ch => ch.id !== chapterId);
+        return {
+          ...subj,
+          totalChapters: newChapters.length,
+          chapters: newChapters
+        };
+      })
+    })));
+    setRevisions(prev => prev.filter(r => r.chapterId !== chapterId));
+    soundManager.playClick();
+  };
+
+  const editTopic = (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[] }) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            return {
+              ...t,
+              name: updates.name !== undefined ? updates.name.trim() : t.name,
+              difficulty: updates.difficulty !== undefined ? updates.difficulty : t.difficulty,
+              weightage: updates.weightage !== undefined ? updates.weightage : t.weightage,
+              subtopics: updates.subtopics !== undefined ? updates.subtopics : t.subtopics
+            };
+          })
+        }))
+      }))
+    })));
+    setRevisions(prev => prev.map(r => r.topicId === topicId ? { ...r, topicName: updates.name?.trim() || r.topicName } : r));
+    soundManager.playClick();
+  };
+
+  const deleteTopic = (topicId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.filter(t => t.id !== topicId)
+        }))
+      }))
+    })));
+    setRevisions(prev => prev.filter(r => r.topicId !== topicId));
+    soundManager.playClick();
+  };
+
+  const addSubtopic = (topicId: string, subtopicName: string) => {
+    if (!subtopicName.trim()) return;
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            return {
+              ...t,
+              subtopics: [...t.subtopics, subtopicName.trim()]
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playClick();
+  };
+
+  const deleteSubtopic = (topicId: string, subtopicIndex: number) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const updated = t.subtopics.filter((_, idx) => idx !== subtopicIndex);
+            return {
+              ...t,
+              subtopics: updated
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playClick();
+  };
+
   const logStudySession = (minutes: number) => {
     const today = getTodayDateString();
     setActivityHistory(prev => {
@@ -616,6 +773,14 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         completeRevisionCard,
         addTopic,
         addCustomTopicWithHierarchy,
+        editSubject,
+        deleteSubject,
+        editChapter,
+        deleteChapter,
+        editTopic,
+        deleteTopic,
+        addSubtopic,
+        deleteSubtopic,
         logStudySession,
         resetToDemo,
         exportData,
