@@ -9,7 +9,8 @@ import {
   BarChart3,
   Calendar,
   Settings,
-  Plus
+  Plus,
+  ExternalLink
 } from 'lucide-react';
 
 export type AppView = 'overview' | 'syllabus' | 'subjects' | 'revision' | 'weak' | 'analytics' | 'heatmap' | 'settings';
@@ -41,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside className="hidden md:flex w-64 flex-col justify-between h-screen sticky top-0 bg-white dark:bg-slate-900/95 border-r border-slate-200/80 dark:border-slate-800/80 p-4 z-40">
       <div>
-        <div className="flex items-center gap-3 px-3 py-2.5 mb-6">
+        <div className="flex items-center gap-3 px-3 py-2.5 mb-5">
           <img
             src="/logo.png"
             alt="SYLLABUS 3D Logo"
@@ -59,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <button
           onClick={onOpenAddTopic}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mb-6 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-semibold shadow-md transition-all"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mb-4 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Topic</span>
@@ -73,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => onSelectView(item.id as AppView)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 border border-transparent'
@@ -95,23 +96,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-bold text-slate-900 dark:text-white">
-            {profile.name}
-          </span>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-600 dark:text-brand-400">
-            Lvl {profile.level}
-          </span>
-        </div>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
-          {profile.levelTitle}
-        </p>
-        <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-          <div
-            className="h-full bg-brand-500 rounded-full"
-            style={{ width: `${(profile.xp % 300) / 3}%` }}
-          />
+      <div className="space-y-3">
+        {/* Mock Tracker External Link Button */}
+        <a
+          href="https://mock-percentile-tracker.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-between p-2.5 rounded-2xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-500/30 hover:border-blue-500 hover:scale-[1.02] active:scale-[0.98] transition-all group shadow-sm"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img
+              src="/mock_tracker_logo.png"
+              alt="Mock Tracker Logo"
+              className="w-7 h-7 object-contain drop-shadow-sm group-hover:scale-110 transition-transform shrink-0"
+            />
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                Mock Tracker
+              </span>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                Score & Percentiles
+              </p>
+            </div>
+          </div>
+          <ExternalLink className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+        </a>
+
+        {/* User Level Card */}
+        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-900 dark:text-white">
+              {profile.name}
+            </span>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-600 dark:text-brand-400">
+              Lvl {profile.level}
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
+            {profile.levelTitle}
+          </p>
+          <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div
+              className="h-full bg-brand-500 rounded-full"
+              style={{ width: `${(profile.xp % 300) / 3}%` }}
+            />
+          </div>
         </div>
       </div>
     </aside>

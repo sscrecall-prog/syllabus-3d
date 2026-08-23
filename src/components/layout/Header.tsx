@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, Plus } from 'lucide-react';
+import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, Plus, ExternalLink } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 interface HeaderProps {
@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
       {/* Desktop Search Bar */}
       <button
         onClick={onOpenSearch}
-        className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all w-64 xl:w-80 group"
+        className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all w-52 xl:w-72 group"
       >
         <Search className="w-4 h-4 group-hover:text-brand-500" />
         <span className="text-xs font-medium flex-1 text-left">
@@ -67,7 +67,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
       </button>
 
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-        {/* Mobile / Tablet Search Button */}
+        {/* Mock Tracker Button */}
+        <a
+          href="https://mock-percentile-tracker.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-blue-600/10 to-indigo-600/10 hover:from-blue-600/20 hover:to-indigo-600/20 border border-blue-500/30 hover:border-blue-500/60 text-blue-600 dark:text-blue-400 text-xs font-bold transition-all shadow-sm group"
+          title="Open Mock Percentile Tracker"
+        >
+          <img
+            src="/mock_tracker_logo.png"
+            alt="Mock Tracker"
+            className="w-4 h-4 sm:w-5 sm:h-5 object-contain group-hover:scale-110 transition-transform"
+          />
+          <span className="hidden xs:inline">Mock Tracker</span>
+          <ExternalLink className="w-3 h-3 hidden sm:inline text-blue-500" />
+        </a>
+
+        {/* Mobile Search Button */}
         <button
           onClick={onOpenSearch}
           className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"

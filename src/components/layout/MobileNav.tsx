@@ -10,7 +10,8 @@ import {
   BarChart3,
   Calendar,
   Settings,
-  X
+  X,
+  ExternalLink
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 
@@ -57,6 +58,31 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }
                 <X className="w-4 h-4" />
               </button>
             </div>
+
+            {/* External Tool Card */}
+            <a
+              href="https://mock-percentile-tracker.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-between p-3.5 mb-3 rounded-2xl bg-gradient-to-r from-blue-600/15 via-indigo-600/15 to-purple-600/15 border border-blue-500/40 text-blue-600 dark:text-blue-400 shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src="/mock_tracker_logo.png"
+                  alt="Mock Tracker"
+                  className="w-9 h-9 object-contain drop-shadow-sm"
+                />
+                <div>
+                  <h5 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                    Mock Tracker
+                    <ExternalLink className="w-3.5 h-3.5 text-blue-500" />
+                  </h5>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Track mock scores & percentiles
+                  </p>
+                </div>
+              </div>
+            </a>
 
             <div className="space-y-2.5">
               {moreItems.map(item => {
