@@ -19,7 +19,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onEnterApp }) => {
           <img
             src="/logo.png"
             alt="SYLLABUS 3D Logo"
-            className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-brand-500/30 hover:scale-105 transition-transform"
+            className="w-10 h-10 object-contain drop-shadow-md hover:scale-105 transition-transform"
           />
           <div>
             <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">

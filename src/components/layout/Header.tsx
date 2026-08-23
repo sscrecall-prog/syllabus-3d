@@ -27,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
         <img
           src="/logo.png"
           alt="SYLLABUS 3D"
-          className="md:hidden w-8 h-8 rounded-xl object-cover shadow-sm shadow-brand-500/25 shrink-0"
+          className="md:hidden w-8 h-8 object-contain drop-shadow-sm shrink-0"
         />
 
         <div className="relative inline-flex items-center">

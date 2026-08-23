@@ -45,7 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <img
             src="/logo.png"
             alt="SYLLABUS 3D Logo"
-            className="w-9 h-9 rounded-xl object-cover shadow-md shadow-brand-500/25 hover:scale-105 transition-transform"
+            className="w-9 h-9 object-contain drop-shadow-md hover:scale-105 transition-transform"
           />
           <div>
             <h1 className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
