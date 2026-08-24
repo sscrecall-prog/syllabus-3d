@@ -10,6 +10,7 @@ import {
   BarChart3,
   Calendar,
   CalendarCheck,
+  Network,
   Settings,
   X,
   ExternalLink,
@@ -38,6 +39,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView, 
   ];
 
   const moreItems = [
+    { id: 'mindmap', label: 'Concept Mind Map', icon: Network, desc: 'Interactive concept constellation & graph' },
     { id: 'subjects', label: 'Subjects', icon: BookOpen, desc: 'Quant, Reasoning, English, GA' },
     { id: 'analytics', label: 'Analytics & Medals', icon: BarChart3, desc: 'XP, Levels, 3D Medals & Readiness' },
     { id: 'heatmap', label: 'Study Heatmap', icon: Calendar, desc: '120-day consistency grid' },

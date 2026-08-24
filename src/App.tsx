@@ -6,6 +6,7 @@ import { OverviewView } from './components/views/OverviewView';
 import { SyllabusView } from './components/views/SyllabusView';
 import { SubjectsView } from './components/views/SubjectsView';
 import { PlannerView } from './components/views/PlannerView';
+import { MindMapView } from './components/views/MindMapView';
 import { RevisionView } from './components/views/RevisionView';
 import { WeakTopicsView } from './components/views/WeakTopicsView';
 import { AnalyticsView } from './components/views/AnalyticsView';
@@ -87,6 +88,10 @@ export const App: React.FC = () => {
               onOpenFocusChamber={handleLaunchFocus}
               onOpenTopicDrawer={handleOpenTopicDrawer}
             />
+          )}
+
+          {currentView === 'mindmap' && (
+            <MindMapView onOpenTopicDrawer={handleOpenTopicDrawer} />
           )}
 
           {currentView === 'syllabus' && (

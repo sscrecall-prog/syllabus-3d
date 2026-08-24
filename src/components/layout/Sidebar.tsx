@@ -9,12 +9,13 @@ import {
   BarChart3,
   Calendar,
   CalendarCheck,
+  Network,
   Settings,
   Plus,
   ExternalLink
 } from 'lucide-react';
 
-export type AppView = 'overview' | 'syllabus' | 'subjects' | 'planner' | 'revision' | 'weak' | 'analytics' | 'heatmap' | 'settings';
+export type AppView = 'overview' | 'syllabus' | 'subjects' | 'planner' | 'mindmap' | 'revision' | 'weak' | 'analytics' | 'heatmap' | 'settings';
 
 interface SidebarProps {
   activeView: AppView;
@@ -34,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navSections = [
     { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'planner', label: 'Study Planner', icon: CalendarCheck, badge: todayCount, badgeColor: 'bg-cyan-500' },
+    { id: 'mindmap', label: 'Concept Mind Map', icon: Network },
     { id: 'syllabus', label: 'Syllabus Explorer', icon: FolderTree },
     { id: 'subjects', label: 'Subjects', icon: BookOpen },
     { id: 'revision', label: 'Revision Queue', icon: RotateCw, badge: dueRevisions.length, badgeColor: 'bg-amber-500' },
