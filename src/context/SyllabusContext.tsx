@@ -42,6 +42,7 @@ interface SyllabusContextType {
   currentExam: Exam | undefined;
   selectedExamId: string;
   setSelectedExamId: (id: string) => void;
+  updateCurrentExamDetails: (updates: { name?: string; examDate?: string; targetYear?: number }) => void;
   profile: UserProgressProfile;
   updateProfile: (updates: Partial<UserProgressProfile>) => void;
   achievements: AchievementBadge[];
@@ -298,6 +299,22 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setSelectedExamId = (examId: string) => {
     updateProfile({ selectedExamId: examId });
+  };
+
+  const updateCurrentExamDetails = (updates: { name?: string; examDate?: string; targetYear?: number }) => {
+    if (!currentExam) return;
+    setExams(prev => prev.map(e => {
+      if (e.id !== currentExam.id) return e;
+      return {
+        ...e,
+        name: updates.name !== undefined ? updates.name : e.name,
+        examDate: updates.examDate !== undefined ? updates.examDate : e.examDate,
+        targetYear: updates.targetYear !== undefined ? updates.targetYear : e.targetYear
+      };
+    }));
+    if (updates.examDate) {
+      updateProfile({ targetExamDate: updates.examDate });
+    }
   };
 
   const updateTopicStatus = (topicId: string, status: TopicStatus, accuracy?: number) => {
@@ -739,7 +756,6 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playCompleteChime();
   };
 
-  // CLEAR ALL DEMO DATA TO GET A 100% CLEAN & BLANK APP
   const clearAllDemoData = () => {
     const blankExam: Exam = {
       id: 'custom_exam_blank',
@@ -756,6 +772,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setProfile({
       ...profile,
       selectedExamId: 'custom_exam_blank',
+      targetExamDate: '2026-10-15',
       xp: 0,
       level: 1,
       levelTitle: 'Novice Scholar',
@@ -769,6 +786,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('syllabus3d_profile', JSON.stringify({
       ...profile,
       selectedExamId: 'custom_exam_blank',
+      targetExamDate: '2026-10-15',
       xp: 0,
       level: 1,
       levelTitle: 'Novice Scholar',
@@ -811,6 +829,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         currentExam,
         selectedExamId: profile.selectedExamId,
         setSelectedExamId,
+        updateCurrentExamDetails,
         profile,
         updateProfile,
         achievements,

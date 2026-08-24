@@ -2,6 +2,7 @@ import React from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { ProgressOrb } from '../3d/ProgressOrb';
 import { SubjectCard3D } from '../3d/SubjectCard3D';
+import { ExamCountdown3D } from '../3d/ExamCountdown3D';
 import { RotateCw, AlertTriangle, ArrowRight, Clock, CheckCircle2, Plus, Sparkles } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
@@ -67,13 +68,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
           <button
             onClick={onOpenAddTopic}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md transition-all"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add Topic / Subject</span>
           </button>
         </div>
       </div>
+
+      {/* 3D Exam Countdown Clock Card */}
+      <ExamCountdown3D />
 
       {/* 3D Mastery Orb & KPI Overview */}
       <div className="relative p-4 sm:p-8 rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-lg overflow-hidden">
