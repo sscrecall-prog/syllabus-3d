@@ -1,0 +1,66 @@
+{
+  "name": "SYLLABUS 3D - Smart Exam Mastery Tracker",
+  "short_name": "SYLLABUS 3D",
+  "description": "Track your competitive exam syllabus in 3D, spaced repetition flashcards, offline focus chamber, and concept mind maps.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#040714",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Focus Chamber",
+      "short_name": "Focus",
+      "description": "Open 3D Pomodoro Focus Chamber",
+      "url": "/?view=focus",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Study Planner",
+      "short_name": "Planner",
+      "description": "View daily study targets and Kanban board",
+      "url": "/?view=planner",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Revision Queue",
+      "short_name": "Revise",
+      "description": "Practice due spaced repetition cards",
+      "url": "/?view=revision",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity"
+  ]
+}
