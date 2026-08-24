@@ -11,16 +11,18 @@ import {
   Calendar,
   Settings,
   X,
-  ExternalLink
+  ExternalLink,
+  Timer
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 
 interface MobileNavProps {
   activeView: AppView;
   onSelectView: (view: AppView) => void;
+  onOpenFocus?: () => void;
 }
 
-export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }) => {
+export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView, onOpenFocus }) => {
   const { dueRevisions, weakTopics } = useSyllabus();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
 
@@ -49,7 +51,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }
             
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                Additional Modules
+                Additional Modules & Tools
               </h4>
               <button 
                 onClick={() => setShowMoreSheet(false)}
@@ -59,7 +61,32 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }
               </button>
             </div>
 
-            {/* External Tool Card */}
+            {/* 3D Focus Chamber Mobile Trigger */}
+            {onOpenFocus && (
+              <button
+                onClick={() => {
+                  setShowMoreSheet(false);
+                  onOpenFocus();
+                }}
+                className="w-full flex items-center justify-between p-3.5 mb-2.5 rounded-2xl bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 border border-cyan-500/40 text-cyan-600 dark:text-cyan-300 shadow-sm text-left cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+                    <Timer className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-bold flex items-center gap-1.5">
+                      3D Pomodoro Focus Chamber
+                    </h5>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Full-screen 3D timer & offline ambient sounds
+                    </p>
+                  </div>
+                </div>
+              </button>
+            )}
+
+            {/* External Mock Tracker Card */}
             <a
               href="https://mock-percentile-tracker.vercel.app/"
               target="_blank"
@@ -95,7 +122,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }
                       onSelectView(item.id as AppView);
                       setShowMoreSheet(false);
                     }}
-                    className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left transition-all ${
+                    className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left transition-all cursor-pointer ${
                       isSel
                         ? 'bg-brand-500/10 border border-brand-500/30 text-brand-600 dark:text-brand-400'
                         : 'bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white'
@@ -129,7 +156,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }
                 onSelectView(item.id as AppView);
                 setShowMoreSheet(false);
               }}
-              className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] ${
+              className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] cursor-pointer ${
                 isActive
                   ? 'text-brand-500 bg-brand-500/10 font-bold'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
@@ -150,7 +177,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView }
 
         <button
           onClick={() => setShowMoreSheet(prev => !prev)}
-          className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] ${
+          className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] cursor-pointer ${
             isMoreActive || showMoreSheet
               ? 'text-brand-500 bg-brand-500/10 font-bold'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'

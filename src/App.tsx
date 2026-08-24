@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Sidebar, AppView } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { MobileNav } from './components/layout/MobileNav';
-import { LandingHero } from './components/landing/LandingHero';
 import { OverviewView } from './components/views/OverviewView';
 import { SyllabusView } from './components/views/SyllabusView';
 import { SubjectsView } from './components/views/SubjectsView';
@@ -12,32 +11,36 @@ import { AnalyticsView } from './components/views/AnalyticsView';
 import { HeatmapView } from './components/views/HeatmapView';
 import { SettingsView } from './components/views/SettingsView';
 import { CommandSearchModal } from './components/modals/CommandSearchModal';
+import { AddTopicModal } from './components/modals/AddTopicModal';
 import { TopicDetailDrawer } from './components/modals/TopicDetailDrawer';
 import { RevisionSessionModal } from './components/modals/RevisionSessionModal';
-import { AddTopicModal } from './components/modals/AddTopicModal';
+import { PomodoroFocusModal } from './components/focus/PomodoroFocusModal';
+import { LandingHero } from './components/landing/LandingHero';
 import { Topic } from './types/syllabus';
 
 export const App: React.FC = () => {
-  // App opens with the welcome poster screen first
   const [isLanding, setIsLanding] = useState(true);
-  const [activeView, setActiveView] = useState<AppView>('overview');
+  const [currentView, setCurrentView] = useState<AppView>('overview');
 
+  // Modals
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
+  const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
+  const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
 
-  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [selectedSubName, setSelectedSubName] = useState('');
-  const [selectedChName, setSelectedChName] = useState('');
+  // Topic Drawer
+  const [selectedTopic, setSelectedTopic] = useState<{
+    topic: Topic;
+    subjectName: string;
+    chapterName: string;
+  } | null>(null);
 
   const handleOpenTopicDrawer = (topic: Topic, subName: string, chName: string) => {
-    setSelectedTopic(topic);
-    setSelectedSubName(subName);
-    setSelectedChName(chName);
+    setSelectedTopic({ topic, subjectName: subName, chapterName: chName });
   };
 
-  const handleSelectFromSearch = (topic: Topic) => {
-    handleOpenTopicDrawer(topic, 'Syllabus', 'Chapter');
+  const handleCloseTopicDrawer = () => {
+    setSelectedTopic(null);
   };
 
   if (isLanding) {
@@ -45,90 +48,102 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200">
+      {/* Desktop Sidebar */}
       <Sidebar
-        activeView={activeView}
-        onSelectView={view => setActiveView(view)}
+        activeView={currentView}
+        onSelectView={setCurrentView}
         onOpenAddTopic={() => setIsAddTopicOpen(true)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      {/* Main Workspace */}
+      <div className="flex-1 flex flex-col min-w-0">
         <Header
           onOpenSearch={() => setIsSearchOpen(true)}
-          onOpenSettings={() => setActiveView('settings')}
+          onOpenSettings={() => setCurrentView('settings')}
           onOpenAddTopic={() => setIsAddTopicOpen(true)}
+          onOpenFocus={() => setIsFocusModalOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 pb-24 md:pb-8 max-w-7xl w-full mx-auto">
-          {activeView === 'overview' && (
+        <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">
+          {currentView === 'overview' && (
             <OverviewView
-              onNavigate={view => setActiveView(view)}
+              onNavigate={setCurrentView}
               onOpenTopicDrawer={handleOpenTopicDrawer}
               onOpenRevisionSession={() => setIsRevisionSessionOpen(true)}
               onOpenAddTopic={() => setIsAddTopicOpen(true)}
             />
           )}
 
-          {activeView === 'syllabus' && (
+          {currentView === 'syllabus' && (
             <SyllabusView
               onOpenTopicDrawer={handleOpenTopicDrawer}
               onOpenAddTopic={() => setIsAddTopicOpen(true)}
             />
           )}
 
-          {activeView === 'subjects' && (
+          {currentView === 'subjects' && (
             <SubjectsView
-              onNavigate={view => setActiveView(view)}
+              onNavigate={setCurrentView}
               onOpenTopicDrawer={handleOpenTopicDrawer}
             />
           )}
 
-          {activeView === 'revision' && (
-            <RevisionView
-              onOpenRevisionSession={() => setIsRevisionSessionOpen(true)}
-            />
+          {currentView === 'revision' && (
+            <RevisionView onOpenRevisionSession={() => setIsRevisionSessionOpen(true)} />
           )}
 
-          {activeView === 'weak' && (
-            <WeakTopicsView
-              onOpenTopicDrawer={handleOpenTopicDrawer}
-            />
+          {currentView === 'weak' && (
+            <WeakTopicsView onOpenTopicDrawer={handleOpenTopicDrawer} />
           )}
 
-          {activeView === 'analytics' && <AnalyticsView />}
+          {currentView === 'analytics' && <AnalyticsView />}
 
-          {activeView === 'heatmap' && <HeatmapView />}
+          {currentView === 'heatmap' && <HeatmapView />}
 
-          {activeView === 'settings' && <SettingsView />}
+          {currentView === 'settings' && <SettingsView />}
         </main>
-
-        <MobileNav
-          activeView={activeView}
-          onSelectView={view => setActiveView(view)}
-        />
       </div>
 
+      {/* Mobile Bottom Navigation */}
+      <MobileNav
+        activeView={currentView}
+        onSelectView={setCurrentView}
+        onOpenFocus={() => setIsFocusModalOpen(true)}
+      />
+
+      {/* 3D Pomodoro Focus Chamber */}
+      <PomodoroFocusModal
+        isOpen={isFocusModalOpen}
+        onClose={() => setIsFocusModalOpen(false)}
+        defaultTopicId={selectedTopic?.topic.id}
+      />
+
+      {/* Topic Detail Drawer */}
+      <TopicDetailDrawer
+        topic={selectedTopic?.topic || null}
+        subjectName={selectedTopic?.subjectName}
+        chapterName={selectedTopic?.chapterName}
+        onClose={handleCloseTopicDrawer}
+      />
+
+      {/* Quick Search Ctrl+K Modal */}
       <CommandSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
-        onSelectTopic={handleSelectFromSearch}
+        onSelectTopic={(topic) => handleOpenTopicDrawer(topic, '', '')}
       />
 
-      <TopicDetailDrawer
-        topic={selectedTopic}
-        subjectName={selectedSubName}
-        chapterName={selectedChName}
-        onClose={() => setSelectedTopic(null)}
-      />
-
-      <RevisionSessionModal
-        isOpen={isRevisionSessionOpen}
-        onClose={() => setIsRevisionSessionOpen(false)}
-      />
-
+      {/* Add Topic / Subject Modal */}
       <AddTopicModal
         isOpen={isAddTopicOpen}
         onClose={() => setIsAddTopicOpen(false)}
+      />
+
+      {/* Flashcard Revision Modal */}
+      <RevisionSessionModal
+        isOpen={isRevisionSessionOpen}
+        onClose={() => setIsRevisionSessionOpen(false)}
       />
     </div>
   );
