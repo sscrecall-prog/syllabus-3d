@@ -17,11 +17,9 @@ import { AddTopicModal } from './components/modals/AddTopicModal';
 import { TopicDetailDrawer } from './components/modals/TopicDetailDrawer';
 import { RevisionSessionModal } from './components/modals/RevisionSessionModal';
 import { PomodoroFocusModal } from './components/focus/PomodoroFocusModal';
-import { LandingHero } from './components/landing/LandingHero';
 import { Topic } from './types/syllabus';
 
 export const App: React.FC = () => {
-  const [isLanding, setIsLanding] = useState(true);
   const [currentView, setCurrentView] = useState<AppView>('overview');
 
   // Modals
@@ -50,10 +48,6 @@ export const App: React.FC = () => {
     setFocusTopicId(topicId);
     setIsFocusModalOpen(true);
   };
-
-  if (isLanding) {
-    return <LandingHero onEnterApp={() => setIsLanding(false)} />;
-  }
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200">
