@@ -7,7 +7,6 @@ import {
   Pause,
   Check,
   Plus,
-  Save,
   CheckCircle2,
   Clock,
   Edit3,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react';
 import { StatusBadge } from '../common/StatusBadge';
 import { formatDateReadable, formatMinutes } from '../../utils/dateUtils';
+import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 
 interface TopicDetailDrawerProps {
   topic: Topic | null;
@@ -98,8 +98,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     updateTopicStatus(topic.id, st, accuracy);
   };
 
-  const handleSaveNotes = () => {
-    updateTopicNotes(topic.id, notes);
+  const handleSaveNotes = (newNotes: string) => {
+    setNotes(newNotes);
+    updateTopicNotes(topic.id, newNotes);
   };
 
   const handleLogTime = () => {
@@ -145,7 +146,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
   const tabs = [
     { id: 'overview' as const, label: 'Overview' },
-    { id: 'notes' as const, label: 'Notes & Rules' },
+    { id: 'notes' as const, label: 'Notes & Formulas' },
     { id: 'mistakes' as const, label: 'Mistakes (' + topic.mistakes.length + ')' },
   ];
 
@@ -457,28 +458,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             </>
           )}
 
+          {/* ADVANCED NOTION/OBSIDIAN-GRADE PROFESSIONAL NOTES */}
           {activeTab === 'notes' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h5 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                  High-Yield Formulas & Notes
-                </h5>
-                <button
-                  onClick={handleSaveNotes}
-                  className="px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save Notes</span>
-                </button>
-              </div>
-              <textarea
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                placeholder="Add your cheat sheet rules, high-frequency exceptions, or key formulas here..."
-                rows={10}
-                className="w-full p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
+            <ProfessionalNotesEditor
+              initialContent={notes}
+              topicName={topic.name}
+              onSave={handleSaveNotes}
+            />
           )}
 
           {activeTab === 'mistakes' && (
