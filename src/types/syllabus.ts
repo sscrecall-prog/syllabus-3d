@@ -133,3 +133,18 @@ export interface SubjectStats {
   weakCount: number;
   lastStudied: string | null;
 }
+
+export type PlannerColumnStatus = 'today' | 'in_progress' | 'upcoming' | 'completed';
+
+export interface PlannerTask {
+  id: string;
+  topicId?: string;
+  topicName: string;
+  subjectName?: string;
+  subjectColor?: string;
+  status: PlannerColumnStatus;
+  scheduledDate: string;
+  estimatedMinutes: number;
+  completedAt?: string;
+  isCustom: boolean;
+}

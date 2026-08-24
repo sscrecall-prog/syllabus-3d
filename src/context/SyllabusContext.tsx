@@ -12,7 +12,9 @@ import {
   DailyActivity,
   OverallStats,
   SubjectStats,
-  DifficultyLevel
+  DifficultyLevel,
+  PlannerTask,
+  PlannerColumnStatus
 } from '../types/syllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
@@ -37,6 +39,49 @@ export interface CreateCustomTopicPayload {
   subtopics: string[];
 }
 
+const INITIAL_PLANNER_TASKS: PlannerTask[] = [
+  {
+    id: 'plan_1',
+    topicName: 'Percentage & Fractional Conversions',
+    subjectName: 'Quantitative Aptitude',
+    subjectColor: '#3b82f6',
+    status: 'today',
+    scheduledDate: getTodayDateString(),
+    estimatedMinutes: 45,
+    isCustom: false
+  },
+  {
+    id: 'plan_2',
+    topicName: 'Syllogism & Venn Diagrams',
+    subjectName: 'Reasoning Ability',
+    subjectColor: '#8b5cf6',
+    status: 'today',
+    scheduledDate: getTodayDateString(),
+    estimatedMinutes: 30,
+    isCustom: false
+  },
+  {
+    id: 'plan_3',
+    topicName: 'Error Spotting & Subject-Verb Rules',
+    subjectName: 'English Language',
+    subjectColor: '#10b981',
+    status: 'in_progress',
+    scheduledDate: getTodayDateString(),
+    estimatedMinutes: 40,
+    isCustom: false
+  },
+  {
+    id: 'plan_4',
+    topicName: 'Full Mock Test Analysis & Mistake Log',
+    subjectName: 'Custom Target',
+    subjectColor: '#ec4899',
+    status: 'upcoming',
+    scheduledDate: getTodayDateString(),
+    estimatedMinutes: 60,
+    isCustom: true
+  }
+];
+
 interface SyllabusContextType {
   exams: Exam[];
   currentExam: Exam | undefined;
@@ -53,6 +98,13 @@ interface SyllabusContextType {
   weakTopics: Array<{ subjectName: string; subjectColor: string; chapterName: string; topic: Topic }>;
   revisions: RevisionRecord[];
   dueRevisions: RevisionRecord[];
+
+  // Planner
+  plannerTasks: PlannerTask[];
+  addPlannerTask: (task: Omit<PlannerTask, 'id'>) => void;
+  togglePlannerTask: (taskId: string) => void;
+  movePlannerTask: (taskId: string, newStatus: PlannerColumnStatus) => void;
+  deletePlannerTask: (taskId: string) => void;
 
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
   updateTopicNotes: (topicId: string, notes: string) => void;
@@ -144,6 +196,16 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return initRevs;
   });
 
+  const [plannerTasks, setPlannerTasks] = useState<PlannerTask[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('syllabus3d_planner');
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+    }
+    return INITIAL_PLANNER_TASKS;
+  });
+
   useEffect(() => {
     localStorage.setItem('syllabus3d_exams', JSON.stringify(exams));
   }, [exams]);
@@ -163,6 +225,10 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     localStorage.setItem('syllabus3d_revisions', JSON.stringify(revisions));
   }, [revisions]);
+
+  useEffect(() => {
+    localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks));
+  }, [plannerTasks]);
 
   const currentExam = useMemo(() => {
     if (exams.length === 0) return undefined;
@@ -315,6 +381,57 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (updates.examDate) {
       updateProfile({ targetExamDate: updates.examDate });
     }
+  };
+
+  // Planner Methods
+  const addPlannerTask = (taskData: Omit<PlannerTask, 'id'>) => {
+    const newTask: PlannerTask = {
+      ...taskData,
+      id: 'task_' + Math.random().toString(36).substr(2, 9)
+    };
+    setPlannerTasks(prev => [newTask, ...prev]);
+    soundManager.playClick();
+  };
+
+  const togglePlannerTask = (taskId: string) => {
+    setPlannerTasks(prev => prev.map(t => {
+      if (t.id !== taskId) return t;
+      const isComp = t.status === 'completed';
+      const nextStatus: PlannerColumnStatus = isComp ? 'today' : 'completed';
+      if (!isComp) {
+        soundManager.playCompleteChime();
+        confetti({ particleCount: 35, spread: 50, origin: { y: 0.8 } });
+      } else {
+        soundManager.playClick();
+      }
+      return {
+        ...t,
+        status: nextStatus,
+        completedAt: !isComp ? getTodayDateString() : undefined
+      };
+    }));
+  };
+
+  const movePlannerTask = (taskId: string, newStatus: PlannerColumnStatus) => {
+    setPlannerTasks(prev => prev.map(t => {
+      if (t.id !== taskId) return t;
+      if (newStatus === 'completed') {
+        soundManager.playCompleteChime();
+        confetti({ particleCount: 30, spread: 45, origin: { y: 0.8 } });
+      } else {
+        soundManager.playClick();
+      }
+      return {
+        ...t,
+        status: newStatus,
+        completedAt: newStatus === 'completed' ? getTodayDateString() : undefined
+      };
+    }));
+  };
+
+  const deletePlannerTask = (taskId: string) => {
+    setPlannerTasks(prev => prev.filter(t => t.id !== taskId));
+    soundManager.playClick();
   };
 
   const updateTopicStatus = (topicId: string, status: TopicStatus, accuracy?: number) => {
@@ -734,10 +851,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.removeItem('syllabus3d_achievements');
     localStorage.removeItem('syllabus3d_activity');
     localStorage.removeItem('syllabus3d_revisions');
+    localStorage.removeItem('syllabus3d_planner');
     setExams(INITIAL_EXAMS);
     setProfile(INITIAL_PROFILE);
     setAchievements(INITIAL_ACHIEVEMENTS);
     setActivityHistory(INITIAL_ACTIVITY_HISTORY);
+    setPlannerTasks(INITIAL_PLANNER_TASKS);
 
     const initRevs: RevisionRecord[] = [];
     const ssc = INITIAL_EXAMS[0];
@@ -769,6 +888,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setExams([blankExam]);
     setRevisions([]);
     setActivityHistory([]);
+    setPlannerTasks([]);
     setProfile({
       ...profile,
       selectedExamId: 'custom_exam_blank',
@@ -783,6 +903,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('syllabus3d_exams', JSON.stringify([blankExam]));
     localStorage.setItem('syllabus3d_revisions', JSON.stringify([]));
     localStorage.setItem('syllabus3d_activity', JSON.stringify([]));
+    localStorage.setItem('syllabus3d_planner', JSON.stringify([]));
     localStorage.setItem('syllabus3d_profile', JSON.stringify({
       ...profile,
       selectedExamId: 'custom_exam_blank',
@@ -804,7 +925,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       profile,
       achievements,
       activityHistory,
-      revisions
+      revisions,
+      plannerTasks
     }, null, 2);
   };
 
@@ -816,6 +938,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (parsed.achievements) setAchievements(parsed.achievements);
       if (parsed.activityHistory) setActivityHistory(parsed.activityHistory);
       if (parsed.revisions) setRevisions(parsed.revisions);
+      if (parsed.plannerTasks) setPlannerTasks(parsed.plannerTasks);
       return true;
     } catch (err) {
       return false;
@@ -840,6 +963,11 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         weakTopics,
         revisions,
         dueRevisions,
+        plannerTasks,
+        addPlannerTask,
+        togglePlannerTask,
+        movePlannerTask,
+        deletePlannerTask,
         updateTopicStatus,
         updateTopicNotes,
         addTopicMistake,

@@ -9,6 +9,7 @@ import {
   BookOpen,
   BarChart3,
   Calendar,
+  CalendarCheck,
   Settings,
   X,
   ExternalLink,
@@ -23,11 +24,14 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView, onOpenFocus }) => {
-  const { dueRevisions, weakTopics } = useSyllabus();
+  const { dueRevisions, weakTopics, plannerTasks } = useSyllabus();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
+
+  const todayCount = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress').length;
 
   const primaryItems = [
     { id: 'overview', label: 'Home', icon: LayoutDashboard },
+    { id: 'planner', label: 'Planner', icon: CalendarCheck, badge: todayCount, badgeColor: 'bg-cyan-500' },
     { id: 'syllabus', label: 'Explorer', icon: FolderTree },
     { id: 'revision', label: 'Revise', icon: RotateCw, badge: dueRevisions.length, badgeColor: 'bg-amber-500' },
     { id: 'weak', label: 'Weak', icon: AlertTriangle, badge: weakTopics.length, badgeColor: 'bg-rose-500' },
@@ -145,7 +149,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView, 
         </div>
       )}
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 flex items-center justify-around shadow-lg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-1 py-1.5 flex items-center justify-around shadow-lg">
         {primaryItems.map(item => {
           const IconComponent = item.icon;
           const isActive = activeView === item.id;
@@ -156,7 +160,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView, 
                 onSelectView(item.id as AppView);
                 setShowMoreSheet(false);
               }}
-              className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] cursor-pointer ${
+              className={`relative flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all min-w-[48px] cursor-pointer ${
                 isActive
                   ? 'text-brand-500 bg-brand-500/10 font-bold'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
@@ -165,26 +169,26 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeView, onSelectView, 
               <div className="relative">
                 <IconComponent className="w-5 h-5" />
                 {item.badge !== undefined && item.badge > 0 && (
-                  <span className={`absolute -top-1.5 -right-2.5 px-1 min-w-[16px] h-4 rounded-full ${item.badgeColor} text-white text-[9px] font-bold flex items-center justify-center shadow-sm`}>
+                  <span className={`absolute -top-1.5 -right-2.5 px-1 min-w-[15px] h-3.5 rounded-full ${item.badgeColor} text-white text-[9px] font-bold flex items-center justify-center shadow-sm`}>
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-semibold mt-0.5">{item.label}</span>
+              <span className="text-[9px] font-semibold mt-0.5">{item.label}</span>
             </button>
           );
         })}
 
         <button
           onClick={() => setShowMoreSheet(prev => !prev)}
-          className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all min-w-[52px] cursor-pointer ${
+          className={`relative flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all min-w-[48px] cursor-pointer ${
             isMoreActive || showMoreSheet
               ? 'text-brand-500 bg-brand-500/10 font-bold'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
           }`}
         >
           <MoreHorizontal className="w-5 h-5" />
-          <span className="text-[10px] font-semibold mt-0.5">More</span>
+          <span className="text-[9px] font-semibold mt-0.5">More</span>
         </button>
       </nav>
     </>

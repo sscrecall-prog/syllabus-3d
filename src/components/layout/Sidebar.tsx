@@ -8,12 +8,13 @@ import {
   AlertTriangle,
   BarChart3,
   Calendar,
+  CalendarCheck,
   Settings,
   Plus,
   ExternalLink
 } from 'lucide-react';
 
-export type AppView = 'overview' | 'syllabus' | 'subjects' | 'revision' | 'weak' | 'analytics' | 'heatmap' | 'settings';
+export type AppView = 'overview' | 'syllabus' | 'subjects' | 'planner' | 'revision' | 'weak' | 'analytics' | 'heatmap' | 'settings';
 
 interface SidebarProps {
   activeView: AppView;
@@ -26,10 +27,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectView,
   onOpenAddTopic
 }) => {
-  const { dueRevisions, weakTopics, profile } = useSyllabus();
+  const { dueRevisions, weakTopics, plannerTasks, profile } = useSyllabus();
+
+  const todayCount = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress').length;
 
   const navSections = [
     { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'planner', label: 'Study Planner', icon: CalendarCheck, badge: todayCount, badgeColor: 'bg-cyan-500' },
     { id: 'syllabus', label: 'Syllabus Explorer', icon: FolderTree },
     { id: 'subjects', label: 'Subjects', icon: BookOpen },
     { id: 'revision', label: 'Revision Queue', icon: RotateCw, badge: dueRevisions.length, badgeColor: 'bg-amber-500' },

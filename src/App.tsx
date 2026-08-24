@@ -5,6 +5,7 @@ import { MobileNav } from './components/layout/MobileNav';
 import { OverviewView } from './components/views/OverviewView';
 import { SyllabusView } from './components/views/SyllabusView';
 import { SubjectsView } from './components/views/SubjectsView';
+import { PlannerView } from './components/views/PlannerView';
 import { RevisionView } from './components/views/RevisionView';
 import { WeakTopicsView } from './components/views/WeakTopicsView';
 import { AnalyticsView } from './components/views/AnalyticsView';
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
   const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
   const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
+  const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
 
   // Topic Drawer
   const [selectedTopic, setSelectedTopic] = useState<{
@@ -41,6 +43,11 @@ export const App: React.FC = () => {
 
   const handleCloseTopicDrawer = () => {
     setSelectedTopic(null);
+  };
+
+  const handleLaunchFocus = (topicId?: string) => {
+    setFocusTopicId(topicId);
+    setIsFocusModalOpen(true);
   };
 
   if (isLanding) {
@@ -62,7 +69,7 @@ export const App: React.FC = () => {
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenSettings={() => setCurrentView('settings')}
           onOpenAddTopic={() => setIsAddTopicOpen(true)}
-          onOpenFocus={() => setIsFocusModalOpen(true)}
+          onOpenFocus={() => handleLaunchFocus(undefined)}
         />
 
         <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">
@@ -72,6 +79,13 @@ export const App: React.FC = () => {
               onOpenTopicDrawer={handleOpenTopicDrawer}
               onOpenRevisionSession={() => setIsRevisionSessionOpen(true)}
               onOpenAddTopic={() => setIsAddTopicOpen(true)}
+            />
+          )}
+
+          {currentView === 'planner' && (
+            <PlannerView
+              onOpenFocusChamber={handleLaunchFocus}
+              onOpenTopicDrawer={handleOpenTopicDrawer}
             />
           )}
 
@@ -109,14 +123,14 @@ export const App: React.FC = () => {
       <MobileNav
         activeView={currentView}
         onSelectView={setCurrentView}
-        onOpenFocus={() => setIsFocusModalOpen(true)}
+        onOpenFocus={() => handleLaunchFocus(undefined)}
       />
 
       {/* 3D Pomodoro Focus Chamber */}
       <PomodoroFocusModal
         isOpen={isFocusModalOpen}
         onClose={() => setIsFocusModalOpen(false)}
-        defaultTopicId={selectedTopic?.topic.id}
+        defaultTopicId={focusTopicId || selectedTopic?.topic.id}
       />
 
       {/* Topic Detail Drawer */}
