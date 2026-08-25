@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sidebar, AppView } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { MobileNav } from './components/layout/MobileNav';
+import { MobileDrawer } from './components/layout/MobileDrawer';
 import { OverviewView } from './components/views/OverviewView';
 import { SyllabusView } from './components/views/SyllabusView';
 import { SubjectsView } from './components/views/SubjectsView';
@@ -28,6 +29,9 @@ import { InitialAuthLoading } from './components/auth/InitialAuthLoading';
 export const App: React.FC = () => {
   const { isAuthenticated, isLoading, authView } = useAuth();
   const [currentView, setCurrentView] = useState<AppView>('overview');
+
+  // Mobile Drawer State
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -75,10 +79,22 @@ export const App: React.FC = () => {
   // 3. Authenticated Main Application Flow
   return (
     <div className="flex min-h-screen bg-[#FAF8F5] dark:bg-[#171717] text-[#171717] dark:text-[#F5E6C8] antialiased font-sans transition-colors duration-200">
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar (Website View) */}
       <Sidebar
         activeView={currentView}
         onSelectView={setCurrentView}
+        onOpenAddTopic={() => setIsAddTopicOpen(true)}
+      />
+
+      {/* Mobile Slide-Out Drawer */}
+      <MobileDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        activeView={currentView}
+        onSelectView={(view) => {
+          setCurrentView(view);
+          setIsMobileDrawerOpen(false);
+        }}
         onOpenAddTopic={() => setIsAddTopicOpen(true)}
       />
 
@@ -89,6 +105,7 @@ export const App: React.FC = () => {
           onOpenSettings={() => setCurrentView('settings')}
           onOpenAddTopic={() => setIsAddTopicOpen(true)}
           onOpenFocus={() => handleLaunchFocus(undefined)}
+          onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
         />
 
         <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">

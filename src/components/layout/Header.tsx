@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, ExternalLink, Timer, User } from 'lucide-react';
+import { Search, Sun, Moon, Flame, Menu, ChevronDown, Volume2, VolumeX, ExternalLink, Timer } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 interface HeaderProps {
@@ -10,9 +10,15 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenAddTopic?: () => void;
   onOpenFocus?: () => void;
+  onOpenMobileMenu?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, onOpenFocus }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenSearch,
+  onOpenSettings,
+  onOpenFocus,
+  onOpenMobileMenu
+}) => {
   const { toggleTheme, isDark } = useTheme();
   const { profile, updateProfile, exams, currentExam, setSelectedExamId } = useSyllabus();
   const { user } = useAuth();
@@ -26,14 +32,33 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
 
   return (
     <header className="sticky top-0 z-30 h-16 w-full bg-[#FAF8F5]/95 dark:bg-[#171717]/95 backdrop-blur-md border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-2 transition-colors">
-      {/* Left: Logo & Exam selector */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink">
-        <img
-          src="/logo.png"
-          alt="SYLLABUS 3D"
-          className="md:hidden w-8 h-8 object-contain drop-shadow-sm shrink-0"
-        />
+      
+      {/* 1. MOBILE-ONLY LEFT HEADER (3-Line Menu + Logo + Clean App Name) */}
+      <div className="flex md:hidden items-center gap-2.5 min-w-0">
+        {/* 3-Line Menu Button */}
+        <button
+          onClick={onOpenMobileMenu}
+          className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
+          title="Open Navigation Menu"
+        >
+          <Menu className="w-5 h-5 stroke-[2.5] text-[#D4AF37]" />
+        </button>
 
+        {/* App Logo & App Name */}
+        <div className="flex items-center gap-2">
+          <img
+            src="/logo.png"
+            alt="SYLLABUS 3D"
+            className="w-7 h-7 object-contain drop-shadow-sm shrink-0"
+          />
+          <span className="text-xs font-black tracking-wider text-[#171717] dark:text-[#F5E6C8] uppercase font-mono">
+            SYLLABUS 3D
+          </span>
+        </div>
+      </div>
+
+      {/* 2. DESKTOP-ONLY LEFT HEADER (Logo & Exam Selector & Target Date) - UNTOUCHED FOR WEBSITE */}
+      <div className="hidden md:flex items-center gap-2 sm:gap-3 min-w-0 shrink">
         <div className="relative inline-flex items-center min-w-0 max-w-[140px] sm:max-w-[210px]">
           <select
             value={profile.selectedExamId}
@@ -56,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
         )}
       </div>
 
-      {/* Desktop Search Bar */}
+      {/* Desktop Search Bar (Website view only) */}
       <button
         onClick={onOpenSearch}
         className="hidden lg:flex items-center gap-3 px-4 py-2 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#4B5563] dark:text-[#A3A3A3] hover:border-[#D4AF37] dark:hover:border-[#D4AF37] transition-all w-52 xl:w-72 group cursor-pointer shadow-sm"
@@ -72,24 +97,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
 
       {/* Right Controls */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* 3D Focus Chamber Button */}
+        {/* Desktop-only Focus Chamber */}
         {onOpenFocus && (
           <button
             onClick={onOpenFocus}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D4AF37]/20 to-[#B89327]/30 hover:from-[#D4AF37]/35 hover:to-[#B89327]/45 border border-[#D4AF37]/60 text-[#8C6D15] dark:text-[#D4AF37] text-xs font-black shadow-sm transition-all cursor-pointer group shrink-0"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#D4AF37]/20 to-[#B89327]/30 hover:from-[#D4AF37]/35 hover:to-[#B89327]/45 border border-[#D4AF37]/60 text-[#8C6D15] dark:text-[#D4AF37] text-xs font-black shadow-sm transition-all cursor-pointer group shrink-0"
             title="Launch 3D Pomodoro Focus Chamber"
           >
             <Timer className="w-4 h-4 text-[#D4AF37] group-hover:rotate-12 transition-transform stroke-[2.2]" />
-            <span className="hidden sm:inline">Focus Chamber</span>
+            <span>Focus Chamber</span>
           </button>
         )}
 
-        {/* Mock Tracker Button */}
+        {/* Desktop-only Mock Tracker */}
         <a
           href="https://mock-percentile-tracker.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#222222] hover:bg-[#F5E6C8]/30 dark:hover:bg-[#2A2A2A] border border-[#EBD3A0] dark:border-[#383838] hover:border-[#D4AF37] text-[#171717] dark:text-[#F5E6C8] text-xs font-bold transition-all shadow-sm group shrink-0"
+          className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#222222] hover:bg-[#F5E6C8]/30 dark:hover:bg-[#2A2A2A] border border-[#EBD3A0] dark:border-[#383838] hover:border-[#D4AF37] text-[#171717] dark:text-[#F5E6C8] text-xs font-bold transition-all shadow-sm group shrink-0"
           title="Open Mock Percentile Tracker"
         >
           <img
@@ -97,14 +122,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
             alt="Mock Tracker"
             className="w-4 h-4 object-contain group-hover:scale-110 transition-transform"
           />
-          <span className="hidden md:inline">Mock Tracker</span>
-          <ExternalLink className="w-3 h-3 hidden md:inline text-[#D4AF37]" />
+          <span>Mock Tracker</span>
+          <ExternalLink className="w-3 h-3 text-[#D4AF37]" />
         </a>
 
         {/* Mobile Search Button */}
         <button
           onClick={onOpenSearch}
-          className="lg:hidden p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] shrink-0 cursor-pointer shadow-sm"
+          className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] shrink-0 cursor-pointer shadow-sm"
           title="Search Syllabus"
         >
           <Search className="w-4 h-4 text-[#D4AF37] stroke-[2.2]" />
@@ -118,10 +143,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
           </span>
         </div>
 
-        {/* Sound Toggle Button */}
+        {/* Sound Toggle (Desktop) */}
         <button
           onClick={toggleSound}
-          className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#4B5563] dark:text-[#F5E6C8] hover:border-[#D4AF37] transition-all cursor-pointer shadow-sm"
+          className="hidden sm:block p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#4B5563] dark:text-[#F5E6C8] hover:border-[#D4AF37] transition-all cursor-pointer shadow-sm"
           title={profile.soundEnabled ? 'Mute Sounds' : 'Unmute Sounds'}
         >
           {profile.soundEnabled ? (
@@ -147,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
         {/* User Profile Avatar */}
         <button
           onClick={onOpenSettings}
-          className="flex items-center gap-2 pl-1 cursor-pointer group"
+          className="flex items-center pl-0.5 cursor-pointer group"
           title="Account Settings"
         >
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#B89327] text-[#171717] font-black flex items-center justify-center text-xs shadow-md border-2 border-white dark:border-[#333333] group-hover:scale-105 transition-transform">
