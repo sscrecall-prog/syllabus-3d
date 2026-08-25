@@ -19,7 +19,12 @@ import {
   HelpCircle,
   ExternalLink,
   LogOut,
-  ShieldCheck
+  ShieldCheck,
+  Cloud,
+  RefreshCw,
+  Server,
+  Key,
+  Check
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -33,8 +38,11 @@ export const SettingsView: React.FC = () => {
     importData,
     resetToDemo,
     clearAllDemoData,
-    currentExam,
-    exams
+    syncStatus,
+    lastSyncedAt,
+    syncWithCloud,
+    cloudConfig,
+    updateCloudConfig
   } = useSyllabus();
 
   const { user, logout, updateUserSession } = useAuth();
@@ -45,12 +53,30 @@ export const SettingsView: React.FC = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showDbConfig, setShowDbConfig] = useState(false);
+
+  // Cloud Config State
+  const [dbType, setDbType] = useState<'default' | 'firebase' | 'supabase'>(cloudConfig.type);
+  const [dbUrl, setDbUrl] = useState(cloudConfig.endpointUrl || '');
+  const [dbKey, setDbKey] = useState(cloudConfig.apiKey || '');
+  const [savedDbNotice, setSavedDbNotice] = useState(false);
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile({ name });
     updateUserSession({ name });
     soundManager.playClick();
+  };
+
+  const handleSaveDbConfig = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateCloudConfig({
+      type: dbType,
+      endpointUrl: dbUrl.trim(),
+      apiKey: dbKey.trim()
+    });
+    setSavedDbNotice(true);
+    setTimeout(() => setSavedDbNotice(false), 3000);
   };
 
   const handleExport = () => {
@@ -100,7 +126,7 @@ export const SettingsView: React.FC = () => {
             <span>App Settings & Preferences</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Customize profile details, backup your syllabus data, or install the app for 100% offline access.
+            Real-time cross-device sync between Mobile and PC, account details, and backup options.
           </p>
         </div>
 
@@ -115,7 +141,7 @@ export const SettingsView: React.FC = () => {
             </button>
             <button
               onClick={() => setShowLogoutConfirm(false)}
-              className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300"
+              className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
             >
               Cancel
             </button>
@@ -131,6 +157,129 @@ export const SettingsView: React.FC = () => {
         )}
       </div>
 
+      {/* CROSS-DEVICE REAL-TIME CLOUD SYNC CARD */}
+      <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-teal-950/30 to-slate-900 border border-emerald-500/30 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+              <Cloud className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="text-sm sm:text-base font-bold text-white">
+                  Cross-Device Real-Time Cloud Sync
+                </h4>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span>{syncStatus === 'syncing' ? 'Syncing...' : 'Active & Synced'}</span>
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Whatever you add on PC is automatically synced to your Mobile, and vice versa!
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => syncWithCloud()}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
+          >
+            <RefreshCw className={`w-4 h-4 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
+            <span>Sync Now (Force Refresh)</span>
+          </button>
+        </div>
+
+        {/* Sync Status Details */}
+        <div className="pt-3 border-t border-emerald-500/20 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
+          <div className="flex items-center gap-2">
+            <span>Linked Account:</span>
+            <span className="font-bold text-white font-mono">{user?.email || 'Logged In Account'}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span>Last Synced:</span>
+            <span className="font-bold text-emerald-400">
+              {lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Just now'}
+            </span>
+          </div>
+        </div>
+
+        {/* Optional Custom Backend Accordion */}
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={() => setShowDbConfig(p => !p)}
+            className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <Server className="w-3.5 h-3.5" />
+            <span>{showDbConfig ? 'Hide Custom Database Settings' : 'Advanced: Connect Private Firebase / Supabase DB'}</span>
+          </button>
+
+          {showDbConfig && (
+            <form onSubmit={handleSaveDbConfig} className="mt-3 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 animate-fade-in text-left">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                  Database Provider
+                </label>
+                <select
+                  value={dbType}
+                  onChange={(e) => setDbType(e.target.value as any)}
+                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white"
+                >
+                  <option value="default">Default Managed Cloud Sync (Zero Setup Needed)</option>
+                  <option value="firebase">Custom Firebase Realtime Database</option>
+                  <option value="supabase">Custom Supabase Database</option>
+                </select>
+              </div>
+
+              {dbType !== 'default' && (
+                <>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      Firebase Database URL (e.g. https://my-project.firebaseio.com)
+                    </label>
+                    <input
+                      type="url"
+                      value={dbUrl}
+                      onChange={(e) => setDbUrl(e.target.value)}
+                      placeholder="https://your-firebase-db.firebaseio.com"
+                      className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      API Auth Token / Key (Optional)
+                    </label>
+                    <input
+                      type="password"
+                      value={dbKey}
+                      onChange={(e) => setDbKey(e.target.value)}
+                      placeholder="Database secret / auth token"
+                      className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="flex items-center justify-between pt-1">
+                {savedDbNotice && (
+                  <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Database settings saved!
+                  </span>
+                )}
+                <button
+                  type="submit"
+                  className="ml-auto px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold cursor-pointer"
+                >
+                  Save Sync Settings
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+
       {/* Authenticated User Account Card */}
       {user && (
         <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -144,7 +293,7 @@ export const SettingsView: React.FC = () => {
                   {user.name}
                 </h4>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" />
+                  <ShieldCheck className="w-3.5 h-3.5" />
                   <span>{user.provider === 'google' ? 'Google Auth' : 'Verified Account'}</span>
                 </span>
               </div>
@@ -207,7 +356,7 @@ export const SettingsView: React.FC = () => {
 
           <button
             type="submit"
-            className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm transition-all"
+            className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
             Save Changes
           </button>
@@ -218,10 +367,10 @@ export const SettingsView: React.FC = () => {
       <div className="p-6 rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Download className="w-4 h-4 text-brand-500" />
-          <span>Data Backup & Sync (JSON)</span>
+          <span>Data Backup & Export (JSON)</span>
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Save your complete syllabus progress, notes, mistakes, and revisions as a JSON file, or restore on another laptop or mobile.
+          Save your complete syllabus progress, notes, mistakes, and revisions as a JSON file, or restore on another device.
         </p>
 
         <div className="flex flex-wrap items-center gap-3">

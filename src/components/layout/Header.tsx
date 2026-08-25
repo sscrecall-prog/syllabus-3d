@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, ExternalLink, Timer } from 'lucide-react';
+import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, ExternalLink, Timer, CloudCheck, Cloud, RefreshCw } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 interface HeaderProps {
@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, onOpenFocus }) => {
   const { toggleTheme, isDark } = useTheme();
-  const { profile, updateProfile, exams, currentExam, setSelectedExamId } = useSyllabus();
+  const { profile, updateProfile, exams, currentExam, setSelectedExamId, syncStatus, syncWithCloud } = useSyllabus();
   const { user } = useAuth();
 
   const toggleSound = () => {
@@ -59,10 +59,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
       {/* Desktop Search Bar */}
       <button
         onClick={onOpenSearch}
-        className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all w-52 xl:w-72 group cursor-pointer"
+        className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-all w-48 xl:w-64 group cursor-pointer"
       >
         <Search className="w-4 h-4 group-hover:text-brand-500" />
-        <span className="text-xs font-medium flex-1 text-left">
+        <span className="text-xs font-medium flex-1 text-left truncate">
           Quick search topics...
         </span>
         <kbd className="px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
@@ -72,6 +72,22 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
 
       {/* Right Controls */}
       <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        {/* Live Cloud Sync Button / Badge */}
+        <button
+          onClick={() => syncWithCloud()}
+          title="Click to sync data with cloud across Mobile & PC"
+          className="flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold shadow-sm transition-all cursor-pointer shrink-0"
+        >
+          {syncStatus === 'syncing' ? (
+            <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+          ) : (
+            <Cloud className="w-3.5 h-3.5 text-emerald-500" />
+          )}
+          <span className="hidden sm:inline">
+            {syncStatus === 'syncing' ? 'Syncing...' : 'Cloud Synced'}
+          </span>
+        </button>
+
         {/* 3D Focus Chamber Button */}
         {onOpenFocus && (
           <button
