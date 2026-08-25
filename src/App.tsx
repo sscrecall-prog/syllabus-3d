@@ -169,7 +169,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#FAF8F5] dark:bg-[#171717] text-[#171717] dark:text-[#F5E6C8] antialiased font-sans transition-colors duration-200">
+    <div className="flex min-h-screen bg-[#F7F6F0] dark:bg-[#0D0E0C] text-[#191A17] dark:text-[#F4F4ED] antialiased font-sans transition-colors duration-200">
       
       {/* 3D Animated Startup Intro Experience */}
       {showIntro && (
@@ -183,6 +183,7 @@ export const App: React.FC = () => {
           setIsAddTopicOpen(true);
           window.history.pushState({ modal: 'add_topic' }, '');
         }}
+        onOpenFocus={() => handleLaunchFocus(undefined)}
       />
 
       <MobileDrawer

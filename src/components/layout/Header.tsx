@@ -11,7 +11,8 @@ import {
   ChevronDown,
   Menu,
   ArrowLeft,
-  GraduationCap
+  GraduationCap,
+  Sparkles
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -121,6 +122,23 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Side Tools */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
+          
+          {/* PROMINENT FOCUS CHAMBER BUTTON (DESKTOP & WEBSITE ACCESS) */}
+          {onOpenFocus && (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onOpenFocus();
+              }}
+              className="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#596B35] text-[#354126] dark:text-[#F4F4ED] border border-[#596B35]/40 transition-all cursor-pointer shadow-subtle-depth text-xs font-extrabold active:scale-95 group"
+              title="Open 3D Deep Study Focus Chamber (Pomodoro, Stopwatch, Timer)"
+            >
+              <div className="w-2 h-2 rounded-full bg-[#596B35] dark:bg-[#A4B879] group-hover:bg-white animate-pulse" />
+              <Timer className="w-4 h-4 text-[#596B35] dark:text-[#A4B879] group-hover:text-white transition-colors" />
+              <span className="hidden sm:inline">Focus Chamber</span>
+            </button>
+          )}
+
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}

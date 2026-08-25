@@ -13,7 +13,7 @@ import {
   Plus,
   Settings,
   ExternalLink,
-  LogOut,
+  Timer,
   Sparkles
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
@@ -34,12 +34,14 @@ interface SidebarProps {
   activeView: AppView;
   onSelectView: (view: AppView) => void;
   onOpenAddTopic?: () => void;
+  onOpenFocus?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeView,
   onSelectView,
-  onOpenAddTopic
+  onOpenAddTopic,
+  onOpenFocus
 }) => {
   const { profile, dueRevisions, weakTopics, plannerTasks } = useSyllabus();
   const { logout, user } = useAuth();
@@ -112,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-[#F7F6F0] dark:bg-[#0D0E0C] border-r border-[#D8D8CF] dark:border-[#30342B] p-4 justify-between transition-colors z-20 shrink-0 select-none overflow-y-auto">
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         {/* App Branding */}
         <div className="flex items-center gap-3 px-2 py-1">
           <div className="w-9 h-9 rounded-xl bg-[#11120F] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] shadow-sm flex items-center justify-center p-1.5 shrink-0">
@@ -128,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Quick Add Custom Topic Action (Primary Button System) */}
+        {/* Quick Add Custom Topic Action */}
         {onOpenAddTopic && (
           <button
             onClick={onOpenAddTopic}
@@ -136,6 +138,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Custom Topic</span>
+          </button>
+        )}
+
+        {/* DIRECT 1-CLICK FOCUS CHAMBER LAUNCHER IN SIDEBAR */}
+        {onOpenFocus && (
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              onOpenFocus();
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#596B35] text-[#354126] dark:text-[#F4F4ED] border border-[#596B35]/40 text-xs font-extrabold shadow-sm transition-all cursor-pointer group active:scale-98"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 h-2 rounded-full bg-[#596B35] dark:bg-[#A4B879] group-hover:bg-white animate-pulse" />
+              <Timer className="w-4 h-4 text-[#596B35] dark:text-[#A4B879] group-hover:text-white transition-colors" />
+              <span>3D Focus Chamber</span>
+            </div>
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/40 dark:bg-black/20 text-[#354126] dark:text-[#F4F4ED] group-hover:text-white">
+              Timer
+            </span>
           </button>
         )}
 
@@ -151,9 +173,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   soundManager.playClick();
                   onSelectView(item.id);
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] font-extrabold shadow-sm'
+                    ? 'bg-[#EEEEE8] dark:bg-[#1D201A] text-[#11120F] dark:text-[#F4F4ED] border border-[#D8D8CF] dark:border-[#30342B] font-extrabold shadow-sm'
                     : 'text-[#65675F] dark:text-[#A7AA9C] hover:bg-[#EEEEE8] dark:hover:bg-[#151713] hover:text-[#191A17] dark:hover:text-white'
                 }`}
               >
