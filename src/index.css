@@ -7,17 +7,21 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 }
 
 * {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   background-color: #FAF8F5;
   color: #171717;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overscroll-behavior-y: contain;
 }
 
 .dark body {
@@ -25,7 +29,16 @@ body {
   color: #F5E6C8;
 }
 
-/* High-Contrast Luxury Custom Scrollbar */
+/* Safe Area Insets for Mobile Notches & Navigation Bars */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Custom Luxury Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -52,17 +65,11 @@ body {
   perspective: 1000px;
 }
 
-/* Crisp Icon & Text Glow Utilities */
-.icon-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  transition: all 0.2s ease-in-out;
+/* No Scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-.text-gold-gradient {
-  background: linear-gradient(135deg, #D4AF37 0%, #F5E6C8 50%, #B89327 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
