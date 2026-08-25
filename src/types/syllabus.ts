@@ -63,11 +63,10 @@ export interface RevisionRecord {
   subjectName: string;
   chapterId: string;
   chapterName: string;
+  completedDate: string | null;
+  scheduledDate: string;
   stage: number;
   intervalDays: number;
-  scheduledDate: string;
-  completedDate: string | null;
-  status: 'pending' | 'completed' | 'overdue';
   history: Array<{
     date: string;
     grade: 'again' | 'hard' | 'good' | 'easy';
@@ -135,6 +134,8 @@ export interface SubjectStats {
 }
 
 export type PlannerColumnStatus = 'today' | 'in_progress' | 'upcoming' | 'completed';
+export type TaskPriority = 'high' | 'medium' | 'low';
+export type TaskCategory = 'concept' | 'practice' | 'mock' | 'revision';
 
 export interface PlannerTask {
   id: string;
@@ -147,4 +148,6 @@ export interface PlannerTask {
   estimatedMinutes: number;
   completedAt?: string;
   isCustom: boolean;
+  priority?: TaskPriority;
+  category?: TaskCategory;
 }

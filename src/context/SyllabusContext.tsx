@@ -14,7 +14,9 @@ import {
   SubjectStats,
   DifficultyLevel,
   PlannerTask,
-  PlannerColumnStatus
+  PlannerColumnStatus,
+  TaskPriority,
+  TaskCategory
 } from '../types/syllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
@@ -69,7 +71,9 @@ const INITIAL_PLANNER_TASKS: PlannerTask[] = [
     status: 'today',
     scheduledDate: getTodayDateString(),
     estimatedMinutes: 45,
-    isCustom: false
+    isCustom: false,
+    priority: 'high',
+    category: 'concept'
   },
   {
     id: 'plan_2',
@@ -79,7 +83,9 @@ const INITIAL_PLANNER_TASKS: PlannerTask[] = [
     status: 'today',
     scheduledDate: getTodayDateString(),
     estimatedMinutes: 30,
-    isCustom: false
+    isCustom: false,
+    priority: 'medium',
+    category: 'practice'
   },
   {
     id: 'plan_3',
@@ -89,7 +95,9 @@ const INITIAL_PLANNER_TASKS: PlannerTask[] = [
     status: 'in_progress',
     scheduledDate: getTodayDateString(),
     estimatedMinutes: 40,
-    isCustom: false
+    isCustom: false,
+    priority: 'high',
+    category: 'revision'
   },
   {
     id: 'plan_4',
@@ -99,7 +107,9 @@ const INITIAL_PLANNER_TASKS: PlannerTask[] = [
     status: 'upcoming',
     scheduledDate: getTodayDateString(),
     estimatedMinutes: 60,
-    isCustom: true
+    isCustom: true,
+    priority: 'high',
+    category: 'mock'
   }
 ];
 
@@ -126,6 +136,7 @@ interface SyllabusContextType {
   togglePlannerTask: (taskId: string) => void;
   movePlannerTask: (taskId: string, newStatus: PlannerColumnStatus) => void;
   deletePlannerTask: (taskId: string) => void;
+  clearCompletedPlannerTasks: () => void;
 
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
   updateTopicNotes: (topicId: string, notes: string) => void;
@@ -463,6 +474,11 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const deletePlannerTask = (taskId: string) => {
     setPlannerTasks(prev => prev.filter(t => t.id !== taskId));
+    soundManager.playClick();
+  };
+
+  const clearCompletedPlannerTasks = () => {
+    setPlannerTasks(prev => prev.filter(t => t.status !== 'completed'));
     soundManager.playClick();
   };
 
@@ -1023,6 +1039,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         togglePlannerTask,
         movePlannerTask,
         deletePlannerTask,
+        clearCompletedPlannerTasks,
         updateTopicStatus,
         updateTopicNotes,
         addTopicMistake,
