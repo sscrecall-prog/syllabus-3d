@@ -23,7 +23,8 @@ import {
   Clock,
   ChevronDown,
   Plus,
-  Minus
+  Minus,
+  Search
 } from 'lucide-react';
 import { ambientEngine, AmbientSoundType } from '../../utils/ambientSounds';
 import { soundManager } from '../../utils/soundEffects';
@@ -65,6 +66,10 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
   const [selectedTopicId, setSelectedTopicId] = useState<string>(defaultTopicId || '');
   
+  // Search state for topic selector
+  const [isTopicSearchOpen, setIsTopicSearchOpen] = useState(false);
+  const [topicSearchTerm, setTopicSearchTerm] = useState('');
+
   // State for Countdown Timers
   const [totalSeconds, setTotalSeconds] = useState(25 * 60);
   const [secondsLeft, setSecondsLeft] = useState(25 * 60);
@@ -215,6 +220,17 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
   const selectedTopic = allTopics.find(t => t.topic.id === selectedTopicId);
 
+  // Filtered topics for real-time search
+  const filteredTopics = useMemo(() => {
+    if (!topicSearchTerm.trim()) return allTopics;
+    const q = topicSearchTerm.toLowerCase();
+    return allTopics.filter(t =>
+      t.topic.name.toLowerCase().includes(q) ||
+      t.subjectName.toLowerCase().includes(q) ||
+      t.chapterName.toLowerCase().includes(q)
+    );
+  }, [allTopics, topicSearchTerm]);
+
   if (!isOpen) return null;
 
   const circumference = 2 * Math.PI * 130;
@@ -226,7 +242,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
       {/* FOCUS MODAL CARD */}
       <div className="relative w-full max-w-2xl rounded-3xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0] dark:border-[#333333] shadow-2xl overflow-hidden flex flex-col my-auto transition-all">
         
-        {/* 1. TOP HEADER & CLOSE BUTTON (NO EXPAND BUTTON AS REQUESTED) */}
+        {/* 1. TOP HEADER & CLOSE BUTTON */}
         <div className="p-4 sm:p-5 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] flex items-center justify-between bg-white/70 dark:bg-[#202020]/70">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#D4AF37] to-[#B89327] text-[#171717] flex items-center justify-center font-black shadow-md">
@@ -256,10 +272,10 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
         <div className="p-4 sm:p-6 space-y-5 overflow-y-auto">
           
-          {/* 2. TOP UP OVERVIEW CARDS (Focus Stats & Active Subject Selector) */}
+          {/* 2. TOP OVERVIEW CARDS (Focus Stats & SEARCHABLE Active Topic Selector) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             
-            {/* Left Card: Focus Sessions & Daily Velocity */}
+            {/* Left Card: Focus Sessions */}
             <div className="p-3.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/35 flex items-center justify-center shrink-0">
@@ -274,30 +290,98 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
               </div>
             </div>
 
-            {/* Right Card: Live Topic Selector */}
-            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] flex items-center justify-between shadow-sm relative">
-              <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-bold text-[#6B7280] block">Active Study Target</span>
-                  <select
-                    value={selectedTopicId}
-                    onChange={e => setSelectedTopicId(e.target.value)}
-                    className="w-full bg-transparent text-xs font-black text-[#171717] dark:text-[#F5E6C8] truncate cursor-pointer focus:outline-none"
-                  >
-                    {allTopics.map(t => (
-                      <option key={t.topic.id} value={t.topic.id} className="bg-[#FAF8F5] dark:bg-[#1A1A1A] text-[#171717] dark:text-white">
-                        {t.subjectName} • {t.topic.name}
-                      </option>
-                    ))}
-                  </select>
+            {/* Right Card: SEARCHABLE Target Topic Trigger */}
+            <div className="relative">
+              <div
+                onClick={() => setIsTopicSearchOpen(prev => !prev)}
+                className="p-3.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37] flex items-center justify-between shadow-sm cursor-pointer transition-all group"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[10px] font-bold text-[#6B7280] block flex items-center gap-1">
+                      <span>Active Study Target</span>
+                      <Search className="w-3 h-3 text-[#D4AF37] inline" />
+                    </span>
+                    <span className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] truncate block group-hover:text-[#D4AF37] transition-colors">
+                      {selectedTopic ? `${selectedTopic.subjectName} • ${selectedTopic.topic.name}` : 'Search & Select Topic...'}
+                    </span>
+                  </div>
                 </div>
+                <Search className="w-4 h-4 text-[#D4AF37] shrink-0" />
               </div>
-              <ChevronDown className="w-4 h-4 text-[#D4AF37] pointer-events-none shrink-0" />
+
+              {/* SEARCH POPOVER MODAL / DROPDOWN */}
+              {isTopicSearchOpen && (
+                <div className="absolute top-full left-0 right-0 mt-2 z-30 p-3 rounded-2xl bg-white dark:bg-[#202020] border border-[#D4AF37] shadow-2xl space-y-2.5 animate-slide-up">
+                  {/* Search input */}
+                  <div className="relative flex items-center">
+                    <Search className="absolute left-3 w-4 h-4 text-[#D4AF37] pointer-events-none" />
+                    <input
+                      type="text"
+                      autoFocus
+                      value={topicSearchTerm}
+                      onChange={e => setTopicSearchTerm(e.target.value)}
+                      placeholder="🔍 Search subject, chapter, or topic..."
+                      className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
+                    />
+                    {topicSearchTerm && (
+                      <button
+                        onClick={() => setTopicSearchTerm('')}
+                        className="absolute right-2.5 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Filtered Topics List */}
+                  <div className="max-h-44 overflow-y-auto space-y-1 p-1 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
+                    {filteredTopics.length === 0 ? (
+                      <p className="text-center py-4 text-xs text-[#6B7280]">
+                        No matching topics found
+                      </p>
+                    ) : (
+                      filteredTopics.map(t => {
+                        const isSelected = selectedTopicId === t.topic.id;
+                        return (
+                          <div
+                            key={t.topic.id}
+                            onClick={() => {
+                              soundManager.playClick();
+                              setSelectedTopicId(t.topic.id);
+                              setIsTopicSearchOpen(false);
+                              setTopicSearchTerm('');
+                            }}
+                            className={`p-2 rounded-lg flex items-center justify-between text-xs font-semibold cursor-pointer transition-all ${
+                              isSelected
+                                ? 'bg-[#D4AF37] text-[#171717] font-bold shadow-sm'
+                                : 'hover:bg-[#F5E6C8]/40 dark:hover:bg-[#252525] text-[#171717] dark:text-[#F5E6C8]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0 pr-2">
+                              <span
+                                className="w-2 h-2 rounded-full shrink-0"
+                                style={{ backgroundColor: t.subjectColor || '#D4AF37' }}
+                              />
+                              <span className="truncate">{t.topic.name}</span>
+                            </div>
+                            <span className={`text-[10px] shrink-0 font-mono ${
+                              isSelected ? 'text-[#171717]' : 'text-[#6B7280]'
+                            }`}>
+                              {t.subjectName}
+                            </span>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* 3. FOUR MODE TABS: POMODORO | BREAK | STOPWATCH | TIMER (As in reference image) */}
+          {/* 3. FOUR MODE TABS: POMODORO | BREAK | STOPWATCH | TIMER */}
           <div className="flex items-center justify-center p-1.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] shadow-sm max-w-md mx-auto">
             
             {/* Mode 1: Pomodoro */}
