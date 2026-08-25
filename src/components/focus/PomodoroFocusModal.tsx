@@ -14,11 +14,16 @@ import {
   Waves,
   Headphones,
   Flame as FireIcon,
-  Maximize2,
-  Minimize2,
   Check,
   BookOpen,
-  Sparkles
+  Sparkles,
+  Hourglass,
+  Coffee,
+  Timer as StopwatchIcon,
+  Clock,
+  ChevronDown,
+  Plus,
+  Minus
 } from 'lucide-react';
 import { ambientEngine, AmbientSoundType } from '../../utils/ambientSounds';
 import { soundManager } from '../../utils/soundEffects';
@@ -30,12 +35,15 @@ interface PomodoroFocusModalProps {
   defaultTopicId?: string;
 }
 
+type FocusMainMode = 'pomodoro' | 'break' | 'stopwatch' | 'timer';
+
 const MOTIVATIONAL_QUOTES = [
   "The secret of getting ahead is getting started. — Mark Twain",
   "Focus on being productive instead of busy. — Tim Ferriss",
   "One focused hour is worth ten distracted hours. — Deep Work",
   "Your rank is decided in the quiet hours of deep practice.",
   "Small daily streaks lead to massive exam breakthroughs.",
+  "Push yourself, because no one else is going to do it for you."
 ];
 
 export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
@@ -43,23 +51,34 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   onClose,
   defaultTopicId
 }) => {
-  const { allTopics, logStudySession } = useSyllabus();
+  const { allTopics, logStudySession, profile } = useSyllabus();
 
-  // Mode: 25m Focus, 50m Deep, 90m Flow, 5m Short Break, 15m Long Break
-  const [sessionType, setSessionType] = useState<'focus25' | 'focus50' | 'focus90' | 'break5' | 'break15'>('focus25');
+  // Mode: 'pomodoro' | 'break' | 'stopwatch' | 'timer'
+  const [mainMode, setMainMode] = useState<FocusMainMode>('pomodoro');
+  
+  // Pomodoro Sub-presets: 25, 50, 90
+  const [pomoPreset, setPomoPreset] = useState<number>(25);
+  // Break Sub-presets: 5, 15
+  const [breakPreset, setBreakPreset] = useState<number>(5);
+  // Custom Timer Minutes
+  const [customTimerMinutes, setCustomTimerMinutes] = useState<number>(45);
+
   const [selectedTopicId, setSelectedTopicId] = useState<string>(defaultTopicId || '');
+  
+  // State for Countdown Timers
   const [totalSeconds, setTotalSeconds] = useState(25 * 60);
   const [secondsLeft, setSecondsLeft] = useState(25 * 60);
+
+  // State for Stopwatch (Count-Up)
+  const [stopwatchSeconds, setStopwatchSeconds] = useState(0);
+
   const [isRunning, setIsRunning] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeSound, setActiveSound] = useState<AmbientSoundType>('rain');
   const [soundVolume, setSoundVolume] = useState(0.5);
   const [completedSessionsToday, setCompletedSessionsToday] = useState(2);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Initialize selected topic if passed
+  // Initialize selected topic
   useEffect(() => {
     if (defaultTopicId) {
       setSelectedTopicId(defaultTopicId);
@@ -68,32 +87,46 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     }
   }, [defaultTopicId, allTopics]);
 
-  // Set time when sessionType changes
+  // Mode change handler
   useEffect(() => {
-    let dur = 25 * 60;
-    if (sessionType === 'focus25') dur = 25 * 60;
-    else if (sessionType === 'focus50') dur = 50 * 60;
-    else if (sessionType === 'focus90') dur = 90 * 60;
-    else if (sessionType === 'break5') dur = 5 * 60;
-    else if (sessionType === 'break15') dur = 15 * 60;
-
-    setTotalSeconds(dur);
-    setSecondsLeft(dur);
     setIsRunning(false);
-  }, [sessionType]);
+    if (mainMode === 'pomodoro') {
+      const dur = pomoPreset * 60;
+      setTotalSeconds(dur);
+      setSecondsLeft(dur);
+    } else if (mainMode === 'break') {
+      const dur = breakPreset * 60;
+      setTotalSeconds(dur);
+      setSecondsLeft(dur);
+    } else if (mainMode === 'timer') {
+      const dur = customTimerMinutes * 60;
+      setTotalSeconds(dur);
+      setSecondsLeft(dur);
+    } else if (mainMode === 'stopwatch') {
+      setStopwatchSeconds(0);
+    }
+  }, [mainMode, pomoPreset, breakPreset, customTimerMinutes]);
 
-  // Timer Tick
+  // Timer Tick Handling
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
-    if (isRunning && secondsLeft > 0) {
-      interval = setInterval(() => {
-        setSecondsLeft(prev => prev - 1);
-      }, 1000);
-    } else if (isRunning && secondsLeft === 0) {
-      handleSessionComplete();
+    if (isRunning) {
+      if (mainMode === 'stopwatch') {
+        interval = setInterval(() => {
+          setStopwatchSeconds(prev => prev + 1);
+        }, 1000);
+      } else {
+        if (secondsLeft > 0) {
+          interval = setInterval(() => {
+            setSecondsLeft(prev => prev - 1);
+          }, 1000);
+        } else if (secondsLeft === 0) {
+          handleSessionComplete();
+        }
+      }
     }
     return () => clearInterval(interval);
-  }, [isRunning, secondsLeft]);
+  }, [isRunning, secondsLeft, mainMode]);
 
   // Ambient sound handling
   useEffect(() => {
@@ -116,20 +149,16 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     setIsRunning(false);
     ambientEngine.stop();
     soundManager.playCompleteChime();
-    confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+    confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
 
     const minutesSpent = Math.round(totalSeconds / 60);
     logStudySession(minutesSpent);
 
-    if (sessionType.startsWith('focus')) {
+    if (mainMode === 'pomodoro' || mainMode === 'timer') {
       setCompletedSessionsToday(c => c + 1);
-    }
-
-    // Auto switch to break if focus completed
-    if (sessionType === 'focus25') {
-      setSessionType('break5');
-    } else if (sessionType === 'focus50') {
-      setSessionType('break15');
+      // Auto suggest break
+      setMainMode('break');
+      setBreakPreset(5);
     }
   };
 
@@ -141,268 +170,404 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   const handleReset = () => {
     soundManager.playClick();
     setIsRunning(false);
-    setSecondsLeft(totalSeconds);
-    ambientEngine.stop();
-  };
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(() => {});
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen().catch(() => {});
-      setIsFullscreen(false);
+    if (mainMode === 'stopwatch') {
+      if (stopwatchSeconds > 60) {
+        logStudySession(Math.round(stopwatchSeconds / 60));
+      }
+      setStopwatchSeconds(0);
+    } else if (mainMode === 'pomodoro') {
+      setSecondsLeft(pomoPreset * 60);
+    } else if (mainMode === 'break') {
+      setSecondsLeft(breakPreset * 60);
+    } else if (mainMode === 'timer') {
+      setSecondsLeft(customTimerMinutes * 60);
     }
   };
 
-  const formatTimer = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  const handleAddMinutes = (mins: number) => {
+    soundManager.playClick();
+    if (mainMode !== 'stopwatch') {
+      setSecondsLeft(prev => Math.max(60, prev + mins * 60));
+      setTotalSeconds(prev => Math.max(60, prev + mins * 60));
+    }
   };
 
-  const progressPercent = totalSeconds > 0 ? Math.round(((totalSeconds - secondsLeft) / totalSeconds) * 100) : 0;
+  // Format MM:SS or HH:MM:SS
+  const formatTime = (secs: number) => {
+    const hours = Math.floor(secs / 3600);
+    const mins = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
 
-  const currentTopicItem = useMemo(() => {
-    return allTopics.find(t => t.topic.id === selectedTopicId);
-  }, [allTopics, selectedTopicId]);
+    if (hours > 0) {
+      return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    return `${String(mins).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
+  // Radial progress percentage
+  const progressPercent = useMemo(() => {
+    if (mainMode === 'stopwatch') {
+      return (stopwatchSeconds % 60) / 60;
+    }
+    if (totalSeconds === 0) return 0;
+    return (totalSeconds - secondsLeft) / totalSeconds;
+  }, [mainMode, stopwatchSeconds, secondsLeft, totalSeconds]);
+
+  const selectedTopic = allTopics.find(t => t.topic.id === selectedTopicId);
 
   if (!isOpen) return null;
 
-  const sounds: Array<{ type: AmbientSoundType; label: string; icon: React.ElementType }> = [
-    { type: 'rain', label: 'Rain', icon: CloudRain },
-    { type: 'ocean', label: 'Waves', icon: Waves },
-    { type: 'binaural', label: 'Alpha 432Hz', icon: Headphones },
-    { type: 'fireplace', label: 'Cozy Fire', icon: FireIcon },
-    { type: 'none', label: 'Mute', icon: VolumeX },
-  ];
+  const circumference = 2 * Math.PI * 130;
+  const strokeDashoffset = circumference - (progressPercent * circumference);
 
   return (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 z-50 bg-[#040714] text-white flex flex-col justify-between p-4 sm:p-8 overflow-y-auto overflow-x-hidden selection:bg-brand-500/30 backdrop-blur-3xl animate-fade-in"
-    >
-      {/* Background Animated Breathing Mesh */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[900px] h-[600px] sm:h-[900px] rounded-full blur-[140px] transition-all duration-1000 ${
-            sessionType.startsWith('break')
-              ? 'bg-gradient-to-tr from-emerald-600/20 via-teal-500/20 to-cyan-500/10'
-              : isRunning
-              ? 'bg-gradient-to-tr from-cyan-500/25 via-purple-600/25 to-pink-500/20 animate-pulse'
-              : 'bg-gradient-to-tr from-blue-600/15 via-purple-600/15 to-transparent'
-          }`}
-        />
-      </div>
-
-      {/* Top Controls Bar */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto flex items-center justify-between gap-3">
-        {/* Active Session & Topic Badge */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-2xl bg-brand-500/20 border border-brand-500/40 flex items-center justify-center text-brand-400 shrink-0 shadow-lg">
-            <Zap className="w-5 h-5 animate-pulse" />
-          </div>
-
-          <div className="min-w-0">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-brand-400">
-              {sessionType.startsWith('break') ? '☕ Rest & Recharge' : '⚡ 3D Deep Study Chamber'}
-            </span>
-            <div className="flex items-center gap-2">
-              <select
-                value={selectedTopicId}
-                onChange={e => setSelectedTopicId(e.target.value)}
-                className="bg-slate-900/80 border border-slate-700/80 text-xs font-bold rounded-xl px-2.5 py-1 text-white focus:ring-2 focus:ring-brand-500 focus:outline-none truncate max-w-[200px] sm:max-w-xs cursor-pointer"
-              >
-                <option value="">-- Freeflow Focus (General) --</option>
-                {allTopics.map(t => (
-                  <option key={t.topic.id} value={t.topic.id}>
-                    {t.subjectName} · {t.topic.name}
-                  </option>
-                ))}
-              </select>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-xl overflow-y-auto animate-fade-in select-none">
+      
+      {/* FOCUS MODAL CARD */}
+      <div className="relative w-full max-w-2xl rounded-3xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0] dark:border-[#333333] shadow-2xl overflow-hidden flex flex-col my-auto transition-all">
+        
+        {/* 1. TOP HEADER & CLOSE BUTTON (NO EXPAND BUTTON AS REQUESTED) */}
+        <div className="p-4 sm:p-5 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] flex items-center justify-between bg-white/70 dark:bg-[#202020]/70">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#D4AF37] to-[#B89327] text-[#171717] flex items-center justify-center font-black shadow-md">
+              <Zap className="w-5 h-5 fill-[#171717]" />
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5E6C8] uppercase tracking-wider">
+                3D Deep Study Chamber
+              </h3>
+              <p className="text-[10px] font-bold text-[#8C6D15] dark:text-[#D4AF37]">
+                Ekagra Mastery Engine
+              </p>
             </div>
           </div>
-        </div>
-
-        {/* Right Header Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={toggleFullscreen}
-            className="p-2 sm:p-2.5 rounded-2xl bg-white/10 hover:bg-white/15 text-slate-200 border border-white/15 transition-all cursor-pointer"
-            title="Toggle Fullscreen (F11)"
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
 
           <button
             onClick={() => {
               ambientEngine.stop();
               onClose();
             }}
-            className="p-2 sm:p-2.5 rounded-2xl bg-white/10 hover:bg-rose-500/20 hover:text-rose-400 text-slate-200 border border-white/15 transition-all cursor-pointer"
-            title="Exit Focus Chamber"
+            className="p-2 rounded-xl text-[#6B7280] hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+            title="Close Chamber"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
-      </div>
 
-      {/* Main 3D Ticking Chamber Core */}
-      <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center justify-center my-6 text-center space-y-6">
-        {/* Session Selector Chips */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl shadow-xl">
-          {[
-            { id: 'focus25', label: '25m Focus' },
-            { id: 'focus50', label: '50m Deep Work' },
-            { id: 'focus90', label: '90m Flow State' },
-            { id: 'break5', label: '5m Short Break' },
-            { id: 'break15', label: '15m Long Break' },
-          ].map(m => (
-            <button
-              key={m.id}
-              onClick={() => setSessionType(m.id as typeof sessionType)}
-              className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                sessionType === m.id
-                  ? 'bg-gradient-to-r from-brand-500 to-purple-600 text-white shadow-md shadow-brand-500/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <div className="p-4 sm:p-6 space-y-5 overflow-y-auto">
+          
+          {/* 2. TOP UP OVERVIEW CARDS (Focus Stats & Active Subject Selector) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            
+            {/* Left Card: Focus Sessions & Daily Velocity */}
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/35 flex items-center justify-center shrink-0">
+                  <Flame className="w-5 h-5 fill-[#D4AF37]" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-[#6B7280] block">Today's Focus Streak</span>
+                  <span className="text-sm font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
+                    {completedSessionsToday} Deep Sessions Completed
+                  </span>
+                </div>
+              </div>
+            </div>
 
-        {/* 3D Glowing Orb Timer Dial */}
-        <div className="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">
-          {/* Multi-layer SVG Progress Ring */}
-          <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 240 240">
-            <circle
-              cx="120"
-              cy="120"
-              r="105"
-              className="stroke-slate-800/80"
-              strokeWidth="10"
-              fill="transparent"
-            />
-            <circle
-              cx="120"
-              cy="120"
-              r="105"
-              stroke="url(#focusGradient)"
-              strokeWidth="12"
-              strokeDasharray={660}
-              strokeDashoffset={660 - (660 * progressPercent) / 100}
-              strokeLinecap="round"
-              fill="transparent"
-              className="transition-all duration-1000 ease-out"
-            />
-            <defs>
-              <linearGradient id="focusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00d2ff" />
-                <stop offset="50%" stopColor="#a855f7" />
-                <stop offset="100%" stopColor="#ec4899" />
-              </linearGradient>
-            </defs>
-          </svg>
-
-          {/* Center Digital Clock & Breathing Orb Core */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            {/* Center Breathing Aura */}
-            <div
-              className={`absolute w-44 h-44 rounded-full filter blur-xl transition-all duration-700 ${
-                isRunning
-                  ? 'bg-gradient-to-tr from-cyan-500/20 via-purple-500/30 to-pink-500/20 scale-110 animate-pulse'
-                  : 'bg-slate-800/40 scale-95'
-              }`}
-            />
-
-            <span className="relative z-10 text-5xl sm:text-7xl font-black font-mono tracking-tighter drop-shadow-[0_4px_25px_rgba(0,210,255,0.4)]">
-              {formatTimer(secondsLeft)}
-            </span>
-
-            <span className="relative z-10 text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-slate-400 mt-2 flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`} />
-              <span>{isRunning ? 'Flow State Active' : 'Chamber Idle'}</span>
-            </span>
+            {/* Right Card: Live Topic Selector */}
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] flex items-center justify-between shadow-sm relative">
+              <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-bold text-[#6B7280] block">Active Study Target</span>
+                  <select
+                    value={selectedTopicId}
+                    onChange={e => setSelectedTopicId(e.target.value)}
+                    className="w-full bg-transparent text-xs font-black text-[#171717] dark:text-[#F5E6C8] truncate cursor-pointer focus:outline-none"
+                  >
+                    {allTopics.map(t => (
+                      <option key={t.topic.id} value={t.topic.id} className="bg-[#FAF8F5] dark:bg-[#1A1A1A] text-[#171717] dark:text-white">
+                        {t.subjectName} • {t.topic.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <ChevronDown className="w-4 h-4 text-[#D4AF37] pointer-events-none shrink-0" />
+            </div>
           </div>
-        </div>
 
-        {/* Play / Pause / Reset Action Controls */}
-        <div className="flex items-center justify-center gap-4 pt-2">
-          <button
-            onClick={handleReset}
-            className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer"
-            title="Reset Timer"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </button>
-
-          <button
-            onClick={handleTogglePlay}
-            className={`px-8 sm:px-10 py-4 rounded-2xl flex items-center gap-3 text-base sm:text-lg font-black tracking-wide shadow-2xl transition-all cursor-pointer ${
-              isRunning
-                ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/40 scale-105'
-                : 'bg-gradient-to-r from-[#0066ff] via-[#8b5cf6] to-[#d946ef] text-white shadow-purple-500/40 hover:scale-105 active:scale-95'
-            }`}
-          >
-            {isRunning ? <Pause className="w-6 h-6 fill-white" /> : <Play className="w-6 h-6 fill-white" />}
-            <span>{isRunning ? 'Pause Focus' : 'Start Focus'}</span>
-          </button>
-
-          {secondsLeft < totalSeconds && (
+          {/* 3. FOUR MODE TABS: POMODORO | BREAK | STOPWATCH | TIMER (As in reference image) */}
+          <div className="flex items-center justify-center p-1.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] shadow-sm max-w-md mx-auto">
+            
+            {/* Mode 1: Pomodoro */}
             <button
-              onClick={handleSessionComplete}
-              className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 hover:bg-emerald-500/30 text-emerald-400 transition-all cursor-pointer"
-              title="Log Completed Early"
+              onClick={() => setMainMode('pomodoro')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                mainMode === 'pomodoro'
+                  ? 'bg-[#D4AF37] text-[#171717] shadow-sm'
+                  : 'text-[#6B7280] hover:text-[#171717] dark:hover:text-white'
+              }`}
             >
-              <CheckCircle2 className="w-5 h-5" />
+              <Hourglass className="w-3.5 h-3.5" />
+              <span>Pomodoro</span>
             </button>
+
+            {/* Mode 2: Break */}
+            <button
+              onClick={() => setMainMode('break')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                mainMode === 'break'
+                  ? 'bg-[#D4AF37] text-[#171717] shadow-sm'
+                  : 'text-[#6B7280] hover:text-[#171717] dark:hover:text-white'
+              }`}
+            >
+              <Coffee className="w-3.5 h-3.5" />
+              <span>Break</span>
+            </button>
+
+            {/* Mode 3: Stopwatch */}
+            <button
+              onClick={() => setMainMode('stopwatch')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                mainMode === 'stopwatch'
+                  ? 'bg-[#D4AF37] text-[#171717] shadow-sm'
+                  : 'text-[#6B7280] hover:text-[#171717] dark:hover:text-white'
+              }`}
+            >
+              <StopwatchIcon className="w-3.5 h-3.5" />
+              <span>Stopwatch</span>
+            </button>
+
+            {/* Mode 4: Custom Timer */}
+            <button
+              onClick={() => setMainMode('timer')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                mainMode === 'timer'
+                  ? 'bg-[#D4AF37] text-[#171717] shadow-sm'
+                  : 'text-[#6B7280] hover:text-[#171717] dark:hover:text-white'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>Timer</span>
+            </button>
+          </div>
+
+          {/* SUB-PRESETS ROW FOR POMODORO / BREAK / TIMER */}
+          {mainMode === 'pomodoro' && (
+            <div className="flex items-center justify-center gap-2">
+              {[25, 50, 90].map(mins => (
+                <button
+                  key={mins}
+                  onClick={() => setPomoPreset(mins)}
+                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    pomoPreset === mins
+                      ? 'bg-[#D4AF37]/20 border-[#D4AF37] text-[#8C6D15] dark:text-[#D4AF37]'
+                      : 'bg-white dark:bg-[#202020] border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280]'
+                  }`}
+                >
+                  {mins === 25 ? '25m Focus' : mins === 50 ? '50m Deep Work' : '90m Flow State'}
+                </button>
+              ))}
+            </div>
           )}
-        </div>
 
-        {/* Motivational Aspirant Quote */}
-        <p className="text-xs sm:text-sm text-slate-400 italic max-w-md mx-auto pt-2">
-          {MOTIVATIONAL_QUOTES[quoteIndex % MOTIVATIONAL_QUOTES.length]}
-        </p>
-      </div>
+          {mainMode === 'break' && (
+            <div className="flex items-center justify-center gap-2">
+              {[5, 15].map(mins => (
+                <button
+                  key={mins}
+                  onClick={() => setBreakPreset(mins)}
+                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    breakPreset === mins
+                      ? 'bg-[#D4AF37]/20 border-[#D4AF37] text-[#8C6D15] dark:text-[#D4AF37]'
+                      : 'bg-white dark:bg-[#202020] border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280]'
+                  }`}
+                >
+                  {mins === 5 ? '5m Short Break' : '15m Long Break'}
+                </button>
+              ))}
+            </div>
+          )}
 
-      {/* Bottom Ambient Audio Dock & Session Stats */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-3xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl shadow-xl">
-        {/* Offline Ambient Sound Generator */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5 pr-2">
-            <Volume2 className="w-4 h-4 text-cyan-400" />
-            <span>Ambient Sound:</span>
-          </span>
+          {mainMode === 'timer' && (
+            <div className="flex items-center justify-center gap-2">
+              {[15, 30, 45, 60, 120].map(mins => (
+                <button
+                  key={mins}
+                  onClick={() => setCustomTimerMinutes(mins)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    customTimerMinutes === mins
+                      ? 'bg-[#D4AF37]/20 border-[#D4AF37] text-[#8C6D15] dark:text-[#D4AF37]'
+                      : 'bg-white dark:bg-[#202020] border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280]'
+                  }`}
+                >
+                  {mins}m
+                </button>
+              ))}
+            </div>
+          )}
 
-          {sounds.map(s => {
-            const Icon = s.icon;
-            const isSel = activeSound === s.type;
-            return (
+          {/* 4. RADIAL CLOCK DISPLAY */}
+          <div className="flex flex-col items-center justify-center py-2 relative">
+            <div className="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center">
+              
+              {/* Animated SVG Ring */}
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 300 300">
+                {/* Background Ring */}
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="130"
+                  className="stroke-slate-200 dark:stroke-[#2A2A2A]"
+                  strokeWidth="8"
+                  fill="transparent"
+                />
+
+                {/* Progress Ring */}
+                <circle
+                  cx="150"
+                  cy="150"
+                  r="130"
+                  stroke="#D4AF37"
+                  strokeWidth="10"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  fill="transparent"
+                  className="transition-all duration-1000 ease-linear"
+                />
+              </svg>
+
+              {/* Center Clock Numbers */}
+              <div className="absolute flex flex-col items-center justify-center text-center space-y-1">
+                
+                {/* Status indicator badge */}
+                <span className="px-3 py-1 text-[11px] font-black rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/35 flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-500 animate-ping' : 'bg-[#D4AF37]'}`} />
+                  <span>
+                    {isRunning
+                      ? mainMode === 'break' ? 'Relaxing Break' : 'Deep Work Active'
+                      : 'Chamber Ready'}
+                  </span>
+                </span>
+
+                {/* Time Display */}
+                <span className="text-4xl sm:text-5xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono tracking-tight mt-1">
+                  {mainMode === 'stopwatch' ? formatTime(stopwatchSeconds) : formatTime(secondsLeft)}
+                </span>
+
+                <span className="text-xs font-semibold text-[#6B7280]">
+                  {mainMode === 'stopwatch'
+                    ? 'Timed Stopwatch Session'
+                    : `${Math.round(totalSeconds / 60)} min Target Goal`}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 5. START / PAUSE / END CONTROLS */}
+          <div className="flex items-center justify-center gap-3 pt-1">
+            
+            {/* Quick -5m Button */}
+            {mainMode !== 'stopwatch' && (
               <button
-                key={s.type}
-                onClick={() => {
-                  setActiveSound(s.type);
-                  soundManager.playClick();
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                  isSel
-                    ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 font-bold shadow-sm'
-                    : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-white'
-                }`}
+                onClick={() => handleAddMinutes(-5)}
+                className="p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
+                title="Subtract 5 minutes"
               >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{s.label}</span>
+                <Minus className="w-4 h-4" />
               </button>
-            );
-          })}
-        </div>
+            )}
 
-        {/* Daily Stats */}
-        <div className="flex items-center gap-4 text-xs font-semibold text-slate-400 shrink-0">
-          <div className="flex items-center gap-1.5 text-orange-400 bg-orange-500/10 px-3 py-1.5 rounded-xl border border-orange-500/30">
-            <Flame className="w-4 h-4 fill-orange-500" />
-            <span>{completedSessionsToday} Cycles Done Today</span>
+            {/* Reset / End Button */}
+            <button
+              onClick={handleReset}
+              className="px-5 py-3.5 rounded-2xl bg-white dark:bg-[#222222] hover:bg-rose-500/15 border border-[#EBD3A0] dark:border-[#383838] hover:border-rose-500/50 text-[#6B7280] hover:text-rose-500 text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+              title="Reset or End Session"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Reset</span>
+            </button>
+
+            {/* MAIN START / PAUSE BUTTON */}
+            <button
+              onClick={handleTogglePlay}
+              className={`px-8 py-3.5 rounded-2xl font-black text-sm shadow-lg transition-all active:scale-95 cursor-pointer flex items-center gap-2 ${
+                isRunning
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/30'
+                  : 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] shadow-[#D4AF37]/35'
+              }`}
+            >
+              {isRunning ? (
+                <>
+                  <Pause className="w-5 h-5 fill-current" />
+                  <span>Pause</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5 fill-current" />
+                  <span>Start Focus</span>
+                </>
+              )}
+            </button>
+
+            {/* Quick +5m Button */}
+            {mainMode !== 'stopwatch' && (
+              <button
+                onClick={() => handleAddMinutes(5)}
+                className="p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
+                title="Add 5 minutes"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Motivational Quote */}
+          <div className="text-center pt-1">
+            <p className="text-[11px] font-medium text-[#6B7280] italic max-w-md mx-auto">
+              &ldquo;{MOTIVATIONAL_QUOTES[quoteIndex]}&rdquo;
+            </p>
+          </div>
+
+          {/* 6. AMBIENT SOUND GENERATOR BAR */}
+          <div className="p-3 rounded-2xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#6B7280]">
+              <Volume2 className="w-4 h-4 text-[#D4AF37]" />
+              <span>Ambient Sound:</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+              {[
+                { id: 'rain', label: 'Rain', icon: CloudRain },
+                { id: 'waves', label: 'Waves', icon: Waves },
+                { id: 'binaural', label: 'Alpha 432Hz', icon: Headphones },
+                { id: 'fire', label: 'Fire', icon: FireIcon },
+                { id: 'none', label: 'Mute', icon: VolumeX }
+              ].map(snd => {
+                const SndIcon = snd.icon;
+                const isActive = activeSound === snd.id;
+
+                return (
+                  <button
+                    key={snd.id}
+                    onClick={() => {
+                      soundManager.playClick();
+                      setActiveSound(snd.id as AmbientSoundType);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                      isActive
+                        ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
+                        : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
+                    }`}
+                  >
+                    <SndIcon className="w-3.5 h-3.5" />
+                    <span>{snd.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
