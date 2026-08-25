@@ -14,7 +14,9 @@ import {
   Flame,
   Layers,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  Search,
+  X
 } from 'lucide-react';
 import { PlannerColumnStatus, PlannerTask, Topic } from '../../types/syllabus';
 import { getTodayDateString } from '../../utils/dateUtils';
@@ -40,6 +42,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedSyllabusTopicId, setSelectedSyllabusTopicId] = useState('');
+  const [topicSearchQuery, setTopicSearchQuery] = useState('');
   const [customTitle, setCustomTitle] = useState('');
   const [targetColumn, setTargetColumn] = useState<PlannerColumnStatus>('today');
   const [estimatedMins, setEstimatedMins] = useState(45);
@@ -52,6 +55,21 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
   const totalTodayCount = todayTasks.length + inProgressTasks.length + completedTasks.length;
   const completedTodayCount = completedTasks.length;
   const todayProgressPercent = totalTodayCount > 0 ? Math.round((completedTodayCount / totalTodayCount) * 100) : 0;
+
+  // Real-time filtered topics for search
+  const filteredTopics = useMemo(() => {
+    if (!topicSearchQuery.trim()) return allTopics;
+    const q = topicSearchQuery.toLowerCase();
+    return allTopics.filter(t =>
+      t.topic.name.toLowerCase().includes(q) ||
+      t.subjectName.toLowerCase().includes(q) ||
+      t.chapterName.toLowerCase().includes(q)
+    );
+  }, [allTopics, topicSearchQuery]);
+
+  const selectedTopicObj = useMemo(() => {
+    return allTopics.find(t => t.topic.id === selectedSyllabusTopicId);
+  }, [allTopics, selectedSyllabusTopicId]);
 
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +93,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       addPlannerTask({
         topicName: customTitle.trim(),
         subjectName: 'Daily Goal',
-        subjectColor: '#ec4899',
+        subjectColor: '#D4AF37',
         status: targetColumn,
         scheduledDate: getTodayDateString(),
         estimatedMinutes: estimatedMins,
@@ -85,6 +103,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
     setCustomTitle('');
     setSelectedSyllabusTopicId('');
+    setTopicSearchQuery('');
     setShowAddModal(false);
   };
 
@@ -135,259 +154,314 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       {/* Header & Goal Progress Banner */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-            <CalendarCheck className="w-6 h-6 text-brand-500" />
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#171717] dark:text-[#F5E6C8] tracking-tight flex items-center gap-2.5">
+            <CalendarCheck className="w-6 h-6 text-[#D4AF37]" />
             <span>Daily Target & Weekly Study Planner</span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Organize daily focus targets, schedule syllabus topics, and conquer preparation milestones.
+          <p className="text-xs sm:text-sm text-[#6B7280] mt-1">
+            Organize high-yield daily goals, focus queues, and protect your preparation velocity.
           </p>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-500 to-purple-600 hover:from-brand-600 hover:to-purple-700 text-white text-xs font-bold shadow-md shadow-brand-500/25 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] font-black text-xs shadow-md shadow-[#D4AF37]/25 hover:shadow-lg transition-all active:scale-98 cursor-pointer shrink-0"
         >
-          <Plus className="w-4 h-4" />
-          <span>+ Add Study Target</span>
+          <Plus className="w-4 h-4 stroke-[3]" />
+          <span>Add Study Target</span>
         </button>
       </div>
 
-      {/* Today's Target Velocity Bar */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900/95 to-[#0e1630] border border-slate-800 text-white shadow-xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-brand-500/20 border border-brand-500/40 flex items-center justify-center text-brand-400">
-              <Flame className="w-5 h-5 fill-brand-400 animate-pulse" />
+      {/* Target Velocity Progress Bar */}
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37]">
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm sm:text-base font-bold">
-                Daily Completion Velocity: {completedTodayCount} of {totalTodayCount} Targets Done
+              <h4 className="text-xs sm:text-sm font-bold text-[#171717] dark:text-[#F5E6C8]">
+                Today's Daily Target Velocity
               </h4>
-              <p className="text-[11px] text-slate-400">
-                {todayProgressPercent === 100 && totalTodayCount > 0
-                  ? '🎉 Outstanding! All targets conquered today! Streak protected.'
-                  : 'Complete today targets to maintain your AIR-1 consistency streak.'}
+              <p className="text-[10px] text-[#6B7280]">
+                {completedTodayCount} of {totalTodayCount} focus items completed
               </p>
             </div>
           </div>
 
-          <span className="text-lg sm:text-2xl font-black font-mono text-cyan-400">
-            {todayProgressPercent}%
+          <span className="text-xs font-black text-[#D4AF37] font-mono">
+            {todayProgressPercent}% Conquered
           </span>
         </div>
 
-        <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden p-0.5">
+        <div className="w-full h-2 rounded-full bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 transition-all duration-700"
+            className="h-full bg-gradient-to-r from-[#D4AF37] to-emerald-500 rounded-full transition-all duration-500"
             style={{ width: `${todayProgressPercent}%` }}
           />
         </div>
       </div>
 
-      {/* 4 Kanban Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 items-start">
+      {/* 4-COLUMN KANBAN BOARD */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {columns.map(col => {
-          const IconComp = col.icon;
+          const ColIcon = col.icon;
           return (
             <div
               key={col.id}
-              className="p-4 rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm flex flex-col min-h-[420px]"
+              className="flex flex-col rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md p-4 space-y-3.5 min-h-[460px]"
             >
               {/* Column Header */}
-              <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${col.color}`}>
-                    <IconComp className="w-3.5 h-3.5" />
+              <div className="flex items-center justify-between pb-2 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
+                <div className="flex items-center gap-2">
+                  <div className={`p-1.5 rounded-xl ${col.color}`}>
+                    <ColIcon className="w-4 h-4" />
                   </div>
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                  <h3 className="text-xs font-extrabold text-[#171717] dark:text-[#F5E6C8]">
                     {col.title}
-                  </h4>
+                  </h3>
                 </div>
-
-                <span className="px-2 py-0.5 text-[11px] font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border border-[#EBD3A0]/60 dark:border-[#333333]">
                   {col.tasks.length}
                 </span>
               </div>
 
-              {/* Tasks List */}
-              <div className="space-y-2.5 flex-1 overflow-y-auto">
-                {col.tasks.length > 0 ? (
+              {/* Task Cards Stack */}
+              <div className="flex-1 space-y-2.5 overflow-y-auto max-h-[500px]">
+                {col.tasks.length === 0 ? (
+                  <div className="h-36 flex flex-col items-center justify-center text-center p-4 border border-dashed border-[#EBD3A0]/60 dark:border-[#333333] rounded-2xl">
+                    <p className="text-[11px] text-[#6B7280] font-medium">No tasks in queue</p>
+                  </div>
+                ) : (
                   col.tasks.map(task => (
                     <div
                       key={task.id}
-                      className={`p-3.5 rounded-2xl border transition-all ${
+                      className={`p-3.5 rounded-2xl border transition-all space-y-2.5 group ${
                         task.status === 'completed'
-                          ? 'bg-emerald-500/5 border-emerald-500/30 dark:bg-emerald-950/20'
-                          : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200/80 dark:border-slate-700/60 hover:border-slate-400'
+                          ? 'bg-emerald-500/5 dark:bg-emerald-950/10 border-emerald-500/20 opacity-75'
+                          : 'bg-[#FAF8F5] dark:bg-[#171717] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <span
-                            className="w-2 h-2 rounded-full shrink-0"
-                            style={{ backgroundColor: task.subjectColor || '#3b82f6' }}
-                          />
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
-                            {task.subjectName}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <button
+                            onClick={() => togglePlannerTask(task.id)}
+                            className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all shrink-0 cursor-pointer ${
+                              task.status === 'completed'
+                                ? 'bg-emerald-500 border-emerald-500 text-white'
+                                : 'border-[#EBD3A0] dark:border-slate-600 hover:border-[#D4AF37]'
+                            }`}
+                          >
+                            {task.status === 'completed' && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                          </button>
+                          <span className={`text-xs font-bold leading-snug ${
+                            task.status === 'completed'
+                              ? 'line-through text-[#6B7280]'
+                              : 'text-[#171717] dark:text-[#F5E6C8]'
+                          }`}>
+                            {task.topicName}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            onClick={() => deletePlannerTask(task.id)}
-                            className="p-1 rounded text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-                            title="Delete Target"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
+                        <button
+                          onClick={() => deletePlannerTask(task.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1 text-[#6B7280] hover:text-rose-500 transition-opacity cursor-pointer shrink-0"
+                          title="Delete Task"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Subject & Meta Row */}
+                      <div className="flex items-center justify-between text-[10px] text-[#6B7280]">
+                        <span
+                          className="px-2 py-0.5 rounded-md font-semibold truncate max-w-[120px]"
+                          style={{
+                            backgroundColor: `${task.subjectColor || '#D4AF37'}20`,
+                            color: task.subjectColor || '#D4AF37'
+                          }}
+                        >
+                          {task.subjectName}
+                        </span>
+
+                        <div className="flex items-center gap-1 font-mono">
+                          <Clock className="w-3 h-3 text-[#6B7280]" />
+                          <span>{task.estimatedMinutes}m</span>
                         </div>
                       </div>
 
-                      <h5
-                        className={`text-xs sm:text-sm font-bold mb-2 leading-snug ${
-                          task.status === 'completed'
-                            ? 'line-through text-slate-400 dark:text-slate-500'
-                            : 'text-slate-900 dark:text-white'
-                        }`}
-                      >
-                        {task.topicName}
-                      </h5>
+                      {/* Quick Move Buttons */}
+                      <div className="pt-2 border-t border-[#EBD3A0]/40 dark:border-[#262626] flex items-center justify-between text-[10px] font-bold">
+                        {onOpenFocusChamber && task.status !== 'completed' && (
+                          <button
+                            onClick={() => onOpenFocusChamber(task.topicId)}
+                            className="text-[#D4AF37] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <Zap className="w-3 h-3" />
+                            <span>Focus</span>
+                          </button>
+                        )}
 
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/40 text-[11px]">
-                        <span className="flex items-center gap-1 text-slate-500 font-medium">
-                          <Clock className="w-3 h-3" />
-                          <span>{task.estimatedMinutes}m est</span>
-                        </span>
-
-                        {/* Status Action Buttons */}
-                        <div className="flex items-center gap-1">
-                          {task.status !== 'completed' && onOpenFocusChamber && (
+                        <div className="flex items-center gap-1 ml-auto">
+                          {col.id !== 'today' && (
                             <button
-                              onClick={() => onOpenFocusChamber(task.topicId)}
-                              className="px-2 py-1 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold hover:bg-cyan-500/20 transition-all flex items-center gap-1"
-                              title="Start 3D Focus Timer"
+                              onClick={() => movePlannerTask(task.id, 'today')}
+                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-[#2A2A2A] hover:bg-[#D4AF37] hover:text-[#171717] text-[#6B7280] transition-colors cursor-pointer"
                             >
-                              <Zap className="w-3 h-3" />
-                              <span>Focus</span>
+                              Today
                             </button>
                           )}
-
-                          {task.status === 'today' && (
+                          {col.id !== 'in_progress' && (
                             <button
                               onClick={() => movePlannerTask(task.id, 'in_progress')}
-                              className="px-2 py-1 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-bold hover:bg-purple-500/20"
+                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-[#2A2A2A] hover:bg-[#D4AF37] hover:text-[#171717] text-[#6B7280] transition-colors cursor-pointer"
                             >
-                              Start →
+                              Focus
                             </button>
                           )}
-
-                          {task.status === 'in_progress' && (
+                          {col.id !== 'upcoming' && (
                             <button
-                              onClick={() => movePlannerTask(task.id, 'completed')}
-                              className="px-2 py-1 rounded-lg bg-emerald-500 text-white text-[10px] font-bold hover:bg-emerald-600 shadow-sm"
+                              onClick={() => movePlannerTask(task.id, 'upcoming')}
+                              className="px-2 py-0.5 rounded bg-slate-200 dark:bg-[#2A2A2A] hover:bg-[#D4AF37] hover:text-[#171717] text-[#6B7280] transition-colors cursor-pointer"
                             >
-                              Done ✓
-                            </button>
-                          )}
-
-                          {task.status === 'upcoming' && (
-                            <button
-                              onClick={() => movePlannerTask(task.id, 'today')}
-                              className="px-2 py-1 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold hover:bg-cyan-500/20"
-                            >
-                              Move to Today ↑
-                            </button>
-                          )}
-
-                          {task.status === 'completed' && (
-                            <button
-                              onClick={() => movePlannerTask(task.id, 'today')}
-                              className="px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-semibold"
-                            >
-                              Reopen ↺
+                              Week
                             </button>
                           )}
                         </div>
                       </div>
                     </div>
                   ))
-                ) : (
-                  <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4">
-                    No targets in this column
-                  </div>
                 )}
               </div>
-
-              {/* Bottom Quick Add to column */}
-              <button
-                onClick={() => {
-                  setTargetColumn(col.id);
-                  setShowAddModal(true);
-                }}
-                className="mt-3 w-full py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Card</span>
-              </button>
             </div>
           );
         })}
       </div>
 
-      {/* Add Target Modal */}
+      {/* CREATE TARGET MODAL WITH SEARCH FILTER */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md">
-          <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden animate-fade-in">
-            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto animate-fade-in">
+          <div className="relative w-full max-w-lg rounded-3xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0] dark:border-[#333333] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+            <div className="p-4 sm:p-5 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] flex items-center justify-between bg-white/70 dark:bg-[#202020]/70 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-500 flex items-center justify-center">
-                  <Target className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37]">
+                  <Plus className="w-4 h-4" />
                 </div>
-                <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  Add Study Target to Planner
-                </h4>
+                <div>
+                  <h4 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">
+                    Add Study Target to Planner
+                  </h4>
+                  <p className="text-[10px] text-[#6B7280]">
+                    Link syllabus topics with instant search or add custom goals
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="p-1.5 rounded-xl text-[#6B7280] hover:text-rose-500 hover:bg-[#F5E6C8]/40 dark:hover:bg-[#282828] transition-colors cursor-pointer"
               >
-                <Check className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateTask} className="p-5 sm:p-6 space-y-4">
-              {/* Select from Syllabus Topics */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+            <form onSubmit={handleCreateTask} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
+              
+              {/* SELECT FROM SYLLABUS TOPICS WITH REAL-TIME SEARCH */}
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] space-y-3">
+                <label className="block text-xs font-black text-[#171717] dark:text-[#F5E6C8]">
                   Select from Syllabus Topics (Recommended)
                 </label>
-                <select
-                  value={selectedSyllabusTopicId}
-                  onChange={e => {
-                    setSelectedSyllabusTopicId(e.target.value);
-                    if (e.target.value) setCustomTitle('');
-                  }}
-                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500"
-                >
-                  <option value="">-- Choose Syllabus Topic --</option>
-                  {allTopics.map(t => (
-                    <option key={t.topic.id} value={t.topic.id}>
-                      {t.subjectName} · {t.topic.name}
-                    </option>
-                  ))}
-                </select>
+
+                {/* Search Bar Input */}
+                <div className="relative flex items-center">
+                  <Search className="absolute left-3 w-4 h-4 text-[#D4AF37] pointer-events-none" />
+                  <input
+                    type="text"
+                    value={topicSearchQuery}
+                    onChange={(e) => setTopicSearchQuery(e.target.value)}
+                    placeholder="🔍 Search topic or subject (e.g. Percentage, History, Geometry)..."
+                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
+                  />
+                  {topicSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setTopicSearchQuery('')}
+                      className="absolute right-2.5 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Selected Topic Pill Indicator */}
+                {selectedTopicObj && (
+                  <div className="p-2.5 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 flex items-center justify-between text-xs font-bold text-[#8C6D15] dark:text-[#D4AF37]">
+                    <div className="flex items-center gap-2 truncate pr-2">
+                      <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span className="truncate">Selected: {selectedTopicObj.subjectName} • {selectedTopicObj.topic.name}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSyllabusTopicId('')}
+                      className="text-[10px] text-rose-500 hover:underline shrink-0"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+
+                {/* Scrollable Filtered Topic List */}
+                <div className="max-h-40 overflow-y-auto space-y-1.5 p-1 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
+                  {filteredTopics.length === 0 ? (
+                    <p className="text-center py-4 text-xs text-[#6B7280]">
+                      No matching topics found for "{topicSearchQuery}"
+                    </p>
+                  ) : (
+                    filteredTopics.map((t) => {
+                      const isSelected = selectedSyllabusTopicId === t.topic.id;
+                      return (
+                        <div
+                          key={t.topic.id}
+                          onClick={() => {
+                            setSelectedSyllabusTopicId(t.topic.id);
+                            setCustomTitle('');
+                          }}
+                          className={`p-2 rounded-lg flex items-center justify-between text-xs font-semibold cursor-pointer transition-all ${
+                            isSelected
+                              ? 'bg-[#D4AF37] text-[#171717] font-bold shadow-sm'
+                              : 'hover:bg-[#F5E6C8]/40 dark:hover:bg-[#252525] text-[#171717] dark:text-[#F5E6C8]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0 pr-2">
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{ backgroundColor: t.subjectColor || '#D4AF37' }}
+                            />
+                            <span className="truncate">{t.topic.name}</span>
+                          </div>
+                          <span className={`text-[10px] shrink-0 font-mono ${
+                            isSelected ? 'text-[#171717]' : 'text-[#6B7280]'
+                          }`}>
+                            {t.subjectName}
+                          </span>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               </div>
 
               <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-slate-200 dark:border-slate-700" />
-                <span className="flex-shrink mx-3 text-[10px] font-bold text-slate-400 uppercase">OR Custom Goal</span>
-                <div className="flex-grow border-t border-slate-200 dark:border-slate-700" />
+                <div className="flex-grow border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E]" />
+                <span className="flex-shrink mx-3 text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  OR Custom Goal
+                </span>
+                <div className="flex-grow border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E]" />
               </div>
 
               {/* Custom Goal Title */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#171717] dark:text-[#F5E6C8] mb-1.5">
                   Custom Task Title
                 </label>
                 <input
@@ -398,28 +472,28 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     if (e.target.value) setSelectedSyllabusTopicId('');
                   }}
                   placeholder="e.g. Attempt Full Mock Test #12 & Review Mistake Log"
-                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500"
+                  className="w-full p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-xs font-semibold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold text-[#171717] dark:text-[#F5E6C8] mb-1.5">
                     Target Column
                   </label>
                   <select
                     value={targetColumn}
                     onChange={e => setTargetColumn(e.target.value as PlannerColumnStatus)}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white"
+                    className="w-full p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
                   >
-                    <option value="today">Today Target</option>
-                    <option value="in_progress">In Focus</option>
+                    <option value="today">Today's Target</option>
+                    <option value="in_progress">In Focus (Deep Work)</option>
                     <option value="upcoming">Upcoming Week</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold text-[#171717] dark:text-[#F5E6C8] mb-1.5">
                     Est. Minutes
                   </label>
                   <input
@@ -429,23 +503,23 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     step={5}
                     value={estimatedMins}
                     onChange={e => setEstimatedMins(Number(e.target.value))}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white"
+                    className="w-full p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                  className="px-4 py-2.5 text-xs font-bold rounded-xl border border-[#EBD3A0] dark:border-[#383838] text-[#6B7280] hover:text-[#171717] dark:hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!selectedSyllabusTopicId && !customTitle.trim()}
-                  className="px-5 py-2.5 text-xs font-bold bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white rounded-xl shadow-md cursor-pointer"
+                  className="px-5 py-2.5 text-xs font-black bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] disabled:opacity-50 text-[#171717] rounded-xl shadow-md cursor-pointer"
                 >
                   Add to Board
                 </button>

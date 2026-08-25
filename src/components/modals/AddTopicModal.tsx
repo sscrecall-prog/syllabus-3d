@@ -14,7 +14,6 @@ import {
   Info
 } from 'lucide-react';
 import { DifficultyLevel } from '../../types/syllabus';
-import { soundManager } from '../../utils/soundEffects';
 
 interface AddTopicModalProps {
   isOpen: boolean;
@@ -54,13 +53,11 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
   // Single Topic state
   const [singleTopicName, setSingleTopicName] = useState('');
   const [singleDifficulty, setSingleDifficulty] = useState<DifficultyLevel>('Medium');
-  const [singleWeightage, setSingleWeightage] = useState(4);
   const [singleSubtopicsText, setSingleSubtopicsText] = useState('');
 
   // Bulk Multi-Topic state (Line by line paste)
   const [bulkTextInput, setBulkTextInput] = useState('');
   const [bulkDefaultDifficulty, setBulkDefaultDifficulty] = useState<DifficultyLevel>('Medium');
-  const [bulkDefaultWeightage, setBulkDefaultWeightage] = useState(3);
 
   useEffect(() => {
     if (currentExam && currentExam.subjects.length > 0) {
@@ -91,7 +88,6 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
     .map(line => line.trim())
     .filter(line => line.length > 0)
     .map(line => {
-      // Check if line has subtopics separated by "-" or ":"
       let name = line;
       let subtopics: string[] = ['Core Concepts'];
 
@@ -111,7 +107,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
       return {
         name,
         difficulty: bulkDefaultDifficulty,
-        weightage: bulkDefaultWeightage,
+        weightage: 3,
         subtopics: subtopics.length > 0 ? subtopics : ['Core Concepts']
       };
     })
@@ -140,7 +136,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
       topicsToCreate.push({
         name: singleTopicName.trim(),
         difficulty: singleDifficulty,
-        weightage: singleWeightage,
+        weightage: 3,
         subtopics: subtopics.length > 0 ? subtopics : ['Core Concepts']
       });
     } else {
@@ -368,40 +364,24 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   value={bulkTextInput}
                   onChange={(e) => setBulkTextInput(e.target.value)}
                   placeholder={`Paste your topics list here (each topic on a new line):\nPercentage & Fraction Conversions\nProfit, Loss & Discount Formulas\nSimple & Compound Interest\nRatio & Proportion Tricks\nTime, Speed & Distance`}
-                  rows={5}
+                  rows={6}
                   className="w-full p-3 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-medium text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37] font-mono leading-relaxed placeholder-slate-400"
                   required={creationMode === 'bulk'}
                 />
 
-                <div className="grid grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block text-[10px] font-bold text-[#6B7280] mb-1">
-                      Default Difficulty for all
-                    </label>
-                    <select
-                      value={bulkDefaultDifficulty}
-                      onChange={(e) => setBulkDefaultDifficulty(e.target.value as DifficultyLevel)}
-                      className="w-full p-2 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white"
-                    >
-                      <option value="Easy">Easy</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Hard">Hard</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-bold text-[#6B7280] mb-1">
-                      Default Weightage (1-5)
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={5}
-                      value={bulkDefaultWeightage}
-                      onChange={(e) => setBulkDefaultWeightage(Number(e.target.value))}
-                      className="w-full p-2 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white"
-                    />
-                  </div>
+                <div className="pt-1">
+                  <label className="block text-[11px] font-bold text-[#6B7280] mb-1">
+                    Difficulty for all topics
+                  </label>
+                  <select
+                    value={bulkDefaultDifficulty}
+                    onChange={(e) => setBulkDefaultDifficulty(e.target.value as DifficultyLevel)}
+                    className="w-full p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
+                  >
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-start gap-2 text-[11px] text-[#8C6D15] dark:text-[#D4AF37]">
@@ -424,31 +404,17 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#6B7280] mb-1">Difficulty</label>
-                    <select
-                      value={singleDifficulty}
-                      onChange={(e) => setSingleDifficulty(e.target.value as DifficultyLevel)}
-                      className="w-full p-2 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white"
-                    >
-                      <option value="Easy">Easy</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Hard">Hard</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#6B7280] mb-1">Weightage (1-5)</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={5}
-                      value={singleWeightage}
-                      onChange={(e) => setSingleWeightage(Number(e.target.value))}
-                      className="w-full p-2 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#6B7280] mb-1">Difficulty</label>
+                  <select
+                    value={singleDifficulty}
+                    onChange={(e) => setSingleDifficulty(e.target.value as DifficultyLevel)}
+                    className="w-full p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
+                  >
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
                 </div>
 
                 <div>
