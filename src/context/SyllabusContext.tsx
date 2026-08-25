@@ -40,6 +40,26 @@ export interface CreateCustomTopicPayload {
   subtopics: string[];
 }
 
+export interface CreateMultipleCustomTopicsPayload {
+  isNewSubject: boolean;
+  subjectId?: string;
+  newSubjectName?: string;
+  newSubjectColor?: string;
+  newSubjectIcon?: string;
+
+  isNewChapter: boolean;
+  chapterId?: string;
+  newChapterName?: string;
+  newChapterDescription?: string;
+
+  topics: Array<{
+    name: string;
+    difficulty?: DifficultyLevel;
+    weightage?: number;
+    subtopics?: string[];
+  }>;
+}
+
 const INITIAL_PLANNER_TASKS: PlannerTask[] = [
   {
     id: 'plan_1',
@@ -114,6 +134,7 @@ interface SyllabusContextType {
   completeRevisionCard: (revisionId: string, grade: 'again' | 'hard' | 'good' | 'easy') => void;
   addTopic: (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => void;
   addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
+  addMultipleCustomTopicsWithHierarchy: (payload: CreateMultipleCustomTopicsPayload) => void;
 
   editSubject: (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => void;
   deleteSubject: (subjectId: string) => void;
@@ -619,10 +640,32 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const addCustomTopicWithHierarchy = (payload: CreateCustomTopicPayload) => {
-    const newTopic: Topic = {
+    addMultipleCustomTopicsWithHierarchy({
+      isNewSubject: payload.isNewSubject,
+      subjectId: payload.subjectId,
+      newSubjectName: payload.newSubjectName,
+      newSubjectColor: payload.newSubjectColor,
+      newSubjectIcon: payload.newSubjectIcon,
+      isNewChapter: payload.isNewChapter,
+      chapterId: payload.chapterId,
+      newChapterName: payload.newChapterName,
+      newChapterDescription: payload.newChapterDescription,
+      topics: [{
+        name: payload.topicName,
+        difficulty: payload.difficulty,
+        weightage: payload.weightage,
+        subtopics: payload.subtopics
+      }]
+    });
+  };
+
+  const addMultipleCustomTopicsWithHierarchy = (payload: CreateMultipleCustomTopicsPayload) => {
+    if (!payload.topics || payload.topics.length === 0) return;
+
+    const newTopicObjects: Topic[] = payload.topics.map(t => ({
       id: 'top_' + Math.random().toString(36).substr(2, 9),
-      name: payload.topicName.trim(),
-      subtopics: payload.subtopics && payload.subtopics.length > 0 ? payload.subtopics : ['Core Concepts'],
+      name: t.name.trim(),
+      subtopics: t.subtopics && t.subtopics.length > 0 ? t.subtopics : ['Core Concepts'],
       status: 'not_started' as TopicStatus,
       completionPercentage: 0,
       studyTimeMinutes: 0,
@@ -630,12 +673,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       nextRevision: null,
       accuracy: 0,
       mockAttempts: 0,
-      difficulty: payload.difficulty || 'Medium',
+      difficulty: t.difficulty || 'Medium',
       isWeak: false,
-      weightage: payload.weightage || 3,
+      weightage: t.weightage || 3,
       notes: '',
       mistakes: []
-    };
+    }));
 
     setExams(prevExams => prevExams.map(exam => {
       if (exam.id !== profile.selectedExamId) return exam;
@@ -651,7 +694,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           id: newSubId,
           name: payload.newSubjectName?.trim() || 'Custom Subject',
           icon: payload.newSubjectIcon || 'BookOpen',
-          color: payload.newSubjectColor || '#6366f1',
+          color: payload.newSubjectColor || '#D4AF37',
           totalChapters: 1,
           chapters: []
         };
@@ -672,7 +715,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             id: newChId,
             name: payload.newChapterName?.trim() || 'General Concepts',
             description: payload.newChapterDescription?.trim() || 'Custom study unit',
-            topics: [newTopic]
+            topics: newTopicObjects
           };
           chapters.push(newChapter);
         } else {
@@ -680,7 +723,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (ch.id !== targetChapterId) return ch;
             return {
               ...ch,
-              topics: [...ch.topics, newTopic]
+              topics: [...ch.topics, ...newTopicObjects]
             };
           });
         }
@@ -698,7 +741,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       };
     }));
 
-    soundManager.playClick();
+    soundManager.playCompleteChime();
+    confetti({ particleCount: 45, spread: 60, origin: { y: 0.8 } });
   };
 
   const editSubject = (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => {
@@ -986,6 +1030,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         completeRevisionCard,
         addTopic,
         addCustomTopicWithHierarchy,
+        addMultipleCustomTopicsWithHierarchy,
         editSubject,
         deleteSubject,
         editChapter,
