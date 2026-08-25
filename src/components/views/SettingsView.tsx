@@ -24,7 +24,10 @@ import {
   RefreshCw,
   Server,
   Key,
-  Check
+  Check,
+  QrCode,
+  ArrowRight,
+  Copy
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -41,6 +44,8 @@ export const SettingsView: React.FC = () => {
     syncStatus,
     lastSyncedAt,
     syncWithCloud,
+    generatePairCode,
+    importByPairCode,
     cloudConfig,
     updateCloudConfig
   } = useSyllabus();
@@ -53,13 +58,14 @@ export const SettingsView: React.FC = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [showDbConfig, setShowDbConfig] = useState(false);
 
-  // Cloud Config State
-  const [dbType, setDbType] = useState<'default' | 'firebase' | 'supabase'>(cloudConfig.type);
-  const [dbUrl, setDbUrl] = useState(cloudConfig.endpointUrl || '');
-  const [dbKey, setDbKey] = useState(cloudConfig.apiKey || '');
-  const [savedDbNotice, setSavedDbNotice] = useState(false);
+  // 6-Digit Device Pairing State
+  const [generatedPairCode, setGeneratedPairCode] = useState<string | null>(null);
+  const [inputPairCode, setInputPairCode] = useState('');
+  const [isPairingLoading, setIsPairingLoading] = useState(false);
+  const [pairError, setPairError] = useState<string | null>(null);
+  const [pairSuccess, setPairSuccess] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,15 +74,48 @@ export const SettingsView: React.FC = () => {
     soundManager.playClick();
   };
 
-  const handleSaveDbConfig = (e: React.FormEvent) => {
+  const handleGenerateCode = async () => {
+    setIsPairingLoading(true);
+    setPairError(null);
+    try {
+      const code = await generatePairCode();
+      setGeneratedPairCode(code);
+    } catch (e: any) {
+      setPairError('Failed to generate code. Check internet connection.');
+    } finally {
+      setIsPairingLoading(false);
+    }
+  };
+
+  const handlePairSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateCloudConfig({
-      type: dbType,
-      endpointUrl: dbUrl.trim(),
-      apiKey: dbKey.trim()
-    });
-    setSavedDbNotice(true);
-    setTimeout(() => setSavedDbNotice(false), 3000);
+    if (!inputPairCode.trim()) return;
+    setIsPairingLoading(true);
+    setPairError(null);
+    setPairSuccess(false);
+
+    try {
+      const success = await importByPairCode(inputPairCode.trim());
+      if (success) {
+        setPairSuccess(true);
+        setInputPairCode('');
+      } else {
+        setPairError('Invalid or expired 6-digit sync code.');
+      }
+    } catch (e: any) {
+      setPairError(e.message || 'Error connecting to sync server.');
+    } finally {
+      setIsPairingLoading(false);
+    }
+  };
+
+  const handleCopyCode = () => {
+    if (generatedPairCode) {
+      navigator.clipboard.writeText(generatedPairCode);
+      setCopiedCode(true);
+      soundManager.playClick();
+      setTimeout(() => setCopiedCode(false), 2500);
+    }
   };
 
   const handleExport = () => {
@@ -157,126 +196,140 @@ export const SettingsView: React.FC = () => {
         )}
       </div>
 
-      {/* CROSS-DEVICE REAL-TIME CLOUD SYNC CARD */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-teal-950/30 to-slate-900 border border-emerald-500/30 shadow-xl space-y-4">
+      {/* 1. PROFESSIONAL REAL-TIME CLOUD SYNC & 6-DIGIT DEVICE PAIR HUB */}
+      <div className="p-6 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-blue-950/30 to-slate-900 border border-cyan-500/30 shadow-xl space-y-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
               <Cloud className="w-6 h-6 animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-sm sm:text-base font-bold text-white">
-                  Cross-Device Real-Time Cloud Sync
+                  Real-Time Cross-Device Sync (PC ⇄ Mobile)
                 </h4>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  <span>{syncStatus === 'syncing' ? 'Syncing...' : 'Active & Synced'}</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-500/20 text-cyan-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  <span>{syncStatus === 'syncing' ? 'Syncing...' : 'Live Synced'}</span>
                 </span>
               </div>
               <p className="text-xs text-slate-300 mt-0.5">
-                Whatever you add on PC is automatically synced to your Mobile, and vice versa!
+                Every topic, note, revision, and study timer automatically syncs across all your devices.
               </p>
             </div>
           </div>
 
           <button
             onClick={() => syncWithCloud()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-xs font-bold shadow-md shadow-cyan-500/25 transition-all cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-4 h-4 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
-            <span>Sync Now (Force Refresh)</span>
+            <span>Force Sync Now</span>
           </button>
+        </div>
+
+        {/* 6-DIGIT INSTANT DEVICE PAIRING ROOM */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-cyan-400">
+            <QrCode className="w-4 h-4" />
+            <span>Instant 6-Digit Device Link (Sync in 3 Seconds)</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Step A: Generate on PC */}
+            <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+              <span className="text-[11px] font-bold text-slate-300 block">
+                Option A: On your PC (Send to Mobile)
+              </span>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                Click below to generate a temporary 6-digit sync PIN for this device.
+              </p>
+
+              {generatedPairCode ? (
+                <div className="flex items-center justify-between p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-semibold">PAIR PIN:</span>
+                    <span className="text-xl sm:text-2xl font-black font-mono tracking-widest text-white">
+                      {generatedPairCode.slice(0, 3)} {generatedPairCode.slice(3)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleCopyCode}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedCode ? 'Copied!' : 'Copy'}</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleGenerateCode}
+                  disabled={isPairingLoading}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Key className="w-4 h-4 text-cyan-400" />
+                  <span>Generate 6-Digit Sync PIN</span>
+                </button>
+              )}
+            </div>
+
+            {/* Step B: Enter on Mobile */}
+            <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+              <span className="text-[11px] font-bold text-slate-300 block">
+                Option B: On your Mobile (Receive from PC)
+              </span>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                Type the 6-digit PIN from your PC to immediately import all your syllabus data.
+              </p>
+
+              <form onSubmit={handlePairSubmit} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    maxLength={7}
+                    value={inputPairCode}
+                    onChange={(e) => setInputPairCode(e.target.value)}
+                    placeholder="Enter 6-digit PIN"
+                    className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm font-mono font-bold text-white text-center tracking-widest focus:ring-2 focus:ring-cyan-500"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isPairingLoading || !inputPairCode.trim()}
+                    className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0"
+                  >
+                    {isPairingLoading ? 'Syncing...' : 'Link Device'}
+                  </button>
+                </div>
+
+                {pairSuccess && (
+                  <p className="text-xs text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> All PC data successfully linked & synced!
+                  </p>
+                )}
+                {pairError && (
+                  <p className="text-xs text-rose-400 font-bold animate-fade-in">
+                    ⚠ {pairError}
+                  </p>
+                )}
+              </form>
+            </div>
+          </div>
         </div>
 
         {/* Sync Status Details */}
-        <div className="pt-3 border-t border-emerald-500/20 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
+        <div className="pt-2 border-t border-cyan-500/20 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
           <div className="flex items-center gap-2">
-            <span>Linked Account:</span>
-            <span className="font-bold text-white font-mono">{user?.email || 'Logged In Account'}</span>
+            <span>Linked User Account:</span>
+            <span className="font-bold text-white font-mono">{user?.email || 'Active Account'}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span>Last Synced:</span>
-            <span className="font-bold text-emerald-400">
+            <span>Last Sync Time:</span>
+            <span className="font-bold text-cyan-400">
               {lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Just now'}
             </span>
           </div>
-        </div>
-
-        {/* Optional Custom Backend Accordion */}
-        <div className="pt-2">
-          <button
-            type="button"
-            onClick={() => setShowDbConfig(p => !p)}
-            className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
-          >
-            <Server className="w-3.5 h-3.5" />
-            <span>{showDbConfig ? 'Hide Custom Database Settings' : 'Advanced: Connect Private Firebase / Supabase DB'}</span>
-          </button>
-
-          {showDbConfig && (
-            <form onSubmit={handleSaveDbConfig} className="mt-3 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 animate-fade-in text-left">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-300 mb-1">
-                  Database Provider
-                </label>
-                <select
-                  value={dbType}
-                  onChange={(e) => setDbType(e.target.value as any)}
-                  className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white"
-                >
-                  <option value="default">Default Managed Cloud Sync (Zero Setup Needed)</option>
-                  <option value="firebase">Custom Firebase Realtime Database</option>
-                  <option value="supabase">Custom Supabase Database</option>
-                </select>
-              </div>
-
-              {dbType !== 'default' && (
-                <>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
-                      Firebase Database URL (e.g. https://my-project.firebaseio.com)
-                    </label>
-                    <input
-                      type="url"
-                      value={dbUrl}
-                      onChange={(e) => setDbUrl(e.target.value)}
-                      placeholder="https://your-firebase-db.firebaseio.com"
-                      className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
-                      API Auth Token / Key (Optional)
-                    </label>
-                    <input
-                      type="password"
-                      value={dbKey}
-                      onChange={(e) => setDbKey(e.target.value)}
-                      placeholder="Database secret / auth token"
-                      className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white"
-                    />
-                  </div>
-                </>
-              )}
-
-              <div className="flex items-center justify-between pt-1">
-                {savedDbNotice && (
-                  <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" /> Database settings saved!
-                  </span>
-                )}
-                <button
-                  type="submit"
-                  className="ml-auto px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold cursor-pointer"
-                >
-                  Save Sync Settings
-                </button>
-              </div>
-            </form>
-          )}
         </div>
       </div>
 
