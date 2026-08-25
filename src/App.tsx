@@ -43,6 +43,7 @@ export const App: React.FC = () => {
     localStorage.setItem('syllabus3d_theme_system', themeSystem);
     if (themeSystem === 'spatial') {
       document.documentElement.classList.add('theme-spatial');
+      document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('theme-spatial');
     }
