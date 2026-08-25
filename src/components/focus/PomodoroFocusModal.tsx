@@ -19,8 +19,7 @@ import {
   Clock,
   Plus,
   Minus,
-  Search,
-  Check
+  Search
 } from 'lucide-react';
 import { ambientEngine, AmbientSoundType } from '../../utils/ambientSounds';
 import { soundManager } from '../../utils/soundEffects';
@@ -34,14 +33,6 @@ interface PomodoroFocusModalProps {
 
 type FocusMainMode = 'pomodoro' | 'break' | 'stopwatch' | 'timer';
 
-const MOTIVATIONAL_QUOTES = [
-  "The secret of getting ahead is getting started. — Mark Twain",
-  "Focus on being productive instead of busy. — Tim Ferriss",
-  "One focused hour is worth ten distracted hours. — Deep Work",
-  "Your rank is decided in the quiet hours of deep practice.",
-  "Small daily streaks lead to massive exam breakthroughs."
-];
-
 export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   isOpen,
   onClose,
@@ -49,45 +40,29 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 }) => {
   const { allTopics, logStudySession } = useSyllabus();
 
-  // Mode: 'pomodoro' | 'break' | 'stopwatch' | 'timer'
   const [mainMode, setMainMode] = useState<FocusMainMode>('pomodoro');
-  
-  // Pomodoro Sub-presets: 25, 50, 90
   const [pomoPreset, setPomoPreset] = useState<number>(25);
-  // Break Sub-presets: 5, 15
   const [breakPreset, setBreakPreset] = useState<number>(5);
-  // Custom Timer Minutes
   const [customTimerMinutes, setCustomTimerMinutes] = useState<number>(45);
 
   const [selectedTopicId, setSelectedTopicId] = useState<string>(defaultTopicId || '');
-  
-  // Search state for topic selector
   const [isTopicSearchOpen, setIsTopicSearchOpen] = useState(false);
   const [topicSearchTerm, setTopicSearchTerm] = useState('');
 
-  // State for Countdown Timers
   const [totalSeconds, setTotalSeconds] = useState(25 * 60);
   const [secondsLeft, setSecondsLeft] = useState(25 * 60);
-
-  // State for Stopwatch (Count-Up)
   const [stopwatchSeconds, setStopwatchSeconds] = useState(0);
 
   const [isRunning, setIsRunning] = useState(false);
   const [activeSound, setActiveSound] = useState<AmbientSoundType>('rain');
   const [soundVolume, setSoundVolume] = useState(0.5);
   const [completedSessionsToday, setCompletedSessionsToday] = useState(2);
-  const [quoteIndex, setQuoteIndex] = useState(0);
 
-  // Initialize selected topic
   useEffect(() => {
-    if (defaultTopicId) {
-      setSelectedTopicId(defaultTopicId);
-    } else if (allTopics.length > 0 && !selectedTopicId) {
-      setSelectedTopicId(allTopics[0].topic.id);
-    }
+    if (defaultTopicId) setSelectedTopicId(defaultTopicId);
+    else if (allTopics.length > 0 && !selectedTopicId) setSelectedTopicId(allTopics[0].topic.id);
   }, [defaultTopicId, allTopics]);
 
-  // Mode change handler
   useEffect(() => {
     setIsRunning(false);
     if (mainMode === 'pomodoro') {
@@ -107,19 +82,14 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     }
   }, [mainMode, pomoPreset, breakPreset, customTimerMinutes]);
 
-  // Timer Tick Handling
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isRunning) {
       if (mainMode === 'stopwatch') {
-        interval = setInterval(() => {
-          setStopwatchSeconds(prev => prev + 1);
-        }, 1000);
+        interval = setInterval(() => setStopwatchSeconds(prev => prev + 1), 1000);
       } else {
         if (secondsLeft > 0) {
-          interval = setInterval(() => {
-            setSecondsLeft(prev => prev - 1);
-          }, 1000);
+          interval = setInterval(() => setSecondsLeft(prev => prev - 1), 1000);
         } else if (secondsLeft === 0) {
           handleSessionComplete();
         }
@@ -128,7 +98,6 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     return () => clearInterval(interval);
   }, [isRunning, secondsLeft, mainMode]);
 
-  // Ambient sound handling
   useEffect(() => {
     if (isOpen && isRunning && activeSound !== 'none') {
       ambientEngine.play(activeSound);
@@ -136,478 +105,209 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     } else {
       ambientEngine.stop();
     }
-    return () => {
-      ambientEngine.stop();
-    };
+    return () => ambientEngine.stop();
   }, [isOpen, isRunning, activeSound]);
-
-  useEffect(() => {
-    ambientEngine.setVolume(soundVolume);
-  }, [soundVolume]);
 
   const handleSessionComplete = () => {
     setIsRunning(false);
     ambientEngine.stop();
     soundManager.playCompleteChime();
     confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
-
-    const minutesSpent = Math.round(totalSeconds / 60);
-    logStudySession(minutesSpent);
-
-    if (mainMode === 'pomodoro' || mainMode === 'timer') {
-      setCompletedSessionsToday(c => c + 1);
-      // Auto suggest break
-      setMainMode('break');
-      setBreakPreset(5);
-    }
+    logStudySession(Math.round(totalSeconds / 60));
+    setCompletedSessionsToday(c => c + 1);
   };
 
-  const handleTogglePlay = () => {
-    soundManager.playClick();
-    setIsRunning(prev => !prev);
-  };
-
-  const handleReset = () => {
-    soundManager.playClick();
-    setIsRunning(false);
-    if (mainMode === 'stopwatch') {
-      if (stopwatchSeconds > 60) {
-        logStudySession(Math.round(stopwatchSeconds / 60));
-      }
-      setStopwatchSeconds(0);
-    } else if (mainMode === 'pomodoro') {
-      setSecondsLeft(pomoPreset * 60);
-    } else if (mainMode === 'break') {
-      setSecondsLeft(breakPreset * 60);
-    } else if (mainMode === 'timer') {
-      setSecondsLeft(customTimerMinutes * 60);
-    }
-  };
-
-  const handleAddMinutes = (mins: number) => {
-    soundManager.playClick();
-    if (mainMode !== 'stopwatch') {
-      setSecondsLeft(prev => Math.max(60, prev + mins * 60));
-      setTotalSeconds(prev => Math.max(60, prev + mins * 60));
-    }
-  };
-
-  // Format MM:SS or HH:MM:SS
   const formatTime = (secs: number) => {
-    const hours = Math.floor(secs / 3600);
-    const mins = Math.floor((secs % 3600) / 60);
+    const mins = Math.floor(secs / 60);
     const s = secs % 60;
-
-    if (hours > 0) {
-      return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
     return `${String(mins).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  // Radial progress percentage
   const progressPercent = useMemo(() => {
-    if (mainMode === 'stopwatch') {
-      return (stopwatchSeconds % 60) / 60;
-    }
+    if (mainMode === 'stopwatch') return (stopwatchSeconds % 60) / 60;
     if (totalSeconds === 0) return 0;
     return (totalSeconds - secondsLeft) / totalSeconds;
   }, [mainMode, stopwatchSeconds, secondsLeft, totalSeconds]);
 
   const selectedTopic = allTopics.find(t => t.topic.id === selectedTopicId);
 
-  // Filtered topics for real-time search
   const filteredTopics = useMemo(() => {
     if (!topicSearchTerm.trim()) return allTopics;
     const q = topicSearchTerm.toLowerCase();
     return allTopics.filter(t =>
       t.topic.name.toLowerCase().includes(q) ||
-      t.subjectName.toLowerCase().includes(q) ||
-      t.chapterName.toLowerCase().includes(q)
+      t.subjectName.toLowerCase().includes(q)
     );
   }, [allTopics, topicSearchTerm]);
 
   if (!isOpen) return null;
 
-  // Responsive radius calculation: radius = 105 on mobile, 130 on desktop
-  const radius = 115;
+  const radius = 105;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progressPercent * circumference);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-slate-950/90 backdrop-blur-xl select-none animate-fade-in overflow-y-auto">
-      
-      {/* IMMERSIVE MOBILE-NATIVE FOCUS CARD */}
-      <div className="relative w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-xl sm:rounded-[32px] bg-[#FAF8F5] dark:bg-[#1A1A1A] sm:border border-[#EBD3A0] dark:border-[#333333] shadow-2xl overflow-hidden flex flex-col justify-between pt-safe pb-safe">
+    <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black/80 backdrop-blur-md select-none animate-fade-in">
+      <div className="relative w-full h-full sm:h-auto sm:max-w-lg sm:rounded-3xl bg-[#F7F6F0] dark:bg-[#0D0E0C] border border-[#D8D8CF] dark:border-[#30342B] shadow-2xl p-5 flex flex-col justify-between pt-safe pb-safe">
         
-        {/* 1. TOP HEADER */}
-        <div className="px-4 py-3 sm:px-5 sm:py-4 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] flex items-center justify-between bg-white/80 dark:bg-[#202020]/80 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#B89327] text-[#171717] flex items-center justify-center font-black shadow-sm">
-              <Zap className="w-4 h-4 fill-[#171717]" />
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#D8D8CF] dark:border-[#30342B]">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#596B35] text-white flex items-center justify-center font-bold">
+              <Zap className="w-4 h-4 fill-white" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-black text-[#171717] dark:text-[#F5E6C8] uppercase tracking-wider">
-                3D Deep Study Chamber
+              <h3 className="text-sm font-bold text-[#11120F] dark:text-[#F4F4ED] uppercase font-serif">
+                Focus Chamber
               </h3>
-              <p className="text-[9px] font-bold text-[#8C6D15] dark:text-[#D4AF37]">
-                Ekagra Mastery Engine
+              <p className="text-[10px] text-[#596B35] dark:text-[#A4B879]">
+                Deep Study Session
               </p>
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              ambientEngine.stop();
-              onClose();
-            }}
-            className="p-2 rounded-xl text-[#6B7280] hover:text-rose-500 hover:bg-rose-500/10 active:scale-90 transition-all cursor-pointer"
-            title="Close Chamber"
-          >
+          <button onClick={onClose} className="p-1 text-[#85877E] hover:text-[#11120F] dark:hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* 2. SCROLLABLE / FLEXIBLE BODY */}
-        <div className="px-3.5 py-3 sm:px-6 sm:py-4 space-y-3 sm:space-y-4 overflow-y-auto flex-1 flex flex-col justify-between">
-          
-          {/* Top Overview Cards (Compact & Responsive) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 shrink-0">
-            
-            {/* Focus Streak Card */}
-            <div className="p-2.5 sm:p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/35 flex items-center justify-center shrink-0">
-                  <Flame className="w-4 h-4 fill-[#D4AF37]" />
-                </div>
-                <div>
-                  <span className="text-[9px] font-bold text-[#6B7280] block">Today's Focus</span>
-                  <span className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
-                    {completedSessionsToday} Deep Sessions Completed
-                  </span>
-                </div>
-              </div>
+        {/* Target Topic Search */}
+        <div className="relative my-2">
+          <div
+            onClick={() => setIsTopicSearchOpen(prev => !prev)}
+            className="p-2.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-[#596B35] animate-pulse" />
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">
+                {selectedTopic ? `${selectedTopic.subjectName} • ${selectedTopic.topic.name}` : 'Select Topic...'}
+              </span>
             </div>
-
-            {/* Searchable Target Topic Card */}
-            <div className="relative">
-              <div
-                onClick={() => setIsTopicSearchOpen(prev => !prev)}
-                className="p-2.5 sm:p-3 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37] flex items-center justify-between shadow-sm cursor-pointer transition-all group"
-              >
-                <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-1">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[9px] font-bold text-[#6B7280] block flex items-center gap-1">
-                      <span>Target Topic</span>
-                      <Search className="w-2.5 h-2.5 text-[#D4AF37] inline" />
-                    </span>
-                    <span className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] truncate block group-hover:text-[#D4AF37]">
-                      {selectedTopic ? `${selectedTopic.subjectName} • ${selectedTopic.topic.name}` : 'Search & Select Topic...'}
-                    </span>
-                  </div>
-                </div>
-                <Search className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-              </div>
-
-              {/* SEARCH POPOVER MODAL */}
-              {isTopicSearchOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 z-30 p-2.5 rounded-2xl bg-white dark:bg-[#202020] border border-[#D4AF37] shadow-2xl space-y-2 animate-slide-up">
-                  <div className="relative flex items-center">
-                    <Search className="absolute left-2.5 w-3.5 h-3.5 text-[#D4AF37] pointer-events-none" />
-                    <input
-                      type="text"
-                      autoFocus
-                      value={topicSearchTerm}
-                      onChange={e => setTopicSearchTerm(e.target.value)}
-                      placeholder="Search subject or topic..."
-                      className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
-                    />
-                    {topicSearchTerm && (
-                      <button
-                        onClick={() => setTopicSearchTerm('')}
-                        className="absolute right-2 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="max-h-40 overflow-y-auto space-y-1 p-1 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
-                    {filteredTopics.length === 0 ? (
-                      <p className="text-center py-3 text-xs text-[#6B7280]">
-                        No matching topics
-                      </p>
-                    ) : (
-                      filteredTopics.map(t => {
-                        const isSelected = selectedTopicId === t.topic.id;
-                        return (
-                          <div
-                            key={t.topic.id}
-                            onClick={() => {
-                              soundManager.playClick();
-                              setSelectedTopicId(t.topic.id);
-                              setIsTopicSearchOpen(false);
-                              setTopicSearchTerm('');
-                            }}
-                            className={`p-1.5 rounded-lg flex items-center justify-between text-xs font-semibold cursor-pointer transition-all ${
-                              isSelected
-                                ? 'bg-[#D4AF37] text-[#171717] font-bold shadow-sm'
-                                : 'hover:bg-[#F5E6C8]/40 dark:hover:bg-[#252525] text-[#171717] dark:text-[#F5E6C8]'
-                            }`}
-                          >
-                            <div className="flex items-center gap-1.5 min-w-0 pr-1">
-                              <span
-                                className="w-1.5 h-1.5 rounded-full shrink-0"
-                                style={{ backgroundColor: t.subjectColor || '#D4AF37' }}
-                              />
-                              <span className="truncate">{t.topic.name}</span>
-                            </div>
-                            <span className={`text-[9px] shrink-0 font-mono ${
-                              isSelected ? 'text-[#171717]' : 'text-[#6B7280]'
-                            }`}>
-                              {t.subjectName}
-                            </span>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            <Search className="w-3.5 h-3.5 text-[#596B35]" />
           </div>
 
-          {/* 4 MODE TABS: POMODORO | BREAK | STOPWATCH | TIMER */}
-          <div className="flex items-center justify-between p-1 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#333333] shadow-sm shrink-0">
-            {[
-              { id: 'pomodoro' as FocusMainMode, label: 'Pomodoro', icon: Hourglass },
-              { id: 'break' as FocusMainMode, label: 'Break', icon: Coffee },
-              { id: 'stopwatch' as FocusMainMode, label: 'Stopwatch', icon: StopwatchIcon },
-              { id: 'timer' as FocusMainMode, label: 'Timer', icon: Clock }
-            ].map(tab => {
-              const Icon = tab.icon;
-              const isActive = mainMode === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setMainMode(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#D4AF37] text-[#171717] shadow-sm'
-                      : 'text-[#6B7280] hover:text-[#171717] dark:hover:text-white'
-                  }`}
-                >
-                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-                  <span className="truncate">{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sub-presets Row */}
-          {mainMode === 'pomodoro' && (
-            <div className="flex items-center justify-center gap-1.5 shrink-0">
-              {[25, 50, 90].map(mins => (
-                <button
-                  key={mins}
-                  onClick={() => setPomoPreset(mins)}
-                  className={`px-3 py-1 rounded-xl text-[11px] font-bold transition-all border cursor-pointer ${
-                    pomoPreset === mins
-                      ? 'bg-[#D4AF37]/20 border-[#D4AF37] text-[#8C6D15] dark:text-[#D4AF37]'
-                      : 'bg-white dark:bg-[#202020] border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280]'
-                  }`}
-                >
-                  {mins === 25 ? '25m Focus' : mins === 50 ? '50m Deep' : '90m Flow'}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {mainMode === 'break' && (
-            <div className="flex items-center justify-center gap-1.5 shrink-0">
-              {[5, 15].map(mins => (
-                <button
-                  key={mins}
-                  onClick={() => setBreakPreset(mins)}
-                  className={`px-3 py-1 rounded-xl text-[11px] font-bold transition-all border cursor-pointer ${
-                    breakPreset === mins
-                      ? 'bg-[#D4AF37]/20 border-[#D4AF37] text-[#8C6D15] dark:text-[#D4AF37]'
-                      : 'bg-white dark:bg-[#202020] border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280]'
-                  }`}
-                >
-                  {mins === 5 ? '5m Short Break' : '15m Long Break'}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {mainMode === 'timer' && (
-            <div className="flex items-center justify-center gap-1.5 shrink-0">
-              {[15, 30, 45, 60, 120].map(mins => (
-                <button
-                  key={mins}
-                  onClick={() => setCustomTimerMinutes(mins)}
-                  className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all border cursor-pointer ${
-                    customTimerMinutes === mins
-                      ? 'bg-[#D4AF37]/20 border-[#D4AF37] text-[#8C6D15] dark:text-[#D4AF37]'
-                      : 'bg-white dark:bg-[#202020] border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280]'
-                  }`}
-                >
-                  {mins}m
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* RADIAL CLOCK DISPLAY (Mobile Scaled) */}
-          <div className="flex flex-col items-center justify-center py-1 sm:py-2 relative flex-1">
-            <div className="relative w-52 h-52 sm:w-64 sm:h-64 flex items-center justify-center">
-              
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 260 260">
-                <circle
-                  cx="130"
-                  cy="130"
-                  r={radius}
-                  className="stroke-slate-200 dark:stroke-[#2A2A2A]"
-                  strokeWidth="7"
-                  fill="transparent"
-                />
-
-                <circle
-                  cx="130"
-                  cy="130"
-                  r={radius}
-                  stroke="#D4AF37"
-                  strokeWidth="9"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  className="transition-all duration-1000 ease-linear"
-                />
-              </svg>
-
-              <div className="absolute flex flex-col items-center justify-center text-center space-y-1">
-                <span className="px-2.5 py-0.5 text-[10px] font-black rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/35 flex items-center gap-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-500 animate-ping' : 'bg-[#D4AF37]'}`} />
-                  <span>
-                    {isRunning
-                      ? mainMode === 'break' ? 'Relaxing Break' : 'Deep Work Active'
-                      : 'Chamber Ready'}
-                  </span>
-                </span>
-
-                <span className="text-4xl sm:text-5xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono tracking-tight mt-0.5">
-                  {mainMode === 'stopwatch' ? formatTime(stopwatchSeconds) : formatTime(secondsLeft)}
-                </span>
-
-                <span className="text-[10px] font-semibold text-[#6B7280]">
-                  {mainMode === 'stopwatch'
-                    ? 'Timed Stopwatch Session'
-                    : `${Math.round(totalSeconds / 60)} min Target Goal`}
-                </span>
+          {isTopicSearchOpen && (
+            <div className="absolute top-full left-0 right-0 mt-1 z-30 p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#596B35] shadow-2xl space-y-2">
+              <input
+                type="text"
+                autoFocus
+                value={topicSearchTerm}
+                onChange={e => setTopicSearchTerm(e.target.value)}
+                placeholder="Search topic..."
+                className="w-full p-2 rounded-lg bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium focus:outline-none"
+              />
+              <div className="max-h-36 overflow-y-auto space-y-1">
+                {filteredTopics.map(t => (
+                  <div
+                    key={t.topic.id}
+                    onClick={() => {
+                      setSelectedTopicId(t.topic.id);
+                      setIsTopicSearchOpen(false);
+                    }}
+                    className="p-1.5 rounded-md hover:bg-[#DCE8B7] dark:hover:bg-[#354126] text-xs cursor-pointer flex justify-between"
+                  >
+                    <span className="font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">{t.topic.name}</span>
+                    <span className="text-[10px] text-[#85877E]">{t.subjectName}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* START / PAUSE / RESET BUTTONS */}
-          <div className="flex items-center justify-center gap-2.5 shrink-0">
-            {mainMode !== 'stopwatch' && (
-              <button
-                onClick={() => handleAddMinutes(-5)}
-                className="p-2.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
-                title="-5 minutes"
-              >
-                <Minus className="w-4 h-4" />
-              </button>
-            )}
-
+        {/* 4 Mode Tabs */}
+        <div className="flex items-center justify-between p-1 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B]">
+          {[
+            { id: 'pomodoro' as FocusMainMode, label: 'Pomodoro', icon: Hourglass },
+            { id: 'break' as FocusMainMode, label: 'Break', icon: Coffee },
+            { id: 'stopwatch' as FocusMainMode, label: 'Stopwatch', icon: StopwatchIcon },
+            { id: 'timer' as FocusMainMode, label: 'Timer', icon: Clock }
+          ].map(tab => (
             <button
-              onClick={handleReset}
-              className="px-4 py-3 rounded-2xl bg-white dark:bg-[#222222] hover:bg-rose-500/15 border border-[#EBD3A0] dark:border-[#383838] hover:border-rose-500/50 text-[#6B7280] hover:text-rose-500 text-xs font-black transition-all cursor-pointer flex items-center gap-1 shadow-sm"
-              title="Reset Session"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Reset</span>
-            </button>
-
-            <button
-              onClick={handleTogglePlay}
-              className={`px-7 py-3 rounded-2xl font-black text-xs sm:text-sm shadow-lg transition-all active:scale-95 cursor-pointer flex items-center gap-2 ${
-                isRunning
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/30'
-                  : 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] shadow-[#D4AF37]/35'
+              key={tab.id}
+              onClick={() => setMainMode(tab.id)}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                mainMode === tab.id
+                  ? 'bg-[#596B35] text-white shadow-sm'
+                  : 'text-[#65675F] dark:text-[#A7AA9C]'
               }`}
             >
-              {isRunning ? (
-                <>
-                  <Pause className="w-4 h-4 fill-current" />
-                  <span>Pause</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Start Focus</span>
-                </>
-              )}
+              {tab.label}
             </button>
+          ))}
+        </div>
 
-            {mainMode !== 'stopwatch' && (
-              <button
-                onClick={() => handleAddMinutes(5)}
-                className="p-2.5 rounded-2xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
-                title="+5 minutes"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+        {/* Radial Clock Display */}
+        <div className="flex flex-col items-center justify-center my-3 relative">
+          <div className="relative w-52 h-52 flex items-center justify-center">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 240 240">
+              <circle cx="120" cy="120" r={radius} stroke="currentColor" strokeWidth="8" className="text-[#EEEEE8] dark:text-[#151713]" fill="transparent" />
+              <circle
+                cx="120"
+                cy="120"
+                r={radius}
+                stroke="#596B35"
+                strokeWidth="8"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                fill="transparent"
+                className="transition-all duration-1000 ease-linear"
+              />
+            </svg>
 
-          {/* Motivational Quote */}
-          <div className="text-center shrink-0">
-            <p className="text-[10px] font-medium text-[#6B7280] italic max-w-sm mx-auto line-clamp-1">
-              &ldquo;{MOTIVATIONAL_QUOTES[quoteIndex]}&rdquo;
-            </p>
-          </div>
-
-          {/* 6. AMBIENT SOUND SELECTOR BAR (Thumb-friendly on mobile) */}
-          <div className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] flex items-center justify-between gap-2 shrink-0">
-            <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#6B7280] shrink-0">
-              <Volume2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Sound:</span>
-            </div>
-
-            <div className="flex items-center justify-between sm:justify-end gap-1 w-full overflow-x-auto no-scrollbar">
-              {[
-                { id: 'rain', label: 'Rain', icon: CloudRain },
-                { id: 'waves', label: 'Waves', icon: Waves },
-                { id: 'binaural', label: 'Alpha', icon: Headphones },
-                { id: 'fire', label: 'Fire', icon: FireIcon },
-                { id: 'none', label: 'Mute', icon: VolumeX }
-              ].map(snd => {
-                const SndIcon = snd.icon;
-                const isActive = activeSound === snd.id;
-
-                return (
-                  <button
-                    key={snd.id}
-                    onClick={() => {
-                      soundManager.playClick();
-                      setActiveSound(snd.id as AmbientSoundType);
-                    }}
-                    className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer border ${
-                      isActive
-                        ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                        : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E]'
-                    }`}
-                  >
-                    <SndIcon className="w-3 h-3 shrink-0" />
-                    <span>{snd.label}</span>
-                  </button>
-                );
-              })}
+            <div className="absolute flex flex-col items-center justify-center text-center">
+              <span className="text-4xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono">
+                {mainMode === 'stopwatch' ? formatTime(stopwatchSeconds) : formatTime(secondsLeft)}
+              </span>
+              <span className="text-[10px] text-[#596B35] font-bold uppercase tracking-wider mt-1">
+                {isRunning ? 'Session Active' : 'Ready'}
+              </span>
             </div>
           </div>
+        </div>
+
+        {/* Start / Pause Controls */}
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => {
+              setIsRunning(false);
+              setSecondsLeft(pomoPreset * 60);
+            }}
+            className="px-4 py-2.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#65675F]"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => setIsRunning(r => !r)}
+            className="px-8 py-3 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-2"
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
+            <span>{isRunning ? 'Pause' : 'Start Focus'}</span>
+          </button>
+        </div>
+
+        {/* Ambient Sound Bar */}
+        <div className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] flex items-center justify-between gap-1 mt-3">
+          {[
+            { id: 'rain', label: 'Rain' },
+            { id: 'waves', label: 'Waves' },
+            { id: 'binaural', label: 'Alpha' },
+            { id: 'none', label: 'Mute' }
+          ].map(snd => (
+            <button
+              key={snd.id}
+              onClick={() => setActiveSound(snd.id as AmbientSoundType)}
+              className={`flex-1 py-1 text-[10px] font-bold rounded-md ${
+                activeSound === snd.id
+                  ? 'bg-[#596B35] text-white'
+                  : 'text-[#65675F] dark:text-[#A7AA9C]'
+              }`}
+            >
+              {snd.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>

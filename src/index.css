@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-background: #F7F6F0;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #EEEEE8;
+  --color-border: #D8D8CF;
+  --color-primary: #11120F;
+  --color-primary-accent: #596B35;
+  --color-accent-light: #DCE8B7;
+  --color-secondary-accent: #8FA35F;
+  --color-text-primary: #191A17;
+  --color-text-secondary: #65675F;
+  --color-text-muted: #85877E;
+  --color-success: #4F7A45;
+  --color-warning: #C49A3A;
+  --color-error: #B94A48;
+}
+
+.dark {
+  --color-background: #0D0E0C;
+  --color-surface: #151713;
+  --color-surface-elevated: #1D201A;
+  --color-border: #30342B;
+  --color-text-primary: #F4F4ED;
+  --color-text-secondary: #A7AA9C;
+  --color-primary-accent: #A4B879;
+  --color-accent-soft: #354126;
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
@@ -18,18 +46,13 @@
 }
 
 body {
-  background-color: #FAF8F5;
-  color: #171717;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overscroll-behavior-y: contain;
 }
 
-.dark body {
-  background-color: #171717;
-  color: #F5E6C8;
-}
-
-/* Safe Area Insets for Mobile Notches & Navigation Bars */
+/* Safe Area Insets */
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0px);
 }
@@ -38,7 +61,7 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Custom Luxury Scrollbar */
+/* Academic Olive Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -49,27 +72,42 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.35);
+  background: rgba(89, 107, 53, 0.35);
   border-radius: 9px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.7);
+  background: rgba(89, 107, 53, 0.7);
 }
 
-.preserve-3d {
-  transform-style: preserve-3d;
-}
-
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-/* No Scrollbar utility */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Subtle Layered Card Elevation */
+.academic-card {
+  background-color: #FFFFFF;
+  border: 1px solid #D8D8CF;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px -2px rgba(17, 18, 15, 0.05), 0 8px 16px -4px rgba(17, 18, 15, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .academic-card {
+  background-color: #151713;
+  border-color: #30342B;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+}
+
+.academic-card:hover {
+  border-color: #8FA35F;
+  transform: translateY(-1px);
+}
+
+.dark .academic-card:hover {
+  border-color: #A4B879;
 }

@@ -10,12 +10,10 @@ import {
   RotateCw,
   AlertTriangle,
   BarChart3,
-  Flame,
   Plus,
   Settings,
   ExternalLink,
   LogOut,
-  Trophy,
   Sparkles
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
@@ -59,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Study Planner',
       icon: CalendarCheck,
       badge: plannerTasks.filter(t => t.status === 'today').length || null,
-      badgeColor: 'bg-[#D4AF37] text-[#171717]'
+      badgeColor: 'bg-[#596B35] text-white'
     },
     {
       id: 'mindmap' as AppView,
@@ -87,14 +85,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Spaced Revision',
       icon: RotateCw,
       badge: dueRevisions.length || null,
-      badgeColor: 'bg-amber-500 text-white'
+      badgeColor: 'bg-[#C49A3A] text-white'
     },
     {
       id: 'weak' as AppView,
       label: 'Weak Topics & Traps',
       icon: AlertTriangle,
       badge: weakTopics.length || null,
-      badgeColor: 'bg-rose-500 text-white'
+      badgeColor: 'bg-[#B94A48] text-white'
     },
     {
       id: 'analytics' as AppView,
@@ -113,30 +111,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-[#FAF8F5] dark:bg-[#171717] border-r border-[#EBD3A0]/60 dark:border-[#2E2E2E] p-4 justify-between transition-colors z-20 shrink-0 select-none overflow-y-auto">
+    <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-[#F7F6F0] dark:bg-[#0D0E0C] border-r border-[#D8D8CF] dark:border-[#30342B] p-4 justify-between transition-colors z-20 shrink-0 select-none overflow-y-auto">
       <div className="space-y-4">
         {/* App Branding */}
         <div className="flex items-center gap-3 px-2 py-1">
-          <div className="w-10 h-10 rounded-2xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md flex items-center justify-center p-1.5 shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-[#11120F] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] shadow-sm flex items-center justify-center p-1.5 shrink-0">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h1 className="text-sm font-black tracking-wider text-[#171717] dark:text-[#F5E6C8] uppercase">
+            <h1 className="text-sm font-black tracking-wider text-[#11120F] dark:text-[#F4F4ED] uppercase font-serif">
               SYLLABUS 3D
             </h1>
-            <p className="text-[10px] font-bold text-[#8C6D15] dark:text-[#D4AF37]">
-              Smart Exam Tracker
+            <p className="text-[10px] font-bold text-[#596B35] dark:text-[#A4B879]">
+              Academic Mastery System
             </p>
           </div>
         </div>
 
-        {/* Quick Add Custom Topic Action */}
+        {/* Quick Add Custom Topic Action (Primary Button System) */}
         {onOpenAddTopic && (
           <button
             onClick={onOpenAddTopic}
-            className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] font-black text-xs shadow-md shadow-[#D4AF37]/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+            className="w-full py-2.5 px-4 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
           >
-            <Plus className="w-4 h-4 stroke-[3]" />
+            <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Custom Topic</span>
           </button>
         )}
@@ -153,21 +151,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   soundManager.playClick();
                   onSelectView(item.id);
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] text-[#171717] shadow-md shadow-[#D4AF37]/25'
-                    : 'text-[#374151] dark:text-[#D4D4D4] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#242424] hover:text-[#171717] dark:hover:text-white'
+                    ? 'bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] font-extrabold shadow-sm'
+                    : 'text-[#65675F] dark:text-[#A7AA9C] hover:bg-[#EEEEE8] dark:hover:bg-[#151713] hover:text-[#191A17] dark:hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 stroke-[2.2] ${isActive ? 'text-[#171717]' : 'text-[#8C6D15] dark:text-[#D4AF37]'}`} />
+                  <Icon className={`w-4 h-4 stroke-[2] ${isActive ? 'text-[#596B35] dark:text-[#A4B879]' : 'text-[#85877E]'}`} />
                   <span>{item.label}</span>
                 </div>
 
                 {item.badge !== null && item.badge > 0 && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                    isActive ? 'bg-black/20 text-[#171717]' : item.badgeColor
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${item.badgeColor}`}>
                     {item.badge}
                   </span>
                 )}
@@ -177,49 +173,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom User Level Card & External Tracker */}
+      {/* Bottom User Level Card */}
       <div className="space-y-3 pt-2">
         <a
           href="https://mock-percentile-tracker.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37] transition-all group shadow-sm"
+          className="w-full flex items-center justify-between p-3 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35] transition-all group shadow-subtle-depth"
         >
           <div className="flex items-center gap-2.5">
             <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-5 h-5 object-contain" />
             <div>
-              <span className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] block">Mock Tracker</span>
-              <span className="text-[10px] font-semibold text-[#6B7280]">Score & Percentiles</span>
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] block">Mock Tracker</span>
+              <span className="text-[10px] text-[#65675F] dark:text-[#85877E]">Score & Percentiles</span>
             </div>
           </div>
-          <ExternalLink className="w-3.5 h-3.5 text-[#D4AF37] group-hover:translate-x-0.5 transition-transform" />
+          <ExternalLink className="w-3.5 h-3.5 text-[#596B35] dark:text-[#A4B879]" />
         </a>
 
         {/* User Level Card */}
-        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] space-y-2 shadow-sm">
+        <div className="p-3.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] space-y-2 shadow-subtle-depth">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#B89327] text-[#171717] font-black flex items-center justify-center text-xs shrink-0 shadow-sm">
-                {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
+              <div className="w-7 h-7 rounded-lg bg-[#596B35] text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
+                {profile.name ? profile.name.charAt(0).toUpperCase() : 'A'}
               </div>
               <div className="truncate">
-                <h4 className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] truncate">
+                <h4 className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">
                   {profile.name}
                 </h4>
-                <p className="text-[10px] font-bold text-[#6B7280]">
+                <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
                   {profile.levelTitle}
                 </p>
               </div>
             </div>
 
-            <span className="px-2 py-0.5 text-[10px] font-black rounded-lg bg-[#D4AF37]/20 text-[#8C6D15] dark:text-[#D4AF37] font-mono">
+            <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-[#DCE8B7] dark:bg-[#354126] text-[#354126] dark:text-[#A4B879] font-mono">
               Lvl {profile.level}
             </span>
           </div>
 
-          <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] overflow-hidden">
+          <div className="w-full h-1.5 rounded-full bg-[#EEEEE8] dark:bg-[#1D201A] overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#D4AF37] to-[#B89327] rounded-full"
+              className="h-full bg-[#596B35] dark:bg-[#A4B879] rounded-full"
               style={{ width: `${(profile.xp % 300) / 3}%` }}
             />
           </div>

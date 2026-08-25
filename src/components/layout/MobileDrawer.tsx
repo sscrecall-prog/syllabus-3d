@@ -1,8 +1,6 @@
 import React from 'react';
-import { AppView } from './Sidebar';
-import { useSyllabus } from '../../context/SyllabusContext';
-import { useAuth } from '../../context/AuthContext';
 import {
+  X,
   LayoutDashboard,
   CalendarCheck,
   BrainCircuit,
@@ -12,12 +10,10 @@ import {
   AlertTriangle,
   BarChart3,
   Settings,
-  X,
-  ExternalLink,
-  Plus,
-  Flame,
-  ChevronDown
+  Plus
 } from 'lucide-react';
+import { AppView } from './Sidebar';
+import { useSyllabus } from '../../context/SyllabusContext';
 import { soundManager } from '../../utils/soundEffects';
 
 interface MobileDrawerProps {
@@ -35,142 +31,57 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   onSelectView,
   onOpenAddTopic
 }) => {
-  const { profile, dueRevisions, weakTopics, plannerTasks, exams, setSelectedExamId } = useSyllabus();
+  const { profile, dueRevisions, weakTopics } = useSyllabus();
 
   if (!isOpen) return null;
 
   const navItems = [
-    {
-      id: 'overview' as AppView,
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'planner' as AppView,
-      label: 'Daily & Weekly Planner',
-      icon: CalendarCheck,
-      badge: plannerTasks.filter(t => t.status === 'today').length || null,
-      badgeColor: 'bg-[#D4AF37] text-[#171717]'
-    },
-    {
-      id: 'mindmap' as AppView,
-      label: 'Concept Mind Map',
-      icon: BrainCircuit,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'syllabus' as AppView,
-      label: 'Syllabus Explorer',
-      icon: BookOpen,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'subjects' as AppView,
-      label: 'Subjects & Chapters',
-      icon: Layers,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'revision' as AppView,
-      label: 'Spaced Revision Vault',
-      icon: RotateCw,
-      badge: dueRevisions.length || null,
-      badgeColor: 'bg-amber-500 text-white'
-    },
-    {
-      id: 'weak' as AppView,
-      label: 'Weak Topics & Traps',
-      icon: AlertTriangle,
-      badge: weakTopics.length || null,
-      badgeColor: 'bg-rose-500 text-white'
-    },
-    {
-      id: 'analytics' as AppView,
-      label: 'Analytics & Heatmap',
-      icon: BarChart3,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'settings' as AppView,
-      label: 'Settings & JSON Backup',
-      icon: Settings,
-      badge: null,
-      badgeColor: ''
-    }
+    { id: 'overview' as AppView, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'planner' as AppView, label: 'Study Planner', icon: CalendarCheck },
+    { id: 'mindmap' as AppView, label: 'Concept Mind Map', icon: BrainCircuit },
+    { id: 'syllabus' as AppView, label: 'Syllabus Explorer', icon: BookOpen },
+    { id: 'subjects' as AppView, label: 'Subjects & Chapters', icon: Layers },
+    { id: 'revision' as AppView, label: 'Spaced Revision', icon: RotateCw, badge: dueRevisions.length },
+    { id: 'weak' as AppView, label: 'Weak Topics', icon: AlertTriangle, badge: weakTopics.length },
+    { id: 'analytics' as AppView, label: 'Analytics & Heatmap', icon: BarChart3 },
+    { id: 'settings' as AppView, label: 'Settings', icon: Settings }
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex md:hidden animate-fade-in">
+    <div className="md:hidden fixed inset-0 z-50 flex">
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
+      <div onClick={onClose} className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" />
 
-      {/* Drawer Body */}
-      <div className="relative w-[280px] max-w-[85vw] h-full bg-[#FAF8F5] dark:bg-[#171717] border-r border-[#EBD3A0] dark:border-[#333333] shadow-2xl flex flex-col justify-between p-4 z-10 overflow-y-auto animate-slide-right">
+      {/* Drawer Card */}
+      <div className="relative w-4/5 max-w-xs bg-[#F7F6F0] dark:bg-[#0D0E0C] border-r border-[#D8D8CF] dark:border-[#30342B] p-5 flex flex-col justify-between z-10 shadow-2xl animate-slide-right overflow-y-auto">
         <div className="space-y-4">
-          {/* Header Branding & Close Button */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
+          <div className="flex items-center justify-between pb-3 border-b border-[#D8D8CF] dark:border-[#30342B]">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] p-1.5 shadow-sm flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#1D201A] p-1 flex items-center justify-center">
                 <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
-              <div>
-                <h2 className="text-xs font-black tracking-wider text-[#171717] dark:text-[#F5E6C8] uppercase">
-                  SYLLABUS 3D
-                </h2>
-                <p className="text-[9px] font-bold text-[#8C6D15] dark:text-[#D4AF37]">
-                  Smart Exam Tracker
-                </p>
-              </div>
+              <h2 className="text-sm font-black text-[#11120F] dark:text-[#F4F4ED] font-serif uppercase tracking-wider">
+                SYLLABUS 3D
+              </h2>
             </div>
-
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-xl text-[#6B7280] hover:text-rose-500 transition-colors"
-            >
+            <button onClick={onClose} className="p-1 text-[#85877E] hover:text-[#11120F] dark:hover:text-white">
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Exam Selector on Drawer */}
-          <div className="relative">
-            <select
-              value={profile.selectedExamId}
-              onChange={e => setSelectedExamId(e.target.value)}
-              className="w-full appearance-none pl-3 pr-8 py-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-xs font-extrabold text-[#171717] dark:text-[#F5E6C8] cursor-pointer focus:outline-none shadow-sm"
-            >
-              {exams.map(e => (
-                <option key={e.id} value={e.id}>
-                  {e.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C6D15] dark:text-[#D4AF37]" />
-          </div>
-
-          {/* Add Custom Topic Button */}
           {onOpenAddTopic && (
             <button
               onClick={() => {
                 onClose();
                 onOpenAddTopic();
               }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] font-black text-xs shadow-md shadow-[#D4AF37]/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#11120F] text-white font-bold text-xs flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4 stroke-[3]" />
+              <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>Add Custom Topic</span>
             </button>
           )}
 
-          {/* Navigation Links */}
           <nav className="space-y-1">
             {navItems.map(item => {
               const Icon = item.icon;
@@ -181,22 +92,20 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                   onClick={() => {
                     soundManager.playClick();
                     onSelectView(item.id);
+                    onClose();
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs font-extrabold transition-all cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold ${
                     isActive
-                      ? 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] text-[#171717] shadow-md shadow-[#D4AF37]/25'
-                      : 'text-[#374151] dark:text-[#D4D4D4] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#242424]'
+                      ? 'bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] font-black'
+                      : 'text-[#65675F] dark:text-[#A7AA9C] hover:bg-[#EEEEE8] dark:hover:bg-[#151713]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 stroke-[2.2] ${isActive ? 'text-[#171717]' : 'text-[#8C6D15] dark:text-[#D4AF37]'}`} />
+                    <Icon className="w-4 h-4" />
                     <span>{item.label}</span>
                   </div>
-
-                  {item.badge !== null && item.badge > 0 && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                      isActive ? 'bg-black/20 text-[#171717]' : item.badgeColor
-                    }`}>
+                  {Boolean(item.badge) && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#596B35] text-white">
                       {item.badge}
                     </span>
                   )}
@@ -206,20 +115,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           </nav>
         </div>
 
-        {/* Bottom External Mock Tracker link */}
-        <div className="pt-3 border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] space-y-2">
-          <a
-            href="https://mock-percentile-tracker.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-sm text-xs font-bold text-[#171717] dark:text-[#F5E6C8]"
-          >
-            <div className="flex items-center gap-2">
-              <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-4 h-4 object-contain" />
-              <span>Mock Tracker</span>
-            </div>
-            <ExternalLink className="w-3.5 h-3.5 text-[#D4AF37]" />
-          </a>
+        <div className="pt-4 border-t border-[#D8D8CF] dark:border-[#30342B]">
+          <p className="text-[10px] text-[#85877E] text-center">
+            Syllabus 3D v2.0 • Academic Edition
+          </p>
         </div>
       </div>
     </div>

@@ -17,8 +17,7 @@ import {
   Layers,
   X,
   ChevronsUpDown,
-  FolderOpen,
-  Folder
+  CheckCircle2
 } from 'lucide-react';
 import { formatTimeAgo } from '../../utils/dateUtils';
 import { EditSubjectModal } from '../modals/EditSubjectModal';
@@ -44,15 +43,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubjectId || '');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<TopicStatus | 'all'>('all');
-  
-  // All chapters start collapsed by default as requested
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
 
-  // Modals for editing subject & chapter
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editingChapter, setEditingChapter] = useState<{ subjectId: string; chapter: Chapter } | null>(null);
 
-  // Sync initialSubjectId when passed from props
   useEffect(() => {
     if (initialSubjectId && currentExam?.subjects.some(s => s.id === initialSubjectId)) {
       setSelectedSubjectId(initialSubjectId);
@@ -80,7 +75,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
   const activeSubject = currentExam?.subjects.find(s => s.id === selectedSubjectId) || currentExam?.subjects[0];
 
-  // Expand / Collapse all chapters
   const allCurrentChapterIds = useMemo(() => {
     return activeSubject?.chapters.map(c => c.id) || [];
   }, [activeSubject]);
@@ -120,14 +114,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     });
   }, [activeSubject, searchTerm, statusFilter]);
 
-  // Auto-expand chapters when searching with text
   useEffect(() => {
     if (searchTerm.trim().length > 0) {
       const autoExp: Record<string, boolean> = {};
       filteredChapters.forEach(ch => {
-        if (ch.topics.length > 0) {
-          autoExp[ch.id] = true;
-        }
+        if (ch.topics.length > 0) autoExp[ch.id] = true;
       });
       setExpandedChapters(prev => ({ ...prev, ...autoExp }));
     }
@@ -144,74 +135,67 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     ? Math.round((completedTopicsInSubject / totalTopicsInSubject) * 100)
     : 0;
 
-  const getDifficultyColor = (diff: string) => {
-    if (diff === 'Easy') return 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
-    if (diff === 'Hard') return 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/30';
-    return 'text-[#8C6D15] dark:text-[#D4AF37] bg-[#D4AF37]/15 border-[#D4AF37]/35';
-  };
-
   const getStatusBadgeUI = (status: TopicStatus) => {
     switch (status) {
       case 'completed':
         return {
           label: 'Mastered ✓',
-          classes: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/40 font-bold'
+          classes: 'bg-[#4F7A45]/15 text-[#4F7A45] border-[#4F7A45]/30 font-bold'
         };
       case 'in_progress':
         return {
           label: 'In Progress ⚡',
-          classes: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/40 font-bold'
+          classes: 'bg-[#DCE8B7] dark:bg-[#354126] text-[#354126] dark:text-[#A4B879] border-[#596B35]/30 font-bold'
         };
       case 'revision_due':
         return {
           label: 'Revise Due ⏳',
-          classes: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/40 font-bold'
+          classes: 'bg-[#C49A3A]/15 text-[#C49A3A] border-[#C49A3A]/30 font-bold'
         };
       case 'weak':
         return {
           label: 'Weak Topic ⚠️',
-          classes: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/40 font-bold'
+          classes: 'bg-[#B94A48]/15 text-[#B94A48] border-[#B94A48]/30 font-bold'
         };
       default:
         return {
           label: 'Not Started ⭕',
-          classes: 'bg-[#FAF8F5] dark:bg-[#1A1A1A] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#383838]'
+          classes: 'bg-[#EEEEE8] dark:bg-[#1D201A] text-[#85877E] border-[#D8D8CF] dark:border-[#30342B]'
         };
     }
   };
 
   return (
     <div className="space-y-6 pb-16">
-      {/* 1. Header with Title and Add Topic Action */}
+      {/* 1. Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] tracking-tight flex items-center gap-2.5">
+          <h2 className="text-xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] tracking-tight font-serif flex items-center gap-2.5">
             <span>Syllabus Explorer</span>
-            <span className="px-2.5 py-0.5 text-xs font-black rounded-full bg-[#D4AF37]/20 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/40 font-mono">
-              {completedTopicsInSubject}/{totalTopicsInSubject} Mastered ({subjectMasteryPercent}%)
+            <span className="px-2.5 py-0.5 text-xs font-bold rounded-lg bg-[#DCE8B7] dark:bg-[#354126] text-[#354126] dark:text-[#A4B879] font-mono">
+              {completedTopicsInSubject}/{totalTopicsInSubject} ({subjectMasteryPercent}%)
             </span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#6B7280] mt-1 font-medium">
-            Click on any chapter to expand and view its topic list.
+          <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A7AA9C] mt-1">
+            Systematic chapter breakdown and topic-level mastery tracking.
           </p>
         </div>
 
         <button
           onClick={onOpenAddTopic}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/25 hover:shadow-lg transition-all active:scale-98 cursor-pointer shrink-0"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold shadow-sm transition-all active:scale-98 cursor-pointer shrink-0"
         >
-          <Plus className="w-4 h-4 stroke-[3]" />
+          <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Add Custom Topic</span>
         </button>
       </div>
 
-      {/* 2. Luxury Horizontal Subject Selector Carousel */}
-      <div className="flex items-center gap-2.5 p-2 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md overflow-x-auto no-scrollbar">
+      {/* 2. Subject Horizontal Selector */}
+      <div className="flex items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth overflow-x-auto no-scrollbar">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {currentExam.subjects.map(subj => {
             const isActive = activeSubject.id === subj.id;
             const IconComponent = iconMap[subj.icon] || BookOpen;
-            const chCount = subj.chapters.length;
 
             return (
               <button
@@ -221,94 +205,75 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   if (onSelectSubjectId) onSelectSubjectId(subj.id);
                   setExpandedChapters({});
                 }}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer border ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                   isActive
-                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] text-[#171717] border-transparent shadow-md shadow-[#D4AF37]/25 scale-[1.02]'
-                    : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] dark:text-[#A0A0A0] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] hover:text-[#171717] dark:hover:text-white'
+                    ? 'bg-[#11120F] text-white border-transparent shadow-sm'
+                    : 'bg-[#F7F6F0] dark:bg-[#1D201A] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35]'
                 }`}
               >
-                <div
-                  className={`w-6 h-6 rounded-xl flex items-center justify-center ${
-                    isActive
-                      ? 'bg-black/15 text-[#171717]'
-                      : 'bg-[#D4AF37]/15 text-[#D4AF37]'
-                  }`}
-                >
-                  <IconComponent className="w-3.5 h-3.5" />
-                </div>
+                <IconComponent className={`w-3.5 h-3.5 ${isActive ? 'text-[#DCE8B7]' : 'text-[#596B35]'}`} />
                 <span>{subj.name}</span>
-                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
-                  isActive ? 'bg-black/15 text-[#171717]' : 'bg-slate-200 dark:bg-[#2A2A2A] text-[#6B7280]'
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-[#EEEEE8] dark:bg-[#151713] text-[#85877E]'
                 }`}>
-                  {chCount} ch
+                  {subj.chapters.length}
                 </span>
               </button>
             );
           })}
         </div>
 
-        {/* Edit Subject Settings Trigger */}
         {activeSubject && (
           <button
             onClick={() => setEditingSubject(activeSubject)}
-            className="p-2.5 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] text-[#6B7280] hover:text-[#D4AF37] transition-all cursor-pointer shrink-0"
-            title="Edit Active Subject"
+            className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#11120F] transition-all cursor-pointer shrink-0"
+            title="Edit Subject"
           >
-            <Edit2 className="w-4 h-4" />
+            <Edit2 className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
 
-      {/* 3. Luxury Search, Filter & Accordion Controls Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 p-3.5 sm:p-4 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md">
-        {/* Search Input */}
+      {/* 3. Search & Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth">
         <div className="relative flex-1 max-w-full sm:max-w-xs">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37] pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#596B35] pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            placeholder="Search topics or subtopics..."
-            className="w-full pl-10 pr-8 py-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
+            placeholder="Search topics..."
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium text-[#191A17] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35]"
           />
           {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5 cursor-pointer"
-            >
+            <button onClick={() => setSearchTerm('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E]">
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        {/* Filter Pills & Expand All Button */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           <button
             onClick={handleToggleAllChapters}
-            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] hover:text-[#171717] dark:hover:text-white border border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-            title={areAllExpanded ? 'Collapse All Chapters' : 'Expand All Chapters'}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#1D201A] text-[#65675F] border border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35] transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
-            <ChevronsUpDown className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <ChevronsUpDown className="w-3.5 h-3.5 text-[#596B35]" />
             <span>{areAllExpanded ? 'Collapse All' : 'Expand All'}</span>
           </button>
-
-          <div className="h-4 w-px bg-[#EBD3A0]/60 dark:bg-[#2E2E2E] shrink-0" />
 
           {[
             { id: 'all', label: 'All' },
             { id: 'completed', label: '✓ Mastered' },
             { id: 'in_progress', label: '⚡ In Progress' },
-            { id: 'revision_due', label: '⏳ Revise Due' },
-            { id: 'weak', label: '⚠️ Weak Topics' },
-            { id: 'not_started', label: '⭕ Not Started' },
+            { id: 'weak', label: '⚠️ Weak' }
           ].map(filt => (
             <button
               key={filt.id}
               onClick={() => setStatusFilter(filt.id as TopicStatus | 'all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                 statusFilter === filt.id
-                  ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                  : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
+                  ? 'bg-[#596B35] text-white border-[#596B35]'
+                  : 'bg-[#F7F6F0] dark:bg-[#1D201A] text-[#65675F] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35]'
               }`}
             >
               {filt.label}
@@ -317,63 +282,50 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Chapters Accordion Stack */}
-      <div className="space-y-4">
+      {/* 4. CHAPTER CARDS (Academic Tactile Elevation) */}
+      <div className="space-y-3.5">
         {filteredChapters.map(chapter => {
           const isExpanded = Boolean(expandedChapters[chapter.id]);
           const chCompleted = chapter.topics.filter(t => t.status === 'completed').length;
+          const isFullComplete = chapter.topics.length > 0 && chCompleted === chapter.topics.length;
           const chPercent = chapter.topics.length > 0 ? Math.round((chCompleted / chapter.topics.length) * 100) : 0;
 
           return (
             <div
               key={chapter.id}
-              className={`rounded-3xl bg-white dark:bg-[#202020] border transition-all duration-300 shadow-md overflow-hidden ${
-                isExpanded
-                  ? 'border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]/30'
-                  : 'border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37]/70'
+              className={`rounded-2xl border transition-all duration-200 shadow-subtle-depth overflow-hidden ${
+                isFullComplete
+                  ? 'bg-[#F7F9F2] dark:bg-[#181C15] border-[#596B35]/50'
+                  : 'bg-white dark:bg-[#151713] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#8FA35F]'
               }`}
             >
               <div
                 onClick={() => toggleChapter(chapter.id)}
-                className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-[#FAF8F5]/70 dark:bg-[#1A1A1A]/70 cursor-pointer select-none group transition-colors hover:bg-[#F5E6C8]/30 dark:hover:bg-[#222222]"
+                className="p-4 sm:p-5 flex items-center justify-between gap-3 cursor-pointer select-none"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className={`p-2 rounded-xl transition-all duration-200 shrink-0 ${
-                    isExpanded
-                      ? 'bg-[#D4AF37] text-[#171717] shadow-sm rotate-0'
-                      : 'bg-white dark:bg-[#242424] border border-[#EBD3A0]/60 dark:border-[#383838] text-[#D4AF37] group-hover:scale-105'
+                  <div className={`p-1.5 rounded-lg shrink-0 ${
+                    isFullComplete ? 'bg-[#596B35] text-white' : 'bg-[#EEEEE8] dark:bg-[#1D201A] text-[#596B35]'
                   }`}>
                     {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </div>
 
                   <div>
-                    <h4 className={`text-sm sm:text-base font-black transition-colors ${
-                      isExpanded
-                        ? 'text-[#D4AF37]'
-                        : 'text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37]'
-                    }`}>
+                    <h4 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#F4F4ED]">
                       {chapter.name}
                     </h4>
-                    <p className="text-[11px] text-[#6B7280] line-clamp-1">
-                      {chapter.description || 'Custom study unit'}
+                    <p className="text-[11px] text-[#65675F] dark:text-[#85877E] line-clamp-1">
+                      {chapter.description || 'Academic study unit'}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  <div className="hidden sm:flex flex-col items-end">
-                    <span className="text-xs font-bold text-[#171717] dark:text-[#F5E6C8] font-mono">
-                      {chCompleted} / {chapter.topics.length} Mastered
-                    </span>
-                    <div className="w-24 h-1.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] mt-1 overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-[#D4AF37] to-emerald-500 rounded-full transition-all duration-500"
-                        style={{ width: `${chPercent}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <span className="px-2.5 py-1 text-xs font-black rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/30 font-mono">
+                  <span className={`px-2.5 py-1 text-xs font-bold rounded-lg font-mono ${
+                    isFullComplete
+                      ? 'bg-[#596B35] text-white'
+                      : 'bg-[#EEEEE8] dark:bg-[#1D201A] text-[#596B35] dark:text-[#A4B879]'
+                  }`}>
                     {chPercent}%
                   </span>
 
@@ -382,100 +334,44 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       e.stopPropagation();
                       setEditingChapter({ subjectId: activeSubject.id, chapter });
                     }}
-                    className="p-2 rounded-xl text-[#6B7280] hover:text-[#D4AF37] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#282828] transition-colors cursor-pointer"
-                    title="Edit Chapter Details"
+                    className="p-1.5 text-[#85877E] hover:text-[#11120F] transition-colors"
                   >
-                    <Edit2 className="w-4 h-4" />
+                    <Edit2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
 
               {isExpanded && (
-                <div className="divide-y divide-[#EBD3A0]/40 dark:divide-[#282828] border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] bg-white dark:bg-[#1E1E1E] animate-fade-in">
-                  {chapter.topics.length > 0 ? (
-                    chapter.topics.map(topic => {
-                      const badge = getStatusBadgeUI(topic.status);
-                      const hasNotes = Boolean(topic.notes && topic.notes.trim().length > 0);
-                      const mistakeCount = topic.mistakes?.length || 0;
-
-                      return (
-                        <div
-                          key={topic.id}
-                          onClick={() => onOpenTopicDrawer(topic, activeSubject.name, chapter.name)}
-                          className="group p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FAF8F5] dark:hover:bg-[#242424] transition-all"
-                        >
-                          <div className="flex-1 min-w-0 space-y-1.5">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <h5 className="text-xs sm:text-sm font-extrabold text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors">
-                                {topic.name}
-                              </h5>
-
-                              <span className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border ${getDifficultyColor(topic.difficulty)}`}>
-                                {topic.difficulty}
+                <div className="divide-y divide-[#EEEEE8] dark:divide-[#1D201A] border-t border-[#D8D8CF] dark:border-[#30342B] bg-white dark:bg-[#151713]">
+                  {chapter.topics.map(topic => {
+                    const badge = getStatusBadgeUI(topic.status);
+                    return (
+                      <div
+                        key={topic.id}
+                        onClick={() => onOpenTopicDrawer(topic, activeSubject.name, chapter.name)}
+                        className="p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[#F7F6F0] dark:hover:bg-[#1D201A] transition-colors cursor-pointer"
+                      >
+                        <div className="space-y-1">
+                          <h5 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
+                            {topic.name}
+                          </h5>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {topic.subtopics.slice(0, 3).map((sub, i) => (
+                              <span key={i} className="px-1.5 py-0.5 rounded text-[10px] bg-[#EEEEE8] dark:bg-[#1D201A] text-[#65675F] dark:text-[#85877E]">
+                                {sub}
                               </span>
-
-                              {hasNotes && (
-                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/30 flex items-center gap-1">
-                                  <FileText className="w-3 h-3" />
-                                  <span>Notes</span>
-                                </span>
-                              )}
-
-                              {mistakeCount > 0 && (
-                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1">
-                                  <AlertTriangle className="w-3 h-3" />
-                                  <span>{mistakeCount} Mistake{mistakeCount > 1 ? 's' : ''}</span>
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              {topic.subtopics.slice(0, 4).map((sub, i) => (
-                                <span
-                                  key={i}
-                                  className="px-2 py-0.5 rounded-md bg-white dark:bg-[#262626] border border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280] dark:text-[#B0B0B0] text-[10px] font-medium"
-                                >
-                                  {sub}
-                                </span>
-                              ))}
-                              {topic.subtopics.length > 4 && (
-                                <span className="text-[10px] font-bold text-[#D4AF37]">
-                                  +{topic.subtopics.length - 4} more
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EBD3A0]/30 dark:border-[#282828]">
-                            {topic.lastStudied && (
-                              <span className="text-[10px] font-medium text-[#6B7280]">
-                                {formatTimeAgo(topic.lastStudied)}
-                              </span>
-                            )}
-
-                            <span className={`px-3 py-1 text-xs rounded-xl border ${badge.classes}`}>
-                              {badge.label}
-                            </span>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteTopic(topic.id);
-                              }}
-                              className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-[#6B7280] hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
-                              title="Delete Topic"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            ))}
                           </div>
                         </div>
-                      );
-                    })
-                  ) : (
-                    <div className="p-8 text-center text-xs text-[#6B7280]">
-                      No topics in this chapter. Click &quot;Add Custom Topic&quot; to add concepts.
-                    </div>
-                  )}
+
+                        <div className="flex items-center gap-2.5">
+                          <span className={`px-2.5 py-0.5 text-[11px] rounded-md border ${badge.classes}`}>
+                            {badge.label}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

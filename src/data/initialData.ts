@@ -140,7 +140,7 @@ export const INITIAL_EXAMS: Exam[] = [
         id: 'subj_quant',
         name: 'Quantitative Aptitude',
         icon: 'Calculator',
-        color: '#5B5FEF',
+        color: '#596B35',
         totalChapters: 4,
         chapters: [
           {
@@ -321,7 +321,7 @@ export const INITIAL_EXAMS: Exam[] = [
         id: 'subj_reasoning',
         name: 'General Intelligence & Reasoning',
         icon: 'BrainCircuit',
-        color: '#10B981',
+        color: '#3A3F33',
         totalChapters: 3,
         chapters: [
           {
@@ -439,7 +439,7 @@ export const INITIAL_EXAMS: Exam[] = [
         id: 'subj_english',
         name: 'English Comprehension',
         icon: 'BookOpen',
-        color: '#F59E0B',
+        color: '#708250',
         totalChapters: 3,
         chapters: [
           {
@@ -540,7 +540,7 @@ export const INITIAL_EXAMS: Exam[] = [
         id: 'subj_ga',
         name: 'General Awareness & GK',
         icon: 'Globe',
-        color: '#8B5CF6',
+        color: '#4A582F',
         totalChapters: 3,
         chapters: [
           {
