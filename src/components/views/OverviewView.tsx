@@ -23,9 +23,11 @@ import {
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
 import { ExamCountdown3D } from '../3d/ExamCountdown3D';
+import { soundManager } from '../../utils/soundEffects';
 
 interface OverviewViewProps {
   onNavigate: (view: AppView) => void;
+  onNavigateToSubject?: (subjectId: string) => void;
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
   onOpenRevisionSession: () => void;
   onOpenAddTopic?: () => void;
@@ -33,6 +35,7 @@ interface OverviewViewProps {
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
   onNavigate,
+  onNavigateToSubject,
   onOpenTopicDrawer,
   onOpenRevisionSession,
   onOpenAddTopic
@@ -118,9 +121,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       {/* 3. BENTO GRID ARCHITECTURE */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
         
-        {/* BENTO CARD 1: 3D Radial Mastery Engine (Col 12 on mobile, Col 7 on desktop) - ULTRA PROFESSIONAL */}
+        {/* BENTO CARD 1: 3D Radial Mastery Engine */}
         <div className="md:col-span-7 p-4 sm:p-7 rounded-[28px] sm:rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-lg hover:border-[#D4AF37]/70 transition-all relative overflow-hidden flex flex-col justify-between group">
-          {/* Subtle Ambient Radial Backlight */}
           <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#D4AF37]/15 transition-all" />
 
           {/* Top Header Row */}
@@ -146,10 +148,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
           {/* Radial Ring + Progress Stats */}
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-1">
-            {/* SVG Circular Radial Gauge */}
             <div className="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center shrink-0">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 150 150">
-                {/* Background Ring */}
                 <circle
                   cx="75"
                   cy="75"
@@ -159,7 +159,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   className="text-slate-100 dark:text-[#171717]"
                   fill="transparent"
                 />
-                {/* Gold Gradient Animated Value Ring */}
                 <circle
                   cx="75"
                   cy="75"
@@ -181,7 +180,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </defs>
               </svg>
 
-              {/* Inside Gauge Value */}
               <div className="absolute flex flex-col items-center justify-center text-center">
                 <span className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-white font-mono tracking-tight">
                   {overallStats.completionPercentage}%
@@ -192,11 +190,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </div>
             </div>
 
-            {/* Quick KPI Stat Cards */}
             <div className="w-full space-y-2.5 flex-1">
               <div className="grid grid-cols-2 gap-2 text-left">
-                
-                {/* Stat 1: Completed Topics */}
                 <div className="p-2.5 sm:p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] space-y-1">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#6B7280] dark:text-[#A3A3A3]">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -207,7 +202,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   </span>
                 </div>
 
-                {/* Stat 2: Study Hours */}
                 <div className="p-2.5 sm:p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] space-y-1">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#6B7280] dark:text-[#A3A3A3]">
                     <Clock className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
@@ -219,7 +213,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </div>
               </div>
 
-              {/* Multi-Segment Status Progress Bar */}
               <div className="p-2.5 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] space-y-1.5">
                 <div className="flex justify-between items-center text-[10px] font-bold">
                   <span className="text-blue-600 dark:text-blue-400 flex items-center gap-1">
@@ -254,7 +247,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </div>
         </div>
 
-        {/* BENTO CARD 2: Daily Target Velocity (Col 12 on mobile, Col 5 on desktop) */}
+        {/* BENTO CARD 2: Daily Target Velocity */}
         <div className="md:col-span-5 p-5 sm:p-7 rounded-[28px] sm:rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-lg hover:border-[#D4AF37]/70 transition-all flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -280,7 +273,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </button>
           </div>
 
-          {/* Today Progress Velocity Bar */}
           <div className="space-y-1.5 p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
             <div className="flex justify-between text-xs font-black">
               <span className="text-[#171717] dark:text-[#F5E6C8]">Today's Target Velocity</span>
@@ -294,7 +286,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </div>
           </div>
 
-          {/* Pending Targets Mini Queue */}
           <div className="space-y-2">
             <span className="text-[10px] font-black text-[#6B7280] dark:text-[#A3A3A3] uppercase tracking-wider block">
               Active Focus Queue
@@ -323,37 +314,55 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* 4. SUBJECT MASTERY SNAPSHOTS */}
+      {/* 4. SUBJECT MASTERY BREAKDOWN (Direct 1-Click Navigation to Exact Subject) */}
       <div className="space-y-3.5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm sm:text-lg font-black text-[#171717] dark:text-[#F5E6C8] flex items-center gap-2">
-            <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
-            <span>Subject Mastery Breakdown</span>
-          </h3>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/35 flex items-center justify-center">
+              <Layers className="w-4 h-4 stroke-[2.2]" />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-base font-black text-[#171717] dark:text-[#F5E6C8]">
+                Subject Mastery Breakdown
+              </h3>
+              <p className="text-[10px] text-[#6B7280] dark:text-[#A3A3A3] hidden sm:block">
+                Click any subject card to open and explore its chapters directly
+              </p>
+            </div>
+          </div>
+
           <button
-            onClick={() => onNavigate('syllabus')}
+            onClick={() => onNavigate('subjects')}
             className="text-xs font-bold text-[#8C6D15] dark:text-[#D4AF37] hover:underline flex items-center gap-1 cursor-pointer"
           >
-            <span>Explore Full Syllabus</span>
+            <span>View All Subjects</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        {/* Responsive Grid of Subject Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {subjectStats.map(subj => (
             <div
               key={subj.subjectId}
-              onClick={() => onNavigate('syllabus')}
-              className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37] transition-all shadow-md cursor-pointer space-y-3 group"
+              onClick={() => {
+                soundManager.playClick();
+                if (onNavigateToSubject) {
+                  onNavigateToSubject(subj.subjectId);
+                } else {
+                  onNavigate('syllabus');
+                }
+              }}
+              className="p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37] hover:shadow-lg transition-all shadow-md cursor-pointer space-y-2.5 group active:scale-98"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 min-w-0">
                   <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: subj.color }} />
-                  <h4 className="text-xs sm:text-sm font-black text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors">
+                  <h4 className="text-xs sm:text-sm font-black text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors truncate">
                     {subj.subjectName}
                   </h4>
                 </div>
-                <span className="text-xs font-black font-mono text-[#D4AF37]">
+                <span className="text-xs font-black font-mono text-[#D4AF37] shrink-0">
                   {subj.percentage}%
                 </span>
               </div>
@@ -365,9 +374,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 />
               </div>
 
-              <div className="flex items-center justify-between text-[10px] text-[#6B7280] font-semibold pt-1">
-                <span>{subj.completedTopics} / {subj.totalTopics} Topics</span>
-                <span>{subj.totalStudyHours} hrs</span>
+              <div className="flex items-center justify-between text-[10px] text-[#6B7280] font-semibold pt-0.5">
+                <span>{subj.completedTopics} / {subj.totalTopics} Topics Mastered</span>
               </div>
             </div>
           ))}

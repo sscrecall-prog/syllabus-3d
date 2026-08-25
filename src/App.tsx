@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   const { isAuthenticated, isLoading, authView } = useAuth();
   const [currentView, setCurrentView] = useState<AppView>('overview');
   const [viewHistory, setViewHistory] = useState<AppView[]>([]);
+  const [targetSubjectId, setTargetSubjectId] = useState<string>('');
 
   // Mobile Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -54,19 +55,21 @@ export const App: React.FC = () => {
     if (newView === currentView) return;
     setViewHistory(prev => [...prev, currentView]);
     setCurrentView(newView);
-    // Push shallow history state for mobile hardware back button
     window.history.pushState({ view: newView }, '');
   }, [currentView]);
 
+  // Direct Navigate to Subject in Syllabus Explorer
+  const handleNavigateToSubject = (subjectId: string) => {
+    setTargetSubjectId(subjectId);
+    handleNavigate('syllabus');
+  };
+
   // Master Back Navigation Handler
   const handleGoBack = useCallback(() => {
-    // 1. Close open drawer if present
     if (selectedTopic) {
       setSelectedTopic(null);
       return;
     }
-
-    // 2. Close open modals if present
     if (isFocusModalOpen) {
       setIsFocusModalOpen(false);
       return;
@@ -88,7 +91,6 @@ export const App: React.FC = () => {
       return;
     }
 
-    // 3. Pop from View History Stack
     if (viewHistory.length > 0) {
       const prevView = viewHistory[viewHistory.length - 1];
       setViewHistory(prev => prev.slice(0, prev.length - 1));
@@ -107,7 +109,7 @@ export const App: React.FC = () => {
     currentView
   ]);
 
-  // Intercept Mobile Hardware / Browser Back Gesture (popstate)
+  // Intercept Mobile Hardware / Browser Back Gesture
   useEffect(() => {
     const onPopState = (e: PopStateEvent) => {
       handleGoBack();
@@ -148,12 +150,10 @@ export const App: React.FC = () => {
 
   const canGoBack = currentView !== 'overview' || Boolean(selectedTopic) || isFocusModalOpen || isRevisionSessionOpen || isAddTopicOpen || isSearchOpen || isMobileDrawerOpen;
 
-  // 1. Initial Session Checking (Zero Flash)
   if (isLoading) {
     return <InitialAuthLoading />;
   }
 
-  // 2. Unauthenticated Flow
   if (!isAuthenticated) {
     return (
       <AuthLayout>
@@ -164,10 +164,8 @@ export const App: React.FC = () => {
     );
   }
 
-  // 3. Authenticated Main Application Flow
   return (
     <div className="flex min-h-screen bg-[#FAF8F5] dark:bg-[#171717] text-[#171717] dark:text-[#F5E6C8] antialiased font-sans transition-colors duration-200">
-      {/* Desktop Sidebar (Website View) */}
       <Sidebar
         activeView={currentView}
         onSelectView={handleNavigate}
@@ -177,7 +175,6 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Mobile Slide-Out Drawer */}
       <MobileDrawer
         isOpen={isMobileDrawerOpen}
         onClose={() => setIsMobileDrawerOpen(false)}
@@ -192,7 +189,6 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Main Workspace */}
       <div className="flex-1 flex flex-col min-w-0">
         <Header
           onOpenSearch={() => {
@@ -215,6 +211,7 @@ export const App: React.FC = () => {
           {currentView === 'overview' && (
             <OverviewView
               onNavigate={handleNavigate}
+              onNavigateToSubject={handleNavigateToSubject}
               onOpenTopicDrawer={handleOpenTopicDrawer}
               onOpenRevisionSession={() => {
                 setIsRevisionSessionOpen(true);
@@ -245,6 +242,8 @@ export const App: React.FC = () => {
                 setIsAddTopicOpen(true);
                 window.history.pushState({ modal: 'add_topic' }, '');
               }}
+              initialSubjectId={targetSubjectId}
+              onSelectSubjectId={setTargetSubjectId}
             />
           )}
 
@@ -274,7 +273,6 @@ export const App: React.FC = () => {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
       <MobileNav
         activeView={currentView}
         onSelectView={handleNavigate}
@@ -285,14 +283,12 @@ export const App: React.FC = () => {
         onOpenFocus={() => handleLaunchFocus(undefined)}
       />
 
-      {/* 3D Pomodoro Focus Chamber */}
       <PomodoroFocusModal
         isOpen={isFocusModalOpen}
         onClose={() => setIsFocusModalOpen(false)}
         defaultTopicId={focusTopicId || selectedTopic?.topic.id}
       />
 
-      {/* Topic Detail Drawer */}
       <TopicDetailDrawer
         topic={selectedTopic?.topic || null}
         subjectName={selectedTopic?.subjectName}
@@ -300,20 +296,17 @@ export const App: React.FC = () => {
         onClose={handleCloseTopicDrawer}
       />
 
-      {/* Quick Search Ctrl+K Modal */}
       <CommandSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectTopic={(topic) => handleOpenTopicDrawer(topic, '', '')}
       />
 
-      {/* Add Topic / Subject Modal */}
       <AddTopicModal
         isOpen={isAddTopicOpen}
         onClose={() => setIsAddTopicOpen(false)}
       />
 
-      {/* Flashcard Revision Modal */}
       <RevisionSessionModal
         isOpen={isRevisionSessionOpen}
         onClose={() => setIsRevisionSessionOpen(false)}

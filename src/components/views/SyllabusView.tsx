@@ -28,16 +28,20 @@ interface SyllabusViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
   onOpenAddTopic: () => void;
   onOpenFocus?: (topicId?: string) => void;
+  initialSubjectId?: string;
+  onSelectSubjectId?: (id: string) => void;
 }
 
 export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onOpenTopicDrawer,
   onOpenAddTopic,
-  onOpenFocus
+  onOpenFocus,
+  initialSubjectId,
+  onSelectSubjectId
 }) => {
   const { currentExam, deleteTopic, updateTopicStatus } = useSyllabus();
 
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubjectId || '');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<TopicStatus | 'all'>('all');
   
@@ -47,6 +51,13 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   // Modals for editing subject & chapter
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editingChapter, setEditingChapter] = useState<{ subjectId: string; chapter: Chapter } | null>(null);
+
+  // Sync initialSubjectId when passed from props
+  useEffect(() => {
+    if (initialSubjectId && currentExam?.subjects.some(s => s.id === initialSubjectId)) {
+      setSelectedSubjectId(initialSubjectId);
+    }
+  }, [initialSubjectId, currentExam]);
 
   useEffect(() => {
     if (currentExam && currentExam.subjects.length > 0) {
@@ -207,7 +218,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 key={subj.id}
                 onClick={() => {
                   setSelectedSubjectId(subj.id);
-                  // Keep collapsed when changing subjects
+                  if (onSelectSubjectId) onSelectSubjectId(subj.id);
                   setExpandedChapters({});
                 }}
                 className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer border ${
@@ -272,7 +283,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
         {/* Filter Pills & Expand All Button */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
-          {/* Quick Expand / Collapse All Toggle */}
           <button
             onClick={handleToggleAllChapters}
             className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] hover:text-[#171717] dark:hover:text-white border border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
@@ -307,7 +317,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Chapters Accordion Stack (Click to expand specific chapter) */}
+      {/* 4. Chapters Accordion Stack */}
       <div className="space-y-4">
         {filteredChapters.map(chapter => {
           const isExpanded = Boolean(expandedChapters[chapter.id]);
@@ -323,13 +333,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   : 'border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37]/70'
               }`}
             >
-              {/* Chapter Header Click Target (Expands only this chapter) */}
               <div
                 onClick={() => toggleChapter(chapter.id)}
                 className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-[#FAF8F5]/70 dark:bg-[#1A1A1A]/70 cursor-pointer select-none group transition-colors hover:bg-[#F5E6C8]/30 dark:hover:bg-[#222222]"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {/* Rotating Chevron Indicator */}
                   <div className={`p-2 rounded-xl transition-all duration-200 shrink-0 ${
                     isExpanded
                       ? 'bg-[#D4AF37] text-[#171717] shadow-sm rotate-0'
@@ -382,7 +390,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 </div>
               </div>
 
-              {/* Topics List Rows (Only visible when isExpanded === true) */}
               {isExpanded && (
                 <div className="divide-y divide-[#EBD3A0]/40 dark:divide-[#282828] border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] bg-white dark:bg-[#1E1E1E] animate-fade-in">
                   {chapter.topics.length > 0 ? (
@@ -403,12 +410,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                                 {topic.name}
                               </h5>
 
-                              {/* Difficulty Badge */}
                               <span className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border ${getDifficultyColor(topic.difficulty)}`}>
                                 {topic.difficulty}
                               </span>
 
-                              {/* Notes Indicator */}
                               {hasNotes && (
                                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/30 flex items-center gap-1">
                                   <FileText className="w-3 h-3" />
@@ -416,7 +421,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                                 </span>
                               )}
 
-                              {/* Mistakes Indicator */}
                               {mistakeCount > 0 && (
                                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1">
                                   <AlertTriangle className="w-3 h-3" />
@@ -425,7 +429,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                               )}
                             </div>
 
-                            {/* Subtopics Checklist Chips */}
                             <div className="flex flex-wrap items-center gap-1.5">
                               {topic.subtopics.slice(0, 4).map((sub, i) => (
                                 <span
@@ -443,7 +446,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                             </div>
                           </div>
 
-                          {/* Right Side: Status Badge, Last Studied & Quick Actions */}
                           <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EBD3A0]/30 dark:border-[#282828]">
                             {topic.lastStudied && (
                               <span className="text-[10px] font-medium text-[#6B7280]">
@@ -451,12 +453,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                               </span>
                             )}
 
-                            {/* Status Chip Button */}
                             <span className={`px-3 py-1 text-xs rounded-xl border ${badge.classes}`}>
                               {badge.label}
                             </span>
 
-                            {/* Delete Topic Action */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -483,14 +483,12 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         })}
       </div>
 
-      {/* Edit Subject Modal */}
       <EditSubjectModal
         subject={editingSubject}
         isOpen={Boolean(editingSubject)}
         onClose={() => setEditingSubject(null)}
       />
 
-      {/* Edit Chapter Modal */}
       <EditChapterModal
         subjectId={editingChapter?.subjectId || ''}
         chapter={editingChapter?.chapter || null}
