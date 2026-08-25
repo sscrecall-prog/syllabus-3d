@@ -121,9 +121,9 @@
 
 /* -- GLASS SURFACE SYSTEM -- */
 
-/* Level 1: Primary cards and panels */
-.theme-spatial .bg-white,
-.theme-spatial [class*="dark:bg-[#151713]"] {
+/* Level 1: Primary cards and panels (exclude structural elements) */
+.theme-spatial :not(aside):not(nav):not(header) > .bg-white,
+.theme-spatial :not(aside):not(nav):not(header) > [class*="dark:bg-[#151713]"] {
   background: linear-gradient(
     135deg,
     rgba(15, 23, 42, 0.78) 0%,
@@ -138,11 +138,20 @@
     0 2px 8px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
+/* Cards inside sidebar get lighter glass without heavy shadows */
+.theme-spatial aside .bg-white,
+.theme-spatial aside [class*="dark:bg-[#151713]"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
 
-/* Level 2: Recessed surfaces */
-.theme-spatial [class*="bg-[#F7F6F0]"],
-.theme-spatial [class*="dark:bg-[#1D201A]"],
-.theme-spatial [class*="dark:bg-[#0D0E0C]"] {
+/* Level 2: Recessed surfaces (exclude structural elements) */
+.theme-spatial :not(aside):not(nav) > [class*="bg-[#F7F6F0]"],
+.theme-spatial :not(aside):not(nav) > [class*="dark:bg-[#1D201A]"],
+.theme-spatial :not(aside):not(nav) > [class*="dark:bg-[#0D0E0C]"] {
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
@@ -170,17 +179,26 @@
     0 8px 40px rgba(0, 0, 0, 0.55) !important;
 }
 
-/* -- SIDEBAR — Translucent Navigation Dock -- */
+/* -- SIDEBAR — Translucent Navigation Dock (STABLE) -- */
 .theme-spatial aside {
   background: linear-gradient(
     180deg,
-    rgba(8, 12, 21, 0.82) 0%,
-    rgba(8, 12, 21, 0.72) 100%
+    rgba(8, 12, 21, 0.88) 0%,
+    rgba(8, 12, 21, 0.82) 100%
   ) !important;
   backdrop-filter: blur(48px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
   border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 0 !important;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3) !important;
+  position: sticky !important;
+  top: 0 !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Active sidebar item glow */
@@ -192,17 +210,27 @@
   box-shadow: 0 0 16px rgba(45, 212, 191, 0.10) !important;
 }
 
-/* -- MOBILE BOTTOM NAV -- */
+/* -- MOBILE BOTTOM NAV (STABLE) -- */
 .theme-spatial nav.fixed {
   background: linear-gradient(
     0deg,
     rgba(5, 6, 8, 0.95) 0%,
-    rgba(8, 12, 21, 0.88) 100%
+    rgba(8, 12, 21, 0.90) 100%
   ) !important;
   backdrop-filter: blur(48px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0 !important;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.55) !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
+  z-index: 40 !important;
 }
 
 /* -- INPUTS, SELECTS, TEXTAREAS -- */
@@ -361,61 +389,44 @@
 /* -- MOBILE GLASS PERFORMANCE OPTIMIZATION -- */
 @media (max-width: 767px) {
 
-  /* Reduce blur intensity on mobile for GPU performance */
-  .theme-spatial .bg-white,
-  .theme-spatial [class*="dark:bg-[#151713]"] {
+  /* Reduce blur intensity on mobile cards for GPU performance */
+  .theme-spatial main .bg-white,
+  .theme-spatial main [class*="dark:bg-[#151713]"] {
     backdrop-filter: blur(24px) saturate(160%) !important;
     -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
     box-shadow:
       0 0 0 0.5px rgba(255, 255, 255, 0.05),
       0 4px 16px rgba(0, 0, 0, 0.45),
       inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-    border-radius: 16px !important;
   }
 
-  /* Mobile header — slimmer, glass toolbar */
+  /* Mobile header — safe area support */
   .theme-spatial header {
     padding-top: env(safe-area-inset-top, 0px) !important;
-    backdrop-filter: blur(32px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.04),
-      0 4px 20px rgba(0, 0, 0, 0.45) !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    transition: none !important;
   }
 
-  /* Mobile content area spacing */
+  /* Mobile content area spacing — prevent content hiding behind bottom nav */
   .theme-spatial main {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    padding-bottom: 100px !important;
+    padding-bottom: 90px !important;
   }
 
-  /* Mobile cards — tighter spacing, softer glass */
-  .theme-spatial .rounded-2xl {
-    border-radius: 16px !important;
-  }
-
-  /* Mobile Bottom Dock — Premium Floating Pill Style */
+  /* Bottom nav — locked stable, no floating, no margins */
   .theme-spatial nav.fixed {
-    margin: 0 8px 8px 8px !important;
-    border-radius: 20px !important;
-    left: 8px !important;
-    right: 8px !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     bottom: 0 !important;
-    background: linear-gradient(
-      0deg,
-      rgba(8, 12, 21, 0.92) 0%,
-      rgba(15, 23, 42, 0.85) 100%
-    ) !important;
-    backdrop-filter: blur(48px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow:
-      0 0 0 0.5px rgba(255, 255, 255, 0.06),
-      0 -2px 20px rgba(0, 0, 0, 0.50),
-      0 8px 32px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-    padding-bottom: max(env(safe-area-inset-bottom, 6px), 6px) !important;
+    position: fixed !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+    padding-bottom: env(safe-area-inset-bottom, 6px) !important;
     padding-top: 6px !important;
   }
 
@@ -438,7 +449,6 @@
   }
 
   /* FAB center button on mobile dock */
-  .theme-spatial nav.fixed button[class*="border-[#596B35]"],
   .theme-spatial nav.fixed button[class*="border-2"] {
     background: linear-gradient(135deg, rgba(13, 148, 136, 0.90) 0%, rgba(45, 212, 191, 0.80) 100%) !important;
     border: 2px solid rgba(45, 212, 191, 0.50) !important;
@@ -477,16 +487,10 @@
     box-shadow: 0 0 12px rgba(45, 212, 191, 0.08) !important;
   }
 
-  /* Mobile touch feedback */
-  .theme-spatial button:active,
-  .theme-spatial a:active {
+  /* Mobile touch feedback — only on content buttons, NOT nav */
+  .theme-spatial main button:active {
     transform: scale(0.97) !important;
     transition: transform 0.08s ease !important;
-  }
-
-  /* Mobile Topic Cards in Syllabus — cleaner glass rows */
-  .theme-spatial [class*="rounded-xl"] {
-    border-radius: 14px !important;
   }
 
   /* Mobile modals — full-width glass panels */
@@ -533,14 +537,11 @@
   }
 }
 
-/* -- SMOOTH MOBILE ANIMATIONS -- */
+/* -- SMOOTH ANIMATIONS (content only, NOT structural elements) -- */
 @media (prefers-reduced-motion: no-preference) {
-  .theme-spatial nav.fixed {
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-  }
-  .theme-spatial .bg-white,
-  .theme-spatial [class*="dark:bg-[#151713]"] {
-    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  .theme-spatial main .bg-white,
+  .theme-spatial main [class*="dark:bg-[#151713]"] {
+    transition: background 0.2s ease, box-shadow 0.2s ease;
   }
 }
 
