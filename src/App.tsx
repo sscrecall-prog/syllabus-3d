@@ -18,8 +18,15 @@ import { TopicDetailDrawer } from './components/modals/TopicDetailDrawer';
 import { RevisionSessionModal } from './components/modals/RevisionSessionModal';
 import { PomodoroFocusModal } from './components/focus/PomodoroFocusModal';
 import { Topic } from './types/syllabus';
+import { useAuth } from './context/AuthContext';
+import { AuthLayout } from './components/auth/AuthLayout';
+import { LoginView } from './components/auth/LoginView';
+import { SignUpView } from './components/auth/SignUpView';
+import { ForgotPasswordView } from './components/auth/ForgotPasswordView';
+import { InitialAuthLoading } from './components/auth/InitialAuthLoading';
 
 export const App: React.FC = () => {
+  const { isAuthenticated, isLoading, authView } = useAuth();
   const [currentView, setCurrentView] = useState<AppView>('overview');
 
   // Modals
@@ -49,6 +56,23 @@ export const App: React.FC = () => {
     setIsFocusModalOpen(true);
   };
 
+  // 1. Initial Session Checking (Zero Flash)
+  if (isLoading) {
+    return <InitialAuthLoading />;
+  }
+
+  // 2. Unauthenticated Flow
+  if (!isAuthenticated) {
+    return (
+      <AuthLayout>
+        {authView === 'login' && <LoginView />}
+        {authView === 'signup' && <SignUpView />}
+        {authView === 'forgot_password' && <ForgotPasswordView />}
+      </AuthLayout>
+    );
+  }
+
+  // 3. Authenticated Main Application Flow
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200">
       {/* Desktop Sidebar */}

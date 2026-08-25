@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
   BookOpen,
@@ -29,6 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAddTopic
 }) => {
   const { dueRevisions, weakTopics, plannerTasks, profile } = useSyllabus();
+  const { user } = useAuth();
 
   const todayCount = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress').length;
 
@@ -132,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-900 dark:text-white">
-              {profile.name}
+              {user?.name || profile.name}
             </span>
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-600 dark:text-brand-400">
               Lvl {profile.level}

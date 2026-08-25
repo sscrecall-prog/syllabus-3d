@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSyllabus } from '../../context/SyllabusContext';
+import { useAuth } from '../../context/AuthContext';
 import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, ExternalLink, Timer } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -14,6 +15,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, onOpenFocus }) => {
   const { toggleTheme, isDark } = useTheme();
   const { profile, updateProfile, exams, currentExam, setSelectedExamId } = useSyllabus();
+  const { user } = useAuth();
 
   const toggleSound = () => {
     const next = !profile.soundEnabled;
@@ -148,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
           title="Settings & Profile"
           className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white text-[11px] sm:text-xs font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform shrink-0 cursor-pointer"
         >
-          {profile.name.slice(0, 1).toUpperCase()}
+          {(user?.name || profile.name).slice(0, 1).toUpperCase()}
         </button>
       </div>
     </header>
