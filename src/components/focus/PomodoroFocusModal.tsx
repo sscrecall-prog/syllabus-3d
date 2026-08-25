@@ -228,7 +228,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                 {isSettingsOpen ? 'Pomodoro Settings' : '3D Focus Chamber'}
               </h3>
               <p className="text-[10px] text-[#596B35] dark:text-[#A4B879]">
-                {isSettingsOpen ? 'Ekagra Engine Configuration' : 'Deep Study Session'}
+                {isSettingsOpen ? 'Study Pomodoro Configuration' : 'Deep Study Session'}
               </p>
             </div>
           </div>
@@ -266,11 +266,11 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
         {isSettingsOpen ? (
           <div className="py-3 space-y-4 overflow-y-auto flex-1 animate-fade-in">
             
-            {/* 1. Ekagra (Focus Duration) */}
+            {/* 1. Study (Focus Duration) */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
-                  Ekagra
+                  Study
                 </span>
                 <div className="flex items-center gap-1 text-base font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono">
                   <span>{focusDurationMinutes}</span>
@@ -427,7 +427,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                   Timer alert
                 </h4>
                 <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
-                  How Ekagra tells you a session ended
+                  How Study timer alerts when a session ends
                 </p>
               </div>
 
@@ -533,7 +533,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
             {isLoopActive && (
               <div className="flex items-center justify-center">
                 <span className="px-3 py-1 rounded-full text-[11px] font-bold font-mono bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] border border-[#596B35]">
-                  🔄 Loop {currentLoop} of {targetLoops}: {mainMode === 'pomodoro' ? 'Ekagra Focus' : 'Break Time'}
+                  🔄 Loop {currentLoop} of {targetLoops}: {mainMode === 'pomodoro' ? 'Study Focus' : 'Break Time'}
                 </span>
               </div>
             )}
