@@ -18,13 +18,23 @@ import {
   ShieldCheck,
   Target,
   Clock,
-  Check
+  Check,
+  Palette
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
 import { PWAInstallModal } from '../modals/PWAInstallModal';
+import { ThemeSystemMode } from '../layout/Header';
 
-export const SettingsView: React.FC = () => {
+interface SettingsViewProps {
+  themeSystem?: ThemeSystemMode;
+  onSetThemeSystem?: (theme: ThemeSystemMode) => void;
+}
+
+export const SettingsView: React.FC<SettingsViewProps> = ({
+  themeSystem = 'academic',
+  onSetThemeSystem
+}) => {
   const {
     profile,
     updateProfile,
@@ -116,7 +126,7 @@ export const SettingsView: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `syllabus_3d_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = 'syllabus_3d_backup_' + new Date().toISOString().slice(0, 10) + '.json';
     a.click();
     URL.revokeObjectURL(url);
     soundManager.playCompleteChime();
@@ -157,7 +167,7 @@ export const SettingsView: React.FC = () => {
             <span>App Settings & Preferences</span>
           </h2>
           <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#85877E] mt-1">
-            Customize your target exam date, live countdown clock, profile details, and data backup.
+            Customize visual theme system, exam target date, live countdown clock, and data backup.
           </p>
         </div>
 
@@ -188,7 +198,84 @@ export const SettingsView: React.FC = () => {
         )}
       </div>
 
-      {/* 1. EXAM COUNTDOWN & SCHEDULE CUSTOMIZER (PRIMARY REQUEST) */}
+      {/* 1. VISUAL THEME SYSTEM SELECTOR (ACADEMIC ⇄ SPATIAL GLASS) */}
+      <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-4">
+        <div className="flex items-center gap-2.5 pb-2 border-b border-[#EEEEE8] dark:border-[#1D201A]">
+          <div className="w-10 h-10 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] text-[#596B35] dark:text-[#A4B879] flex items-center justify-center shrink-0">
+            <Palette className="w-5 h-5 stroke-[2]" />
+          </div>
+          <div>
+            <h3 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif">
+              Visual System & Theme Mode
+            </h3>
+            <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+              Choose between Serious Academic Olive paper or Futuristic VisionOS Spatial Glass.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Card 1: Academic Olive */}
+          <div
+            onClick={() => {
+              if (onSetThemeSystem) {
+                soundManager.playClick();
+                onSetThemeSystem('academic');
+              }
+            }}
+            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer space-y-2.5 shadow-sm active:scale-98 ${
+              themeSystem === 'academic'
+                ? 'border-[#596B35] bg-[#F7F6F0] dark:bg-[#1D201A]'
+                : 'border-[#D8D8CF] dark:border-[#30342B] bg-white dark:bg-[#151713] opacity-75 hover:opacity-100'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] flex items-center gap-1.5 font-serif">
+                <span>🌿 Academic Olive</span>
+              </span>
+              {themeSystem === 'academic' && (
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#596B35] text-white font-mono">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+              Warm neutral paper surfaces, deep charcoal typography, and muted olive accents. Ideal for 6–8 hour serious exam study.
+            </p>
+          </div>
+
+          {/* Card 2: Spatial VisionOS Glass */}
+          <div
+            onClick={() => {
+              if (onSetThemeSystem) {
+                soundManager.playCompleteChime();
+                onSetThemeSystem('spatial');
+              }
+            }}
+            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer space-y-2.5 shadow-sm active:scale-98 ${
+              themeSystem === 'spatial'
+                ? 'border-cyan-400 bg-gradient-to-br from-teal-950/40 to-slate-900/60 shadow-cyan-500/10'
+                : 'border-[#D8D8CF] dark:border-[#30342B] bg-white dark:bg-[#151713] opacity-75 hover:opacity-100'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] flex items-center gap-1.5 font-serif">
+                <span>🔮 Spatial VisionOS Glass</span>
+              </span>
+              {themeSystem === 'spatial' && (
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-500 text-black font-mono">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+              Translucent frosted glass panels, specular chamfered highlights, holographic glowing progress dials, and cosmic ambient background.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. EXAM COUNTDOWN & SCHEDULE CUSTOMIZER */}
       <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-5">
         <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#1D201A]">
           <div className="flex items-center gap-2.5">
@@ -336,7 +423,7 @@ export const SettingsView: React.FC = () => {
         </form>
       </div>
 
-      {/* 2. Authenticated User Profile */}
+      {/* 3. Authenticated User Profile */}
       <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-4">
         <h3 className="text-base font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif flex items-center gap-2">
           <User className="w-4 h-4 text-[#596B35]" />
@@ -373,7 +460,7 @@ export const SettingsView: React.FC = () => {
         </form>
       </div>
 
-      {/* 3. PWA Mobile App Status Card */}
+      {/* 4. PWA Mobile App Status Card */}
       <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] text-[#596B35] dark:text-[#A4B879] flex items-center justify-center shrink-0">
@@ -402,7 +489,7 @@ export const SettingsView: React.FC = () => {
         </button>
       </div>
 
-      {/* 4. Data Backup & Export (JSON) */}
+      {/* 5. Data Backup & Export (JSON) */}
       <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-4">
         <h3 className="text-base font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif flex items-center gap-2">
           <Download className="w-4 h-4 text-[#596B35]" />

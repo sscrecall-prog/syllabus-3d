@@ -2,112 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-background: #F7F6F0;
-  --color-surface: #FFFFFF;
-  --color-surface-soft: #EEEEE8;
-  --color-border: #D8D8CF;
-  --color-primary: #11120F;
-  --color-primary-accent: #596B35;
-  --color-accent-light: #DCE8B7;
-  --color-secondary-accent: #8FA35F;
-  --color-text-primary: #191A17;
-  --color-text-secondary: #65675F;
-  --color-text-muted: #85877E;
-  --color-success: #4F7A45;
-  --color-warning: #C49A3A;
-  --color-error: #B94A48;
-}
-
-.dark {
-  --color-background: #0D0E0C;
-  --color-surface: #151713;
-  --color-surface-elevated: #1D201A;
-  --color-border: #30342B;
-  --color-text-primary: #F4F4ED;
-  --color-text-secondary: #A7AA9C;
-  --color-primary-accent: #A4B879;
-  --color-accent-soft: #354126;
-}
-
 @layer base {
-  html {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+  :root {
+    --color-background: #F7F6F0;
+    --color-primary: #11120F;
+    --color-primary-accent: #596B35;
+    --color-accent-light: #DCE8B7;
+    --color-secondary-accent: #8FA35F;
+    --color-surface: #FFFFFF;
+    --color-surface-soft: #EEEEE8;
+    --color-border: #D8D8CF;
+    --color-text-primary: #191A17;
+    --color-text-secondary: #65675F;
+    --color-text-muted: #85877E;
+    --color-success: #4F7A45;
+    --color-warning: #C49A3A;
+    --color-error: #B94A48;
+  }
+
+  .dark {
+    --color-background: #0D0E0C;
+    --color-primary: #F4F4ED;
+    --color-primary-accent: #A4B879;
+    --color-accent-light: #DCE8B7;
+    --color-secondary-accent: #8FA35F;
+    --color-surface: #151713;
+    --color-surface-soft: #1D201A;
+    --color-border: #30342B;
+    --color-text-primary: #F4F4ED;
+    --color-text-secondary: #A7AA9C;
+    --color-text-muted: #85877E;
+    --color-success: #4F7A45;
+    --color-warning: #C49A3A;
+    --color-error: #B94A48;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Newsreader', Georgia, serif;
   }
 }
 
-* {
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+/* 🔮 SPATIAL VISIONOS GLASS THEME OVERRIDES (.theme-spatial) */
+.theme-spatial {
+  background-color: #07080B !important;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(45, 212, 191, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(89, 107, 53, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(196, 154, 58, 0.08) 0%, transparent 40%) !important;
+  background-attachment: fixed !important;
+  color: #F4F4ED !important;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  overscroll-behavior-y: contain;
+.theme-spatial .bg-white,
+.theme-spatial .dark\:bg-\[\#151713\] {
+  background: rgba(18, 22, 28, 0.68) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 
+    0 16px 36px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.28),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Safe Area Insets */
-.pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
+.theme-spatial header {
+  background: rgba(10, 12, 16, 0.75) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 }
 
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+.theme-spatial aside {
+  background: rgba(10, 12, 16, 0.7) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Academic Olive Scrollbar */
+.theme-spatial .bg-\[\#F7F6F0\],
+.theme-spatial .dark\:bg-\[\#1D201A\],
+.theme-spatial .dark\:bg-\[\#0D0E0C\] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.theme-spatial svg circle[stroke="#596B35"] {
+  stroke: #2DD4BF !important;
+  filter: drop-shadow(0 0 10px rgba(45, 212, 191, 0.75)) drop-shadow(0 0 20px rgba(45, 212, 191, 0.4)) !important;
+}
+
+.theme-spatial nav.fixed {
+  background: rgba(10, 12, 16, 0.85) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(89, 107, 53, 0.35);
-  border-radius: 9px;
+  background: rgba(133, 135, 126, 0.3);
+  border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(89, 107, 53, 0.7);
+  background: rgba(133, 135, 126, 0.5);
 }
-
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Subtle Layered Card Elevation */
-.academic-card {
-  background-color: #FFFFFF;
-  border: 1px solid #D8D8CF;
-  border-radius: 18px;
-  box-shadow: 0 2px 8px -2px rgba(17, 18, 15, 0.05), 0 8px 16px -4px rgba(17, 18, 15, 0.04);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.dark .academic-card {
-  background-color: #151713;
-  border-color: #30342B;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
-}
-
-.academic-card:hover {
-  border-color: #8FA35F;
-  transform: translateY(-1px);
-}
-
-.dark .academic-card:hover {
-  border-color: #A4B879;
 }

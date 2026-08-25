@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar, AppView } from './components/layout/Sidebar';
-import { Header } from './components/layout/Header';
+import { Header, ThemeSystemMode } from './components/layout/Header';
 import { MobileNav } from './components/layout/MobileNav';
 import { MobileDrawer } from './components/layout/MobileDrawer';
 import { OverviewView } from './components/views/OverviewView';
@@ -33,6 +33,24 @@ export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>('overview');
   const [viewHistory, setViewHistory] = useState<AppView[]>([]);
   const [targetSubjectId, setTargetSubjectId] = useState<string>('');
+
+  // Multi-Theme Switcher State ('academic' | 'spatial')
+  const [themeSystem, setThemeSystem] = useState<ThemeSystemMode>(() => {
+    return (localStorage.getItem('syllabus3d_theme_system') as ThemeSystemMode) || 'academic';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('syllabus3d_theme_system', themeSystem);
+    if (themeSystem === 'spatial') {
+      document.documentElement.classList.add('theme-spatial');
+    } else {
+      document.documentElement.classList.remove('theme-spatial');
+    }
+  }, [themeSystem]);
+
+  const handleToggleThemeSystem = () => {
+    setThemeSystem(prev => (prev === 'academic' ? 'spatial' : 'academic'));
+  };
 
   // 3D Animated Startup Logo Experience
   const [showIntro, setShowIntro] = useState<boolean>(true);
@@ -169,7 +187,11 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F7F6F0] dark:bg-[#0D0E0C] text-[#191A17] dark:text-[#F4F4ED] antialiased font-sans transition-colors duration-200">
+    <div className={`flex min-h-screen antialiased font-sans transition-colors duration-200 ${
+      themeSystem === 'spatial'
+        ? 'theme-spatial bg-[#07080B] text-[#F4F4ED]'
+        : 'bg-[#F7F6F0] dark:bg-[#0D0E0C] text-[#191A17] dark:text-[#F4F4ED]'
+    }`}>
       
       {/* 3D Animated Startup Intro Experience */}
       {showIntro && (
@@ -216,6 +238,8 @@ export const App: React.FC = () => {
           canGoBack={canGoBack}
           onGoBack={handleGoBack}
           currentViewTitle={getViewTitle(currentView)}
+          themeSystem={themeSystem}
+          onToggleThemeSystem={handleToggleThemeSystem}
         />
 
         <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">
@@ -280,7 +304,12 @@ export const App: React.FC = () => {
 
           {currentView === 'heatmap' && <HeatmapView />}
 
-          {currentView === 'settings' && <SettingsView />}
+          {currentView === 'settings' && (
+            <SettingsView
+              themeSystem={themeSystem}
+              onSetThemeSystem={setThemeSystem}
+            />
+          )}
         </main>
       </div>
 
