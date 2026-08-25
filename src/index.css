@@ -42,6 +42,8 @@
     color: var(--color-text-primary);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, .font-serif {
@@ -50,10 +52,12 @@
 }
 
 /* ================================================================= */
-/*  SPATIAL VISIONOS GLASS — PREMIUM PROFESSIONAL OVERHAUL           */
+/*  SPATIAL VISIONOS GLASS - FINAL PROFESSIONAL THEME                */
 /* ================================================================= */
 
-/* -- COSMIC AMBIENT BACKGROUND -- */
+/* ----------------------------------------------------------------- */
+/*  A. COSMIC AMBIENT BACKGROUND                                    */
+/* ----------------------------------------------------------------- */
 .theme-spatial {
   background-color: #050608 !important;
   background-image:
@@ -65,43 +69,72 @@
   color: #E2E8F0 !important;
 }
 
-/* -- GLOBAL BORDER RESET -- */
+/* ----------------------------------------------------------------- */
+/*  B. GLOBAL BORDER RESET                                           */
+/* ----------------------------------------------------------------- */
 .theme-spatial,
 .theme-spatial * {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* -- TYPOGRAPHY HIERARCHY -- */
-/* Tier 1: Titles — pure white, maximum contrast */
-.theme-spatial h1,
-.theme-spatial h2,
+/* ----------------------------------------------------------------- */
+/*  C. TYPOGRAPHY HIERARCHY (4-Tier Professional System)             */
+/* ----------------------------------------------------------------- */
+
+/* Tier 1: Page & Section Titles - pure white, tight tracking */
+.theme-spatial h1 {
+  color: #F8FAFC !important;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.theme-spatial h2 {
+  color: #F8FAFC !important;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
 .theme-spatial h3,
 .theme-spatial h4 {
-  color: #F8FAFC !important;
+  color: #F1F5F9 !important;
   letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
+/* Bold/Black text - always bright */
 .theme-spatial [class*="font-extrabold"],
-.theme-spatial [class*="font-black"] {
+.theme-spatial [class*="font-black"],
+.theme-spatial [class*="font-bold"] {
   color: #F1F5F9 !important;
 }
 
-/* Tier 2: Body text — soft silver */
+/* Tier 2: Body text - soft silver, comfortable reading */
+.theme-spatial p,
+.theme-spatial span,
+.theme-spatial label,
+.theme-spatial li {
+  color: #CBD5E1 !important;
+}
 .theme-spatial [class*="text-[#11120F]"],
 .theme-spatial [class*="text-[#191A17]"],
 .theme-spatial [class*="text-[#171717]"] {
   color: #E2E8F0 !important;
 }
+.theme-spatial [class*="text-[#F4F4ED]"] {
+  color: #F1F5F9 !important;
+}
 
-/* Tier 3: Secondary text */
+/* Tier 3: Secondary text - readable slate */
 .theme-spatial [class*="text-[#65675F]"],
-.theme-spatial [class*="text-[#6B7280]"] {
+.theme-spatial [class*="text-[#6B7280]"],
+.theme-spatial [class*="text-slate-600"],
+.theme-spatial [class*="text-gray-600"] {
   color: #94A3B8 !important;
 }
 
-/* Tier 4: Muted captions */
+/* Tier 4: Muted captions - dim but visible */
 .theme-spatial [class*="text-[#85877E]"],
-.theme-spatial [class*="text-[#A7AA9C]"] {
+.theme-spatial [class*="text-[#A7AA9C]"],
+.theme-spatial [class*="text-slate-400"],
+.theme-spatial [class*="text-gray-400"] {
   color: #64748B !important;
 }
 
@@ -115,76 +148,116 @@
 .theme-spatial [class*="text-[#DCE8B7]"] {
   color: #99F6E4 !important;
 }
-.theme-spatial [class*="text-[#F4F4ED]"] {
-  color: #F1F5F9 !important;
+
+/* Monospace / Badge text - slight spacing for legibility */
+.theme-spatial .font-mono {
+  letter-spacing: 0.04em;
+  color: #94A3B8 !important;
 }
 
-/* -- GLASS SURFACE SYSTEM -- */
+/* Specific stat numbers - bright accent */
+.theme-spatial [class*="font-mono"][class*="font-bold"],
+.theme-spatial [class*="font-mono"][class*="font-black"] {
+  color: #E2E8F0 !important;
+}
 
-/* Level 1: Primary cards and panels (exclude structural elements) */
+/* ----------------------------------------------------------------- */
+/*  D. GLASS SURFACE SYSTEM (3-Tier Depth)                          */
+/* ----------------------------------------------------------------- */
+
+/* Tier 1: Primary cards & panels (NOT sidebar/nav/header) */
 .theme-spatial :not(aside):not(nav):not(header) > .bg-white,
 .theme-spatial :not(aside):not(nav):not(header) > [class*="dark:bg-[#151713]"] {
   background: linear-gradient(
-    135deg,
-    rgba(15, 23, 42, 0.78) 0%,
-    rgba(15, 23, 42, 0.62) 100%
+    145deg,
+    rgba(15, 23, 42, 0.75) 0%,
+    rgba(15, 23, 42, 0.58) 100%
   ) !important;
   backdrop-filter: blur(40px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
   box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.06),
-    0 8px 32px rgba(0, 0, 0, 0.50),
-    0 2px 8px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    0 0 0 0.5px rgba(255, 255, 255, 0.05),
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
 }
-/* Cards inside sidebar get lighter glass without heavy shadows */
+
+/* Cards inside sidebar - lighter, no heavy shadows */
 .theme-spatial aside .bg-white,
 .theme-spatial aside [class*="dark:bg-[#151713]"] {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: none !important;
 }
 
-/* Level 2: Recessed surfaces (exclude structural elements) */
+/* Tier 2: Recessed surfaces (NOT structural) */
 .theme-spatial :not(aside):not(nav) > [class*="bg-[#F7F6F0]"],
 .theme-spatial :not(aside):not(nav) > [class*="dark:bg-[#1D201A]"],
 .theme-spatial :not(aside):not(nav) > [class*="dark:bg-[#0D0E0C]"] {
-  background: rgba(255, 255, 255, 0.04) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Tier 3: Nested inner elements */
+.theme-spatial [class*="bg-[#EEEEE8]"],
+.theme-spatial [class*="dark:bg-[#1D201A]"] {
+  background: rgba(255, 255, 255, 0.05) !important;
   border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
-/* Level 3: Nested elements */
-.theme-spatial [class*="bg-[#EEEEE8]"] {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+/* Hover lift on clickable cards */
+.theme-spatial [class*="rounded-2xl"][class*="cursor-pointer"]:hover,
+.theme-spatial [class*="rounded-xl"][class*="cursor-pointer"]:hover {
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
 }
 
-/* -- HEADER — Floating Glass Toolbar -- */
+/* ----------------------------------------------------------------- */
+/*  E. HEADER - Floating Glass Toolbar (STABLE)                     */
+/* ----------------------------------------------------------------- */
 .theme-spatial header {
   background: linear-gradient(
     180deg,
-    rgba(8, 12, 21, 0.88) 0%,
-    rgba(8, 12, 21, 0.78) 100%
+    rgba(8, 12, 21, 0.90) 0%,
+    rgba(8, 12, 21, 0.82) 100%
   ) !important;
   backdrop-filter: blur(48px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 0 !important;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.05),
-    0 8px 40px rgba(0, 0, 0, 0.55) !important;
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 40px rgba(0, 0, 0, 0.50) !important;
+  transform: none !important;
+  transition: none !important;
 }
 
-/* -- SIDEBAR — Translucent Navigation Dock (STABLE) -- */
+/* Header buttons - subtle glass */
+.theme-spatial header button,
+.theme-spatial header [class*="rounded-xl"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: none !important;
+}
+.theme-spatial header button:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  F. SIDEBAR - Translucent Dock (STABLE)                          */
+/* ----------------------------------------------------------------- */
 .theme-spatial aside {
   background: linear-gradient(
     180deg,
-    rgba(8, 12, 21, 0.88) 0%,
-    rgba(8, 12, 21, 0.82) 100%
+    rgba(8, 12, 21, 0.90) 0%,
+    rgba(8, 12, 21, 0.85) 100%
   ) !important;
   backdrop-filter: blur(48px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
@@ -201,27 +274,61 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Active sidebar item glow */
-.theme-spatial aside [class*="bg-[#DCE8B7]"],
-.theme-spatial aside [class*="bg-[#354126]"] {
-  background: rgba(45, 212, 191, 0.15) !important;
-  border-color: rgba(45, 212, 191, 0.30) !important;
-  color: #2DD4BF !important;
-  box-shadow: 0 0 16px rgba(45, 212, 191, 0.10) !important;
+/* Sidebar nav items */
+.theme-spatial aside nav button {
+  color: #94A3B8 !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.theme-spatial aside nav button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #E2E8F0 !important;
 }
 
-/* -- MOBILE BOTTOM NAV (STABLE) -- */
+/* Sidebar active item */
+.theme-spatial aside nav button[class*="bg-[#EEEEE8]"],
+.theme-spatial aside nav button[class*="dark:bg-[#1D201A]"] {
+  background: rgba(45, 212, 191, 0.10) !important;
+  border: 1px solid rgba(45, 212, 191, 0.20) !important;
+  color: #2DD4BF !important;
+}
+.theme-spatial aside nav button[class*="bg-[#EEEEE8]"] svg,
+.theme-spatial aside nav button[class*="dark:bg-[#1D201A]"] svg {
+  color: #2DD4BF !important;
+}
+
+/* Sidebar focus chamber button */
+.theme-spatial aside [class*="bg-[#DCE8B7]"],
+.theme-spatial aside [class*="bg-[#354126]"] {
+  background: rgba(45, 212, 191, 0.12) !important;
+  border-color: rgba(45, 212, 191, 0.25) !important;
+  color: #2DD4BF !important;
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.08) !important;
+}
+
+/* Sidebar add topic button */
+.theme-spatial aside button[class*="bg-[#11120F]"] {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.80) 0%, rgba(20, 184, 166, 0.70) 100%) !important;
+  border: 1px solid rgba(45, 212, 191, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(45, 212, 191, 0.15) !important;
+  color: #FFFFFF !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  G. MOBILE BOTTOM NAV (STABLE - LOCKED)                          */
+/* ----------------------------------------------------------------- */
 .theme-spatial nav.fixed {
   background: linear-gradient(
     0deg,
-    rgba(5, 6, 8, 0.95) 0%,
-    rgba(8, 12, 21, 0.90) 100%
+    rgba(5, 6, 8, 0.96) 0%,
+    rgba(8, 12, 21, 0.92) 100%
   ) !important;
   backdrop-filter: blur(48px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 0 !important;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.50) !important;
   position: fixed !important;
   bottom: 0 !important;
   left: 0 !important;
@@ -231,9 +338,41 @@
   transition: none !important;
   will-change: auto !important;
   z-index: 40 !important;
+  padding-bottom: env(safe-area-inset-bottom, 6px) !important;
 }
 
-/* -- INPUTS, SELECTS, TEXTAREAS -- */
+/* Bottom nav items */
+.theme-spatial nav.fixed button {
+  color: #64748B !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.theme-spatial nav.fixed button span {
+  color: inherit !important;
+}
+
+/* Active bottom nav item */
+.theme-spatial nav.fixed button[class*="font-black"],
+.theme-spatial nav.fixed button[class*="text-[#596B35]"],
+.theme-spatial nav.fixed button[class*="text-[#A4B879]"] {
+  color: #2DD4BF !important;
+}
+
+/* FAB center button */
+.theme-spatial nav.fixed button[class*="border-2"],
+.theme-spatial nav.fixed button[class*="border-[#596B35]"] {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.90) 0%, rgba(45, 212, 191, 0.80) 100%) !important;
+  border: 2px solid rgba(45, 212, 191, 0.45) !important;
+  box-shadow:
+    0 4px 20px rgba(45, 212, 191, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  color: #FFFFFF !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  H. INPUTS, SELECTS, TEXTAREAS                                   */
+/* ----------------------------------------------------------------- */
 .theme-spatial input,
 .theme-spatial textarea,
 .theme-spatial select {
@@ -245,77 +384,14 @@
 .theme-spatial input:focus,
 .theme-spatial textarea:focus,
 .theme-spatial select:focus {
-  border-color: rgba(45, 212, 191, 0.50) !important;
-  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12) !important;
+  border-color: rgba(45, 212, 191, 0.45) !important;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.10) !important;
   outline: none !important;
 }
 .theme-spatial input::placeholder,
 .theme-spatial textarea::placeholder {
-  color: rgba(148, 163, 184, 0.55) !important;
+  color: rgba(148, 163, 184, 0.50) !important;
 }
-
-/* -- BUTTONS -- */
-/* Primary dark buttons to glass teal */
-.theme-spatial [class*="bg-[#11120F]"] {
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.85) 0%, rgba(20, 184, 166, 0.75) 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(45, 212, 191, 0.30) !important;
-  box-shadow:
-    0 4px 16px rgba(45, 212, 191, 0.20),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-}
-.theme-spatial [class*="bg-[#11120F]"]:hover {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.95) 0%, rgba(45, 212, 191, 0.85) 100%) !important;
-  box-shadow:
-    0 6px 24px rgba(45, 212, 191, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
-}
-
-/* Olive accent bg to teal glass */
-.theme-spatial [class*="bg-[#596B35]"] {
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.80) 0%, rgba(20, 184, 166, 0.70) 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(45, 212, 191, 0.25) !important;
-}
-
-/* Sage/Light accent bg to soft teal glass */
-.theme-spatial [class*="bg-[#DCE8B7]"],
-.theme-spatial [class*="bg-[#354126]"] {
-  background: rgba(45, 212, 191, 0.12) !important;
-  color: #5EEAD4 !important;
-  border-color: rgba(45, 212, 191, 0.18) !important;
-}
-
-/* -- HOLOGRAPHIC PROGRESS RING -- */
-.theme-spatial svg circle[stroke="#596B35"] {
-  stroke: #2DD4BF !important;
-  filter:
-    drop-shadow(0 0 6px rgba(45, 212, 191, 0.70))
-    drop-shadow(0 0 16px rgba(45, 212, 191, 0.35))
-    drop-shadow(0 0 32px rgba(45, 212, 191, 0.15)) !important;
-}
-
-/* -- STATUS BADGES -- */
-.theme-spatial [class*="bg-[#4F7A45]"] {
-  background: rgba(34, 197, 94, 0.20) !important;
-  color: #4ADE80 !important;
-}
-.theme-spatial [class*="bg-[#C49A3A]"] {
-  background: rgba(234, 179, 8, 0.18) !important;
-  color: #FACC15 !important;
-}
-.theme-spatial [class*="bg-[#B94A48]"] {
-  background: rgba(239, 68, 68, 0.22) !important;
-  color: #F87171 !important;
-}
-
-/* -- HOVER / ACTIVE STATES -- */
-.theme-spatial button:not([disabled]):active {
-  transform: scale(0.98);
-  transition: transform 0.1s ease;
-}
-
-/* -- RANGE INPUT (Accuracy slider) -- */
 .theme-spatial input[type="range"] {
   background: transparent !important;
   border: none !important;
@@ -331,25 +407,355 @@
   box-shadow: 0 0 8px rgba(45, 212, 191, 0.50);
 }
 
-/* -- MODAL OVERLAYS -- */
-.theme-spatial [class*="bg-black/60"],
-.theme-spatial [class*="bg-black/50"] {
-  background: rgba(2, 3, 8, 0.75) !important;
-  backdrop-filter: blur(8px) !important;
+/* ----------------------------------------------------------------- */
+/*  I. BUTTONS - Glass Teal System                                   */
+/* ----------------------------------------------------------------- */
+
+/* Primary dark buttons to teal glass */
+.theme-spatial main [class*="bg-[#11120F]"] {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.85) 0%, rgba(20, 184, 166, 0.72) 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(45, 212, 191, 0.28) !important;
+  box-shadow:
+    0 4px 16px rgba(45, 212, 191, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+.theme-spatial main [class*="bg-[#11120F]"]:hover {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.95) 0%, rgba(45, 212, 191, 0.82) 100%) !important;
+  box-shadow:
+    0 6px 24px rgba(45, 212, 191, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
 }
 
-/* -- SCROLLBARS (Spatial) -- */
+/* Olive accent bg to teal glass */
+.theme-spatial [class*="bg-[#596B35]"] {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.78) 0%, rgba(20, 184, 166, 0.65) 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(45, 212, 191, 0.22) !important;
+}
+
+/* Light accent bg to soft teal glass */
+.theme-spatial main [class*="bg-[#DCE8B7]"],
+.theme-spatial main [class*="bg-[#354126]"] {
+  background: rgba(45, 212, 191, 0.10) !important;
+  color: #5EEAD4 !important;
+  border-color: rgba(45, 212, 191, 0.16) !important;
+}
+
+/* Ghost / outline buttons */
+.theme-spatial [class*="hover:bg-[#EEEEE8]"],
+.theme-spatial [class*="dark:hover:bg-[#151713]"],
+.theme-spatial [class*="dark:hover:bg-[#1D201A]"] {
+  color: #94A3B8 !important;
+}
+.theme-spatial [class*="hover:bg-[#EEEEE8]"]:hover,
+.theme-spatial [class*="dark:hover:bg-[#151713]"]:hover,
+.theme-spatial [class*="dark:hover:bg-[#1D201A]"]:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #E2E8F0 !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  J. HOLOGRAPHIC PROGRESS ELEMENTS                                */
+/* ----------------------------------------------------------------- */
+
+/* SVG progress rings */
+.theme-spatial svg circle[stroke="#596B35"],
+.theme-spatial svg circle[stroke="#A4B879"] {
+  stroke: #2DD4BF !important;
+  filter:
+    drop-shadow(0 0 6px rgba(45, 212, 191, 0.65))
+    drop-shadow(0 0 16px rgba(45, 212, 191, 0.30)) !important;
+}
+.theme-spatial svg circle[stroke="#D8D8CF"],
+.theme-spatial svg circle[stroke="#30342B"] {
+  stroke: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Progress bars */
+.theme-spatial [class*="bg-[#596B35]"],
+.theme-spatial [class*="dark:bg-[#A4B879]"] {
+  background: linear-gradient(90deg, #0D9488, #2DD4BF) !important;
+}
+.theme-spatial [class*="bg-[#EEEEE8]"][class*="rounded-full"],
+.theme-spatial [class*="dark:bg-[#1D201A]"][class*="rounded-full"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  K. STATUS BADGES - Luminous Glass Pills                         */
+/* ----------------------------------------------------------------- */
+.theme-spatial [class*="bg-[#4F7A45]"] {
+  background: rgba(34, 197, 94, 0.18) !important;
+  color: #4ADE80 !important;
+  border: 1px solid rgba(34, 197, 94, 0.20) !important;
+}
+.theme-spatial [class*="bg-[#C49A3A]"] {
+  background: rgba(234, 179, 8, 0.16) !important;
+  color: #FACC15 !important;
+  border: 1px solid rgba(234, 179, 8, 0.18) !important;
+}
+.theme-spatial [class*="bg-[#B94A48]"] {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #F87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.20) !important;
+}
+
+/* Warning/amber icon colors */
+.theme-spatial [class*="text-[#C49A3A]"] {
+  color: #FBBF24 !important;
+}
+.theme-spatial [class*="fill-[#C49A3A]"] {
+  fill: #FBBF24 !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  L. MODAL OVERLAYS                                                */
+/* ----------------------------------------------------------------- */
+.theme-spatial [class*="bg-black/60"],
+.theme-spatial [class*="bg-black/50"],
+.theme-spatial [class*="bg-black/40"] {
+  background: rgba(2, 3, 8, 0.72) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Modal containers */
+.theme-spatial [class*="max-w-2xl"].bg-white,
+.theme-spatial [class*="max-w-xl"].bg-white,
+.theme-spatial [class*="max-w-lg"].bg-white,
+.theme-spatial [class*="max-w-md"].bg-white {
+  background: linear-gradient(
+    150deg,
+    rgba(15, 23, 42, 0.88) 0%,
+    rgba(15, 23, 42, 0.78) 100%
+  ) !important;
+  backdrop-filter: blur(48px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.05),
+    0 24px 80px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  M. AUTH PAGES                                                    */
+/* ----------------------------------------------------------------- */
+.theme-spatial [class*="min-h-screen"][class*="bg-gradient"],
+.theme-spatial [class*="min-h-screen"][class*="bg-[#F7F6F0]"] {
+  background: #050608 !important;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(45, 212, 191, 0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%) !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  N. SPECIFIC VIEW ENHANCEMENTS                                   */
+/* ----------------------------------------------------------------- */
+
+/* Exam countdown card - subtle glow */
+.theme-spatial [class*="ExamCountdown"] {
+  border: 1px solid rgba(45, 212, 191, 0.15) !important;
+}
+
+/* Subject tab pills (SyllabusView) */
+.theme-spatial [class*="overflow-x-auto"] button,
+.theme-spatial [class*="no-scrollbar"] button {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.theme-spatial [class*="overflow-x-auto"] button[class*="bg-[#11120F]"],
+.theme-spatial [class*="no-scrollbar"] button[class*="bg-[#11120F]"] {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.80) 0%, rgba(20, 184, 166, 0.68) 100%) !important;
+  border: 1px solid rgba(45, 212, 191, 0.30) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 12px rgba(45, 212, 191, 0.18) !important;
+}
+
+/* Kanban columns (PlannerView) */
+.theme-spatial [class*="min-h-"][class*="rounded-2xl"] {
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Settings section cards */
+.theme-spatial [class*="divide-y"] > * {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Toggle / Switch active states */
+.theme-spatial [class*="bg-teal"],
+.theme-spatial [class*="bg-cyan"] {
+  background-color: rgba(45, 212, 191, 0.80) !important;
+}
+
+/* Dropdown menus */
+.theme-spatial [class*="absolute"][class*="shadow-elevated"],
+.theme-spatial [class*="absolute"][class*="z-40"] {
+  background: rgba(15, 23, 42, 0.92) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  O. ACTIVE / INTERACTION STATES                                   */
+/* ----------------------------------------------------------------- */
+.theme-spatial main button:not([disabled]):active {
+  transform: scale(0.97);
+  transition: transform 0.08s ease;
+}
+
+/* Checkbox & Radio styling */
+.theme-spatial input[type="checkbox"]:checked {
+  background-color: #0D9488 !important;
+  border-color: #2DD4BF !important;
+}
+
+/* ----------------------------------------------------------------- */
+/*  P. SCROLLBARS (Spatial)                                          */
+/* ----------------------------------------------------------------- */
 .theme-spatial ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.35);
+  background: rgba(100, 116, 139, 0.30);
 }
 .theme-spatial ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.55);
+  background: rgba(100, 116, 139, 0.50);
 }
 
-/* -- SELECTION -- */
+/* ----------------------------------------------------------------- */
+/*  Q. SELECTION                                                     */
+/* ----------------------------------------------------------------- */
 .theme-spatial ::selection {
-  background: rgba(45, 212, 191, 0.30);
+  background: rgba(45, 212, 191, 0.28);
   color: #FFFFFF;
+}
+
+/* ================================================================= */
+/*  MOBILE-SPECIFIC OPTIMIZATIONS (< 768px)                          */
+/* ================================================================= */
+@media (max-width: 767px) {
+
+  /* GPU performance: lighter blur on mobile */
+  .theme-spatial main .bg-white,
+  .theme-spatial main [class*="dark:bg-[#151713]"] {
+    backdrop-filter: blur(20px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+    box-shadow:
+      0 0 0 0.5px rgba(255, 255, 255, 0.04),
+      0 4px 16px rgba(0, 0, 0, 0.40),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Mobile header - safe area */
+  .theme-spatial header {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+  }
+
+  /* Content padding to clear bottom nav */
+  .theme-spatial main {
+    padding-bottom: 90px !important;
+  }
+
+  /* Mobile bottom nav - locked stable */
+  .theme-spatial nav.fixed {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    position: fixed !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+    padding-bottom: env(safe-area-inset-bottom, 6px) !important;
+    padding-top: 6px !important;
+  }
+
+  /* Mobile drawer - glass treatment */
+  .theme-spatial [class*="animate-slide-right"] {
+    background: linear-gradient(
+      180deg,
+      rgba(8, 12, 21, 0.94) 0%,
+      rgba(5, 8, 16, 0.96) 100%
+    ) !important;
+    backdrop-filter: blur(48px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.55) !important;
+  }
+
+  /* Drawer nav items - larger touch targets */
+  .theme-spatial [class*="animate-slide-right"] nav button {
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Drawer active item */
+  .theme-spatial [class*="animate-slide-right"] nav button[class*="bg-[#DCE8B7]"],
+  .theme-spatial [class*="animate-slide-right"] nav button[class*="bg-[#354126]"] {
+    background: rgba(45, 212, 191, 0.12) !important;
+    border: 1px solid rgba(45, 212, 191, 0.22) !important;
+    color: #2DD4BF !important;
+  }
+
+  /* Mobile modals - glass panels */
+  .theme-spatial [class*="max-w-2xl"],
+  .theme-spatial [class*="max-w-xl"],
+  .theme-spatial [class*="max-w-lg"] {
+    backdrop-filter: blur(28px) saturate(170%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(170%) !important;
+  }
+
+  /* Mobile grid spacing */
+  .theme-spatial .grid-cols-2 {
+    gap: 8px !important;
+  }
+}
+
+/* ================================================================= */
+/*  TABLET OPTIMIZATIONS (768px - 1024px)                            */
+/* ================================================================= */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .theme-spatial main .bg-white,
+  .theme-spatial main [class*="dark:bg-[#151713]"] {
+    backdrop-filter: blur(28px) saturate(165%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(165%) !important;
+  }
+}
+
+/* ================================================================= */
+/*  TOUCH DEVICE OPTIMIZATIONS                                       */
+/* ================================================================= */
+@media (hover: none) and (pointer: coarse) {
+  .theme-spatial main button,
+  .theme-spatial main a {
+    min-height: 40px;
+  }
+  .theme-spatial button:hover {
+    filter: none;
+  }
+  .theme-spatial [class*="shadow-elevated"] {
+    box-shadow:
+      0 2px 12px rgba(0, 0, 0, 0.30),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  }
+}
+
+/* ================================================================= */
+/*  SMOOTH ANIMATIONS (content only)                                 */
+/* ================================================================= */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-spatial main .bg-white,
+  .theme-spatial main [class*="dark:bg-[#151713]"] {
+    transition: box-shadow 0.2s ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-spatial, .theme-spatial * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ================================================================= */
@@ -375,181 +781,4 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* ================================================================= */
-/*  SPATIAL GLASS — MOBILE-FIRST PROFESSIONAL APP EXPERIENCE         */
-/* ================================================================= */
-
-/* -- SAFE AREA PADDING (notch / gesture bar) -- */
-.theme-spatial nav.fixed {
-  padding-bottom: env(safe-area-inset-bottom, 8px) !important;
-}
-
-/* -- MOBILE GLASS PERFORMANCE OPTIMIZATION -- */
-@media (max-width: 767px) {
-
-  /* Reduce blur intensity on mobile cards for GPU performance */
-  .theme-spatial main .bg-white,
-  .theme-spatial main [class*="dark:bg-[#151713]"] {
-    backdrop-filter: blur(24px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-    box-shadow:
-      0 0 0 0.5px rgba(255, 255, 255, 0.05),
-      0 4px 16px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-  }
-
-  /* Mobile header — safe area support */
-  .theme-spatial header {
-    padding-top: env(safe-area-inset-top, 0px) !important;
-    border-radius: 0 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-
-  /* Mobile content area spacing — prevent content hiding behind bottom nav */
-  .theme-spatial main {
-    padding-bottom: 90px !important;
-  }
-
-  /* Bottom nav — locked stable, no floating, no margins */
-  .theme-spatial nav.fixed {
-    border-radius: 0 !important;
-    margin: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    position: fixed !important;
-    transform: none !important;
-    transition: none !important;
-    will-change: auto !important;
-    border: none !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
-    padding-bottom: env(safe-area-inset-bottom, 6px) !important;
-    padding-top: 6px !important;
-  }
-
-  /* Active bottom nav item — teal glow indicator */
-  .theme-spatial nav.fixed button[class*="font-black"] {
-    color: #2DD4BF !important;
-    position: relative;
-  }
-  .theme-spatial nav.fixed button[class*="font-black"]::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #2DD4BF;
-    box-shadow: 0 0 6px rgba(45, 212, 191, 0.70);
-  }
-
-  /* FAB center button on mobile dock */
-  .theme-spatial nav.fixed button[class*="border-2"] {
-    background: linear-gradient(135deg, rgba(13, 148, 136, 0.90) 0%, rgba(45, 212, 191, 0.80) 100%) !important;
-    border: 2px solid rgba(45, 212, 191, 0.50) !important;
-    box-shadow:
-      0 4px 20px rgba(45, 212, 191, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
-    color: #FFFFFF !important;
-  }
-
-  /* Mobile Drawer — full spatial glass treatment */
-  .theme-spatial [class*="animate-slide-right"] {
-    background: linear-gradient(
-      180deg,
-      rgba(8, 12, 21, 0.92) 0%,
-      rgba(5, 8, 16, 0.95) 100%
-    ) !important;
-    backdrop-filter: blur(48px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.10) !important;
-    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.60) !important;
-  }
-
-  /* Mobile drawer nav items — larger touch targets */
-  .theme-spatial [class*="animate-slide-right"] nav button {
-    min-height: 44px !important;
-    border-radius: 12px !important;
-    padding: 10px 12px !important;
-  }
-
-  /* Mobile drawer active item */
-  .theme-spatial [class*="animate-slide-right"] nav button[class*="bg-[#DCE8B7]"],
-  .theme-spatial [class*="animate-slide-right"] nav button[class*="bg-[#354126]"] {
-    background: rgba(45, 212, 191, 0.14) !important;
-    border: 1px solid rgba(45, 212, 191, 0.25) !important;
-    color: #2DD4BF !important;
-    box-shadow: 0 0 12px rgba(45, 212, 191, 0.08) !important;
-  }
-
-  /* Mobile touch feedback — only on content buttons, NOT nav */
-  .theme-spatial main button:active {
-    transform: scale(0.97) !important;
-    transition: transform 0.08s ease !important;
-  }
-
-  /* Mobile modals — full-width glass panels */
-  .theme-spatial [class*="max-w-2xl"],
-  .theme-spatial [class*="max-w-xl"],
-  .theme-spatial [class*="max-w-lg"] {
-    backdrop-filter: blur(32px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
-  }
-
-  /* Mobile grid adjustments */
-  .theme-spatial .grid-cols-2 {
-    gap: 8px !important;
-  }
-}
-
-/* -- TABLET SPECIFIC (768px–1024px) -- */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .theme-spatial .bg-white,
-  .theme-spatial [class*="dark:bg-[#151713]"] {
-    backdrop-filter: blur(32px) saturate(170%) !important;
-    -webkit-backdrop-filter: blur(32px) saturate(170%) !important;
-  }
-}
-
-/* -- TOUCH DEVICE OPTIMIZATIONS -- */
-@media (hover: none) and (pointer: coarse) {
-  /* Larger minimum touch targets */
-  .theme-spatial button {
-    min-height: 40px;
-    min-width: 40px;
-  }
-
-  /* Remove hover-only effects on touch devices */
-  .theme-spatial button:hover {
-    filter: none;
-  }
-
-  /* Disable heavy shadows that cause jank on scroll */
-  .theme-spatial [class*="shadow-elevated"] {
-    box-shadow:
-      0 2px 12px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  }
-}
-
-/* -- SMOOTH ANIMATIONS (content only, NOT structural elements) -- */
-@media (prefers-reduced-motion: no-preference) {
-  .theme-spatial main .bg-white,
-  .theme-spatial main [class*="dark:bg-[#151713]"] {
-    transition: background 0.2s ease, box-shadow 0.2s ease;
-  }
-}
-
-/* Respect users who prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .theme-spatial,
-  .theme-spatial * {
-    transition: none !important;
-    animation: none !important;
-  }
 }

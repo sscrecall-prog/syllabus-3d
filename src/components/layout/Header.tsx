@@ -165,14 +165,16 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
 
-          {/* Theme Toggle (Light / Dark) */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#191A17] dark:text-[#A7AA9C] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
-            title="Toggle Light/Dark Theme"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
-          </button>
+          {/* Theme Toggle (Light / Dark) — hidden in spatial mode */}
+          {themeSystem !== 'spatial' && (
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#191A17] dark:text-[#A7AA9C] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
+              title="Toggle Light/Dark Theme"
+            >
+              {isDarkMode ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
+            </button>
+          )}
 
           {/* User Profile Avatar */}
           <button
