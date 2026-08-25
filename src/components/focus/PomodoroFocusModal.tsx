@@ -1,34 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
+import { useTimer } from '../../context/TimerContext';
 import {
   X,
   Play,
   Pause,
   RotateCcw,
-  Volume2,
-  VolumeX,
   Zap,
   Flame,
-  CloudRain,
-  Waves,
-  Headphones,
-  Flame as FireIcon,
   Hourglass,
   Coffee,
   Timer as StopwatchIcon,
   Clock,
-  Plus,
-  Minus,
   Search,
   Settings,
   Edit2,
-  ChevronRight,
-  Check,
-  Bell
+  PictureInPicture2,
+  Minimize2
 } from 'lucide-react';
 import { ambientEngine, AmbientSoundType } from '../../utils/ambientSounds';
 import { soundManager } from '../../utils/soundEffects';
-import confetti from 'canvas-confetti';
+import { TimerMode } from '../../types/timer';
 
 interface PomodoroFocusModalProps {
   isOpen: boolean;
@@ -36,152 +28,110 @@ interface PomodoroFocusModalProps {
   defaultTopicId?: string;
 }
 
-type FocusMainMode = 'pomodoro' | 'break' | 'stopwatch' | 'timer';
-
 export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   isOpen,
   onClose,
   defaultTopicId
 }) => {
-  const { allTopics, logStudySession } = useSyllabus();
+  const { allTopics } = useSyllabus();
+  const {
+    session,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    resetTimer,
+    setSessionMode,
+    setSessionTopic,
+    requestPictureInPicture,
+    showFloatingOverlay,
+    openPermissionModal
+  } = useTimer();
 
-  const [mainMode, setMainMode] = useState<FocusMainMode>('pomodoro');
-  
-  // Settings Panel States
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLoopModalOpen, setIsLoopModalOpen] = useState(false);
 
-  // Configurable Durations (Matching Uploaded Screenshot)
   const [focusDurationMinutes, setFocusDurationMinutes] = useState<number>(25);
   const [breakDurationMinutes, setBreakDurationMinutes] = useState<number>(8);
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean>(true);
   const [isAutoStartBreaks, setIsAutoStartBreaks] = useState<boolean>(false);
-  const [timerAlertSound, setTimerAlertSound] = useState<string>('Gentle Chime');
-
-  // Custom Timer Minutes
   const [customTimerMinutes, setCustomTimerMinutes] = useState<number>(45);
 
-  // Pomodoro Loop System (Screenshot 2)
   const [targetLoops, setTargetLoops] = useState<number>(2);
-  const [currentLoop, setCurrentLoop] = useState<number>(1);
-  const [isLoopActive, setIsLoopActive] = useState<boolean>(false);
-
-  const [selectedTopicId, setSelectedTopicId] = useState<string>(defaultTopicId || '');
+  const [selectedTopicId, setSelectedTopicId] = useState<string>(defaultTopicId || session.topicId || '');
   const [isTopicSearchOpen, setIsTopicSearchOpen] = useState(false);
   const [topicSearchTerm, setTopicSearchTerm] = useState('');
 
-  const [totalSeconds, setTotalSeconds] = useState(25 * 60);
-  const [secondsLeft, setSecondsLeft] = useState(25 * 60);
-  const [stopwatchSeconds, setStopwatchSeconds] = useState(0);
-
-  const [isRunning, setIsRunning] = useState(false);
   const [activeSound, setActiveSound] = useState<AmbientSoundType>('rain');
   const [soundVolume, setSoundVolume] = useState(0.5);
   const [completedSessionsToday, setCompletedSessionsToday] = useState(2);
 
   useEffect(() => {
-    if (defaultTopicId) setSelectedTopicId(defaultTopicId);
-    else if (allTopics.length > 0 && !selectedTopicId) setSelectedTopicId(allTopics[0].topic.id);
+    if (defaultTopicId) {
+      setSelectedTopicId(defaultTopicId);
+      const top = allTopics.find(t => t.topic.id === defaultTopicId);
+      if (top) setSessionTopic(top.topic.id, top.topic.name, top.subjectName);
+    } else if (allTopics.length > 0 && !selectedTopicId) {
+      setSelectedTopicId(allTopics[0].topic.id);
+      setSessionTopic(allTopics[0].topic.id, allTopics[0].topic.name, allTopics[0].subjectName);
+    }
   }, [defaultTopicId, allTopics]);
-
-  // Mode & Duration Sync
-  useEffect(() => {
-    setIsRunning(false);
-    if (mainMode === 'pomodoro') {
-      const dur = focusDurationMinutes * 60;
-      setTotalSeconds(dur);
-      setSecondsLeft(dur);
-    } else if (mainMode === 'break') {
-      const dur = breakDurationMinutes * 60;
-      setTotalSeconds(dur);
-      setSecondsLeft(dur);
-    } else if (mainMode === 'timer') {
-      const dur = customTimerMinutes * 60;
-      setTotalSeconds(dur);
-      setSecondsLeft(dur);
-    } else if (mainMode === 'stopwatch') {
-      setStopwatchSeconds(0);
-    }
-  }, [mainMode, focusDurationMinutes, breakDurationMinutes, customTimerMinutes]);
-
-  // Ticking Interval
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (isRunning) {
-      if (mainMode === 'stopwatch') {
-        interval = setInterval(() => setStopwatchSeconds(prev => prev + 1), 1000);
-      } else {
-        if (secondsLeft > 0) {
-          interval = setInterval(() => setSecondsLeft(prev => prev - 1), 1000);
-        } else if (secondsLeft === 0) {
-          handleSessionComplete();
-        }
-      }
-    }
-    return () => clearInterval(interval);
-  }, [isRunning, secondsLeft, mainMode]);
 
   // Ambient Audio Engine
   useEffect(() => {
-    if (isOpen && isRunning && isAudioEnabled && activeSound !== 'none') {
+    if (isOpen && session.status === 'running' && isAudioEnabled && activeSound !== 'none') {
       ambientEngine.play(activeSound);
       ambientEngine.setVolume(soundVolume);
     } else {
       ambientEngine.stop();
     }
     return () => ambientEngine.stop();
-  }, [isOpen, isRunning, isAudioEnabled, activeSound]);
+  }, [isOpen, session.status, isAudioEnabled, activeSound, soundVolume]);
 
-  const handleSessionComplete = () => {
-    setIsRunning(false);
-    ambientEngine.stop();
-    soundManager.playCompleteChime();
-    confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+  const isRunning = session.status === 'running';
+  const isPaused = session.status === 'paused';
 
-    logStudySession(Math.round(totalSeconds / 60), selectedTopicId);
-
-    if (mainMode === 'pomodoro') {
-      setCompletedSessionsToday(c => c + 1);
-      
-      // Handle Loop cycle
-      if (isLoopActive) {
-        setMainMode('break');
-        if (isAutoStartBreaks) {
-          setTimeout(() => setIsRunning(true), 1000);
-        }
-      } else {
-        setMainMode('break');
+  const handleTogglePlay = () => {
+    soundManager.playClick();
+    if (isRunning) {
+      pauseTimer();
+    } else if (isPaused) {
+      resumeTimer();
+    } else {
+      // Check if Android permission needed
+      if (window.AndroidFloatingTimer && window.AndroidFloatingTimer.isOverlayPermissionGranted && !window.AndroidFloatingTimer.isOverlayPermissionGranted()) {
+        openPermissionModal();
       }
-    } else if (mainMode === 'break') {
-      if (isLoopActive) {
-        if (currentLoop < targetLoops) {
-          setCurrentLoop(prev => prev + 1);
-          setMainMode('pomodoro');
-          if (isAutoStartBreaks) {
-            setTimeout(() => setIsRunning(true), 1000);
-          }
-        } else {
-          // Finished all loops
-          setIsLoopActive(false);
-          setCurrentLoop(1);
-          setMainMode('pomodoro');
-        }
-      } else {
-        setMainMode('pomodoro');
-      }
+      const top = allTopics.find(t => t.topic.id === selectedTopicId);
+      let dur = focusDurationMinutes;
+      if (session.mode === 'break') dur = breakDurationMinutes;
+      else if (session.mode === 'timer') dur = customTimerMinutes;
+
+      startTimer({
+        mode: session.mode,
+        durationMinutes: dur,
+        topicId: top?.topic.id,
+        topicName: top?.topic.name,
+        subjectName: top?.subjectName
+      });
     }
   };
 
   const handleStartLoopFlow = () => {
     setIsLoopModalOpen(false);
     setIsSettingsOpen(false);
-    setIsLoopActive(true);
-    setCurrentLoop(1);
-    setMainMode('pomodoro');
-    setTotalSeconds(focusDurationMinutes * 60);
-    setSecondsLeft(focusDurationMinutes * 60);
-    setIsRunning(true);
     soundManager.playClick();
+
+    const top = allTopics.find(t => t.topic.id === selectedTopicId);
+    startTimer({
+      mode: 'pomodoro',
+      durationMinutes: focusDurationMinutes,
+      topicId: top?.topic.id,
+      topicName: top?.topic.name,
+      subjectName: top?.subjectName,
+      currentLoop: 1,
+      targetLoops,
+      isLoopActive: true
+    });
   };
 
   const formatTime = (secs: number) => {
@@ -191,10 +141,10 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   };
 
   const progressPercent = useMemo(() => {
-    if (mainMode === 'stopwatch') return (stopwatchSeconds % 60) / 60;
-    if (totalSeconds === 0) return 0;
-    return (totalSeconds - secondsLeft) / totalSeconds;
-  }, [mainMode, stopwatchSeconds, secondsLeft, totalSeconds]);
+    if (session.mode === 'stopwatch') return (session.stopwatchElapsedSec % 60) / 60;
+    if (session.totalDurationSec === 0) return 0;
+    return (session.totalDurationSec - session.remainingSec) / session.totalDurationSec;
+  }, [session.mode, session.stopwatchElapsedSec, session.remainingSec, session.totalDurationSec]);
 
   const selectedTopic = allTopics.find(t => t.topic.id === selectedTopicId);
 
@@ -234,7 +184,26 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* Settings Toggle Button */}
+            {/* PiP Trigger */}
+            <button
+              onClick={async () => {
+                soundManager.playClick();
+                const opened = await requestPictureInPicture();
+                if (opened) {
+                  onClose();
+                } else {
+                  // Fallback: show in-page floating overlay and close modal
+                  showFloatingOverlay();
+                  onClose();
+                }
+              }}
+              className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 transition-all cursor-pointer"
+              title="Minimize to Floating / Picture-in-Picture Timer"
+            >
+              <PictureInPicture2 className="w-4 h-4" />
+            </button>
+
+            {/* Settings Toggle */}
             <button
               onClick={() => {
                 soundManager.playClick();
@@ -252,25 +221,28 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
             {/* Close Modal Button */}
             <button
-              onClick={onClose}
+              onClick={() => {
+                soundManager.playClick();
+                if (isRunning || isPaused) {
+                  showFloatingOverlay();
+                }
+                onClose();
+              }}
               className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
+              title="Close modal (Timer continues in floating mode)"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* ---------------------------------------------------- */}
-        {/* VIEW A: DEDICATED POMODORO SETTINGS PANEL (SCREENSHOT 1) */}
-        {/* ---------------------------------------------------- */}
+        {/* VIEW A: DEDICATED POMODORO SETTINGS PANEL */}
         {isSettingsOpen ? (
           <div className="py-3 space-y-4 overflow-y-auto flex-1 animate-fade-in">
-            
-            {/* 1. Study (Focus Duration) */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
-                  Study
+                  Study Focus Duration
                 </span>
                 <div className="flex items-center gap-1 text-base font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono">
                   <span>{focusDurationMinutes}</span>
@@ -279,13 +251,18 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                 </div>
               </div>
 
-              {/* Slider 1m to 120m */}
               <input
                 type="range"
                 min="1"
                 max="120"
                 value={focusDurationMinutes}
-                onChange={e => setFocusDurationMinutes(Number(e.target.value))}
+                onChange={e => {
+                  const val = Number(e.target.value);
+                  setFocusDurationMinutes(val);
+                  if (session.mode === 'pomodoro' && session.status === 'idle') {
+                    setSessionMode('pomodoro', val);
+                  }
+                }}
                 className="w-full accent-[#596B35] cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-[#85877E] font-mono">
@@ -293,216 +270,107 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                 <span>120 min</span>
               </div>
 
-              {/* Preset Chips */}
               <div className="flex items-center gap-2 pt-1">
                 {[15, 25, 45, 60].map(mins => (
                   <button
                     key={mins}
                     onClick={() => {
-                      soundManager.playClick();
                       setFocusDurationMinutes(mins);
+                      if (session.mode === 'pomodoro' && session.status === 'idle') {
+                        setSessionMode('pomodoro', mins);
+                      }
                     }}
-                    className={`flex-1 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold font-mono transition-all cursor-pointer ${
                       focusDurationMinutes === mins
-                        ? 'bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] border-[#596B35]'
-                        : 'bg-white dark:bg-[#151713] border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] dark:text-[#A7AA9C]'
+                        ? 'bg-[#596B35] text-white shadow-sm'
+                        : 'bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] dark:text-[#A7AA9C]'
                     }`}
                   >
-                    {mins} min
+                    {mins}m
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="border-t border-[#D8D8CF] dark:border-[#30342B]" />
-
-            {/* 2. Break (Break Duration) */}
-            <div className="space-y-2.5">
+            {/* Break Duration */}
+            <div className="space-y-2.5 pt-2 border-t border-[#EEEEE8] dark:border-[#1D201A]">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
-                  Break
+                  Break Duration
                 </span>
                 <div className="flex items-center gap-1 text-base font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono">
                   <span>{breakDurationMinutes}</span>
                   <span className="text-xs text-[#85877E] font-normal">min</span>
-                  <Edit2 className="w-3.5 h-3.5 text-[#596B35] ml-1" />
                 </div>
               </div>
-
-              {/* Slider 1m to 60m */}
               <input
                 type="range"
                 min="1"
-                max="60"
+                max="30"
                 value={breakDurationMinutes}
                 onChange={e => setBreakDurationMinutes(Number(e.target.value))}
                 className="w-full accent-[#596B35] cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-[#85877E] font-mono">
-                <span>1 min</span>
-                <span>60 min</span>
-              </div>
-
-              {/* Preset Chips */}
-              <div className="flex items-center gap-2 pt-1">
-                {[5, 10, 15, 30].map(mins => (
-                  <button
-                    key={mins}
-                    onClick={() => {
-                      soundManager.playClick();
-                      setBreakDurationMinutes(mins);
-                    }}
-                    className={`flex-1 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
-                      breakDurationMinutes === mins
-                        ? 'bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] border-[#596B35]'
-                        : 'bg-white dark:bg-[#151713] border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] dark:text-[#A7AA9C]'
-                    }`}
-                  >
-                    {mins} min
-                  </button>
-                ))}
-              </div>
             </div>
 
-            <div className="border-t border-[#D8D8CF] dark:border-[#30342B]" />
-
-            {/* 3. Audio Toggle */}
-            <div className="flex items-center justify-between py-1">
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
-                  Audio
-                </h4>
-                <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
-                  {isAudioEnabled ? 'Background audio is playing' : 'Background audio is muted'}
-                </p>
-              </div>
-
-              {/* Switch */}
-              <button
-                type="button"
-                onClick={() => setIsAudioEnabled(prev => !prev)}
-                className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
-                  isAudioEnabled ? 'bg-[#596B35]' : 'bg-[#D8D8CF] dark:bg-[#30342B]'
-                }`}
-              >
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                    isAudioEnabled ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* 4. Auto-start breaks Toggle */}
-            <div className="flex items-center justify-between py-1">
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
-                  Auto-start breaks
-                </h4>
-                <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
-                  {isAutoStartBreaks ? 'Breaks start automatically' : 'Break stays paused until you start it'}
-                </p>
-              </div>
-
-              {/* Switch */}
-              <button
-                type="button"
-                onClick={() => setIsAutoStartBreaks(prev => !prev)}
-                className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
-                  isAutoStartBreaks ? 'bg-[#596B35]' : 'bg-[#D8D8CF] dark:bg-[#30342B]'
-                }`}
-              >
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                    isAutoStartBreaks ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* 5. Timer Alert Action */}
-            <div className="flex items-center justify-between py-1">
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
-                  Timer alert
-                </h4>
-                <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
-                  How Study timer alerts when a session ends
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1 text-xs font-bold text-[#596B35] dark:text-[#A4B879]">
-                <span>{timerAlertSound}</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-            </div>
-
-            {/* Bottom Actions: Save Changes & Start Pomodoro */}
-            <div className="flex items-center gap-2.5 pt-2">
-              <button
-                onClick={() => {
-                  soundManager.playClick();
-                  setIsSettingsOpen(false);
-                }}
-                className="flex-1 py-3 rounded-2xl bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] text-xs font-extrabold shadow-sm cursor-pointer transition-all active:scale-95 text-center"
-              >
-                Save changes
-              </button>
-
+            {/* Start Pomodoro Loop Button */}
+            <div className="pt-2">
               <button
                 onClick={() => setIsLoopModalOpen(true)}
-                className="flex-1 py-3 rounded-2xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-extrabold shadow-sm cursor-pointer transition-all active:scale-95 text-center"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#596B35] to-[#4F7A45] hover:opacity-95 text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
               >
-                Pomodoro Loops
+                <Clock className="w-4 h-4" />
+                <span>Start Pomodoro Loop Cycle</span>
               </button>
             </div>
           </div>
         ) : (
-          /* ---------------------------------------------------- */
-          /* VIEW B: MAIN FOCUS CHAMBER RUNNER */
-          /* ---------------------------------------------------- */
-          <div className="flex-1 flex flex-col justify-between py-2 space-y-3">
+          /* VIEW B: MAIN ACTIVE FOCUS CHAMBER */
+          <div className="py-2 space-y-3.5 flex-1 flex flex-col justify-between animate-fade-in">
             
-            {/* Target Topic Bar */}
+            {/* Topic Selector Bar */}
             <div className="relative">
-              <div
+              <button
                 onClick={() => setIsTopicSearchOpen(prev => !prev)}
-                className="p-2.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] flex items-center justify-between cursor-pointer"
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-xs cursor-pointer"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-[#596B35] animate-pulse" />
-                  <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">
-                    {selectedTopic ? `${selectedTopic.subjectName} • ${selectedTopic.topic.name}` : 'Select Topic...'}
+                <div className="flex items-center gap-2 truncate">
+                  <div className="w-2 h-2 rounded-full bg-[#596B35]" />
+                  <span className="font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">
+                    {selectedTopic ? selectedTopic.topic.name : 'Select Topic to Track'}
                   </span>
+                  {selectedTopic && (
+                    <span className="text-[10px] text-[#85877E] truncate">
+                      • {selectedTopic.subjectName}
+                    </span>
+                  )}
                 </div>
-                <Search className="w-3.5 h-3.5 text-[#596B35]" />
-              </div>
+                <Search className="w-3.5 h-3.5 text-[#85877E] shrink-0" />
+              </button>
 
               {isTopicSearchOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 z-30 p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#596B35] shadow-2xl space-y-2">
+                <div className="absolute top-full left-0 right-0 mt-1 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-2xl p-2 z-30 max-h-52 overflow-y-auto space-y-1">
                   <input
                     type="text"
-                    autoFocus
+                    placeholder="Search topic..."
                     value={topicSearchTerm}
                     onChange={e => setTopicSearchTerm(e.target.value)}
-                    placeholder="Search topic..."
-                    className="w-full p-2 rounded-lg bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium focus:outline-none"
+                    className="w-full px-3 py-1.5 rounded-lg bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs mb-1.5 focus:outline-none"
                   />
-                  <div className="max-h-36 overflow-y-auto space-y-1">
-                    {filteredTopics.map(t => (
-                      <div
-                        key={t.topic.id}
-                        onClick={() => {
-                          setSelectedTopicId(t.topic.id);
-                          setIsTopicSearchOpen(false);
-                        }}
-                        className="p-1.5 rounded-md hover:bg-[#DCE8B7] dark:hover:bg-[#354126] text-xs cursor-pointer flex justify-between"
-                      >
-                        <span className="font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">{t.topic.name}</span>
-                        <span className="text-[10px] text-[#85877E]">{t.subjectName}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {filteredTopics.map(t => (
+                    <div
+                      key={t.topic.id}
+                      onClick={() => {
+                        setSelectedTopicId(t.topic.id);
+                        setSessionTopic(t.topic.id, t.topic.name, t.subjectName);
+                        setIsTopicSearchOpen(false);
+                      }}
+                      className="p-2 rounded-lg hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] cursor-pointer flex items-center justify-between text-xs"
+                    >
+                      <span className="font-bold text-[#191A17] dark:text-[#F4F4ED] truncate">{t.topic.name}</span>
+                      <span className="text-[10px] text-[#85877E]">{t.subjectName}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -510,16 +378,21 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
             {/* 4 Mode Tabs */}
             <div className="flex items-center justify-between p-1 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B]">
               {[
-                { id: 'pomodoro' as FocusMainMode, label: 'Pomodoro', icon: Hourglass },
-                { id: 'break' as FocusMainMode, label: 'Break', icon: Coffee },
-                { id: 'stopwatch' as FocusMainMode, label: 'Stopwatch', icon: StopwatchIcon },
-                { id: 'timer' as FocusMainMode, label: 'Timer', icon: Clock }
+                { id: 'pomodoro' as TimerMode, label: 'Pomodoro', icon: Hourglass },
+                { id: 'break' as TimerMode, label: 'Break', icon: Coffee },
+                { id: 'stopwatch' as TimerMode, label: 'Stopwatch', icon: StopwatchIcon },
+                { id: 'timer' as TimerMode, label: 'Timer', icon: Clock }
               ].map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => setMainMode(tab.id)}
+                  onClick={() => {
+                    let dur = focusDurationMinutes;
+                    if (tab.id === 'break') dur = breakDurationMinutes;
+                    else if (tab.id === 'timer') dur = customTimerMinutes;
+                    setSessionMode(tab.id, dur);
+                  }}
                   className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                    mainMode === tab.id
+                    session.mode === tab.id
                       ? 'bg-[#596B35] text-white shadow-sm'
                       : 'text-[#65675F] dark:text-[#A7AA9C]'
                   }`}
@@ -529,11 +402,11 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
               ))}
             </div>
 
-            {/* Loop Active Status Badge */}
-            {isLoopActive && (
+            {/* Loop Active Badge */}
+            {session.isLoopActive && (
               <div className="flex items-center justify-center">
                 <span className="px-3 py-1 rounded-full text-[11px] font-bold font-mono bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] border border-[#596B35]">
-                  🔄 Loop {currentLoop} of {targetLoops}: {mainMode === 'pomodoro' ? 'Study Focus' : 'Break Time'}
+                  🔄 Loop {session.currentLoop} of {session.targetLoops}: {session.mode === 'pomodoro' ? 'Study Focus' : 'Break Time'}
                 </span>
               </div>
             )}
@@ -553,42 +426,40 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                     strokeDashoffset={strokeDashoffset}
                     strokeLinecap="round"
                     fill="transparent"
-                    className="transition-all duration-1000 ease-linear"
+                    className="transition-all duration-300 ease-linear"
                   />
                 </svg>
 
                 <div className="absolute flex flex-col items-center justify-center text-center">
                   <span className="text-4xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono">
-                    {mainMode === 'stopwatch' ? formatTime(stopwatchSeconds) : formatTime(secondsLeft)}
+                    {session.mode === 'stopwatch' ? formatTime(session.stopwatchElapsedSec) : formatTime(session.remainingSec)}
                   </span>
                   <span className="text-[10px] text-[#596B35] dark:text-[#A4B879] font-bold uppercase tracking-wider mt-1">
-                    {isRunning ? (mainMode === 'break' ? 'Resting' : 'Focus Active') : 'Chamber Ready'}
+                    {isRunning ? (session.mode === 'break' ? 'Resting' : 'Focus Active') : isPaused ? 'Timer Paused' : 'Chamber Ready'}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Start / Pause Controls */}
+            {/* Start / Pause / Reset Controls */}
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => {
-                  setIsRunning(false);
-                  if (mainMode === 'pomodoro') setSecondsLeft(focusDurationMinutes * 60);
-                  else if (mainMode === 'break') setSecondsLeft(breakDurationMinutes * 60);
-                  else if (mainMode === 'timer') setSecondsLeft(customTimerMinutes * 60);
-                  else setStopwatchSeconds(0);
+                  soundManager.playClick();
+                  resetTimer();
                 }}
-                className="px-4 py-2.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#65675F] cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#65675F] cursor-pointer hover:text-white transition-all"
+                title="Reset Timer"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
 
               <button
-                onClick={() => setIsRunning(r => !r)}
+                onClick={handleTogglePlay}
                 className="px-8 py-3 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
               >
                 {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
-                <span>{isRunning ? 'Pause' : 'Start Focus'}</span>
+                <span>{isRunning ? 'Pause' : isPaused ? 'Resume' : 'Start Focus'}</span>
               </button>
             </div>
 
@@ -616,9 +487,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
           </div>
         )}
 
-        {/* ---------------------------------------------------- */}
-        {/* VIEW C: START POMODORO LOOP MODAL (SCREENSHOT 2) */}
-        {/* ---------------------------------------------------- */}
+        {/* VIEW C: START POMODORO LOOP MODAL */}
         {isLoopModalOpen && (
           <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="w-full max-w-xs rounded-3xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-2xl p-5 space-y-4 animate-scale-up">

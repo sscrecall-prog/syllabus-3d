@@ -18,6 +18,9 @@ import { AddTopicModal } from './components/modals/AddTopicModal';
 import { TopicDetailDrawer } from './components/modals/TopicDetailDrawer';
 import { RevisionSessionModal } from './components/modals/RevisionSessionModal';
 import { PomodoroFocusModal } from './components/focus/PomodoroFocusModal';
+import { FloatingTimerOverlay } from './components/focus/FloatingTimerOverlay';
+import { FloatingTimerPermissionModal } from './components/modals/FloatingTimerPermissionModal';
+import { useTimer } from './context/TimerContext';
 import { AnimatedLogoIntro } from './components/intro/AnimatedLogoIntro';
 import { Topic } from './types/syllabus';
 import { useAuth } from './context/AuthContext';
@@ -30,6 +33,7 @@ import { soundManager } from './utils/soundEffects';
 
 export const App: React.FC = () => {
   const { isAuthenticated, isLoading, authView } = useAuth();
+  const { isFullModalOpen, openFullModal, closeFullModal, setSessionTopic } = useTimer();
   const [currentView, setCurrentView] = useState<AppView>('overview');
   const [viewHistory, setViewHistory] = useState<AppView[]>([]);
   const [targetSubjectId, setTargetSubjectId] = useState<string>('');
@@ -63,7 +67,6 @@ export const App: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
   const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
-  const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
   const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
 
   // Topic Drawer
@@ -93,8 +96,8 @@ export const App: React.FC = () => {
       setSelectedTopic(null);
       return;
     }
-    if (isFocusModalOpen) {
-      setIsFocusModalOpen(false);
+    if (isFullModalOpen) {
+      closeFullModal();
       return;
     }
     if (isRevisionSessionOpen) {
@@ -123,7 +126,8 @@ export const App: React.FC = () => {
     }
   }, [
     selectedTopic,
-    isFocusModalOpen,
+    isFullModalOpen,
+    closeFullModal,
     isRevisionSessionOpen,
     isAddTopicOpen,
     isSearchOpen,
@@ -153,7 +157,8 @@ export const App: React.FC = () => {
 
   const handleLaunchFocus = (topicId?: string) => {
     setFocusTopicId(topicId);
-    setIsFocusModalOpen(true);
+    if (topicId) setSessionTopic(topicId);
+    openFullModal();
     window.history.pushState({ modal: 'focus' }, '');
   };
 
@@ -171,7 +176,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const canGoBack = currentView !== 'overview' || Boolean(selectedTopic) || isFocusModalOpen || isRevisionSessionOpen || isAddTopicOpen || isSearchOpen || isMobileDrawerOpen;
+  const canGoBack = currentView !== 'overview' || Boolean(selectedTopic) || isFullModalOpen || isRevisionSessionOpen || isAddTopicOpen || isSearchOpen || isMobileDrawerOpen;
 
   if (isLoading) {
     return <InitialAuthLoading />;
@@ -324,9 +329,15 @@ export const App: React.FC = () => {
         onOpenFocus={() => handleLaunchFocus(undefined)}
       />
 
+      {/* Floating Background Timer Overlay */}
+      <FloatingTimerOverlay />
+
+      {/* Floating Timer Permission Explanation Modal */}
+      <FloatingTimerPermissionModal />
+
       <PomodoroFocusModal
-        isOpen={isFocusModalOpen}
-        onClose={() => setIsFocusModalOpen(false)}
+        isOpen={isFullModalOpen}
+        onClose={closeFullModal}
         defaultTopicId={focusTopicId || selectedTopic?.topic.id}
       />
 

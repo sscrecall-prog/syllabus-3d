@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTimer } from '../../context/TimerContext';
 import {
   Settings,
   Download,
@@ -19,7 +20,10 @@ import {
   Target,
   Clock,
   Check,
-  Palette
+  Palette,
+  Shield,
+  PictureInPicture2,
+  Play
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -47,6 +51,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   } = useSyllabus();
 
   const { user, logout, updateUserSession } = useAuth();
+  const { settings, updateSettings, showFloatingOverlay, openPermissionModal } = useTimer();
+  const [testLaunched, setTestLaunched] = useState(false);
   const { isInstalled, isOnline } = usePWA();
   const [showPwaModal, setShowPwaModal] = useState(false);
   
@@ -271,6 +277,218 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
               Translucent frosted glass panels, specular chamfered highlights, holographic glowing progress dials, and cosmic ambient background.
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* FLOATING BACKGROUND TIMER CONFIGURATION */}
+      <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#1D201A]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30 flex items-center justify-center shrink-0">
+              <Shield className="w-5 h-5 stroke-[2.2]" />
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif">
+                Floating Background Timer
+              </h3>
+              <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+                Keep your focus countdown visible as a floating draggable pill over other apps & websites.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              showFloatingOverlay();
+              setTestLaunched(true);
+              setTimeout(() => setTestLaunched(false), 2500);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 border border-teal-400/40 text-teal-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+            title="Preview Floating Timer"
+          >
+            <Play className="w-3.5 h-3.5 fill-teal-300" />
+            <span>{testLaunched ? 'Visible!' : 'Preview Widget'}</span>
+          </button>
+        </div>
+
+        <div className="space-y-3.5">
+          {/* Toggle 1: Enable Floating Timer */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B]">
+            <div>
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] block">
+                Floating Timer Enabled
+              </span>
+              <span className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+                Show compact draggable pill widget when focus timer is active.
+              </span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={settings.enabled}
+                onChange={e => {
+                  soundManager.playClick();
+                  updateSettings({ enabled: e.target.checked });
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+            </label>
+          </div>
+
+          {/* Toggle 2: Show when backgrounded */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B]">
+            <div>
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] block">
+                Show When App in Background
+              </span>
+              <span className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+                Automatically launch native Android overlay or browser Picture-in-Picture when leaving app.
+              </span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={settings.showWhenBackgrounded}
+                onChange={e => {
+                  soundManager.playClick();
+                  updateSettings({ showWhenBackgrounded: e.target.checked });
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+            </label>
+          </div>
+
+          {/* Toggle 3: Show Pause button */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B]">
+            <div>
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] block">
+                Show Pause / Resume Button
+              </span>
+              <span className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+                Display quick 1-tap circular control on the floating pill.
+              </span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={settings.showPauseButton}
+                onChange={e => {
+                  soundManager.playClick();
+                  updateSettings({ showPauseButton: e.target.checked });
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+            </label>
+          </div>
+
+          {/* Toggle 4: Remember Position */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B]">
+            <div>
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] block">
+                Remember Last Dragged Position
+              </span>
+              <span className="text-[11px] text-[#65675F] dark:text-[#85877E]">
+                Keep the floating timer where you placed it across sessions.
+              </span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={settings.rememberPosition}
+                onChange={e => {
+                  soundManager.playClick();
+                  updateSettings({ rememberPosition: e.target.checked });
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+            </label>
+          </div>
+
+          {/* Size & Opacity Customizer */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+            {/* Size Selector */}
+            <div className="p-3.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] space-y-2">
+              <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] block">
+                Widget Size
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    updateSettings({ size: 'standard' });
+                  }}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    settings.size === 'standard'
+                      ? 'bg-teal-500 text-black font-extrabold shadow-sm'
+                      : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border border-[#D8D8CF] dark:border-[#30342B]'
+                  }`}
+                >
+                  Standard (360dp)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    updateSettings({ size: 'compact' });
+                  }}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    settings.size === 'compact'
+                      ? 'bg-teal-500 text-black font-extrabold shadow-sm'
+                      : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border border-[#D8D8CF] dark:border-[#30342B]'
+                  }`}
+                >
+                  Compact (320dp)
+                </button>
+              </div>
+            </div>
+
+            {/* Opacity Slider */}
+            <div className="p-3.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED]">
+                  Widget Opacity
+                </span>
+                <span className="text-xs font-mono font-bold text-teal-400">
+                  {Math.round((settings.opacity || 0.95) * 100)}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="50"
+                max="100"
+                value={Math.round((settings.opacity || 0.95) * 100)}
+                onChange={e => updateSettings({ opacity: Number(e.target.value) / 100 })}
+                className="w-full accent-teal-400 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* Android Overlay Permission Action */}
+          <div className="p-3.5 rounded-xl bg-teal-500/10 border border-teal-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <span className="text-xs font-bold text-teal-300 block">
+                Native Android Overlay & Picture-in-Picture
+              </span>
+              <span className="text-[11px] text-slate-300">
+                Grant "Display over other apps" permission on Android devices to float above any application.
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                openPermissionModal();
+              }}
+              className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-black text-xs font-extrabold shadow-sm active:scale-95 transition-all shrink-0 cursor-pointer"
+            >
+              Check Permissions
+            </button>
           </div>
         </div>
       </div>
