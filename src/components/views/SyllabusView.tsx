@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { ProgressRing } from '../common/ProgressRing';
 import { Topic, TopicStatus, Chapter, Subject } from '../../types/syllabus';
 import {
   Search,
@@ -13,15 +12,13 @@ import {
   Globe,
   Edit2,
   Trash2,
-  MoreVertical,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
   FileText,
-  Zap,
-  Sparkles,
+  AlertTriangle,
   Layers,
-  X
+  X,
+  ChevronsUpDown,
+  FolderOpen,
+  Folder
 } from 'lucide-react';
 import { formatTimeAgo } from '../../utils/dateUtils';
 import { EditSubjectModal } from '../modals/EditSubjectModal';
@@ -43,6 +40,8 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<TopicStatus | 'all'>('all');
+  
+  // All chapters start collapsed by default as requested
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
 
   // Modals for editing subject & chapter
@@ -57,18 +56,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     }
   }, [currentExam, selectedSubjectId]);
 
-  useEffect(() => {
-    if (currentExam) {
-      const initExp: Record<string, boolean> = {};
-      currentExam.subjects.forEach(s => {
-        s.chapters.forEach(ch => {
-          initExp[ch.id] = true;
-        });
-      });
-      setExpandedChapters(initExp);
-    }
-  }, [currentExam]);
-
   const iconMap: Record<string, React.ElementType> = {
     Calculator,
     BrainCircuit,
@@ -81,6 +68,25 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   };
 
   const activeSubject = currentExam?.subjects.find(s => s.id === selectedSubjectId) || currentExam?.subjects[0];
+
+  // Expand / Collapse all chapters
+  const allCurrentChapterIds = useMemo(() => {
+    return activeSubject?.chapters.map(c => c.id) || [];
+  }, [activeSubject]);
+
+  const areAllExpanded = useMemo(() => {
+    if (allCurrentChapterIds.length === 0) return false;
+    return allCurrentChapterIds.every(id => expandedChapters[id]);
+  }, [allCurrentChapterIds, expandedChapters]);
+
+  const handleToggleAllChapters = () => {
+    const newState = !areAllExpanded;
+    const updated: Record<string, boolean> = { ...expandedChapters };
+    allCurrentChapterIds.forEach(id => {
+      updated[id] = newState;
+    });
+    setExpandedChapters(updated);
+  };
 
   const filteredChapters = useMemo(() => {
     if (!activeSubject) return [];
@@ -102,6 +108,19 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       };
     });
   }, [activeSubject, searchTerm, statusFilter]);
+
+  // Auto-expand chapters when searching with text
+  useEffect(() => {
+    if (searchTerm.trim().length > 0) {
+      const autoExp: Record<string, boolean> = {};
+      filteredChapters.forEach(ch => {
+        if (ch.topics.length > 0) {
+          autoExp[ch.id] = true;
+        }
+      });
+      setExpandedChapters(prev => ({ ...prev, ...autoExp }));
+    }
+  }, [searchTerm, filteredChapters]);
 
   if (!currentExam || !activeSubject) return null;
 
@@ -162,7 +181,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </span>
           </h2>
           <p className="text-xs sm:text-sm text-[#6B7280] mt-1 font-medium">
-            Manage your exam subjects, chapters, topics, and subtopics with one-click mastery tracking.
+            Click on any chapter to expand and view its topic list.
           </p>
         </div>
 
@@ -186,7 +205,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             return (
               <button
                 key={subj.id}
-                onClick={() => setSelectedSubjectId(subj.id)}
+                onClick={() => {
+                  setSelectedSubjectId(subj.id);
+                  // Keep collapsed when changing subjects
+                  setExpandedChapters({});
+                }}
                 className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer border ${
                   isActive
                     ? 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] text-[#171717] border-transparent shadow-md shadow-[#D4AF37]/25 scale-[1.02]'
@@ -225,7 +248,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         )}
       </div>
 
-      {/* 3. Luxury Search & Filter Toolbar */}
+      {/* 3. Luxury Search, Filter & Accordion Controls Toolbar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 p-3.5 sm:p-4 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md">
         {/* Search Input */}
         <div className="relative flex-1 max-w-full sm:max-w-xs">
@@ -240,15 +263,27 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+        {/* Filter Pills & Expand All Button */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+          {/* Quick Expand / Collapse All Toggle */}
+          <button
+            onClick={handleToggleAllChapters}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] hover:text-[#171717] dark:hover:text-white border border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+            title={areAllExpanded ? 'Collapse All Chapters' : 'Expand All Chapters'}
+          >
+            <ChevronsUpDown className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>{areAllExpanded ? 'Collapse All' : 'Expand All'}</span>
+          </button>
+
+          <div className="h-4 w-px bg-[#EBD3A0]/60 dark:bg-[#2E2E2E] shrink-0" />
+
           {[
             { id: 'all', label: 'All' },
             { id: 'completed', label: '✓ Mastered' },
@@ -272,29 +307,43 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Chapters Accordion Stack */}
+      {/* 4. Chapters Accordion Stack (Click to expand specific chapter) */}
       <div className="space-y-4">
         {filteredChapters.map(chapter => {
-          const isExpanded = expandedChapters[chapter.id];
+          const isExpanded = Boolean(expandedChapters[chapter.id]);
           const chCompleted = chapter.topics.filter(t => t.status === 'completed').length;
           const chPercent = chapter.topics.length > 0 ? Math.round((chCompleted / chapter.topics.length) * 100) : 0;
 
           return (
             <div
               key={chapter.id}
-              className="rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-lg overflow-hidden transition-all"
+              className={`rounded-3xl bg-white dark:bg-[#202020] border transition-all duration-300 shadow-md overflow-hidden ${
+                isExpanded
+                  ? 'border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]/30'
+                  : 'border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37]/70'
+              }`}
             >
-              {/* Chapter Card Header */}
-              <div className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-[#FAF8F5]/70 dark:bg-[#1A1A1A]/70 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
-                <div
-                  onClick={() => toggleChapter(chapter.id)}
-                  className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer group"
-                >
-                  <div className="p-2 rounded-xl bg-white dark:bg-[#242424] border border-[#EBD3A0]/60 dark:border-[#383838] text-[#D4AF37] shrink-0 group-hover:scale-105 transition-transform">
+              {/* Chapter Header Click Target (Expands only this chapter) */}
+              <div
+                onClick={() => toggleChapter(chapter.id)}
+                className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-[#FAF8F5]/70 dark:bg-[#1A1A1A]/70 cursor-pointer select-none group transition-colors hover:bg-[#F5E6C8]/30 dark:hover:bg-[#222222]"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  {/* Rotating Chevron Indicator */}
+                  <div className={`p-2 rounded-xl transition-all duration-200 shrink-0 ${
+                    isExpanded
+                      ? 'bg-[#D4AF37] text-[#171717] shadow-sm rotate-0'
+                      : 'bg-white dark:bg-[#242424] border border-[#EBD3A0]/60 dark:border-[#383838] text-[#D4AF37] group-hover:scale-105'
+                  }`}>
                     {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </div>
+
                   <div>
-                    <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors">
+                    <h4 className={`text-sm sm:text-base font-black transition-colors ${
+                      isExpanded
+                        ? 'text-[#D4AF37]'
+                        : 'text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37]'
+                    }`}>
                       {chapter.name}
                     </h4>
                     <p className="text-[11px] text-[#6B7280] line-clamp-1">
@@ -321,7 +370,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   </span>
 
                   <button
-                    onClick={() => setEditingChapter({ subjectId: activeSubject.id, chapter })}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingChapter({ subjectId: activeSubject.id, chapter });
+                    }}
                     className="p-2 rounded-xl text-[#6B7280] hover:text-[#D4AF37] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#282828] transition-colors cursor-pointer"
                     title="Edit Chapter Details"
                   >
@@ -330,9 +382,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 </div>
               </div>
 
-              {/* Topics List Rows */}
+              {/* Topics List Rows (Only visible when isExpanded === true) */}
               {isExpanded && (
-                <div className="divide-y divide-[#EBD3A0]/40 dark:divide-[#282828]">
+                <div className="divide-y divide-[#EBD3A0]/40 dark:divide-[#282828] border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] bg-white dark:bg-[#1E1E1E] animate-fade-in">
                   {chapter.topics.length > 0 ? (
                     chapter.topics.map(topic => {
                       const badge = getStatusBadgeUI(topic.status);
@@ -343,7 +395,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         <div
                           key={topic.id}
                           onClick={() => onOpenTopicDrawer(topic, activeSubject.name, chapter.name)}
-                          className="group p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FAF8F5] dark:hover:bg-[#1A1A1A] transition-all"
+                          className="group p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FAF8F5] dark:hover:bg-[#242424] transition-all"
                         >
                           <div className="flex-1 min-w-0 space-y-1.5">
                             <div className="flex flex-wrap items-center gap-2">
