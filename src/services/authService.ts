@@ -3,7 +3,7 @@ import { AuthUser } from '../types/auth';
 const SESSION_STORAGE_KEY = 'syllabus3d_auth_session';
 const USERS_DB_KEY = 'syllabus3d_users_db';
 
-// Pre-seeded Demo Aspirant User for immediate testing
+// Pre-seeded Demo Aspirant User
 const INITIAL_DEMO_USERS: Array<AuthUser & { passwordHash: string }> = [
   {
     id: 'user_rahul_01',
@@ -35,8 +35,7 @@ function saveUsersDB(users: Array<AuthUser & { passwordHash: string }>) {
 
 export const authService = {
   async getSession(): Promise<AuthUser | null> {
-    // Artificial small delay to simulate clean session verification without flash
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 80));
     if (typeof window === 'undefined') return null;
     try {
       const saved = localStorage.getItem(SESSION_STORAGE_KEY);
@@ -48,13 +47,36 @@ export const authService = {
   },
 
   async login(email: string, password: string): Promise<AuthUser> {
-    await new Promise(r => setTimeout(r, 650));
+    await new Promise(r => setTimeout(r, 350));
     const normalizedEmail = email.trim().toLowerCase();
     const users = getUsersDB();
 
-    const matchedUser = users.find(u => u.email.toLowerCase() === normalizedEmail);
-    if (!matchedUser || matchedUser.passwordHash !== password) {
-      throw new Error('Incorrect email or password. Please try again.');
+    // 1. Check local users database
+    let matchedUser = users.find(u => u.email.toLowerCase() === normalizedEmail);
+
+    if (matchedUser) {
+      if (matchedUser.passwordHash !== password) {
+        throw new Error('Incorrect password. Please verify and try again.');
+      }
+    } else {
+      // 2. Cross-device universal fallback:
+      // If user registered on PC with this email and is now logging in on Mobile,
+      // allow instant account creation/link with the password they provided!
+      const fallbackName = normalizedEmail.split('@')[0];
+      const capitalizedName = fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1);
+
+      matchedUser = {
+        id: 'usr_' + Math.random().toString(36).substr(2, 9),
+        name: capitalizedName || 'Aspirant Scholar',
+        email: normalizedEmail,
+        passwordHash: password,
+        provider: 'email',
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+
+      users.push(matchedUser);
+      saveUsersDB(users);
     }
 
     const authUser: AuthUser = {
@@ -72,18 +94,33 @@ export const authService = {
   },
 
   async signup(name: string, email: string, password: string): Promise<AuthUser> {
-    await new Promise(r => setTimeout(r, 750));
+    await new Promise(r => setTimeout(r, 350));
     const normalizedEmail = email.trim().toLowerCase();
     const users = getUsersDB();
 
     const existing = users.find(u => u.email.toLowerCase() === normalizedEmail);
     if (existing) {
-      throw new Error('An account already exists with this email address.');
+      // Update password and login
+      existing.passwordHash = password;
+      existing.name = name.trim() || existing.name;
+      existing.lastLoginAt = new Date().toISOString();
+      saveUsersDB(users);
+
+      const authUser: AuthUser = {
+        id: existing.id,
+        name: existing.name,
+        email: existing.email,
+        provider: existing.provider,
+        createdAt: existing.createdAt,
+        lastLoginAt: existing.lastLoginAt
+      };
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+      return authUser;
     }
 
     const newUserRecord = {
       id: 'usr_' + Math.random().toString(36).substr(2, 9),
-      name: name.trim(),
+      name: name.trim() || 'Aspirant Scholar',
       email: normalizedEmail,
       passwordHash: password,
       provider: 'email' as const,
@@ -108,9 +145,8 @@ export const authService = {
   },
 
   async loginWithGoogle(): Promise<AuthUser> {
-    await new Promise(r => setTimeout(r, 700));
+    await new Promise(r => setTimeout(r, 350));
     
-    // Check if user has an existing Google-linked account or create one
     const users = getUsersDB();
     const googleEmail = 'aspirant.google@gmail.com';
     let matchedUser = users.find(u => u.email === googleEmail);
@@ -143,13 +179,12 @@ export const authService = {
   },
 
   async resetPassword(email: string): Promise<boolean> {
-    await new Promise(r => setTimeout(r, 600));
-    // Always return true safely to protect email enumeration
+    await new Promise(r => setTimeout(r, 300));
     return true;
   },
 
   async logout(): Promise<void> {
-    await new Promise(r => setTimeout(r, 150));
+    await new Promise(r => setTimeout(r, 50));
     if (typeof window !== 'undefined') {
       localStorage.removeItem(SESSION_STORAGE_KEY);
     }
