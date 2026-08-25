@@ -4,15 +4,12 @@ import {
   Target,
   Flame,
   RotateCw,
-  Plus,
   CalendarCheck,
   CheckCircle2,
   Clock,
   ArrowRight,
   Layers,
-  ArrowUpRight,
-  Sparkles,
-  BookOpen
+  ArrowUpRight
 } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
@@ -66,49 +63,27 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const examYear = currentExam?.targetYear || 2026;
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-16">
+    <div className="space-y-5 sm:space-y-7 pb-16">
       
-      {/* 1. EDITORIAL TOP SECTION: "Good Morning, Aspirant" */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-[#596B35] dark:text-[#A4B879] font-mono">
-              Academic Dashboard
-            </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#A4B879]" />
-            <span className="text-[11px] text-[#65675F] dark:text-[#85877E] font-mono">
-              {examName} ({examYear})
-            </span>
-          </div>
-
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] tracking-tight font-serif mt-1">
-            {getGreeting()}, {profile.name || 'Aspirant'}
-          </h2>
-
-          <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A7AA9C] mt-1 font-medium">
-            Your preparation is <span className="font-bold text-[#596B35] dark:text-[#A4B879]">{overallStats.completionPercentage}% complete</span>. Keep your daily streak active.
-          </p>
+      {/* 1. EDITORIAL TOP GREETING SECTION (Clean & Uncluttered) */}
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#596B35] dark:text-[#A4B879] font-mono">
+            Academic Dashboard
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#A4B879]" />
+          <span className="text-[11px] text-[#65675F] dark:text-[#85877E] font-mono">
+            {examName} ({examYear})
+          </span>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
-          {dueRevisions.length > 0 && (
-            <button
-              onClick={onOpenRevisionSession}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] text-[#354126] dark:text-[#F4F4ED] text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-98"
-            >
-              <RotateCw className="w-4 h-4 animate-spin-slow text-[#596B35] dark:text-[#A4B879]" />
-              <span>Revise Queue ({dueRevisions.length})</span>
-            </button>
-          )}
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] tracking-tight font-serif mt-1">
+          {getGreeting()}, {profile.name || 'Aspirant'}
+        </h2>
 
-          <button
-            onClick={onOpenAddTopic}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold shadow-sm transition-all active:scale-98 cursor-pointer shrink-0"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>Add Topic</span>
-          </button>
-        </div>
+        <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A7AA9C] mt-1 font-medium">
+          Your preparation is <span className="font-bold text-[#596B35] dark:text-[#A4B879]">{overallStats.completionPercentage}% complete</span>. Keep your daily streak active.
+        </p>
       </div>
 
       {/* 2. 3D Countdown Flip Clock */}
@@ -142,7 +117,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
           {/* Radial Ring + Progress Stats */}
           <div className="flex flex-col sm:flex-row items-center gap-5 py-1">
-            {/* 3D Circular Progress Indicator */}
             <div className="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center shrink-0">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 140 140">
                 <circle
