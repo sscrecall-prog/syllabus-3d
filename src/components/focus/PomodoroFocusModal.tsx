@@ -138,7 +138,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     soundManager.playCompleteChime();
     confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
 
-    logStudySession(Math.round(totalSeconds / 60));
+    logStudySession(Math.round(totalSeconds / 60), selectedTopicId);
 
     if (mainMode === 'pomodoro') {
       setCompletedSessionsToday(c => c + 1);

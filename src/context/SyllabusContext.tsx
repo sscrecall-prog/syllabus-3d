@@ -154,12 +154,13 @@ interface SyllabusContextType {
   deleteSubject: (subjectId: string) => void;
   editChapter: (subjectId: string, chapterId: string, updates: { name?: string; description?: string }) => void;
   deleteChapter: (subjectId: string, chapterId: string) => void;
-  editTopic: (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[] }) => void;
+  editTopic: (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[]; accuracy?: number; studyTimeMinutes?: number }) => void;
   deleteTopic: (topicId: string) => void;
   addSubtopic: (topicId: string, subtopicName: string) => void;
   deleteSubtopic: (topicId: string, subtopicIndex: number) => void;
 
-  logStudySession: (minutes: number) => void;
+  logStudySession: (minutes: number, topicId?: string) => void;
+  updateTopicMetrics?: (topicId: string, updates: { accuracy?: number; studyTimeMinutes?: number; addMinutes?: number }) => void;
   resetToDemo: () => void;
   clearAllDemoData: () => void;
   exportData: () => string;
@@ -882,7 +883,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
-  const editTopic = (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[] }) => {
+  const editTopic = (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[]; accuracy?: number; studyTimeMinutes?: number }) => {
     setExams(prev => prev.map(exam => ({
       ...exam,
       subjects: exam.subjects.map(subj => ({
@@ -891,12 +892,16 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ...ch,
           topics: ch.topics.map(t => {
             if (t.id !== topicId) return t;
+            const newAcc = updates.accuracy !== undefined ? updates.accuracy : t.accuracy;
             return {
               ...t,
               name: updates.name !== undefined ? updates.name.trim() : t.name,
               difficulty: updates.difficulty !== undefined ? updates.difficulty : t.difficulty,
               weightage: updates.weightage !== undefined ? updates.weightage : t.weightage,
-              subtopics: updates.subtopics !== undefined ? updates.subtopics : t.subtopics
+              subtopics: updates.subtopics !== undefined ? updates.subtopics : t.subtopics,
+              accuracy: newAcc,
+              studyTimeMinutes: updates.studyTimeMinutes !== undefined ? updates.studyTimeMinutes : t.studyTimeMinutes,
+              isWeak: t.status === 'weak' || (newAcc > 0 && newAcc < 60)
             };
           })
         }))
@@ -963,7 +968,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
-  const logStudySession = (minutes: number) => {
+  const logStudySession = (minutes: number, topicId?: string) => {
     const today = getTodayDateString();
     setActivityHistory(prev => {
       const existing = prev.find(a => a.date === today);
@@ -972,6 +977,68 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
       return [...prev, { date: today, studyMinutes: minutes, topicsCompleted: 0, revisionsCompleted: 0 }];
     });
+
+    if (topicId) {
+      setExams(prevExams => prevExams.map(exam => ({
+        ...exam,
+        subjects: exam.subjects.map(subj => ({
+          ...subj,
+          chapters: subj.chapters.map(chap => ({
+            ...chap,
+            topics: chap.topics.map(top => {
+              if (top.id === topicId) {
+                return {
+                  ...top,
+                  studyTimeMinutes: (top.studyTimeMinutes || 0) + minutes,
+                  lastStudied: today
+                };
+              }
+              return top;
+            })
+          }))
+        }))
+      })));
+    }
+  };
+
+  const updateTopicMetrics = (topicId: string, updates: { accuracy?: number; studyTimeMinutes?: number; addMinutes?: number }) => {
+    const today = getTodayDateString();
+    setExams(prevExams => prevExams.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(chap => ({
+          ...chap,
+          topics: chap.topics.map(top => {
+            if (top.id === topicId) {
+              const newAcc = updates.accuracy !== undefined ? updates.accuracy : top.accuracy;
+              let newTime = top.studyTimeMinutes || 0;
+              if (updates.studyTimeMinutes !== undefined) newTime = updates.studyTimeMinutes;
+              if (updates.addMinutes !== undefined) newTime += updates.addMinutes;
+              return {
+                ...top,
+                accuracy: newAcc,
+                studyTimeMinutes: newTime,
+                lastStudied: today,
+                isWeak: top.status === 'weak' || (newAcc > 0 && newAcc < 60)
+              };
+            }
+            return top;
+          })
+        }))
+      }))
+    })));
+    if (updates.addMinutes && updates.addMinutes > 0) {
+      const existingToday = activityHistory.find(a => a.date === today);
+      setActivityHistory(prev => {
+        const ex = prev.find(a => a.date === today);
+        if (ex) {
+          return prev.map(a => (a.date === today ? { ...a, studyMinutes: a.studyMinutes + (updates.addMinutes || 0) } : a));
+        }
+        return [...prev, { date: today, studyMinutes: updates.addMinutes || 0, topicsCompleted: 0, revisionsCompleted: 0 }];
+      });
+    }
+    soundManager.playClick();
   };
 
   const resetToDemo = () => {
@@ -1116,6 +1183,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deleteTopic,
         addSubtopic,
         deleteSubtopic,
+    updateTopicMetrics,
         logStudySession,
         resetToDemo,
         clearAllDemoData,
