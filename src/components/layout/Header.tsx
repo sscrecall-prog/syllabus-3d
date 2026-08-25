@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Sun, Moon, Flame, Menu, ChevronDown, Volume2, VolumeX, ExternalLink, Timer } from 'lucide-react';
+import { Search, Sun, Moon, Flame, Menu, ChevronDown, Volume2, VolumeX, ExternalLink, Timer, ArrowLeft } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 interface HeaderProps {
@@ -11,13 +11,19 @@ interface HeaderProps {
   onOpenAddTopic?: () => void;
   onOpenFocus?: () => void;
   onOpenMobileMenu?: () => void;
+  canGoBack?: boolean;
+  onGoBack?: () => void;
+  currentViewTitle?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   onOpenSettings,
   onOpenFocus,
-  onOpenMobileMenu
+  onOpenMobileMenu,
+  canGoBack,
+  onGoBack,
+  currentViewTitle
 }) => {
   const { toggleTheme, isDark } = useTheme();
   const { profile, updateProfile, exams, currentExam, setSelectedExamId } = useSyllabus();
@@ -33,32 +39,58 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-30 h-16 w-full bg-[#FAF8F5]/95 dark:bg-[#171717]/95 backdrop-blur-md border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] px-3 sm:px-6 md:px-8 flex items-center justify-between gap-2 transition-colors">
       
-      {/* 1. MOBILE-ONLY LEFT HEADER (3-Line Menu + Logo + Clean App Name) */}
-      <div className="flex md:hidden items-center gap-2.5 min-w-0">
-        {/* 3-Line Menu Button */}
-        <button
-          onClick={onOpenMobileMenu}
-          className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
-          title="Open Navigation Menu"
-        >
-          <Menu className="w-5 h-5 stroke-[2.5] text-[#D4AF37]" />
-        </button>
+      {/* 1. MOBILE-ONLY LEFT HEADER (Back Button OR 3-Line Menu + Logo + Clean App Name) */}
+      <div className="flex md:hidden items-center gap-2 min-w-0">
+        {canGoBack && onGoBack ? (
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              onGoBack();
+            }}
+            className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] active:scale-95 transition-all cursor-pointer shadow-sm shrink-0 flex items-center gap-1"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5 stroke-[2.5] text-[#D4AF37]" />
+          </button>
+        ) : (
+          <button
+            onClick={onOpenMobileMenu}
+            className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] active:scale-95 transition-all cursor-pointer shadow-sm shrink-0"
+            title="Open Navigation Menu"
+          >
+            <Menu className="w-5 h-5 stroke-[2.5] text-[#D4AF37]" />
+          </button>
+        )}
 
-        {/* App Logo & App Name */}
-        <div className="flex items-center gap-2">
+        {/* App Logo & App Name / Screen Title */}
+        <div className="flex items-center gap-2 truncate">
           <img
             src="/logo.png"
             alt="SYLLABUS 3D"
             className="w-7 h-7 object-contain drop-shadow-sm shrink-0"
           />
-          <span className="text-xs font-black tracking-wider text-[#171717] dark:text-[#F5E6C8] uppercase font-mono">
-            SYLLABUS 3D
+          <span className="text-xs font-black tracking-wider text-[#171717] dark:text-[#F5E6C8] uppercase font-mono truncate">
+            {canGoBack && currentViewTitle ? currentViewTitle : 'SYLLABUS 3D'}
           </span>
         </div>
       </div>
 
-      {/* 2. DESKTOP-ONLY LEFT HEADER (Logo & Exam Selector & Target Date) - UNTOUCHED FOR WEBSITE */}
+      {/* 2. DESKTOP-ONLY LEFT HEADER (Logo & Exam Selector & Target Date + Optional Desktop Back) */}
       <div className="hidden md:flex items-center gap-2 sm:gap-3 min-w-0 shrink">
+        {canGoBack && onGoBack && (
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              onGoBack();
+            }}
+            className="p-2 rounded-xl bg-white dark:bg-[#222222] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] hover:border-[#D4AF37] text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+            title="Go Back to Previous Screen"
+          >
+            <ArrowLeft className="w-4 h-4 text-[#D4AF37] stroke-[2.5]" />
+            <span>Back</span>
+          </button>
+        )}
+
         <div className="relative inline-flex items-center min-w-0 max-w-[140px] sm:max-w-[210px]">
           <select
             value={profile.selectedExamId}
