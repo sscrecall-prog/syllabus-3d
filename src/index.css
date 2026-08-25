@@ -348,3 +348,207 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ================================================================= */
+/*  SPATIAL GLASS — MOBILE-FIRST PROFESSIONAL APP EXPERIENCE         */
+/* ================================================================= */
+
+/* -- SAFE AREA PADDING (notch / gesture bar) -- */
+.theme-spatial nav.fixed {
+  padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+}
+
+/* -- MOBILE GLASS PERFORMANCE OPTIMIZATION -- */
+@media (max-width: 767px) {
+
+  /* Reduce blur intensity on mobile for GPU performance */
+  .theme-spatial .bg-white,
+  .theme-spatial [class*="dark:bg-[#151713]"] {
+    backdrop-filter: blur(24px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+    box-shadow:
+      0 0 0 0.5px rgba(255, 255, 255, 0.05),
+      0 4px 16px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+    border-radius: 16px !important;
+  }
+
+  /* Mobile header — slimmer, glass toolbar */
+  .theme-spatial header {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    backdrop-filter: blur(32px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04),
+      0 4px 20px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  /* Mobile content area spacing */
+  .theme-spatial main {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-bottom: 100px !important;
+  }
+
+  /* Mobile cards — tighter spacing, softer glass */
+  .theme-spatial .rounded-2xl {
+    border-radius: 16px !important;
+  }
+
+  /* Mobile Bottom Dock — Premium Floating Pill Style */
+  .theme-spatial nav.fixed {
+    margin: 0 8px 8px 8px !important;
+    border-radius: 20px !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 0 !important;
+    background: linear-gradient(
+      0deg,
+      rgba(8, 12, 21, 0.92) 0%,
+      rgba(15, 23, 42, 0.85) 100%
+    ) !important;
+    backdrop-filter: blur(48px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow:
+      0 0 0 0.5px rgba(255, 255, 255, 0.06),
+      0 -2px 20px rgba(0, 0, 0, 0.50),
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 6px), 6px) !important;
+    padding-top: 6px !important;
+  }
+
+  /* Active bottom nav item — teal glow indicator */
+  .theme-spatial nav.fixed button[class*="font-black"] {
+    color: #2DD4BF !important;
+    position: relative;
+  }
+  .theme-spatial nav.fixed button[class*="font-black"]::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #2DD4BF;
+    box-shadow: 0 0 6px rgba(45, 212, 191, 0.70);
+  }
+
+  /* FAB center button on mobile dock */
+  .theme-spatial nav.fixed button[class*="border-[#596B35]"],
+  .theme-spatial nav.fixed button[class*="border-2"] {
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.90) 0%, rgba(45, 212, 191, 0.80) 100%) !important;
+    border: 2px solid rgba(45, 212, 191, 0.50) !important;
+    box-shadow:
+      0 4px 20px rgba(45, 212, 191, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Mobile Drawer — full spatial glass treatment */
+  .theme-spatial [class*="animate-slide-right"] {
+    background: linear-gradient(
+      180deg,
+      rgba(8, 12, 21, 0.92) 0%,
+      rgba(5, 8, 16, 0.95) 100%
+    ) !important;
+    backdrop-filter: blur(48px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(48px) saturate(200%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.60) !important;
+  }
+
+  /* Mobile drawer nav items — larger touch targets */
+  .theme-spatial [class*="animate-slide-right"] nav button {
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Mobile drawer active item */
+  .theme-spatial [class*="animate-slide-right"] nav button[class*="bg-[#DCE8B7]"],
+  .theme-spatial [class*="animate-slide-right"] nav button[class*="bg-[#354126]"] {
+    background: rgba(45, 212, 191, 0.14) !important;
+    border: 1px solid rgba(45, 212, 191, 0.25) !important;
+    color: #2DD4BF !important;
+    box-shadow: 0 0 12px rgba(45, 212, 191, 0.08) !important;
+  }
+
+  /* Mobile touch feedback */
+  .theme-spatial button:active,
+  .theme-spatial a:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.08s ease !important;
+  }
+
+  /* Mobile Topic Cards in Syllabus — cleaner glass rows */
+  .theme-spatial [class*="rounded-xl"] {
+    border-radius: 14px !important;
+  }
+
+  /* Mobile modals — full-width glass panels */
+  .theme-spatial [class*="max-w-2xl"],
+  .theme-spatial [class*="max-w-xl"],
+  .theme-spatial [class*="max-w-lg"] {
+    backdrop-filter: blur(32px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+  }
+
+  /* Mobile grid adjustments */
+  .theme-spatial .grid-cols-2 {
+    gap: 8px !important;
+  }
+}
+
+/* -- TABLET SPECIFIC (768px–1024px) -- */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .theme-spatial .bg-white,
+  .theme-spatial [class*="dark:bg-[#151713]"] {
+    backdrop-filter: blur(32px) saturate(170%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(170%) !important;
+  }
+}
+
+/* -- TOUCH DEVICE OPTIMIZATIONS -- */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger minimum touch targets */
+  .theme-spatial button {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  /* Remove hover-only effects on touch devices */
+  .theme-spatial button:hover {
+    filter: none;
+  }
+
+  /* Disable heavy shadows that cause jank on scroll */
+  .theme-spatial [class*="shadow-elevated"] {
+    box-shadow:
+      0 2px 12px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
+/* -- SMOOTH MOBILE ANIMATIONS -- */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-spatial nav.fixed {
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .theme-spatial .bg-white,
+  .theme-spatial [class*="dark:bg-[#151713]"] {
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .theme-spatial,
+  .theme-spatial * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
