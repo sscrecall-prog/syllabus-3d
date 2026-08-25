@@ -1,9 +1,22 @@
 import React from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { ProgressOrb } from '../3d/ProgressOrb';
-import { SubjectCard3D } from '../3d/SubjectCard3D';
 import { ExamCountdown3D } from '../3d/ExamCountdown3D';
-import { RotateCw, AlertTriangle, ArrowRight, Clock, CheckCircle2, Plus, Sparkles } from 'lucide-react';
+import {
+  RotateCw,
+  AlertTriangle,
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+  Plus,
+  Sparkles,
+  Flame,
+  Zap,
+  TrendingUp,
+  Target,
+  BookOpen,
+  CalendarCheck,
+  Award
+} from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
 
@@ -27,6 +40,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     subjectStats,
     dueRevisions,
     weakTopics,
+    plannerTasks,
+    allTopics
   } = useSyllabus();
 
   const getGreeting = () => {
@@ -38,19 +53,36 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
   if (!currentExam) return null;
 
+  const todayTasks = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress');
+  const completedTodayTasks = plannerTasks.filter(t => t.status === 'completed');
+  const plannerVelocity = plannerTasks.length > 0
+    ? Math.round((completedTodayTasks.length / plannerTasks.length) * 100)
+    : 0;
+
+  // SVG Radial Circle calculations
+  const radius = 64;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (overallStats.completionPercentage / 100) * circumference;
+
   return (
     <div className="space-y-6 sm:space-y-8 pb-16">
-      {/* Greeting & Quick Actions */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3.5">
+      {/* 1. Header Greeting & Quick CTAs */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            {getGreeting()}, <span className="text-brand-500">{profile.name}</span> 👋
+          <h2 className="text-xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] tracking-tight flex items-center gap-2">
+            <span>{getGreeting()},</span>
+            <span className="bg-gradient-to-r from-[#D4AF37] via-[#F5E6C8] to-[#B89327] bg-clip-text text-transparent">
+              {profile.name}
+            </span>
+            <Sparkles className="w-5 h-5 text-[#D4AF37] animate-pulse" />
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs sm:text-sm text-[#6B7280] mt-1 font-medium">
             {currentExam.subjects.length > 0 ? (
-              <>You are on a <span className="font-semibold text-orange-500">{profile.currentStreak}-day consistency streak</span>. {dueRevisions.length} revisions in queue.</>
+              <>
+                Targeting <span className="font-bold text-[#171717] dark:text-[#F5E6C8]">{currentExam.name}</span> • Level {profile.level} Scholar ({profile.xp} XP)
+              </>
             ) : (
-              'Welcome! Your syllabus is clean & ready for your custom subjects.'
+              'Welcome! Your syllabus workspace is ready for your custom subjects.'
             )}
           </p>
         </div>
@@ -59,284 +91,246 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           {dueRevisions.length > 0 && (
             <button
               onClick={onOpenRevisionSession}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold transition-all"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-[#8C6D15] dark:text-[#D4AF37] text-xs font-bold transition-all shadow-sm cursor-pointer"
             >
-              <RotateCw className="w-4 h-4" />
-              <span>Revise Now ({dueRevisions.length})</span>
+              <RotateCw className="w-4 h-4 animate-spin-slow" />
+              <span>Revise Queue ({dueRevisions.length})</span>
             </button>
           )}
 
           <button
             onClick={onOpenAddTopic}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/25 hover:shadow-lg transition-all active:scale-98 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Topic / Subject</span>
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Add Custom Topic</span>
           </button>
         </div>
       </div>
 
-      {/* 3D Exam Countdown Clock Card */}
+      {/* 2. 3D Countdown Flip Clock */}
       <ExamCountdown3D />
 
-      {/* 3D Mastery Orb & KPI Overview */}
-      <div className="relative p-4 sm:p-8 rounded-3xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-lg overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-          <div className="lg:col-span-5 flex flex-col items-center justify-center py-2">
-            <ProgressOrb percentage={overallStats.completionPercentage} size="md" />
-          </div>
+      {/* 3. BENTO GRID ARCHITECTURE */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6">
+        
+        {/* BENTO CARD 1: 3D Radial Mastery Engine (Col 12 on mobile, Col 7 on desktop) */}
+        <div className="md:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-xl hover:border-[#D4AF37]/60 transition-all relative overflow-hidden flex flex-col justify-between group">
+          {/* Subtle Ambient Radial Backlight */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#D4AF37]/15 transition-all" />
 
-          <div className="lg:col-span-7 space-y-4 sm:space-y-6">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  Overall Syllabus Mastery
-                </span>
-                <span className="text-xs sm:text-sm font-bold text-brand-500">
-                  {overallStats.completedCount} / {overallStats.totalTopics} Topics Completed
-                </span>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+                <Target className="w-4 h-4" />
               </div>
-
-              <div className="w-full h-2.5 sm:h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden p-0.5">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-brand-500 via-purple-500 to-emerald-500 transition-all duration-1000"
-                  style={{ width: `${overallStats.completionPercentage}%` }}
-                />
+              <div>
+                <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">
+                  Syllabus Mastery Engine
+                </h3>
+                <span className="text-[11px] font-semibold text-[#6B7280]">
+                  Target Exam: {currentExam.name}
+                </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50">
-                <div className="flex items-center gap-1.5 text-emerald-500 mb-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase">Mastered</span>
+            <span className="px-3 py-1 text-xs font-black rounded-full bg-[#D4AF37]/20 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/40">
+              Lvl {profile.level} {profile.levelTitle}
+            </span>
+          </div>
+
+          {/* Radial Ring + Progress Stats */}
+          <div className="flex flex-col sm:flex-row items-center gap-6 py-2">
+            {/* SVG Circular Radial Gauge */}
+            <div className="relative w-36 h-36 flex items-center justify-center shrink-0">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                {/* Background Ring */}
+                <circle
+                  cx="80"
+                  cy="80"
+                  r={radius}
+                  stroke="currentColor"
+                  strokeWidth="14"
+                  className="text-[#FAF8F5] dark:text-[#171717]"
+                  fill="transparent"
+                />
+                {/* Gold Gradient Animated Value Ring */}
+                <circle
+                  cx="80"
+                  cy="80"
+                  r={radius}
+                  stroke="url(#goldGradient)"
+                  strokeWidth="14"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000 ease-out"
+                  fill="transparent"
+                />
+                <defs>
+                  <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#D4AF37" />
+                    <stop offset="50%" stopColor="#F5E6C8" />
+                    <stop offset="100%" stopColor="#B89327" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Inside Gauge Value */}
+              <div className="absolute flex flex-col items-center justify-center text-center">
+                <span className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-white font-mono">
+                  {overallStats.completionPercentage}%
+                </span>
+                <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  Mastered
+                </span>
+              </div>
+            </div>
+
+            {/* Quick KPI Pills */}
+            <div className="w-full space-y-3">
+              <div className="grid grid-cols-2 gap-2.5 text-left">
+                <div className="p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
+                  <span className="text-[10px] font-bold text-[#6B7280] block">Completed Topics</span>
+                  <span className="text-base sm:text-lg font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
+                    {overallStats.completedCount} <span className="text-xs font-semibold text-[#6B7280]">/ {overallStats.totalTopics}</span>
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  {overallStats.completedCount}
-                </h3>
-                <p className="text-[10px] text-slate-500">Topics done</p>
+
+                <div className="p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
+                  <span className="text-[10px] font-bold text-[#6B7280] block">Study Hours Logged</span>
+                  <span className="text-base sm:text-lg font-black text-[#D4AF37] font-mono">
+                    {overallStats.totalStudyHours} <span className="text-xs font-semibold text-[#6B7280]">hrs</span>
+                  </span>
+                </div>
               </div>
 
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50">
-                <div className="flex items-center gap-1.5 text-amber-500 mb-1">
-                  <RotateCw className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase">Revisions</span>
+              {/* Linear mini bar for in-progress vs weak */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] font-bold text-[#6B7280]">
+                  <span>In Progress ({overallStats.inProgressCount})</span>
+                  <span>Weak / Mistakes ({overallStats.weakCount})</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  {dueRevisions.length}
-                </h3>
-                <p className="text-[10px] text-slate-500">Due for review</p>
-              </div>
-
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50">
-                <div className="flex items-center gap-1.5 text-rose-500 mb-1">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase">Weak</span>
+                <div className="w-full h-2 rounded-full bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] overflow-hidden flex">
+                  <div
+                    className="h-full bg-[#3b82f6]"
+                    style={{ width: `${(overallStats.inProgressCount / (overallStats.totalTopics || 1)) * 100}%` }}
+                  />
+                  <div
+                    className="h-full bg-rose-500"
+                    style={{ width: `${(overallStats.weakCount / (overallStats.totalTopics || 1)) * 100}%` }}
+                  />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  {weakTopics.length}
-                </h3>
-                <p className="text-[10px] text-slate-500">Accuracy &lt; 60%</p>
-              </div>
-
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50">
-                <div className="flex items-center gap-1.5 text-brand-500 mb-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase">Study Time</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  {overallStats.totalStudyHours}h
-                </h3>
-                <p className="text-[10px] text-slate-500">{overallStats.averageAccuracy}% Accuracy</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Subject Tracking Section */}
-      <div>
-        <div className="flex items-center justify-between mb-3.5">
+        {/* BENTO CARD 2: Daily Study Velocity & Streak Shield (Col 12 on mobile, Col 5 on desktop) */}
+        <div className="md:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-xl hover:border-[#D4AF37]/60 transition-all flex flex-col justify-between">
           <div>
-            <h3 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white">
-              Subject Tracking
-            </h3>
-            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-              Saved progress across all subjects
-            </p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-500">
+                  <Flame className="w-4 h-4 fill-orange-500" />
+                </div>
+                <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">
+                  Daily Velocity & Streak
+                </h3>
+              </div>
+              <span className="text-xs font-black text-orange-500 font-mono">
+                {profile.currentStreak} Days Streak 🔥
+              </span>
+            </div>
+
+            {/* Daily Planner Targets Progress */}
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] space-y-3">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <span className="text-[#6B7280]">Today's Target Velocity</span>
+                <span className="text-[#D4AF37] font-mono">{completedTodayTasks.length}/{plannerTasks.length} Completed</span>
+              </div>
+              <div className="w-full h-2.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#D4AF37] to-emerald-500 rounded-full transition-all duration-500"
+                  style={{ width: `${plannerVelocity}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-[#6B7280]">
+                {plannerVelocity >= 100 ? '🎉 Amazing! All today targets completed.' : `${todayTasks.length} high-priority tasks in focus queue.`}
+              </p>
+            </div>
           </div>
 
-          {currentExam.subjects.length > 0 && (
+          <button
+            onClick={() => onNavigate('planner')}
+            className="w-full mt-4 py-2.5 px-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#2A2A2A] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#333333] border border-[#EBD3A0] dark:border-[#383838] text-[#171717] dark:text-[#F5E6C8] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer group"
+          >
+            <span>Open Study Planner Kanban</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#D4AF37]" />
+          </button>
+        </div>
+
+        {/* BENTO CARD 3: Subject Mastery Grid (Col 12) */}
+        <div className="md:col-span-12 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+                <BookOpen className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">
+                  Subject Mastery Breakdown
+                </h3>
+                <span className="text-[11px] font-semibold text-[#6B7280]">
+                  Real-time syllabus completion across all exam subjects
+                </span>
+              </div>
+            </div>
+
             <button
               onClick={() => onNavigate('subjects')}
-              className="flex items-center gap-1 text-xs font-semibold text-brand-500 hover:underline"
+              className="text-xs font-bold text-[#D4AF37] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              <span>View All</span>
+              <span>View All Subjects</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
-          )}
-        </div>
-
-        {currentExam.subjects.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {currentExam.subjects.map(subject => {
-              const stat = subjectStats.find(s => s.subjectId === subject.id) || {
-                completedTopics: 0,
-                totalTopics: 0,
-                percentage: 0,
-                weakCount: 0,
-                lastStudied: null
-              };
-
-              return (
-                <SubjectCard3D
-                  key={subject.id}
-                  subject={subject}
-                  completedTopics={stat.completedTopics}
-                  totalTopics={stat.totalTopics}
-                  percentage={stat.percentage}
-                  weakCount={stat.weakCount}
-                  lastStudied={stat.lastStudied}
-                  onClick={() => onNavigate('syllabus')}
-                />
-              );
-            })}
           </div>
-        ) : (
-          <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-slate-900/85 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center mx-auto">
-              <Sparkles className="w-7 h-7" />
-            </div>
-            <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-              Your Syllabus Canvas is Blank
-            </h4>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-              You have cleared the demo dataset! Click below to add your custom subjects, chapters, and topics.
-            </p>
-            <button
-              onClick={onOpenAddTopic}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition-all cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create Your First Subject & Topic</span>
-            </button>
-          </div>
-        )}
-      </div>
 
-      {/* Revision Queue & Weak Topics Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div className="flex items-center justify-between mb-3.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
-                <RotateCw className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                  Spaced Revision Queue
-                </h4>
-                <p className="text-[11px] text-slate-500">
-                  {dueRevisions.length} topics due for recall
-                </p>
-              </div>
-            </div>
-
-            {dueRevisions.length > 0 && (
-              <button
-                onClick={onOpenRevisionSession}
-                className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-semibold hover:bg-amber-500/20"
+          {/* 4-Column Subject Bento Tiles */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {subjectStats.map((sub) => (
+              <div
+                key={sub.subjectId}
+                onClick={() => onNavigate('subjects')}
+                className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer space-y-3 group"
               >
-                Revise All
-              </button>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            {dueRevisions.length > 0 ? (
-              dueRevisions.slice(0, 4).map(rev => (
-                <div
-                  key={rev.id}
-                  onClick={onOpenRevisionSession}
-                  className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/40 cursor-pointer hover:scale-[1.01] transition-all"
-                >
-                  <div className="min-w-0 pr-2">
-                    <h5 className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                      {rev.topicName}
-                    </h5>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                      {rev.subjectName} · Stage {rev.stage}
-                    </p>
-                  </div>
-
-                  <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-bold shrink-0">
-                    Due Today
+                <div className="flex items-center justify-between">
+                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: sub.color }} />
+                  <span className="text-xs font-black text-[#D4AF37] font-mono">
+                    {sub.percentage}%
                   </span>
                 </div>
-              ))
-            ) : (
-              <div className="py-8 text-center text-xs text-slate-400">
-                ✨ Nothing due for revision today!
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div className="flex items-center justify-between mb-3.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                  Weak Topics Alert
-                </h4>
-                <p className="text-[11px] text-slate-500">
-                  Accuracy &lt; 60% or unresolved errors
-                </p>
-              </div>
-            </div>
-
-            {weakTopics.length > 0 && (
-              <button
-                onClick={() => onNavigate('weak')}
-                className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold hover:bg-rose-500/20"
-              >
-                Diagnose
-              </button>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            {weakTopics.length > 0 ? (
-              weakTopics.slice(0, 4).map(w => (
-                <div
-                  key={w.topic.id}
-                  onClick={() => onOpenTopicDrawer(w.topic, w.subjectName, w.chapterName)}
-                  className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/40 cursor-pointer hover:scale-[1.01] transition-all"
-                >
-                  <div className="min-w-0 pr-2">
-                    <h5 className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                      {w.topic.name}
-                    </h5>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                      {w.subjectName} · {w.chapterName}
-                    </p>
-                  </div>
-
-                  <span className="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-bold shrink-0">
-                    {w.topic.accuracy}%
-                  </span>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-extrabold text-[#171717] dark:text-[#F5E6C8] truncate group-hover:text-[#D4AF37] transition-colors">
+                    {sub.subjectName}
+                  </h4>
+                  <p className="text-[10px] text-[#6B7280] mt-0.5">
+                    {sub.completedTopics} / {sub.totalTopics} Topics Mastered
+                  </p>
                 </div>
-              ))
-            ) : (
-              <div className="py-8 text-center text-xs text-slate-400">
-                🎉 All concepts on track! No weak topics found.
+
+                <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${sub.percentage}%`, backgroundColor: sub.color || '#D4AF37' }}
+                  />
+                </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
+
       </div>
     </div>
   );
