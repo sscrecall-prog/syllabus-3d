@@ -10,6 +10,11 @@ export interface MistakeRecord {
   correctApproach: string;
   dateLogged: string;
   resolved: boolean;
+  wrongLogic?: string;
+  examinerTrap?: string;
+  goldenRule?: string;
+  severity?: 'high' | 'medium' | 'low';
+  mockSource?: string;
 }
 
 export interface Topic {

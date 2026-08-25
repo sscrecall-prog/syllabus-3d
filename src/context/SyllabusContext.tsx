@@ -6,6 +6,7 @@ import {
   Topic,
   TopicStatus,
   MistakeType,
+  MistakeRecord,
   RevisionRecord,
   AchievementBadge,
   UserProgressProfile,
@@ -140,8 +141,10 @@ interface SyllabusContextType {
 
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
   updateTopicNotes: (topicId: string, notes: string) => void;
-  addTopicMistake: (topicId: string, desc: string, type: MistakeType, solution: string) => void;
+  addTopicMistake: (topicId: string, descOrPayload: string | Partial<MistakeRecord>, type?: MistakeType, solution?: string) => void;
   resolveTopicMistake: (topicId: string, mistakeId: string) => void;
+  deleteTopicMistake?: (topicId: string, mistakeId: string) => void;
+  editTopicMistake?: (topicId: string, mistakeId: string, updates: Partial<MistakeRecord>) => void;
   completeRevisionCard: (revisionId: string, grade: 'again' | 'hard' | 'good' | 'easy') => void;
   addTopic: (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => void;
   addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
@@ -558,16 +561,39 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     })));
   };
 
-  const addTopicMistake = (topicId: string, desc: string, type: MistakeType, solution: string) => {
-    const newMistake = {
-      id: 'mist_' + Math.random().toString(36).substr(2, 9),
-      topicId,
-      questionDescription: desc,
-      mistakeType: type,
-      correctApproach: solution,
-      dateLogged: getTodayDateString(),
-      resolved: false
-    };
+  const addTopicMistake = (
+    topicId: string,
+    descOrPayload: string | Partial<MistakeRecord>,
+    type: MistakeType = 'conceptual',
+    solution: string = ''
+  ) => {
+    let newMistake: MistakeRecord;
+    if (typeof descOrPayload === 'object') {
+      newMistake = {
+        id: 'mist_' + Math.random().toString(36).substr(2, 9),
+        topicId,
+        questionDescription: descOrPayload.questionDescription || '',
+        mistakeType: descOrPayload.mistakeType || 'conceptual',
+        correctApproach: descOrPayload.correctApproach || '',
+        dateLogged: getTodayDateString(),
+        resolved: false,
+        wrongLogic: descOrPayload.wrongLogic || '',
+        examinerTrap: descOrPayload.examinerTrap || '',
+        goldenRule: descOrPayload.goldenRule || '',
+        severity: descOrPayload.severity || 'medium',
+        mockSource: descOrPayload.mockSource || ''
+      };
+    } else {
+      newMistake = {
+        id: 'mist_' + Math.random().toString(36).substr(2, 9),
+        topicId,
+        questionDescription: descOrPayload,
+        mistakeType: type,
+        correctApproach: solution,
+        dateLogged: getTodayDateString(),
+        resolved: false
+      };
+    }
 
     setExams(prevExams => prevExams.map(exam => ({
       ...exam,
@@ -595,6 +621,38 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           topics: chap.topics.map(top => (top.id === topicId ? {
             ...top,
             mistakes: top.mistakes.map(m => (m.id === mistakeId ? { ...m, resolved: true } : m))
+          } : top))
+        }))
+      }))
+    })));
+  };
+
+  const deleteTopicMistake = (topicId: string, mistakeId: string) => {
+    setExams(prevExams => prevExams.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(chap => ({
+          ...chap,
+          topics: chap.topics.map(top => (top.id === topicId ? {
+            ...top,
+            mistakes: top.mistakes.filter(m => m.id !== mistakeId)
+          } : top))
+        }))
+      }))
+    })));
+  };
+
+  const editTopicMistake = (topicId: string, mistakeId: string, updates: Partial<MistakeRecord>) => {
+    setExams(prevExams => prevExams.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(chap => ({
+          ...chap,
+          topics: chap.topics.map(top => (top.id === topicId ? {
+            ...top,
+            mistakes: top.mistakes.map(m => (m.id === mistakeId ? { ...m, ...updates } : m))
           } : top))
         }))
       }))
@@ -1044,6 +1102,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateTopicNotes,
         addTopicMistake,
         resolveTopicMistake,
+    deleteTopicMistake,
+    editTopicMistake,
         completeRevisionCard,
         addTopic,
         addCustomTopicWithHierarchy,

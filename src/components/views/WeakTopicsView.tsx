@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldAlert, Brain, Calculator, Compass, Eye, Clock, AlertTriangle } from 'lucide-react';
 import { Topic } from '../../types/syllabus';
+import { soundManager } from '../../utils/soundEffects';
 
 interface WeakTopicsViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
@@ -23,7 +24,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
   let timePressure = 0;
 
   weakTopics.forEach(item => {
-    item.topic.mistakes.forEach(m => {
+    item.topic.mistakes?.forEach(m => {
       if (m.mistakeType === 'conceptual') conceptual++;
       else if (m.mistakeType === 'calculation') calculation++;
       else if (m.mistakeType === 'formula') formula++;
@@ -33,53 +34,63 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
   });
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 sm:space-y-8 pb-16">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Weak Areas Diagnostics
+        <h2 className="text-xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] tracking-tight font-serif flex items-center gap-2.5">
+          <ShieldAlert className="w-6 h-6 text-[#B94A48]" />
+          <span>Weak Areas & Examiner Traps Diagnostics</span>
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Auto-detected vulnerabilities, fallible questions, and mistake logs to turn weaknesses into strengths.
+        <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#85877E] mt-1">
+          Auto-detected vulnerabilities, logged traps, and error analytics to transform mistakes into strengths.
         </p>
       </div>
 
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">
-          Root-Cause Mistake Distribution
+      {/* Root Cause Distribution Banner */}
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-4">
+        <h3 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif uppercase tracking-wider">
+          Root-Cause Fallacy Breakdown
         </h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/20">
-            <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase">Conceptual</span>
-            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{conceptual}</h4>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
+          <div className="p-3 rounded-xl bg-[#B94A48]/10 border border-[#B94A48]/25 text-center">
+            <span className="text-[10px] font-bold text-[#B94A48] uppercase font-mono block">Conceptual</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{conceptual}</h4>
           </div>
 
-          <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
-            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase">Calculation</span>
-            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{calculation}</h4>
+          <div className="p-3 rounded-xl bg-[#C49A3A]/10 border border-[#C49A3A]/25 text-center">
+            <span className="text-[10px] font-bold text-[#C49A3A] uppercase font-mono block">Calculation</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{calculation}</h4>
           </div>
 
-          <div className="p-3 rounded-xl bg-purple-500/5 border border-purple-500/20">
-            <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase">Formula</span>
-            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{formula}</h4>
+          <div className="p-3 rounded-xl bg-[#596B35]/10 border border-[#596B35]/25 text-center">
+            <span className="text-[10px] font-bold text-[#596B35] dark:text-[#A4B879] uppercase font-mono block">Formula</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{formula}</h4>
           </div>
 
-          <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/20">
-            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase">Silly Errors</span>
-            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{silly}</h4>
+          <div className="p-3 rounded-xl bg-[#EEEEE8] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-center">
+            <span className="text-[10px] font-bold text-[#65675F] dark:text-[#A7AA9C] uppercase font-mono block">Silly Traps</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{silly}</h4>
           </div>
 
-          <div className="p-3 rounded-xl bg-orange-500/5 border border-orange-500/20">
-            <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase">Time Pressure</span>
-            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{timePressure}</h4>
+          <div className="p-3 rounded-xl bg-[#8C773E]/10 border border-[#8C773E]/25 text-center">
+            <span className="text-[10px] font-bold text-[#8C773E] uppercase font-mono block">Time Crunch</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{timePressure}</h4>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      {/* Subject Filter Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
         <button
-          onClick={() => setSelectedSubject('all')}
-          className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${selectedSubject === 'all' ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600'}`}
+          onClick={() => {
+            soundManager.playClick();
+            setSelectedSubject('all');
+          }}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
+            selectedSubject === 'all'
+              ? 'bg-[#11120F] text-white border-transparent'
+              : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B]'
+          }`}
         >
           All Subjects ({weakTopics.length})
         </button>
@@ -89,8 +100,15 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
           return (
             <button
               key={s.id}
-              onClick={() => setSelectedSubject(s.name)}
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${selectedSubject === s.name ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600'}`}
+              onClick={() => {
+                soundManager.playClick();
+                setSelectedSubject(s.name);
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
+                selectedSubject === s.name
+                  ? 'bg-[#11120F] text-white border-transparent'
+                  : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B]'
+              }`}
             >
               {s.name} ({count})
             </button>
@@ -98,79 +116,52 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
         })}
       </div>
 
-      <div className="space-y-4">
-        {filteredWeakTopics.length > 0 ? (
-          filteredWeakTopics.map(item => (
+      {/* Weak Topics List */}
+      <div className="space-y-3">
+        {filteredWeakTopics.length === 0 ? (
+          <div className="p-8 rounded-2xl bg-white dark:bg-[#151713] border border-dashed border-[#D8D8CF] dark:border-[#30342B] text-center space-y-2">
+            <CheckCircle2 className="w-8 h-8 text-[#4F7A45] mx-auto" />
+            <h4 className="text-sm font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif">
+              Zero Weak Vulnerabilities Detected!
+            </h4>
+            <p className="text-xs text-[#85877E]">
+              All topics are currently on track with solid accuracy.
+            </p>
+          </div>
+        ) : (
+          filteredWeakTopics.map(({ topic, subjectName, chapterName }) => (
             <div
-              key={item.topic.id}
-              className="p-6 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm"
+              key={topic.id}
+              onClick={() => onOpenTopicDrawer(topic, subjectName, chapterName)}
+              className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35] transition-all shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer group active:scale-99"
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-semibold">
-                      {item.subjectName} · {item.chapterName}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {item.topic.name}
-                  </h3>
+              <div className="space-y-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-[#596B35] dark:text-[#A4B879]">
+                    {subjectName} • {chapterName}
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#B94A48]/15 text-[#B94A48]">
+                    {topic.accuracy}% Accuracy
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <span className="text-xs text-slate-400">Accuracy Score</span>
-                    <h4 className="text-lg font-bold text-rose-500">
-                      {item.topic.accuracy}%
-                    </h4>
-                  </div>
+                <h4 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F4F4ED] group-hover:text-[#596B35] transition-colors truncate">
+                  {topic.name}
+                </h4>
 
-                  <button
-                    onClick={() => onOpenTopicDrawer(item.topic, item.subjectName, item.chapterName)}
-                    className="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center gap-1.5 hover:bg-rose-500/20"
-                  >
-                    <span>Practice & Remedy</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                {topic.mistakes && topic.mistakes.length > 0 && (
+                  <p className="text-xs text-[#85877E] line-clamp-1">
+                    {topic.mistakes.length} logged traps ({topic.mistakes.filter(m => !m.resolved).length} active)
+                  </p>
+                )}
               </div>
 
-              {item.topic.mistakes.length > 0 && (
-                <div className="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                  {item.topic.mistakes.map(m => (
-                    <div
-                      key={m.id}
-                      className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/40 flex items-start justify-between gap-3"
-                    >
-                      <div>
-                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 uppercase">
-                          {m.mistakeType.replace('_', ' ')}
-                        </span>
-                        <p className="text-xs font-medium text-slate-900 dark:text-white mt-1">
-                          {m.questionDescription}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          Remedy: {m.correctApproach}
-                        </p>
-                      </div>
-
-                      {m.resolved ? (
-                        <span className="text-xs font-semibold text-emerald-500 flex items-center gap-1">
-                          <CheckCircle2 className="w-4 h-4" /> Resolved
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold text-rose-500">Unresolved</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#A4B879] group-hover:translate-x-1 transition-transform shrink-0">
+                <span>Inspect Traps</span>
+                <ArrowRight className="w-4 h-4" />
+              </div>
             </div>
           ))
-        ) : (
-          <div className="py-16 text-center text-xs text-slate-400">
-            ✨ No weak topics found for this filter. Excellent preparation!
-          </div>
         )}
       </div>
     </div>
