@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import {
   Exam,
   Subject,
@@ -16,11 +16,9 @@ import {
   PlannerTask,
   PlannerColumnStatus
 } from '../types/syllabus';
-import { SyncStatusType, CloudBackendConfig, CloudSyncPayload } from '../types/cloudSync';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
 import { soundManager } from '../utils/soundEffects';
-import { cloudSyncEngine } from '../services/cloudSyncEngine';
 import { useAuth } from './AuthContext';
 import confetti from 'canvas-confetti';
 
@@ -108,15 +106,6 @@ interface SyllabusContextType {
   togglePlannerTask: (taskId: string) => void;
   movePlannerTask: (taskId: string, newStatus: PlannerColumnStatus) => void;
   deletePlannerTask: (taskId: string) => void;
-
-  // Cloud Sync
-  syncStatus: SyncStatusType;
-  lastSyncedAt: string | null;
-  cloudSyncId: string | null;
-  syncWithCloud: () => Promise<boolean>;
-  connectCloudSyncId: (id: string) => Promise<boolean>;
-  cloudConfig: CloudBackendConfig;
-  updateCloudConfig: (config: CloudBackendConfig) => void;
 
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
   updateTopicNotes: (topicId: string, notes: string) => void;
@@ -220,62 +209,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return INITIAL_PLANNER_TASKS;
   });
 
-  // Cloud Sync State
-  const [syncStatus, setSyncStatus] = useState<SyncStatusType>('synced');
-  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(() => cloudSyncEngine.getLastSyncTime());
-  const [cloudSyncId, setCloudSyncId] = useState<string | null>(() => cloudSyncEngine.getCloudSyncId());
-  const [cloudConfig, setCloudConfig] = useState<CloudBackendConfig>(() => cloudSyncEngine.getConfig());
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Sync profile name with user
+  // Sync profile name with logged-in user
   useEffect(() => {
     if (user?.name && profile.name !== user.name) {
       setProfile(p => ({ ...p, name: user.name }));
     }
   }, [user]);
-
-  // Check URL query parameters for ?sync=CLOUD_ID (Auto 1-Click Sync Link from QR or Message)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const querySyncId = params.get('sync');
-      if (querySyncId) {
-        cloudSyncEngine.connectByCloudId(querySyncId).then((remote) => {
-          if (remote) {
-            if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
-            if (remote.profile) setProfile(remote.profile);
-            if (remote.achievements) setAchievements(remote.achievements);
-            if (remote.activityHistory) setActivityHistory(remote.activityHistory);
-            if (remote.revisions) setRevisions(remote.revisions);
-            if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
-            setCloudSyncId(querySyncId);
-            setLastSyncedAt(remote.updatedAt);
-            setSyncStatus('synced');
-            soundManager.playCompleteChime();
-            confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
-          }
-        }).catch(() => {});
-      }
-    }
-  }, []);
-
-  // Initial Background Cloud Pull
-  useEffect(() => {
-    if (user?.email) {
-      cloudSyncEngine.fetchFromCloud(user.email).then((remote) => {
-        if (remote) {
-          if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
-          if (remote.profile) setProfile(remote.profile);
-          if (remote.achievements) setAchievements(remote.achievements);
-          if (remote.activityHistory) setActivityHistory(remote.activityHistory);
-          if (remote.revisions) setRevisions(remote.revisions);
-          if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
-          setLastSyncedAt(remote.updatedAt);
-          setSyncStatus('synced');
-        }
-      }).catch(() => {});
-    }
-  }, [user?.email]);
 
   // Save to LocalStorage
   useEffect(() => {
@@ -301,124 +240,6 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks));
   }, [plannerTasks]);
-
-  // Auto Cloud Push (Debounced 1.2s after any change)
-  useEffect(() => {
-    if (!user?.email) return;
-    setSyncStatus('syncing');
-
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(async () => {
-      const now = new Date().toISOString();
-      const payload: CloudSyncPayload = {
-        version: '1.0.0',
-        userId: user.id,
-        userEmail: user.email,
-        updatedAt: now,
-        deviceId: cloudSyncEngine.getDeviceId(),
-        exams,
-        profile,
-        achievements,
-        activityHistory,
-        revisions,
-        plannerTasks
-      };
-
-      const res = await cloudSyncEngine.pushToCloud(user.email, payload);
-      if (res.success) {
-        setSyncStatus('synced');
-        setLastSyncedAt(now);
-        if (res.cloudId) setCloudSyncId(res.cloudId);
-      } else {
-        setSyncStatus(navigator.onLine ? 'synced' : 'offline');
-      }
-    }, 1200);
-
-    return () => {
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-    };
-  }, [exams, profile, achievements, activityHistory, revisions, plannerTasks, user?.email]);
-
-  // Manual Sync
-  const syncWithCloud = async (): Promise<boolean> => {
-    if (!user?.email) return false;
-    setSyncStatus('syncing');
-    soundManager.playClick();
-
-    const now = new Date().toISOString();
-    const payload: CloudSyncPayload = {
-      version: '1.0.0',
-      userId: user.id,
-      userEmail: user.email,
-      updatedAt: now,
-      deviceId: cloudSyncEngine.getDeviceId(),
-      exams,
-      profile,
-      achievements,
-      activityHistory,
-      revisions,
-      plannerTasks
-    };
-
-    // Push local
-    const pushRes = await cloudSyncEngine.pushToCloud(user.email, payload);
-    if (pushRes.cloudId) setCloudSyncId(pushRes.cloudId);
-
-    // Pull latest
-    const remote = await cloudSyncEngine.fetchFromCloud(user.email);
-    if (remote) {
-      if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
-      if (remote.profile) setProfile(remote.profile);
-      if (remote.achievements) setAchievements(remote.achievements);
-      if (remote.activityHistory) setActivityHistory(remote.activityHistory);
-      if (remote.revisions) setRevisions(remote.revisions);
-      if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
-    }
-
-    setSyncStatus('synced');
-    setLastSyncedAt(now);
-    soundManager.playCompleteChime();
-    confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
-    return true;
-  };
-
-  // Connect and Import by Cloud Sync ID
-  const connectCloudSyncId = async (id: string): Promise<boolean> => {
-    soundManager.playClick();
-    setSyncStatus('syncing');
-
-    try {
-      const remote = await cloudSyncEngine.connectByCloudId(id);
-      if (remote) {
-        if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
-        if (remote.profile) setProfile(remote.profile);
-        if (remote.achievements) setAchievements(remote.achievements);
-        if (remote.activityHistory) setActivityHistory(remote.activityHistory);
-        if (remote.revisions) setRevisions(remote.revisions);
-        if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
-
-        setCloudSyncId(id.trim());
-        setLastSyncedAt(remote.updatedAt);
-        setSyncStatus('synced');
-        soundManager.playCompleteChime();
-        confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
-        return true;
-      }
-    } catch (e: any) {
-      setSyncStatus('error');
-      throw e;
-    }
-    return false;
-  };
-
-  const updateCloudConfig = (config: CloudBackendConfig) => {
-    setCloudConfig(config);
-    cloudSyncEngine.saveConfig(config);
-    soundManager.playClick();
-  };
 
   const currentExam = useMemo(() => {
     if (exams.length === 0) return undefined;
@@ -1158,13 +979,6 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         togglePlannerTask,
         movePlannerTask,
         deletePlannerTask,
-        syncStatus,
-        lastSyncedAt,
-        cloudSyncId,
-        syncWithCloud,
-        connectCloudSyncId,
-        cloudConfig,
-        updateCloudConfig,
         updateTopicStatus,
         updateTopicNotes,
         addTopicMistake,

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, ExternalLink, Timer, CloudCheck, Cloud, RefreshCw } from 'lucide-react';
+import { Search, Sun, Moon, Flame, Zap, ChevronDown, Volume2, VolumeX, ExternalLink, Timer } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 interface HeaderProps {
@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, onOpenFocus }) => {
   const { toggleTheme, isDark } = useTheme();
-  const { profile, updateProfile, exams, currentExam, setSelectedExamId, syncStatus, syncWithCloud } = useSyllabus();
+  const { profile, updateProfile, exams, currentExam, setSelectedExamId } = useSyllabus();
   const { user } = useAuth();
 
   const toggleSound = () => {
@@ -72,22 +72,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onOpenSettings, on
 
       {/* Right Controls */}
       <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-        {/* Live Cloud Sync Button / Badge */}
-        <button
-          onClick={() => syncWithCloud()}
-          title="Click to sync data with cloud across Mobile & PC"
-          className="flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold shadow-sm transition-all cursor-pointer shrink-0"
-        >
-          {syncStatus === 'syncing' ? (
-            <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-500" />
-          ) : (
-            <Cloud className="w-3.5 h-3.5 text-emerald-500" />
-          )}
-          <span className="hidden sm:inline">
-            {syncStatus === 'syncing' ? 'Syncing...' : 'Cloud Synced'}
-          </span>
-        </button>
-
         {/* 3D Focus Chamber Button */}
         {onOpenFocus && (
           <button

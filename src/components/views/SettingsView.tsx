@@ -19,16 +19,7 @@ import {
   HelpCircle,
   ExternalLink,
   LogOut,
-  ShieldCheck,
-  Cloud,
-  RefreshCw,
-  Server,
-  Key,
-  Check,
-  QrCode,
-  ArrowRight,
-  Copy,
-  Link2
+  ShieldCheck
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -41,14 +32,7 @@ export const SettingsView: React.FC = () => {
     exportData,
     importData,
     resetToDemo,
-    clearAllDemoData,
-    syncStatus,
-    lastSyncedAt,
-    cloudSyncId,
-    syncWithCloud,
-    connectCloudSyncId,
-    cloudConfig,
-    updateCloudConfig
+    clearAllDemoData
   } = useSyllabus();
 
   const { user, logout, updateUserSession } = useAuth();
@@ -60,60 +44,11 @@ export const SettingsView: React.FC = () => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  // Cloud ID Pairing State
-  const [inputSyncId, setInputSyncId] = useState('');
-  const [isPairingLoading, setIsPairingLoading] = useState(false);
-  const [pairError, setPairError] = useState<string | null>(null);
-  const [pairSuccess, setPairSuccess] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [copiedId, setCopiedId] = useState(false);
-
-  const syncLink = typeof window !== 'undefined' && cloudSyncId ? `${window.location.origin}/?sync=${cloudSyncId}` : '';
-  const qrCodeUrl = syncLink ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(syncLink)}&bgcolor=040714&color=00d2ff` : '';
-
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile({ name });
     updateUserSession({ name });
     soundManager.playClick();
-  };
-
-  const handleConnectSyncId = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputSyncId.trim()) return;
-    setIsPairingLoading(true);
-    setPairError(null);
-    setPairSuccess(false);
-
-    try {
-      const success = await connectCloudSyncId(inputSyncId.trim());
-      if (success) {
-        setPairSuccess(true);
-        setInputSyncId('');
-      }
-    } catch (e: any) {
-      setPairError(e.message || 'Error connecting to cloud vault.');
-    } finally {
-      setIsPairingLoading(false);
-    }
-  };
-
-  const handleCopyLink = () => {
-    if (syncLink) {
-      navigator.clipboard.writeText(syncLink);
-      setCopiedLink(true);
-      soundManager.playClick();
-      setTimeout(() => setCopiedLink(false), 2500);
-    }
-  };
-
-  const handleCopyId = () => {
-    if (cloudSyncId) {
-      navigator.clipboard.writeText(cloudSyncId);
-      setCopiedId(true);
-      soundManager.playClick();
-      setTimeout(() => setCopiedId(false), 2500);
-    }
   };
 
   const handleExport = () => {
@@ -163,7 +98,7 @@ export const SettingsView: React.FC = () => {
             <span>App Settings & Preferences</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Real-time cross-device sync between Mobile and PC, account details, and backup options.
+            Manage your account details, local data backup, audio preferences, and offline app status.
           </p>
         </div>
 
@@ -192,155 +127,6 @@ export const SettingsView: React.FC = () => {
             <span>Log Out</span>
           </button>
         )}
-      </div>
-
-      {/* 1. REAL-TIME CLOUD SYNC HUB WITH QR CODE & 1-CLICK SYNC LINK */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-blue-950/30 to-slate-900 border border-cyan-500/30 shadow-xl space-y-5">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
-              <Cloud className="w-6 h-6 animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h4 className="text-sm sm:text-base font-bold text-white">
-                  Real-Time Cross-Device Sync (PC ⇄ Mobile)
-                </h4>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-cyan-500/20 text-cyan-400 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                  <span>{syncStatus === 'syncing' ? 'Syncing...' : 'Live Synced'}</span>
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 mt-0.5">
-                Scan QR or link Cloud ID to sync your PC syllabus and notes directly to your phone!
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => syncWithCloud()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-xs font-bold shadow-md shadow-cyan-500/25 transition-all cursor-pointer shrink-0"
-          >
-            <RefreshCw className={`w-4 h-4 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
-            <span>Force Sync Now</span>
-          </button>
-        </div>
-
-        {/* 2-Column QR & Device Link Vault */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {/* Column 1: QR Code & 1-Click Sync Link (On PC) */}
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between space-y-3">
-              <div>
-                <span className="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
-                  <QrCode className="w-4 h-4" />
-                  <span>Option 1: Scan QR Code with Phone</span>
-                </span>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Apne Mobile phone ke camera se QR scan karein — website turant PC ke data ke sath khul jayegi!
-                </p>
-              </div>
-
-              {cloudSyncId ? (
-                <div className="flex flex-col sm:flex-row items-center gap-4 py-2">
-                  <div className="p-2 rounded-2xl bg-[#040714] border border-cyan-500/40 shadow-lg shrink-0">
-                    <img src={qrCodeUrl} alt="Sync QR Code" className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl object-contain" />
-                  </div>
-                  <div className="space-y-2 text-left w-full">
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">1-Click Sync Link:</span>
-                    <button
-                      onClick={handleCopyLink}
-                      className="w-full flex items-center justify-between p-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition-all cursor-pointer"
-                    >
-                      <div className="flex items-center gap-1.5 truncate pr-2">
-                        <Link2 className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Copy Sync Link</span>
-                      </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/30 text-white shrink-0">
-                        {copiedLink ? 'Copied ✓' : 'Copy'}
-                      </span>
-                    </button>
-
-                    <button
-                      onClick={handleCopyId}
-                      className="w-full flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-[11px] font-mono transition-all cursor-pointer"
-                    >
-                      <span className="truncate pr-2">{cloudSyncId}</span>
-                      <Copy className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-6 text-center text-xs text-slate-400">
-                  <button
-                    onClick={() => syncWithCloud()}
-                    className="px-4 py-2 rounded-xl bg-cyan-500 text-white font-bold"
-                  >
-                    Generate Cloud Sync ID
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Column 2: Paste Cloud ID on Mobile */}
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between space-y-3">
-              <div>
-                <span className="text-xs font-bold text-brand-400 flex items-center gap-1.5">
-                  <Key className="w-4 h-4" />
-                  <span>Option 2: Enter Cloud Sync ID</span>
-                </span>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Agar aap link ya QR use nahi kar rahe, to PC ka Cloud Sync ID yahan paste karein:
-                </p>
-              </div>
-
-              <form onSubmit={handleConnectSyncId} className="space-y-3">
-                <input
-                  type="text"
-                  value={inputSyncId}
-                  onChange={(e) => setInputSyncId(e.target.value)}
-                  placeholder="Paste Cloud Sync ID (e.g. ff8081819...)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs sm:text-sm font-mono font-bold text-white focus:ring-2 focus:ring-brand-500 placeholder-slate-500"
-                />
-
-                <button
-                  type="submit"
-                  disabled={isPairingLoading || !inputSyncId.trim()}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 hover:from-brand-600 hover:to-purple-700 disabled:opacity-50 text-white text-xs font-bold shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isPairingLoading ? 'animate-spin' : ''}`} />
-                  <span>{isPairingLoading ? 'Connecting...' : 'Connect & Import Everything'}</span>
-                </button>
-
-                {pairSuccess && (
-                  <p className="text-xs text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> All PC syllabus & notes successfully synced!
-                  </p>
-                )}
-                {pairError && (
-                  <p className="text-xs text-rose-400 font-bold animate-fade-in">
-                    ⚠ {pairError}
-                  </p>
-                )}
-              </form>
-            </div>
-          </div>
-        </div>
-
-        {/* Sync Status Details */}
-        <div className="pt-2 border-t border-cyan-500/20 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
-          <div className="flex items-center gap-2">
-            <span>Active Cloud Vault ID:</span>
-            <span className="font-bold text-cyan-400 font-mono">{cloudSyncId || 'Generating...'}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span>Last Sync Time:</span>
-            <span className="font-bold text-white">
-              {lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Just now'}
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Authenticated User Account Card */}
