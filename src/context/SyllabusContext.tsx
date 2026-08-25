@@ -112,9 +112,9 @@ interface SyllabusContextType {
   // Cloud Sync
   syncStatus: SyncStatusType;
   lastSyncedAt: string | null;
+  cloudSyncId: string | null;
   syncWithCloud: () => Promise<boolean>;
-  generatePairCode: () => Promise<string>;
-  importByPairCode: (code: string) => Promise<boolean>;
+  connectCloudSyncId: (id: string) => Promise<boolean>;
   cloudConfig: CloudBackendConfig;
   updateCloudConfig: (config: CloudBackendConfig) => void;
 
@@ -223,17 +223,43 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Cloud Sync State
   const [syncStatus, setSyncStatus] = useState<SyncStatusType>('synced');
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(() => cloudSyncEngine.getLastSyncTime());
+  const [cloudSyncId, setCloudSyncId] = useState<string | null>(() => cloudSyncEngine.getCloudSyncId());
   const [cloudConfig, setCloudConfig] = useState<CloudBackendConfig>(() => cloudSyncEngine.getConfig());
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync profile name with logged-in user
+  // Sync profile name with user
   useEffect(() => {
     if (user?.name && profile.name !== user.name) {
       setProfile(p => ({ ...p, name: user.name }));
     }
   }, [user]);
 
-  // Initial Cloud Pull on Login or App Start
+  // Check URL query parameters for ?sync=CLOUD_ID (Auto 1-Click Sync Link from QR or Message)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const querySyncId = params.get('sync');
+      if (querySyncId) {
+        cloudSyncEngine.connectByCloudId(querySyncId).then((remote) => {
+          if (remote) {
+            if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
+            if (remote.profile) setProfile(remote.profile);
+            if (remote.achievements) setAchievements(remote.achievements);
+            if (remote.activityHistory) setActivityHistory(remote.activityHistory);
+            if (remote.revisions) setRevisions(remote.revisions);
+            if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
+            setCloudSyncId(querySyncId);
+            setLastSyncedAt(remote.updatedAt);
+            setSyncStatus('synced');
+            soundManager.playCompleteChime();
+            confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
+          }
+        }).catch(() => {});
+      }
+    }
+  }, []);
+
+  // Initial Background Cloud Pull
   useEffect(() => {
     if (user?.email) {
       cloudSyncEngine.fetchFromCloud(user.email).then((remote) => {
@@ -301,10 +327,11 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         plannerTasks
       };
 
-      const ok = await cloudSyncEngine.pushToCloud(user.email, payload);
-      if (ok) {
+      const res = await cloudSyncEngine.pushToCloud(user.email, payload);
+      if (res.success) {
         setSyncStatus('synced');
         setLastSyncedAt(now);
+        if (res.cloudId) setCloudSyncId(res.cloudId);
       } else {
         setSyncStatus(navigator.onLine ? 'synced' : 'offline');
       }
@@ -337,7 +364,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     // Push local
-    await cloudSyncEngine.pushToCloud(user.email, payload);
+    const pushRes = await cloudSyncEngine.pushToCloud(user.email, payload);
+    if (pushRes.cloudId) setCloudSyncId(pushRes.cloudId);
 
     // Pull latest
     const remote = await cloudSyncEngine.fetchFromCloud(user.email);
@@ -357,48 +385,32 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return true;
   };
 
-  // Generate 6-Digit Pair Code
-  const generatePairCode = async (): Promise<string> => {
-    soundManager.playClick();
-    const now = new Date().toISOString();
-    const payload: CloudSyncPayload = {
-      version: '1.0.0',
-      userId: user?.id || 'guest',
-      userEmail: user?.email || profile.name,
-      updatedAt: now,
-      deviceId: cloudSyncEngine.getDeviceId(),
-      exams,
-      profile,
-      achievements,
-      activityHistory,
-      revisions,
-      plannerTasks
-    };
-
-    return await cloudSyncEngine.generatePairCode(payload);
-  };
-
-  // Import by 6-Digit Pair Code
-  const importByPairCode = async (code: string): Promise<boolean> => {
+  // Connect and Import by Cloud Sync ID
+  const connectCloudSyncId = async (id: string): Promise<boolean> => {
     soundManager.playClick();
     setSyncStatus('syncing');
 
-    const remote = await cloudSyncEngine.importByPairCode(code);
-    if (remote) {
-      if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
-      if (remote.profile) setProfile(remote.profile);
-      if (remote.achievements) setAchievements(remote.achievements);
-      if (remote.activityHistory) setActivityHistory(remote.activityHistory);
-      if (remote.revisions) setRevisions(remote.revisions);
-      if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
+    try {
+      const remote = await cloudSyncEngine.connectByCloudId(id);
+      if (remote) {
+        if (remote.exams && remote.exams.length > 0) setExams(remote.exams);
+        if (remote.profile) setProfile(remote.profile);
+        if (remote.achievements) setAchievements(remote.achievements);
+        if (remote.activityHistory) setActivityHistory(remote.activityHistory);
+        if (remote.revisions) setRevisions(remote.revisions);
+        if (remote.plannerTasks) setPlannerTasks(remote.plannerTasks);
 
-      setLastSyncedAt(remote.updatedAt);
-      setSyncStatus('synced');
-      soundManager.playCompleteChime();
-      confetti({ particleCount: 50, spread: 70, origin: { y: 0.7 } });
-      return true;
+        setCloudSyncId(id.trim());
+        setLastSyncedAt(remote.updatedAt);
+        setSyncStatus('synced');
+        soundManager.playCompleteChime();
+        confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
+        return true;
+      }
+    } catch (e: any) {
+      setSyncStatus('error');
+      throw e;
     }
-    setSyncStatus('error');
     return false;
   };
 
@@ -1148,9 +1160,9 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deletePlannerTask,
         syncStatus,
         lastSyncedAt,
+        cloudSyncId,
         syncWithCloud,
-        generatePairCode,
-        importByPairCode,
+        connectCloudSyncId,
         cloudConfig,
         updateCloudConfig,
         updateTopicStatus,
