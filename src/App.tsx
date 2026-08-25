@@ -18,6 +18,7 @@ import { AddTopicModal } from './components/modals/AddTopicModal';
 import { TopicDetailDrawer } from './components/modals/TopicDetailDrawer';
 import { RevisionSessionModal } from './components/modals/RevisionSessionModal';
 import { PomodoroFocusModal } from './components/focus/PomodoroFocusModal';
+import { AnimatedLogoIntro } from './components/intro/AnimatedLogoIntro';
 import { Topic } from './types/syllabus';
 import { useAuth } from './context/AuthContext';
 import { AuthLayout } from './components/auth/AuthLayout';
@@ -32,6 +33,9 @@ export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>('overview');
   const [viewHistory, setViewHistory] = useState<AppView[]>([]);
   const [targetSubjectId, setTargetSubjectId] = useState<string>('');
+
+  // 3D Animated Startup Logo Experience
+  const [showIntro, setShowIntro] = useState<boolean>(true);
 
   // Mobile Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -166,6 +170,12 @@ export const App: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-[#FAF8F5] dark:bg-[#171717] text-[#171717] dark:text-[#F5E6C8] antialiased font-sans transition-colors duration-200">
+      
+      {/* 3D Animated Startup Intro Experience */}
+      {showIntro && (
+        <AnimatedLogoIntro onComplete={() => setShowIntro(false)} />
+      )}
+
       <Sidebar
         activeView={currentView}
         onSelectView={handleNavigate}
