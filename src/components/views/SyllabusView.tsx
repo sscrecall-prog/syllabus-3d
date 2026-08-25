@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { StatusBadge } from '../common/StatusBadge';
 import { ProgressRing } from '../common/ProgressRing';
 import { Topic, TopicStatus, Chapter, Subject } from '../../types/syllabus';
 import {
@@ -14,7 +13,15 @@ import {
   Globe,
   Edit2,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  FileText,
+  Zap,
+  Sparkles,
+  Layers,
+  X
 } from 'lucide-react';
 import { formatTimeAgo } from '../../utils/dateUtils';
 import { EditSubjectModal } from '../modals/EditSubjectModal';
@@ -23,13 +30,15 @@ import { EditChapterModal } from '../modals/EditChapterModal';
 interface SyllabusViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
   onOpenAddTopic: () => void;
+  onOpenFocus?: (topicId?: string) => void;
 }
 
 export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onOpenTopicDrawer,
   onOpenAddTopic,
+  onOpenFocus
 }) => {
-  const { currentExam, deleteTopic } = useSyllabus();
+  const { currentExam, deleteTopic, updateTopicStatus } = useSyllabus();
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,60 +105,119 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
   if (!currentExam || !activeSubject) return null;
 
+  const totalTopicsInSubject = activeSubject.chapters.reduce((acc, ch) => acc + ch.topics.length, 0);
+  const completedTopicsInSubject = activeSubject.chapters.reduce(
+    (acc, ch) => acc + ch.topics.filter(t => t.status === 'completed').length,
+    0
+  );
+  const subjectMasteryPercent = totalTopicsInSubject > 0
+    ? Math.round((completedTopicsInSubject / totalTopicsInSubject) * 100)
+    : 0;
+
+  const getDifficultyColor = (diff: string) => {
+    if (diff === 'Easy') return 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+    if (diff === 'Hard') return 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/30';
+    return 'text-[#8C6D15] dark:text-[#D4AF37] bg-[#D4AF37]/15 border-[#D4AF37]/35';
+  };
+
+  const getStatusBadgeUI = (status: TopicStatus) => {
+    switch (status) {
+      case 'completed':
+        return {
+          label: 'Mastered ✓',
+          classes: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/40 font-bold'
+        };
+      case 'in_progress':
+        return {
+          label: 'In Progress ⚡',
+          classes: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/40 font-bold'
+        };
+      case 'revision_due':
+        return {
+          label: 'Revise Due ⏳',
+          classes: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/40 font-bold'
+        };
+      case 'weak':
+        return {
+          label: 'Weak Topic ⚠️',
+          classes: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/40 font-bold'
+        };
+      default:
+        return {
+          label: 'Not Started ⭕',
+          classes: 'bg-[#FAF8F5] dark:bg-[#1A1A1A] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#383838]'
+        };
+    }
+  };
+
   return (
-    <div className="space-y-4 sm:space-y-6 pb-16">
-      <div className="flex items-center justify-between gap-3">
+    <div className="space-y-6 pb-16">
+      {/* 1. Header with Title and Add Topic Action */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Syllabus Explorer
+          <h2 className="text-xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] tracking-tight flex items-center gap-2.5">
+            <span>Syllabus Explorer</span>
+            <span className="px-2.5 py-0.5 text-xs font-black rounded-full bg-[#D4AF37]/20 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/40 font-mono">
+              {completedTopicsInSubject}/{totalTopicsInSubject} Mastered ({subjectMasteryPercent}%)
+            </span>
           </h2>
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-            Manage subjects, chapters, topics, and subtopics.
+          <p className="text-xs sm:text-sm text-[#6B7280] mt-1 font-medium">
+            Manage your exam subjects, chapters, topics, and subtopics with one-click mastery tracking.
           </p>
         </div>
 
         <button
           onClick={onOpenAddTopic}
-          className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-md transition-all shrink-0"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/25 hover:shadow-lg transition-all active:scale-98 cursor-pointer shrink-0"
         >
-          <Plus className="w-4 h-4" />
-          <span className="hidden xs:inline">Add Topic / Subject</span>
+          <Plus className="w-4 h-4 stroke-[3]" />
+          <span>Add Custom Topic</span>
         </button>
       </div>
 
-      {/* Swipeable Subject Picker with Quick Edit */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1.5 -mx-1 px-1 flex-1">
+      {/* 2. Luxury Horizontal Subject Selector Carousel */}
+      <div className="flex items-center gap-2.5 p-2 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {currentExam.subjects.map(subj => {
             const isActive = activeSubject.id === subj.id;
             const IconComponent = iconMap[subj.icon] || BookOpen;
+            const chCount = subj.chapters.length;
+
             return (
               <button
                 key={subj.id}
                 onClick={() => setSelectedSubjectId(subj.id)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all whitespace-nowrap cursor-pointer border ${
                   isActive
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 shadow-sm'
-                    : 'bg-slate-100/80 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 border-transparent'
+                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#B89327] text-[#171717] border-transparent shadow-md shadow-[#D4AF37]/25 scale-[1.02]'
+                    : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] dark:text-[#A0A0A0] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] hover:text-[#171717] dark:hover:text-white'
                 }`}
               >
                 <div
-                  className="w-5 h-5 rounded-md flex items-center justify-center"
-                  style={{ backgroundColor: `${subj.color}20`, color: subj.color }}
+                  className={`w-6 h-6 rounded-xl flex items-center justify-center ${
+                    isActive
+                      ? 'bg-black/15 text-[#171717]'
+                      : 'bg-[#D4AF37]/15 text-[#D4AF37]'
+                  }`}
                 >
-                  <IconComponent className="w-3 h-3" />
+                  <IconComponent className="w-3.5 h-3.5" />
                 </div>
                 <span>{subj.name}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
+                  isActive ? 'bg-black/15 text-[#171717]' : 'bg-slate-200 dark:bg-[#2A2A2A] text-[#6B7280]'
+                }`}>
+                  {chCount} ch
+                </span>
               </button>
             );
           })}
         </div>
 
-        {/* Active Subject Settings Button */}
+        {/* Edit Subject Settings Trigger */}
         {activeSubject && (
           <button
             onClick={() => setEditingSubject(activeSubject)}
-            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors shrink-0"
+            className="p-2.5 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37] text-[#6B7280] hover:text-[#D4AF37] transition-all cursor-pointer shrink-0"
             title="Edit Active Subject"
           >
             <Edit2 className="w-4 h-4" />
@@ -157,35 +225,45 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         )}
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="space-y-2.5 sm:space-y-0 sm:flex items-center justify-between gap-3 p-2.5 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+      {/* 3. Luxury Search & Filter Toolbar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 p-3.5 sm:p-4 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-full sm:max-w-xs">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D4AF37] pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            placeholder="Filter topics..."
-            className="w-full pl-8.5 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+            placeholder="Search topics or subtopics..."
+            className="w-full pl-10 pr-8 py-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
           />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
-        <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
           {[
             { id: 'all', label: 'All' },
-            { id: 'completed', label: 'Done' },
-            { id: 'in_progress', label: 'In Prog' },
-            { id: 'revision_due', label: 'Revise' },
-            { id: 'weak', label: 'Weak' },
-            { id: 'not_started', label: 'New' },
+            { id: 'completed', label: '✓ Mastered' },
+            { id: 'in_progress', label: '⚡ In Progress' },
+            { id: 'revision_due', label: '⏳ Revise Due' },
+            { id: 'weak', label: '⚠️ Weak Topics' },
+            { id: 'not_started', label: '⭕ Not Started' },
           ].map(filt => (
             <button
               key={filt.id}
               onClick={() => setStatusFilter(filt.id as TopicStatus | 'all')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-all whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                 statusFilter === filt.id
-                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
+                  : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
               }`}
             >
               {filt.label}
@@ -194,8 +272,8 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* Chapters Accordion */}
-      <div className="space-y-3.5 sm:space-y-5">
+      {/* 4. Chapters Accordion Stack */}
+      <div className="space-y-4">
         {filteredChapters.map(chapter => {
           const isExpanded = expandedChapters[chapter.id];
           const chCompleted = chapter.topics.filter(t => t.status === 'completed').length;
@@ -204,113 +282,146 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           return (
             <div
               key={chapter.id}
-              className="rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden"
+              className="rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-lg overflow-hidden transition-all"
             >
-              <div className="p-3.5 sm:p-5 flex items-center justify-between gap-3 bg-slate-50/40 dark:bg-slate-800/20">
+              {/* Chapter Card Header */}
+              <div className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-[#FAF8F5]/70 dark:bg-[#1A1A1A]/70 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E]">
                 <div
                   onClick={() => toggleChapter(chapter.id)}
-                  className="flex items-center gap-2.5 sm:gap-3.5 flex-1 min-w-0 cursor-pointer"
+                  className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer group"
                 >
-                  <div className="p-1 sm:p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">
+                  <div className="p-2 rounded-xl bg-white dark:bg-[#242424] border border-[#EBD3A0]/60 dark:border-[#383838] text-[#D4AF37] shrink-0 group-hover:scale-105 transition-transform">
                     {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </div>
                   <div>
-                    <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">
+                    <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors">
                       {chapter.name}
                     </h4>
-                    <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
-                      {chapter.description}
+                    <p className="text-[11px] text-[#6B7280] line-clamp-1">
+                      {chapter.description || 'Custom study unit'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <div className="flex items-center gap-3 shrink-0">
                   <div className="hidden sm:flex flex-col items-end">
-                    <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                      {chCompleted} / {chapter.topics.length} Topics
+                    <span className="text-xs font-bold text-[#171717] dark:text-[#F5E6C8] font-mono">
+                      {chCompleted} / {chapter.topics.length} Mastered
                     </span>
-                    <div className="w-20 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 mt-1 overflow-hidden">
+                    <div className="w-24 h-1.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] mt-1 overflow-hidden">
                       <div
-                        className="h-full bg-brand-500 rounded-full"
+                        className="h-full bg-gradient-to-r from-[#D4AF37] to-emerald-500 rounded-full transition-all duration-500"
                         style={{ width: `${chPercent}%` }}
                       />
                     </div>
                   </div>
-                  <ProgressRing progress={chPercent} size={40} strokeWidth={3.5} color={activeSubject.color} />
+
+                  <span className="px-2.5 py-1 text-xs font-black rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/30 font-mono">
+                    {chPercent}%
+                  </span>
 
                   <button
                     onClick={() => setEditingChapter({ subjectId: activeSubject.id, chapter })}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
-                    title="Edit Chapter"
+                    className="p-2 rounded-xl text-[#6B7280] hover:text-[#D4AF37] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#282828] transition-colors cursor-pointer"
+                    title="Edit Chapter Details"
                   >
-                    <Edit2 className="w-3.5 h-3.5" />
+                    <Edit2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
+              {/* Topics List Rows */}
               {isExpanded && (
-                <div className="border-t border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800/50">
+                <div className="divide-y divide-[#EBD3A0]/40 dark:divide-[#282828]">
                   {chapter.topics.length > 0 ? (
-                    chapter.topics.map(topic => (
-                      <div
-                        key={topic.id}
-                        onClick={() => onOpenTopicDrawer(topic, activeSubject.name, chapter.name)}
-                        className="group p-3 sm:p-4 pl-4 sm:pl-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 cursor-pointer hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                            <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-500">
-                              {topic.name}
-                            </h5>
-                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                              {topic.difficulty}
-                            </span>
-                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-brand-500/10 text-brand-600 dark:text-brand-400">
-                              {topic.weightage} Marks
-                            </span>
+                    chapter.topics.map(topic => {
+                      const badge = getStatusBadgeUI(topic.status);
+                      const hasNotes = Boolean(topic.notes && topic.notes.trim().length > 0);
+                      const mistakeCount = topic.mistakes?.length || 0;
+
+                      return (
+                        <div
+                          key={topic.id}
+                          onClick={() => onOpenTopicDrawer(topic, activeSubject.name, chapter.name)}
+                          className="group p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FAF8F5] dark:hover:bg-[#1A1A1A] transition-all"
+                        >
+                          <div className="flex-1 min-w-0 space-y-1.5">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h5 className="text-xs sm:text-sm font-extrabold text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors">
+                                {topic.name}
+                              </h5>
+
+                              {/* Difficulty Badge */}
+                              <span className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border ${getDifficultyColor(topic.difficulty)}`}>
+                                {topic.difficulty}
+                              </span>
+
+                              {/* Notes Indicator */}
+                              {hasNotes && (
+                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/30 flex items-center gap-1">
+                                  <FileText className="w-3 h-3" />
+                                  <span>Notes</span>
+                                </span>
+                              )}
+
+                              {/* Mistakes Indicator */}
+                              {mistakeCount > 0 && (
+                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3" />
+                                  <span>{mistakeCount} Mistake{mistakeCount > 1 ? 's' : ''}</span>
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Subtopics Checklist Chips */}
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {topic.subtopics.slice(0, 4).map((sub, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-0.5 rounded-md bg-white dark:bg-[#262626] border border-[#EBD3A0]/60 dark:border-[#333333] text-[#6B7280] dark:text-[#B0B0B0] text-[10px] font-medium"
+                                >
+                                  {sub}
+                                </span>
+                              ))}
+                              {topic.subtopics.length > 4 && (
+                                <span className="text-[10px] font-bold text-[#D4AF37]">
+                                  +{topic.subtopics.length - 4} more
+                                </span>
+                              )}
+                            </div>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-1">
-                            {topic.subtopics.slice(0, 3).map((s, i) => (
-                              <span
-                                key={i}
-                                className="px-1.5 py-0.5 rounded-md bg-slate-100/70 dark:bg-slate-800/70 text-slate-700 dark:text-slate-300 text-[10px]"
-                              >
-                                {s}
-                              </span>
-                            ))}
-                            {topic.subtopics.length > 3 && (
-                              <span className="text-[10px] text-slate-400">
-                                +{topic.subtopics.length - 3} more
+                          {/* Right Side: Status Badge, Last Studied & Quick Actions */}
+                          <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EBD3A0]/30 dark:border-[#282828]">
+                            {topic.lastStudied && (
+                              <span className="text-[10px] font-medium text-[#6B7280]">
+                                {formatTimeAgo(topic.lastStudied)}
                               </span>
                             )}
+
+                            {/* Status Chip Button */}
+                            <span className={`px-3 py-1 text-xs rounded-xl border ${badge.classes}`}>
+                              {badge.label}
+                            </span>
+
+                            {/* Delete Topic Action */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteTopic(topic.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-[#6B7280] hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                              title="Delete Topic"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
-
-                        <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2.5 shrink-0">
-                          {topic.lastStudied && (
-                            <span className="text-[10px] text-slate-400">
-                              {formatTimeAgo(topic.lastStudied)}
-                            </span>
-                          )}
-                          <StatusBadge status={topic.status} size="sm" />
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteTopic(topic.id);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all"
-                            title="Delete Topic"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
-                    <div className="p-5 text-center text-xs text-slate-400">
-                      No topics in this chapter. Click &quot;Add Topic&quot; above to add concepts.
+                    <div className="p-8 text-center text-xs text-[#6B7280]">
+                      No topics in this chapter. Click &quot;Add Custom Topic&quot; to add concepts.
                     </div>
                   )}
                 </div>
