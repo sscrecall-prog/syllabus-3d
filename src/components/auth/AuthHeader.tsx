@@ -16,14 +16,14 @@ export const AuthHeader: React.FC<AuthHeaderProps> = ({ title, subtitle }) => {
       <button
         onClick={toggleTheme}
         type="button"
-        className="absolute top-0 right-0 p-2 rounded-2xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+        className="absolute top-0 right-0 p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#2A2A2A] text-[#6B7280] dark:text-[#F5E6C8] hover:border-[#D4AF37] border border-[#EBD3A0]/60 dark:border-[#383838] transition-colors cursor-pointer"
         title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       >
-        {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+        {isDark ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-[#6B7280]" />}
       </button>
 
       {/* App Logo */}
-      <div className="w-16 h-16 sm:w-20 sm:h-20 mb-4 p-2 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xl flex items-center justify-center">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 mb-4 p-2 rounded-3xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#333333] shadow-xl flex items-center justify-center">
         <img
           src="/logo.png"
           alt="SYLLABUS 3D Logo"
@@ -32,10 +32,10 @@ export const AuthHeader: React.FC<AuthHeaderProps> = ({ title, subtitle }) => {
       </div>
 
       {/* Heading & Subtitle */}
-      <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+      <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#171717] dark:text-[#F5E6C8]">
         {title}
       </h1>
-      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-sm">
+      <p className="text-xs sm:text-sm text-[#6B7280] mt-1.5 max-w-sm">
         {subtitle}
       </p>
     </div>

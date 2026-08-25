@@ -74,7 +74,7 @@ export const App: React.FC = () => {
 
   // 3. Authenticated Main Application Flow
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200">
+    <div className="flex min-h-screen bg-[#FAF8F5] dark:bg-[#171717] text-[#171717] dark:text-[#F5E6C8] antialiased font-sans transition-colors duration-200">
       {/* Desktop Sidebar */}
       <Sidebar
         activeView={currentView}
@@ -146,6 +146,7 @@ export const App: React.FC = () => {
       <MobileNav
         activeView={currentView}
         onSelectView={setCurrentView}
+        onOpenAddTopic={() => setIsAddTopicOpen(true)}
         onOpenFocus={() => handleLaunchFocus(undefined)}
       />
 

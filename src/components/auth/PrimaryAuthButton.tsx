@@ -7,23 +7,22 @@ interface PrimaryAuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 }
 
 export const PrimaryAuthButton: React.FC<PrimaryAuthButtonProps> = ({
-  isLoading = false,
-  disabled,
+  isLoading,
   children,
   className = '',
+  disabled,
   ...props
 }) => {
   return (
     <button
-      type="submit"
-      disabled={disabled || isLoading}
-      className={`w-full h-[52px] sm:h-[54px] rounded-2xl bg-gradient-to-r from-brand-500 via-indigo-600 to-purple-600 hover:from-brand-600 hover:to-purple-700 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-brand-500/25 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 transition-all flex items-center justify-center gap-2.5 cursor-pointer ${className}`}
       {...props}
+      disabled={isLoading || disabled}
+      className={`w-full h-12 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B89327] hover:from-[#DFC077] hover:to-[#D4AF37] text-[#171717] font-black text-sm shadow-md shadow-[#D4AF37]/25 hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer ${className}`}
     >
       {isLoading ? (
         <>
-          <Loader2 className="w-5 h-5 animate-spin" />
-          <span>Processing...</span>
+          <Loader2 className="w-4 h-4 animate-spin text-[#171717]" />
+          <span>Please wait...</span>
         </>
       ) : (
         children
