@@ -14,19 +14,29 @@ import {
   Sparkles,
   BookOpen,
   Info,
-  Hash
+  Hash,
+  FileDown,
+  Printer,
+  ExternalLink
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
+import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
   topicName: string;
+  subjectName?: string;
+  chapterName?: string;
+  examName?: string;
   onSave: (content: string) => void;
 }
 
 export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = ({
   initialContent,
   topicName,
+  subjectName,
+  chapterName,
+  examName,
   onSave
 }) => {
   const [content, setContent] = useState(initialContent || '');
@@ -54,6 +64,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     setCopied(true);
     soundManager.playClick();
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExportPdf = () => {
+    soundManager.playCompleteChime();
+    generateAndOpenNotesPdf({
+      topicName,
+      subjectName,
+      chapterName,
+      examName: examName || 'SSC CGL 2026',
+      notes: content,
+      autoPrint: true
+    });
   };
 
   // Helper to insert markdown formatting at cursor
@@ -312,11 +334,23 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <button
+            onClick={handleExportPdf}
+            title="Export and Open Academic Notes as PDF in Chrome New Tab"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35]/15 hover:bg-[#596B35]/25 border border-[#596B35]/30 text-[#596B35] dark:text-[#A4B879] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+            <span>Save / Open PDF</span>
+            <span className="text-[9px] px-1 py-0.2 rounded bg-[#596B35] text-white font-mono font-bold">
+              NEW TAB
+            </span>
+          </button>
+
           <button
             onClick={handleCopy}
             title="Copy notes to clipboard"
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 flex items-center gap-1"
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 flex items-center gap-1 cursor-pointer"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
             <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
@@ -325,7 +359,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           {isEditing && (
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95"
             >
               {saveSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
               <span>{saveSuccess ? 'Saved!' : 'Save Notes'}</span>

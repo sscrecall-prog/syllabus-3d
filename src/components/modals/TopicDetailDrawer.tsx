@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Topic, TopicStatus, DifficultyLevel } from '../../types/syllabus';
+import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
   X,
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
+import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
 import { soundManager } from '../../utils/soundEffects';
 
 interface TopicDetailDrawerProps {
@@ -45,7 +46,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     deleteTopic,
     addSubtopic,
     deleteSubtopic,
-    updateTopicMetrics
+    updateTopicMetrics,
+    addTopicPdfAttachment,
+    deleteTopicPdfAttachment,
+    currentExam
   } = useSyllabus();
 
   const [notes, setNotes] = useState('');
@@ -227,12 +231,19 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           <div className="flex items-center px-4 sm:px-6 pt-3 pb-0 border-b border-[#D8D8CF] dark:border-[#30342B] bg-white dark:bg-[#151713] gap-2">
             {[
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
-              { id: 'notes', label: 'Academic Notes', icon: FileText },
+              {
+                id: 'notes',
+                label: 'Academic Notes',
+                icon: FileText,
+                badge: (topic.pdfAttachments && topic.pdfAttachments.length > 0) ? `${topic.pdfAttachments.length} PDF` : null,
+                badgeColor: 'bg-rose-500'
+              },
               {
                 id: 'mistakes',
                 label: 'Mistake & Trap Journal',
                 icon: ShieldAlert,
-                badge: activeMistakesCount > 0 ? activeMistakesCount : null
+                badge: activeMistakesCount > 0 ? activeMistakesCount : null,
+                badgeColor: 'bg-[#B94A48]'
               }
             ].map(tab => {
               const Icon = tab.icon;
@@ -253,7 +264,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   <Icon className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
                   {tab.badge && (
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[#B94A48] text-white">
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono text-white ${tab.badgeColor || 'bg-[#B94A48]'}`}>
                       {tab.badge}
                     </span>
                   )}
@@ -606,11 +617,30 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* NOTES TAB */}
             {activeTab === 'notes' && (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <ProfessionalNotesEditor
                   initialContent={notes}
                   onSave={handleSaveNotes}
                   topicName={topic.name}
+                  subjectName={subjectName}
+                  chapterName={chapterName}
+                  examName={currentExam?.name}
+                />
+
+                <TopicPdfAttachmentsSection
+                  topicId={topic.id}
+                  topicName={topic.name}
+                  attachments={topic.pdfAttachments || []}
+                  onAddAttachment={(newAttachment) => {
+                    if (addTopicPdfAttachment) {
+                      addTopicPdfAttachment(topic.id, newAttachment);
+                    }
+                  }}
+                  onDeleteAttachment={(attachmentId) => {
+                    if (deleteTopicPdfAttachment) {
+                      deleteTopicPdfAttachment(topic.id, attachmentId);
+                    }
+                  }}
                 />
               </div>
             )}

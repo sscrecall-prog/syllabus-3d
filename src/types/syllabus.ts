@@ -17,6 +17,15 @@ export interface MistakeRecord {
   mockSource?: string;
 }
 
+export interface TopicPdfAttachment {
+  id: string;
+  name: string;
+  fileSize: number;
+  uploadedAt: string;
+  url?: string;
+  storageKey?: string;
+}
+
 export interface Topic {
   id: string;
   name: string;
@@ -33,6 +42,8 @@ export interface Topic {
   weightage: number;
   notes: string;
   mistakes: MistakeRecord[];
+  pdfAttachments?: TopicPdfAttachment[];
+  pdfUrl?: string;
 }
 
 export interface Chapter {
