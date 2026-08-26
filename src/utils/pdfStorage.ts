@@ -123,23 +123,35 @@ export async function deletePdfFromStorage(id: string): Promise<void> {
 }
 
 /**
- * Open any PDF (Blob URL, Data URL, or HTTP URL) in a new Chrome tab
+ * Open any PDF (Blob URL, Data URL, or HTTP URL) in a new Chrome tab for viewing
  */
-export function openPdfInNewTab(url: string, title?: string): void {
+export function openPdfInNewTab(url: string, _title?: string): void {
   if (!url) return;
 
   const newTab = window.open(url, '_blank', 'noopener,noreferrer');
   if (newTab) {
     newTab.focus();
   } else {
-    // If popup blocked, create a temporary link and click it
+    // If popup blocked, create a temporary target=_blank link and click it
     const a = document.createElement('a');
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    if (title) a.download = title;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   }
+}
+
+/**
+ * Direct download of a PDF file
+ */
+export function downloadPdfFile(url: string, fileName: string): void {
+  if (!url) return;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }

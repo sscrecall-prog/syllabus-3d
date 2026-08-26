@@ -3,6 +3,7 @@ import {
   FileText,
   Upload,
   ExternalLink,
+  Eye,
   Trash2,
   Download,
   Plus,
@@ -123,6 +124,38 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
       const blobUrl = await getPdfBlobUrl(id);
       if (blobUrl) {
         openPdfInNewTab(blobUrl, attachment.name);
+      } else {
+        setErrorMessage('PDF file not found in local storage.');
+        setTimeout(() => setErrorMessage(null), 3000);
+      }
+    }
+  };
+
+  const handleDownloadPdf = async (attachment: TopicPdfAttachment) => {
+    soundManager.playCompleteChime();
+    const fileName = attachment.name.endsWith('.pdf') ? attachment.name : `${attachment.name}.pdf`;
+
+    if (attachment.url) {
+      const a = document.createElement('a');
+      a.href = attachment.url;
+      a.download = fileName;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    }
+
+    if (attachment.storageKey || attachment.id) {
+      const id = attachment.storageKey || attachment.id;
+      const blobUrl = await getPdfBlobUrl(id);
+      if (blobUrl) {
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       } else {
         setErrorMessage('PDF file not found in local storage.');
         setTimeout(() => setErrorMessage(null), 3000);
@@ -284,21 +317,34 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+                {/* 1. View PDF Button (Icon + Label) */}
                 <button
                   type="button"
                   onClick={() => handleOpenPdf(att)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold transition-all cursor-pointer active:scale-95"
-                  title="Open PDF in new Chrome Tab"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/25 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                  title="View PDF in new Chrome Tab"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Open in Tab</span>
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>View</span>
                 </button>
 
+                {/* 2. Download PDF Button (Icon + Label) */}
+                <button
+                  type="button"
+                  onClick={() => handleDownloadPdf(att)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                  title="Download PDF to device"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download</span>
+                </button>
+
+                {/* 3. Delete PDF Button */}
                 <button
                   type="button"
                   onClick={() => handleDelete(att)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
                   title="Remove PDF"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
