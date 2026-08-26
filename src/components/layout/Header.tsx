@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
-export type ThemeSystemMode = 'academic' | 'spatial';
+export type ThemeSystemMode = 'academic';
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -25,8 +25,6 @@ interface HeaderProps {
   canGoBack?: boolean;
   onGoBack?: () => void;
   currentViewTitle?: string;
-  themeSystem?: ThemeSystemMode;
-  onToggleThemeSystem?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,9 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMobileMenu,
   canGoBack = false,
   onGoBack,
-  currentViewTitle = 'SYLLABUS 3D',
-  themeSystem = 'academic',
-  onToggleThemeSystem
+  currentViewTitle = 'SYLLABUS 3D'
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
   const { user } = useAuth();
@@ -124,28 +120,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Side Tools */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
-          
-          {/* 1-CLICK MULTI-THEME SWITCHER PILL (ACADEMIC ⇄ SPATIAL GLASS) */}
-          {onToggleThemeSystem && (
-            <button
-              onClick={() => {
-                soundManager.playClick();
-                onToggleThemeSystem();
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-extrabold transition-all cursor-pointer shadow-subtle-depth active:scale-95 ${
-                themeSystem === 'spatial'
-                  ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 shadow-teal-500/10'
-                  : 'bg-white dark:bg-[#151713] text-[#596B35] dark:text-[#A4B879] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35]'
-              }`}
-              title="Toggle Theme: Academic Olive ⇄ Spatial VisionOS Glass"
-            >
-              <Sparkles className={`w-3.5 h-3.5 ${themeSystem === 'spatial' ? 'text-cyan-400' : 'text-[#596B35]'}`} />
-              <span className="hidden sm:inline">
-                {themeSystem === 'spatial' ? '🔮 Spatial Glass' : '🌿 Academic'}
-              </span>
-            </button>
-          )}
-
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
@@ -165,16 +139,14 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
 
-          {/* Theme Toggle (Light / Dark) — hidden in spatial mode */}
-          {themeSystem !== 'spatial' && (
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#191A17] dark:text-[#A7AA9C] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
-              title="Toggle Light/Dark Theme"
-            >
-              {isDarkMode ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
-            </button>
-          )}
+          {/* Theme Toggle (Light / Dark) */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#191A17] dark:text-[#A7AA9C] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
+            title="Toggle Light/Dark Theme"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
+          </button>
 
           {/* User Profile Avatar */}
           <button

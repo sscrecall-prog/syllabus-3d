@@ -43,17 +43,10 @@ import {
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
 import { PWAInstallModal } from '../modals/PWAInstallModal';
-import { ThemeSystemMode } from '../layout/Header';
 
-interface SettingsViewProps {
-  themeSystem?: ThemeSystemMode;
-  onSetThemeSystem?: (theme: ThemeSystemMode) => void;
-}
+interface SettingsViewProps {}
 
-export const SettingsView: React.FC<SettingsViewProps> = ({
-  themeSystem = 'academic',
-  onSetThemeSystem
-}) => {
+export const SettingsView: React.FC<SettingsViewProps> = () => {
   const {
     profile,
     updateProfile,
@@ -298,78 +291,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          2. VISUAL THEME SELECTOR
-          ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/20 flex items-center justify-center text-purple-500">
-              <Palette className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">Visual Theme System</h3>
-              <p className="text-[11px] text-[#6B7280]">Choose your preferred design language</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          {/* Academic Olive */}
-          <div
-            onClick={() => { if (onSetThemeSystem) { soundManager.playClick(); onSetThemeSystem('academic'); } }}
-            className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer space-y-3 active:scale-[0.98] ${
-              themeSystem === 'academic'
-                ? 'border-[#D4AF37] bg-gradient-to-br from-[#D4AF37]/5 to-amber-500/5 shadow-md shadow-[#D4AF37]/10'
-                : 'border-slate-200/60 dark:border-[#2A2A2A] bg-white/50 dark:bg-[#1A1A1A]/50 opacity-70 hover:opacity-100'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-[#171717] dark:text-[#F5E6C8]">🌿 Academic Olive</span>
-              {themeSystem === 'academic' && (
-                <span className="px-2.5 py-0.5 text-[9px] font-black rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C9A22E] text-[#171717] shadow-sm">ACTIVE</span>
-              )}
-            </div>
-            <p className="text-[11px] text-[#6B7280] leading-relaxed">
-              Warm neutral paper, deep charcoal typography, and olive accents. Built for long 6–8hr study sessions.
-            </p>
-            <div className="flex gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-[#F7F6F0] border border-slate-200" />
-              <span className="w-5 h-5 rounded-full bg-[#596B35]" />
-              <span className="w-5 h-5 rounded-full bg-[#11120F]" />
-              <span className="w-5 h-5 rounded-full bg-[#D8D8CF]" />
-            </div>
-          </div>
-
-          {/* Spatial VisionOS Glass */}
-          <div
-            onClick={() => { if (onSetThemeSystem) { soundManager.playCompleteChime(); onSetThemeSystem('spatial'); } }}
-            className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer space-y-3 active:scale-[0.98] ${
-              themeSystem === 'spatial'
-                ? 'border-[#C9AF46] bg-gradient-to-br from-[#982A26]/10 to-[#C9AF46]/5 shadow-md shadow-[#982A26]/10'
-                : 'border-slate-200/60 dark:border-[#2A2A2A] bg-white/50 dark:bg-[#1A1A1A]/50 opacity-70 hover:opacity-100'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-[#171717] dark:text-[#F5E6C8]">🔮 Spatial Glass</span>
-              {themeSystem === 'spatial' && (
-                <span className="px-2.5 py-0.5 text-[9px] font-black rounded-full bg-gradient-to-r from-[#982A26] to-[#C9AF46] text-[#F2E7D0] shadow-sm">ACTIVE</span>
-              )}
-            </div>
-            <p className="text-[11px] text-[#6B7280] leading-relaxed">
-              Deep maroon glass panels, crimson accents, warm cream typography, and golden glow. Regal & focused.
-            </p>
-            <div className="flex gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-[#470503] border border-[#982A26]/40" />
-              <span className="w-5 h-5 rounded-full bg-[#982A26]" />
-              <span className="w-5 h-5 rounded-full bg-[#F2E7D0]" />
-              <span className="w-5 h-5 rounded-full bg-[#C9AF46]" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════
-          3. EXAM COUNTDOWN CONFIGURATOR
+          2. EXAM COUNTDOWN CONFIGURATOR
           ═══════════════════════════════════════════════════ */}
       <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
         <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222] flex items-center justify-between">
@@ -488,7 +410,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          4. FLOATING BACKGROUND TIMER
+          3. FLOATING BACKGROUND TIMER
           ═══════════════════════════════════════════════════ */}
       <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
         <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222] flex items-center justify-between">
@@ -582,7 +504,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          5. PWA INSTALL STATUS
+          4. PWA INSTALL STATUS
           ═══════════════════════════════════════════════════ */}
       <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -619,7 +541,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          6. DATA BACKUP & EXPORT
+          5. DATA BACKUP & EXPORT
           ═══════════════════════════════════════════════════ */}
       <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
         <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222]">
