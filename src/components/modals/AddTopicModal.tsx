@@ -53,6 +53,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
   // Single Topic state
   const [singleTopicName, setSingleTopicName] = useState('');
   const [singleDifficulty, setSingleDifficulty] = useState<DifficultyLevel>('Medium');
+  const [singleWeightage, setSingleWeightage] = useState('');
   const [singleSubtopicsText, setSingleSubtopicsText] = useState('');
 
   // Bulk Multi-Topic state (Line by line paste)
@@ -133,10 +134,12 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
         .map(s => s.trim())
         .filter(Boolean);
 
+      const parsedWeightage = singleWeightage.trim() ? Number(singleWeightage) : 3;
+
       topicsToCreate.push({
         name: singleTopicName.trim(),
         difficulty: singleDifficulty,
-        weightage: 3,
+        weightage: parsedWeightage,
         subtopics: subtopics.length > 0 ? subtopics : ['Core Concepts']
       });
     } else {
@@ -404,17 +407,35 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B7280] mb-1">Difficulty</label>
-                  <select
-                    value={singleDifficulty}
-                    onChange={(e) => setSingleDifficulty(e.target.value as DifficultyLevel)}
-                    className="w-full p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
-                  >
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#6B7280] mb-1">Difficulty</label>
+                    <select
+                      value={singleDifficulty}
+                      onChange={(e) => setSingleDifficulty(e.target.value as DifficultyLevel)}
+                      className="w-full p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
+                    >
+                      <option value="Easy">Easy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Hard">Hard</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[11px] font-bold text-[#6B7280]">Weightage Marks</label>
+                      <span className="text-[10px] text-[#9CA3AF] font-medium">(Optional)</span>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={singleWeightage}
+                      onChange={(e) => setSingleWeightage(e.target.value)}
+                      placeholder="e.g. 4 (Optional)"
+                      className="w-full p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-semibold text-[#171717] dark:text-white"
+                    />
+                  </div>
                 </div>
 
                 <div>

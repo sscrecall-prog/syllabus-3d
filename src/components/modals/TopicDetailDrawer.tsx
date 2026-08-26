@@ -78,7 +78,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editDifficulty, setEditDifficulty] = useState<DifficultyLevel>('Medium');
-  const [editWeightage, setEditWeightage] = useState(4);
+  const [editWeightage, setEditWeightage] = useState<number | undefined>(undefined);
   const [newSubtopicInput, setNewSubtopicInput] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [accuracySavedNotice, setAccuracySavedNotice] = useState(false);
@@ -97,7 +97,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
       setStudyMinutesInput(liveTopic.studyTimeMinutes || 0);
       setEditName(liveTopic.name);
       setEditDifficulty(liveTopic.difficulty || 'Medium');
-      setEditWeightage(liveTopic.weightage || 4);
+      setEditWeightage(liveTopic.weightage !== undefined ? liveTopic.weightage : undefined);
     }
   }, [
     liveTopic?.id,
@@ -180,7 +180,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     editTopic(liveTopic.id, {
       name: editName.trim(),
       difficulty: editDifficulty,
-      weightage: Math.max(1, Math.min(10, Number(editWeightage)))
+      weightage: editWeightage !== undefined && editWeightage > 0 ? Number(editWeightage) : undefined
     });
 
     soundManager.playCompleteChime();
@@ -325,17 +325,24 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     </div>
                   </div>
 
-                  {/* Weightage Marks */}
+                  {/* Weightage Marks (Optional) */}
                   <div>
-                    <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A7AA9C] mb-1 uppercase font-mono">
-                      Weightage (1 - 10 Marks)
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A7AA9C] uppercase font-mono">
+                        Weightage Marks
+                      </label>
+                      <span className="text-[10px] text-[#85877E] font-medium">(Optional)</span>
+                    </div>
                     <input
                       type="number"
-                      min="1"
-                      max="10"
-                      value={editWeightage}
-                      onChange={e => setEditWeightage(Number(e.target.value))}
+                      min="0"
+                      max="100"
+                      value={editWeightage !== undefined ? editWeightage : ''}
+                      placeholder="e.g. 4 (Optional)"
+                      onChange={e => {
+                        const val = e.target.value.trim();
+                        setEditWeightage(val === '' ? undefined : Number(val));
+                      }}
                       className="w-full px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35]"
                     />
                   </div>
@@ -376,7 +383,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
               {
                 id: 'notes',
-                label: 'Academic Notes',
+                label: 'Notes',
                 icon: FileText,
                 badge: pdfCount > 0 ? `${pdfCount} PDF` : null,
                 badgeColor: 'bg-rose-500'
