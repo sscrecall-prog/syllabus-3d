@@ -179,7 +179,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen antialiased font-sans transition-colors duration-200 bg-[#F7F6F0] dark:bg-[#0D0E0C] text-[#191A17] dark:text-[#F4F4ED]">
+    <div className="flex min-h-screen antialiased font-sans transition-colors duration-200 bg-[#F7F6F0] dark:bg-[#0B0B0D] text-[#191A17] dark:text-[#F5F5F7]">
       
       {/* 3D Animated Startup Intro Experience */}
       {showIntro && (

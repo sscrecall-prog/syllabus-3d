@@ -84,7 +84,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
       {/* 1. Header with Title and Revision Session Launcher */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] tracking-tight flex items-center gap-2.5">
+          <h2 className="text-xl sm:text-3xl font-black text-[#171717] dark:text-[#F5F5F7] tracking-tight flex items-center gap-2.5">
             <RotateCw className="w-7 h-7 text-[#D4AF37]" />
             <span>Spaced Repetition & Revision Vault</span>
           </h2>
@@ -108,49 +108,49 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
       {/* 2. 4-Stage Retention Memory Pipeline Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* Stage 1 */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-2 relative overflow-hidden group hover:border-[#D4AF37] transition-all">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md space-y-2 relative overflow-hidden group hover:border-[#D4AF37] transition-all">
           <div className="flex items-center justify-between">
             <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">
               Stage 1 (1d)
             </span>
             <span className="text-[10px] text-[#6B7280]">Initial Recall</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-[#F5F5F7] font-mono">
             {stage1Count} <span className="text-xs font-medium text-[#6B7280]">cards</span>
           </h3>
           <p className="text-[11px] text-[#6B7280]">Fresh concepts learned</p>
         </div>
 
         {/* Stage 2 */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-2 relative overflow-hidden group hover:border-[#D4AF37] transition-all">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md space-y-2 relative overflow-hidden group hover:border-[#D4AF37] transition-all">
           <div className="flex items-center justify-between">
             <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
               Stage 2 (3d)
             </span>
             <span className="text-[10px] text-[#6B7280]">Consolidation</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-[#F5F5F7] font-mono">
             {stage2Count} <span className="text-xs font-medium text-[#6B7280]">cards</span>
           </h3>
           <p className="text-[11px] text-[#6B7280]">Memory reinforcing</p>
         </div>
 
         {/* Stage 3 */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-2 relative overflow-hidden group hover:border-[#D4AF37] transition-all">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md space-y-2 relative overflow-hidden group hover:border-[#D4AF37] transition-all">
           <div className="flex items-center justify-between">
             <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
               Stage 3 (7d)
             </span>
             <span className="text-[10px] text-[#6B7280]">Long-Term</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#171717] dark:text-[#F5F5F7] font-mono">
             {stage3Count} <span className="text-xs font-medium text-[#6B7280]">cards</span>
           </h3>
           <p className="text-[11px] text-[#6B7280]">Transition to core recall</p>
         </div>
 
         {/* Stage 4 / Mastered */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-2 relative overflow-hidden group hover:border-emerald-500 transition-all">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md space-y-2 relative overflow-hidden group hover:border-emerald-500 transition-all">
           <div className="flex items-center justify-between">
             <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
               Stage 4 (21d+)
@@ -165,7 +165,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
       </div>
 
       {/* 3. Search & Subject Filter Bar */}
-      <div className="p-4 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-3.5">
+      <div className="p-4 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md space-y-3.5">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1 max-w-full sm:max-w-xs">
@@ -175,7 +175,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search topic or chapter in queue..."
-              className="w-full pl-10 pr-8 py-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0] dark:border-[#383838] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
+              className="w-full pl-10 pr-8 py-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0] dark:border-[#272730] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]"
             />
             {searchQuery && (
               <button
@@ -200,7 +200,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                   activeTab === tab.id
                     ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                    : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
+                    : 'bg-[#FAF8F5] dark:bg-[#18181D] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
                 }`}
               >
                 {tab.label}
@@ -222,7 +222,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               className={`px-3 py-1 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                 selectedSubjectFilter === 'all'
                   ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                  : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
+                  : 'bg-[#FAF8F5] dark:bg-[#18181D] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
               }`}
             >
               All ({revisions.length})
@@ -237,7 +237,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                   className={`px-3 py-1 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                     selectedSubjectFilter === s.name
                       ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                      : 'bg-[#FAF8F5] dark:bg-[#171717] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
+                      : 'bg-[#FAF8F5] dark:bg-[#18181D] text-[#6B7280] border-[#EBD3A0]/60 dark:border-[#2E2E2E] hover:border-[#D4AF37]'
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full inline-block mr-1.5" style={{ backgroundColor: s.color }} />
@@ -260,7 +260,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               return (
                 <div
                   key={rev.id}
-                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md hover:border-[#D4AF37] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
+                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md hover:border-[#D4AF37] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
                 >
                   <div className="space-y-1.5 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                       </span>
                     </div>
 
-                    <h4 className="text-base sm:text-lg font-black text-[#171717] dark:text-[#F5E6C8] group-hover:text-[#D4AF37] transition-colors">
+                    <h4 className="text-base sm:text-lg font-black text-[#171717] dark:text-[#F5F5F7] group-hover:text-[#D4AF37] transition-colors">
                       {rev.topicName}
                     </h4>
                   </div>
@@ -291,12 +291,12 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             })
           ) : (
             /* Luxury Trophy Empty State with Quick Actions */
-            <div className="py-12 sm:py-16 px-6 text-center rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md space-y-4">
+            <div className="py-12 sm:py-16 px-6 text-center rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md space-y-4">
               <div className="w-16 h-16 rounded-3xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] mx-auto shadow-lg">
                 <Trophy className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg sm:text-xl font-black text-[#171717] dark:text-[#F5E6C8]">
+                <h3 className="text-lg sm:text-xl font-black text-[#171717] dark:text-[#F5F5F7]">
                   All Due Cards Cleared for Today! 🎉
                 </h3>
                 <p className="text-xs text-[#6B7280] max-w-md mx-auto">
@@ -308,7 +308,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                 <div className="pt-2">
                   <button
                     onClick={() => setActiveTab('upcoming')}
-                    className="px-5 py-2.5 rounded-2xl bg-[#FAF8F5] dark:bg-[#171717] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#282828] border border-[#EBD3A0] dark:border-[#333333] text-xs font-bold text-[#171717] dark:text-[#F5E6C8] transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                    className="px-5 py-2.5 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] hover:bg-[#F5E6C8]/40 dark:hover:bg-[#282828] border border-[#EBD3A0] dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-[#F5F5F7] transition-all inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>View {upcomingList.length} Upcoming Scheduled Cards</span>
                     <ArrowRight className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -325,22 +325,22 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             displayedUpcoming.map(rev => (
               <div
                 key={rev.id}
-                className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333] shadow-md hover:border-[#D4AF37] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730] shadow-md hover:border-[#D4AF37] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
               >
                 <div className="space-y-1 flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-slate-200 dark:bg-[#2A2A2A] text-[#6B7280]">
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-slate-200 dark:bg-[#23232A] text-[#6B7280]">
                       Stage {rev.stage}
                     </span>
                     <span className="text-xs text-[#6B7280]">{rev.subjectName} • {rev.chapterName}</span>
                   </div>
-                  <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5E6C8]">
+                  <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5F5F7]">
                     {rev.topicName}
                   </h4>
                 </div>
 
                 <div className="flex items-center gap-2.5 shrink-0">
-                  <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] dark:bg-[#171717] border border-[#EBD3A0]/60 dark:border-[#333333] text-xs font-black text-[#D4AF37] font-mono flex items-center gap-1.5">
+                  <span className="px-3 py-1.5 rounded-xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0]/60 dark:border-[#272730] text-xs font-black text-[#D4AF37] font-mono flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{formatDateReadable(rev.scheduledDate)}</span>
                   </span>
@@ -348,7 +348,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               </div>
             ))
           ) : (
-            <div className="py-12 text-center text-xs text-[#6B7280] rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333]">
+            <div className="py-12 text-center text-xs text-[#6B7280] rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730]">
               No upcoming revisions found matching filter.
             </div>
           )
@@ -369,7 +369,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     </span>
                     <span className="text-xs text-[#6B7280]">{rev.subjectName}</span>
                   </div>
-                  <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5E6C8]">
+                  <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5F5F7]">
                     {rev.topicName}
                   </h4>
                 </div>
@@ -380,7 +380,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               </div>
             ))
           ) : (
-            <div className="py-12 text-center text-xs text-[#6B7280] rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#333333]">
+            <div className="py-12 text-center text-xs text-[#6B7280] rounded-3xl bg-white dark:bg-[#202020] border border-[#EBD3A0] dark:border-[#272730]">
               No mastered cards yet. Complete revision cards to fill your Mastered Vault!
             </div>
           )

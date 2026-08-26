@@ -138,7 +138,7 @@ const CircularProgressRing: React.FC<{ percent: number; size?: number; stroke?: 
       </svg>
       {/* Center Text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono leading-none">
+        <span className="text-2xl font-black text-[#171717] dark:text-[#F5F5F7] font-mono leading-none">
           {percent}%
         </span>
         <span className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider mt-0.5">Complete</span>
@@ -172,7 +172,7 @@ const MiniDonut: React.FC<{ completed: number; total: number; size?: number }> =
 /* ─────────────── HEATMAP CELL ─────────────── */
 
 const getHeatmapColor = (minutes: number): string => {
-  if (minutes === 0) return 'bg-slate-100 dark:bg-[#1E1E1E]';
+  if (minutes === 0) return 'bg-slate-100 dark:bg-[#23232A]';
   if (minutes < 30) return 'bg-teal-100 dark:bg-teal-900/30';
   if (minutes < 60) return 'bg-teal-300 dark:bg-teal-700/50';
   if (minutes < 120) return 'bg-teal-500 dark:bg-teal-600/60';
@@ -425,7 +425,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
     switch (p) {
       case 'high': return { label: '🔥 High', classes: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30' };
       case 'medium': return { label: '⚡ Medium', classes: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30' };
-      case 'low': return { label: '☕ Low', classes: 'bg-slate-200 dark:bg-[#2A2A2A] text-[#6B7280] border-slate-300 dark:border-[#383838]' };
+      case 'low': return { label: '☕ Low', classes: 'bg-slate-200 dark:bg-[#23232A] text-[#6B7280] border-slate-300 dark:border-[#272730]' };
       default: return { label: '⚡ Medium', classes: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30' };
     }
   };
@@ -460,7 +460,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
     <div className="space-y-5 sm:space-y-6 pb-20">
 
       {/* ═══════════════ 1. MOTIVATIONAL HERO DASHBOARD ═══════════════ */}
-      <div className="relative overflow-hidden rounded-[28px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-2xl shadow-[#D4AF37]/5">
+      <div className="relative overflow-hidden rounded-[28px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-2xl shadow-[#D4AF37]/5">
         {/* Decorative gradient blobs */}
         <div className="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-gradient-to-br from-[#D4AF37]/15 to-teal-500/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-gradient-to-tr from-purple-500/10 to-cyan-500/10 blur-3xl pointer-events-none" />
@@ -469,7 +469,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {/* Greeting Row */}
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">{greeting.emoji}</span>
-            <h2 className="text-lg sm:text-2xl font-black text-[#171717] dark:text-[#F5E6C8] tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-black text-[#171717] dark:text-[#F5F5F7] tracking-tight">
               {greeting.text}!
             </h2>
           </div>
@@ -491,7 +491,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
                 <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Streak</span>
               </div>
-              <div className="text-2xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono leading-none">
+              <div className="text-2xl font-black text-[#171717] dark:text-[#F5F5F7] font-mono leading-none">
                 {profile.currentStreak}<span className="text-xs font-bold text-[#6B7280] ml-1">days</span>
               </div>
               <span className="text-[10px] font-semibold text-orange-500/80">
@@ -505,10 +505,10 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 <Star className="w-4 h-4 text-purple-500" />
                 <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Level {profile.level}</span>
               </div>
-              <div className="text-sm font-black text-[#171717] dark:text-[#F5E6C8] leading-snug">
+              <div className="text-sm font-black text-[#171717] dark:text-[#F5F5F7] leading-snug">
                 {profile.levelTitle}
               </div>
-              <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] overflow-hidden">
+              <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#23232A] overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-700"
                   style={{ width: `${Math.min((profile.xp % 1000) / 10, 100)}%` }}
@@ -553,14 +553,14 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       </div>
 
       {/* ═══════════════ 2. WEEKLY HEATMAP STRIP ═══════════════ */}
-      <div className="p-4 sm:p-5 rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg">
+      <div className="p-4 sm:p-5 rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-[#D4AF37]" />
-            <span className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] uppercase tracking-wider">Weekly Study Heatmap</span>
+            <span className="text-xs font-black text-[#171717] dark:text-[#F5F5F7] uppercase tracking-wider">Weekly Study Heatmap</span>
           </div>
           <div className="flex items-center gap-1.5 text-[9px] font-semibold text-[#6B7280]">
-            <span className="w-3 h-3 rounded bg-slate-100 dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#333]" />
+            <span className="w-3 h-3 rounded bg-slate-100 dark:bg-[#23232A] border border-slate-200 dark:border-[#333]" />
             <span>0h</span>
             <span className="w-3 h-3 rounded bg-teal-300 dark:bg-teal-700/50" />
             <span>1h</span>
@@ -585,7 +585,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 } flex items-center justify-center`}
                 title={`${day.dayName} ${day.dayNum} ${day.monthName}: ${day.studyMinutes}m study`}
               >
-                <span className="text-[11px] font-black text-[#171717] dark:text-[#F5E6C8] font-mono">
+                <span className="text-[11px] font-black text-[#171717] dark:text-[#F5F5F7] font-mono">
                   {day.dayNum}
                 </span>
               </div>
@@ -606,7 +606,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               <span className="text-2xl shrink-0">{dailyChallenge.icon}</span>
               <div className="min-w-0">
                 <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider block">Daily Challenge</span>
-                <span className="text-xs sm:text-sm font-bold text-[#171717] dark:text-[#F5E6C8] line-clamp-1">
+                <span className="text-xs sm:text-sm font-bold text-[#171717] dark:text-[#F5F5F7] line-clamp-1">
                   {dailyChallenge.text}
                 </span>
               </div>
@@ -631,13 +631,13 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         <div className="space-y-2.5">
           <div className="flex items-center gap-2 px-1">
             <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-            <span className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] uppercase tracking-wider">Smart Suggestions</span>
+            <span className="text-xs font-black text-[#171717] dark:text-[#F5F5F7] uppercase tracking-wider">Smart Suggestions</span>
           </div>
           <div className="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar">
             {smartSuggestions.map((sug, idx) => (
               <div
                 key={idx}
-                className="shrink-0 p-3 rounded-2xl bg-white/70 dark:bg-[#1A1A1A]/80 backdrop-blur-xl border border-white/40 dark:border-[#2A2A2A] shadow-sm hover:shadow-md hover:border-[#D4AF37]/40 transition-all group min-w-[220px] max-w-[260px] space-y-2"
+                className="shrink-0 p-3 rounded-2xl bg-white/70 dark:bg-[#18181D]/80 backdrop-blur-xl border border-white/40 dark:border-[#272730] shadow-sm hover:shadow-md hover:border-[#D4AF37]/40 transition-all group min-w-[220px] max-w-[260px] space-y-2"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
@@ -652,7 +652,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     style={{ backgroundColor: sug.subjectColor }}
                   />
                 </div>
-                <p className="text-[11px] font-bold text-[#171717] dark:text-[#F5E6C8] line-clamp-2 leading-snug">
+                <p className="text-[11px] font-bold text-[#171717] dark:text-[#F5F5F7] line-clamp-2 leading-snug">
                   {sug.topicName}
                 </p>
                 <div className="flex items-center justify-between">
@@ -675,7 +675,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2.5">
           {/* View Mode Switcher */}
-          <div className="flex rounded-2xl bg-white/70 dark:bg-[#1A1A1A]/80 backdrop-blur-xl p-1 border border-white/40 dark:border-[#2A2A2A] shadow-sm">
+          <div className="flex rounded-2xl bg-white/70 dark:bg-[#18181D]/80 backdrop-blur-xl p-1 border border-white/40 dark:border-[#272730] shadow-sm">
             <button
               onClick={() => setViewMode('kanban')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
@@ -703,7 +703,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {completedTasks.length > 0 && (
             <button
               onClick={clearCompletedPlannerTasks}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white/70 dark:bg-[#1A1A1A]/80 backdrop-blur-xl border border-white/40 dark:border-[#2A2A2A] hover:border-rose-500/50 text-xs font-bold text-[#6B7280] hover:text-rose-500 transition-all cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white/70 dark:bg-[#18181D]/80 backdrop-blur-xl border border-white/40 dark:border-[#272730] hover:border-rose-500/50 text-xs font-bold text-[#6B7280] hover:text-rose-500 transition-all cursor-pointer shadow-sm"
               title="Clear completed tasks from board"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -732,7 +732,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer border ${
               selectedSubjectFilter === 'all'
                 ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                : 'bg-white/60 dark:bg-[#1A1A1A]/60 text-[#6B7280] border-white/40 dark:border-[#2A2A2A] hover:border-[#D4AF37]/50'
+                : 'bg-white/60 dark:bg-[#18181D]/60 text-[#6B7280] border-white/40 dark:border-[#272730] hover:border-[#D4AF37]/50'
             }`}
           >
             All ({plannerTasks.length})
@@ -746,7 +746,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer border ${
                   selectedSubjectFilter === s.name
                     ? 'bg-[#D4AF37] text-[#171717] border-[#D4AF37] shadow-sm'
-                    : 'bg-white/60 dark:bg-[#1A1A1A]/60 text-[#6B7280] border-white/40 dark:border-[#2A2A2A] hover:border-[#D4AF37]/50'
+                    : 'bg-white/60 dark:bg-[#18181D]/60 text-[#6B7280] border-white/40 dark:border-[#272730] hover:border-[#D4AF37]/50'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full inline-block mr-1" style={{ backgroundColor: s.color }} />
@@ -765,18 +765,18 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
             return (
               <div
                 key={col.id}
-                className={`flex flex-col rounded-[24px] bg-white/50 dark:bg-[#141414]/70 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg p-4 space-y-3 min-h-[420px] transition-all hover:shadow-xl`}
+                className={`flex flex-col rounded-[24px] bg-white/50 dark:bg-[#141414]/70 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg p-4 space-y-3 min-h-[420px] transition-all hover:shadow-xl`}
               >
                 {/* Column Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#252525]">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#272730]">
                   <div className="flex items-center gap-2">
                     <div className={`p-1.5 rounded-xl bg-gradient-to-br ${col.gradient} text-white shadow-sm`}>
                       <ColIcon className="w-3.5 h-3.5" />
                     </div>
-                    <h3 className="text-xs font-extrabold text-[#171717] dark:text-[#F5E6C8]">{col.title}</h3>
+                    <h3 className="text-xs font-extrabold text-[#171717] dark:text-[#F5F5F7]">{col.title}</h3>
                   </div>
                   <span className={`px-2.5 py-0.5 text-[10px] font-black rounded-full ${col.bgLight} font-mono ${
-                    col.tasks.length > 0 ? 'text-[#171717] dark:text-[#F5E6C8]' : 'text-[#6B7280]'
+                    col.tasks.length > 0 ? 'text-[#171717] dark:text-[#F5F5F7]' : 'text-[#6B7280]'
                   }`}>
                     {col.tasks.length}
                   </span>
@@ -785,8 +785,8 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 {/* Task Cards */}
                 <div className="flex-1 space-y-2.5 overflow-y-auto max-h-[520px]">
                   {col.tasks.length === 0 ? (
-                    <div className="h-36 flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-slate-200/60 dark:border-[#252525] rounded-2xl">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#1E1E1E] flex items-center justify-center mb-2">
+                    <div className="h-36 flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-slate-200/60 dark:border-[#272730] rounded-2xl">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#23232A] flex items-center justify-center mb-2">
                         <ColIcon className="w-5 h-5 text-[#6B7280]/50" />
                       </div>
                       <p className="text-[11px] text-[#6B7280] font-medium">
@@ -805,7 +805,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                           className={`relative overflow-hidden rounded-2xl border transition-all group ${
                             isDone
                               ? 'bg-emerald-500/5 dark:bg-emerald-950/10 border-emerald-500/20 opacity-80'
-                              : 'bg-white/80 dark:bg-[#1A1A1A]/80 backdrop-blur-xl border-white/40 dark:border-[#2A2A2A] hover:border-[#D4AF37]/50 hover:shadow-md hover:-translate-y-0.5'
+                              : 'bg-white/80 dark:bg-[#18181D]/80 backdrop-blur-xl border-white/40 dark:border-[#272730] hover:border-[#D4AF37]/50 hover:shadow-md hover:-translate-y-0.5'
                           }`}
                           style={{ transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
                         >
@@ -830,7 +830,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                                   {isDone && <Check className="w-3 h-3 stroke-[3]" />}
                                 </button>
                                 <span className={`text-xs font-bold leading-snug ${
-                                  isDone ? 'line-through text-[#6B7280]' : 'text-[#171717] dark:text-[#F5E6C8]'
+                                  isDone ? 'line-through text-[#6B7280]' : 'text-[#171717] dark:text-[#F5F5F7]'
                                 }`}>
                                   {task.topicName}
                                 </span>
@@ -852,7 +852,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                               <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold ${cBadge.color}`}>
                                 {cBadge.label}
                               </span>
-                              <span className="px-2 py-0.5 rounded-lg text-[9px] font-mono text-[#6B7280] bg-slate-50 dark:bg-[#1E1E1E] ml-auto flex items-center gap-1">
+                              <span className="px-2 py-0.5 rounded-lg text-[9px] font-mono text-[#6B7280] bg-slate-50 dark:bg-[#23232A] ml-auto flex items-center gap-1">
                                 <Clock className="w-2.5 h-2.5 text-[#D4AF37]" />
                                 {task.estimatedMinutes}m
                               </span>
@@ -872,7 +872,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                             </div>
 
                             {/* Actions */}
-                            <div className="pt-2 border-t border-slate-100 dark:border-[#222] flex items-center justify-between gap-2">
+                            <div className="pt-2 border-t border-slate-100 dark:border-[#272730] flex items-center justify-between gap-2">
                               {onOpenFocusChamber && !isDone ? (
                                 <button
                                   onClick={() => onOpenFocusChamber(task.topicId)}
@@ -884,13 +884,13 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                               ) : <div />}
                               <div className="flex items-center gap-1 ml-auto text-[9px] font-bold">
                                 {col.id !== 'today' && (
-                                  <button onClick={() => movePlannerTask(task.id, 'today')} className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-[#1E1E1E] hover:bg-cyan-500 hover:text-white text-[#6B7280] transition-all cursor-pointer">Today</button>
+                                  <button onClick={() => movePlannerTask(task.id, 'today')} className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-[#23232A] hover:bg-cyan-500 hover:text-white text-[#6B7280] transition-all cursor-pointer">Today</button>
                                 )}
                                 {col.id !== 'in_progress' && (
-                                  <button onClick={() => movePlannerTask(task.id, 'in_progress')} className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-[#1E1E1E] hover:bg-purple-500 hover:text-white text-[#6B7280] transition-all cursor-pointer">Focus</button>
+                                  <button onClick={() => movePlannerTask(task.id, 'in_progress')} className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-[#23232A] hover:bg-purple-500 hover:text-white text-[#6B7280] transition-all cursor-pointer">Focus</button>
                                 )}
                                 {col.id !== 'upcoming' && (
-                                  <button onClick={() => movePlannerTask(task.id, 'upcoming')} className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-[#1E1E1E] hover:bg-amber-500 hover:text-white text-[#6B7280] transition-all cursor-pointer">Week</button>
+                                  <button onClick={() => movePlannerTask(task.id, 'upcoming')} className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-[#23232A] hover:bg-amber-500 hover:text-white text-[#6B7280] transition-all cursor-pointer">Week</button>
                                 )}
                               </div>
                             </div>
@@ -908,11 +908,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         /* ═══════════════ 8. WEEKLY CALENDAR VIEW ═══════════════ */
         <div className="space-y-4">
           {/* Week Navigation */}
-          <div className="p-4 rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="p-4 rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setWeekOffset(w => w - 1)}
-                className="p-2 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/80 border border-white/40 dark:border-[#2A2A2A] hover:border-[#D4AF37]/50 text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white/70 dark:bg-[#18181D]/80 border border-white/40 dark:border-[#272730] hover:border-[#D4AF37]/50 text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -921,20 +921,20 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                   weekOffset === 0
                     ? 'bg-gradient-to-r from-[#D4AF37] to-[#C9A22E] text-[#171717] shadow-md shadow-[#D4AF37]/25'
-                    : 'bg-white/70 dark:bg-[#1A1A1A]/80 text-[#6B7280] border border-white/40 dark:border-[#2A2A2A]'
+                    : 'bg-white/70 dark:bg-[#18181D]/80 text-[#6B7280] border border-white/40 dark:border-[#272730]'
                 }`}
               >
                 This Week
               </button>
               <button
                 onClick={() => setWeekOffset(w => w + 1)}
-                className="p-2 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/80 border border-white/40 dark:border-[#2A2A2A] hover:border-[#D4AF37]/50 text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-white/70 dark:bg-[#18181D]/80 border border-white/40 dark:border-[#272730] hover:border-[#D4AF37]/50 text-[#6B7280] hover:text-[#171717] dark:hover:text-white transition-all cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] font-mono flex items-center gap-2">
+            <div className="text-xs font-black text-[#171717] dark:text-[#F5F5F7] font-mono flex items-center gap-2">
               <Calendar className="w-4 h-4 text-[#D4AF37]" />
               <span>{weekDays[0]?.monthName} {weekDays[0]?.dayNum} – {weekDays[6]?.monthName} {weekDays[6]?.dayNum}, {weekDays[0]?.dateObj.getFullYear()}</span>
             </div>
@@ -962,12 +962,12 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   data-today={day.isToday ? 'true' : 'false'}
                   className={`snap-center shrink-0 w-[260px] sm:w-[280px] lg:w-auto rounded-[24px] p-3.5 flex flex-col justify-between space-y-3 min-h-[400px] lg:min-h-[420px] border backdrop-blur-2xl transition-all ${
                     day.isToday
-                      ? 'bg-white/70 dark:bg-[#1A1A1A]/90 border-[#D4AF37]/60 shadow-xl ring-1 ring-[#D4AF37]/20'
-                      : 'bg-white/40 dark:bg-[#141414]/60 border-white/30 dark:border-[#2A2A2A] hover:border-[#D4AF37]/30'
+                      ? 'bg-white/70 dark:bg-[#18181D]/90 border-[#D4AF37]/60 shadow-xl ring-1 ring-[#D4AF37]/20'
+                      : 'bg-white/40 dark:bg-[#141414]/60 border-white/30 dark:border-[#272730] hover:border-[#D4AF37]/30'
                   }`}
                 >
                   {/* Day Header */}
-                  <div className="pb-2.5 border-b border-slate-100 dark:border-[#252525] space-y-1.5">
+                  <div className="pb-2.5 border-b border-slate-100 dark:border-[#272730] space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <span className={`text-[10px] font-black uppercase tracking-wider ${
@@ -986,7 +986,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl font-black text-[#171717] dark:text-[#F5E6C8] font-mono leading-none">
+                        <span className="text-xl font-black text-[#171717] dark:text-[#F5F5F7] font-mono leading-none">
                           {day.dayNum}
                         </span>
                         <span className="text-[10px] font-normal text-[#6B7280]">{day.monthName}</span>
@@ -1003,7 +1003,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   {/* Day Task List */}
                   <div className="flex-1 space-y-2 overflow-y-auto max-h-[260px]">
                     {dayTasks.length === 0 ? (
-                      <div className="h-24 flex flex-col items-center justify-center text-center p-2 border-2 border-dashed border-slate-200/50 dark:border-[#252525] rounded-2xl">
+                      <div className="h-24 flex flex-col items-center justify-center text-center p-2 border-2 border-dashed border-slate-200/50 dark:border-[#272730] rounded-2xl">
                         <Calendar className="w-5 h-5 text-[#6B7280]/30 mb-1" />
                         <span className="text-[10px] text-[#6B7280]">No targets scheduled</span>
                       </div>
@@ -1016,7 +1016,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                             className={`relative overflow-hidden rounded-xl border space-y-1 transition-all text-left group ${
                               isDone
                                 ? 'bg-emerald-500/5 border-emerald-500/20 opacity-70'
-                                : 'bg-white/70 dark:bg-[#1A1A1A]/70 border-white/40 dark:border-[#2A2A2A] hover:border-[#D4AF37]/40'
+                                : 'bg-white/70 dark:bg-[#18181D]/70 border-white/40 dark:border-[#272730] hover:border-[#D4AF37]/40'
                             }`}
                           >
                             <div className="h-[2px] w-full" style={{ background: task.subjectColor || '#D4AF37' }} />
@@ -1033,7 +1033,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                                   {isDone && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                                 </button>
                                 <span className={`text-[11px] font-bold line-clamp-2 leading-tight flex-1 ${
-                                  isDone ? 'line-through text-[#6B7280]' : 'text-[#171717] dark:text-[#F5E6C8]'
+                                  isDone ? 'line-through text-[#6B7280]' : 'text-[#171717] dark:text-[#F5F5F7]'
                                 }`}>
                                   {task.topicName}
                                 </span>
@@ -1057,7 +1057,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   {/* Schedule Button */}
                   <button
                     onClick={() => handleOpenAddForDate(day.dateStr)}
-                    className="w-full py-2 rounded-xl bg-white/60 dark:bg-[#1A1A1A]/60 hover:bg-gradient-to-r hover:from-[#D4AF37] hover:to-[#C9A22E] hover:text-[#171717] border border-slate-200/60 dark:border-[#252525] text-[11px] font-bold text-[#6B7280] transition-all flex items-center justify-center gap-1 cursor-pointer"
+                    className="w-full py-2 rounded-xl bg-white/60 dark:bg-[#18181D]/60 hover:bg-gradient-to-r hover:from-[#D4AF37] hover:to-[#C9A22E] hover:text-[#171717] border border-slate-200/60 dark:border-[#272730] text-[11px] font-bold text-[#6B7280] transition-all flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Schedule</span>
@@ -1072,15 +1072,15 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       {/* ═══════════════ 9. CREATE TARGET MODAL ═══════════════ */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-lg overflow-y-auto animate-fade-in">
-          <div className="relative w-full max-w-lg rounded-[28px] bg-white/95 dark:bg-[#161616]/95 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+          <div className="relative w-full max-w-lg rounded-[28px] bg-white/95 dark:bg-[#18181D]/95 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
             {/* Modal Header */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#252525] flex items-center justify-between shrink-0">
+            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#C9A22E] flex items-center justify-center text-[#171717] shadow-md shadow-[#D4AF37]/25">
                   <Target className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">
+                  <h4 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">
                     Schedule Study Target
                   </h4>
                   <p className="text-[10px] text-[#6B7280]">
@@ -1099,8 +1099,8 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
             <form onSubmit={handleCreateTask} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
 
               {/* Date Picker */}
-              <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-[#1A1A1A]/80 border border-slate-200/60 dark:border-[#2A2A2A] space-y-2.5">
-                <label className="text-xs font-black text-[#171717] dark:text-[#F5E6C8] flex items-center gap-1.5">
+              <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-[#18181D]/80 border border-slate-200/60 dark:border-[#272730] space-y-2.5">
+                <label className="text-xs font-black text-[#171717] dark:text-[#F5F5F7] flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span>Target Date</span>
                 </label>
@@ -1111,7 +1111,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                       targetDate === getTodayDateString()
                         ? 'bg-gradient-to-r from-[#D4AF37] to-[#C9A22E] text-[#171717] border-[#D4AF37] shadow-sm'
-                        : 'bg-white dark:bg-[#1E1E1E] text-[#6B7280] border-slate-200 dark:border-[#2A2A2A]'
+                        : 'bg-white dark:bg-[#23232A] text-[#6B7280] border-slate-200 dark:border-[#272730]'
                     }`}
                   >
                     📍 Today
@@ -1124,7 +1124,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                       targetDate === (() => { const d = new Date(); d.setDate(d.getDate() + 1); return formatYMD(d); })()
                         ? 'bg-gradient-to-r from-[#D4AF37] to-[#C9A22E] text-[#171717] border-[#D4AF37] shadow-sm'
-                        : 'bg-white dark:bg-[#1E1E1E] text-[#6B7280] border-slate-200 dark:border-[#2A2A2A]'
+                        : 'bg-white dark:bg-[#23232A] text-[#6B7280] border-slate-200 dark:border-[#272730]'
                     }`}
                   >
                     ➡️ Tomorrow
@@ -1133,14 +1133,14 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     type="date"
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
-                    className="p-2 rounded-xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white"
+                    className="p-2 rounded-xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white"
                   />
                 </div>
               </div>
 
               {/* Topic Picker */}
-              <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-[#1A1A1A]/80 border border-slate-200/60 dark:border-[#2A2A2A] space-y-3">
-                <label className="text-xs font-black text-[#171717] dark:text-[#F5E6C8]">
+              <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-[#18181D]/80 border border-slate-200/60 dark:border-[#272730] space-y-3">
+                <label className="text-xs font-black text-[#171717] dark:text-[#F5F5F7]">
                   Select from Syllabus Topics
                 </label>
                 <div className="relative flex items-center">
@@ -1150,7 +1150,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     value={topicSearchQuery}
                     onChange={(e) => setTopicSearchQuery(e.target.value)}
                     placeholder="Search topic or subject..."
-                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]/50"
+                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-semibold text-[#171717] dark:text-white placeholder-[#6B7280] focus:ring-2 focus:ring-[#D4AF37]/50"
                   />
                   {topicSearchQuery && (
                     <button type="button" onClick={() => setTopicSearchQuery('')} className="absolute right-2.5 text-[#6B7280] hover:text-[#171717] dark:hover:text-white p-0.5 cursor-pointer">
@@ -1169,7 +1169,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   </div>
                 )}
 
-                <div className="max-h-36 overflow-y-auto space-y-1 p-1.5 rounded-xl bg-white/80 dark:bg-[#1E1E1E] border border-slate-200/60 dark:border-[#2A2A2A]">
+                <div className="max-h-36 overflow-y-auto space-y-1 p-1.5 rounded-xl bg-white/80 dark:bg-[#23232A] border border-slate-200/60 dark:border-[#272730]">
                   {filteredTopicsForModal.length === 0 ? (
                     <p className="text-center py-4 text-xs text-[#6B7280]">No matching topics found</p>
                   ) : (
@@ -1182,7 +1182,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                           className={`p-2 rounded-lg flex items-center justify-between text-xs font-semibold cursor-pointer transition-all ${
                             isSelected
                               ? 'bg-[#D4AF37] text-[#171717] font-bold shadow-sm'
-                              : 'hover:bg-slate-100 dark:hover:bg-[#252525] text-[#171717] dark:text-[#F5E6C8]'
+                              : 'hover:bg-slate-100 dark:hover:bg-[#252525] text-[#171717] dark:text-[#F5F5F7]'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-2">
@@ -1200,9 +1200,9 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               </div>
 
               <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-slate-200 dark:border-[#2A2A2A]" />
+                <div className="flex-grow border-t border-slate-200 dark:border-[#272730]" />
                 <span className="flex-shrink mx-3 text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">OR Custom Goal</span>
-                <div className="flex-grow border-t border-slate-200 dark:border-[#2A2A2A]" />
+                <div className="flex-grow border-t border-slate-200 dark:border-[#272730]" />
               </div>
 
               {/* Custom Title */}
@@ -1211,7 +1211,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 value={customTitle}
                 onChange={e => { setCustomTitle(e.target.value); if (e.target.value) setSelectedSyllabusTopicId(''); }}
                 placeholder="e.g. Solve 50 Mensuration PYQs & Notes"
-                className="w-full p-3 rounded-2xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-semibold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50"
+                className="w-full p-3 rounded-2xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-semibold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50"
               />
 
               {/* Priority & Category */}
@@ -1221,7 +1221,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   <select
                     value={priority}
                     onChange={e => setPriority(e.target.value as TaskPriority)}
-                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
+                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
                   >
                     <option value="high">🔥 High</option>
                     <option value="medium">⚡ Medium</option>
@@ -1233,7 +1233,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   <select
                     value={category}
                     onChange={e => setCategory(e.target.value as TaskCategory)}
-                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
+                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
                   >
                     <option value="concept">📖 Theory</option>
                     <option value="practice">✍️ Practice</option>
@@ -1250,7 +1250,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   <select
                     value={targetColumn}
                     onChange={e => setTargetColumn(e.target.value as PlannerColumnStatus)}
-                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
+                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white cursor-pointer"
                   >
                     <option value="today">Today's Target</option>
                     <option value="in_progress">Deep Focus</option>
@@ -1264,17 +1264,17 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     min={10} max={300} step={5}
                     value={estimatedMins}
                     onChange={e => setEstimatedMins(Number(e.target.value))}
-                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#1E1E1E] border border-slate-200 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white"
+                    className="w-full p-2.5 rounded-2xl bg-white dark:bg-[#23232A] border border-slate-200 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white"
                   />
                 </div>
               </div>
 
               {/* Submit */}
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-[#252525]">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-[#272730]">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-[#2A2A2A] text-[#6B7280] hover:text-[#171717] dark:hover:text-white cursor-pointer transition-colors"
+                  className="px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-[#272730] text-[#6B7280] hover:text-[#171717] dark:hover:text-white cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>

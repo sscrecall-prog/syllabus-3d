@@ -338,7 +338,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           <button
             onClick={handleExportPdf}
             title="Export and Open Academic Notes as PDF in Chrome New Tab"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35]/15 hover:bg-[#596B35]/25 border border-[#596B35]/30 text-[#596B35] dark:text-[#A4B879] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35]/15 hover:bg-[#596B35]/25 border border-[#596B35]/30 text-[#596B35] dark:text-[#8B5CF6] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
           >
             <FileDown className="w-3.5 h-3.5" />
             <span>Save / Open PDF</span>

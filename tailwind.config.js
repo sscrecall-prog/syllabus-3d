@@ -25,16 +25,16 @@ export default {
           warning: '#C49A3A',
           error: '#B94A48',
         },
-        // Dark Mode System
+        // Dark Mode System (Obsidian & Violet Edition)
         dark: {
-          bg: '#0D0E0C',
-          surface: '#151713',
-          elevated: '#1D201A',
-          border: '#30342B',
-          'text-primary': '#F4F4ED',
-          'text-secondary': '#A7AA9C',
-          accent: '#A4B879',
-          'accent-soft': '#354126'
+          bg: '#0B0B0D',
+          surface: '#18181D',
+          elevated: '#23232A',
+          border: '#272730',
+          'text-primary': '#F5F5F7',
+          'text-secondary': '#A1A1AA',
+          accent: '#8B5CF6',
+          'accent-soft': '#3B2473'
         }
       },
       fontFamily: {

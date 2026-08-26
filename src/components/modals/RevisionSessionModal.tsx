@@ -63,7 +63,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5] dark:bg-[#1A1A1A] border border-[#EBD3A0] dark:border-[#333333] shadow-2xl overflow-hidden p-6 sm:p-8">
+      <div className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0] dark:border-[#272730] shadow-2xl overflow-hidden p-6 sm:p-8">
         
         {/* Header with Progress Bar */}
         <div className="flex items-center justify-between mb-4">
@@ -72,7 +72,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
               <RotateCw className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5E6C8]">
+              <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5F5F7]">
                 Spaced Revision Flashcards
               </h4>
               <p className="text-[10px] text-[#6B7280] font-semibold">
@@ -90,7 +90,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
         </div>
 
         {/* Shimmering Gold Progress Track */}
-        <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#2A2A2A] mb-6 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#23232A] mb-6 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-[#D4AF37] via-[#F5E6C8] to-[#B89327] transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
@@ -103,7 +103,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
               <Trophy className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-xl font-black text-[#171717] dark:text-[#F5E6C8]">
+              <h3 className="text-xl font-black text-[#171717] dark:text-[#F5F5F7]">
                 Revision Session Complete!
               </h3>
               <p className="text-xs text-[#6B7280] max-w-sm mx-auto">
@@ -132,7 +132,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
                 }`}
               >
                 {/* FRONT FACE (Question / Topic Name) */}
-                <div className="absolute inset-0 w-full h-full p-6 rounded-3xl bg-white dark:bg-[#202020] border-2 border-[#EBD3A0] dark:border-[#333333] hover:border-[#D4AF37] shadow-xl flex flex-col justify-between [backface-visibility:hidden]">
+                <div className="absolute inset-0 w-full h-full p-6 rounded-3xl bg-white dark:bg-[#202020] border-2 border-[#EBD3A0] dark:border-[#272730] hover:border-[#D4AF37] shadow-xl flex flex-col justify-between [backface-visibility:hidden]">
                   <div className="flex items-center justify-between text-xs font-bold text-[#6B7280]">
                     <span className="px-2.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37]">
                       {currentRevision.subjectName}
@@ -144,7 +144,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
                     <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider block">
                       Topic to Recall:
                     </span>
-                    <h3 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5E6C8]">
+                    <h3 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5F5F7]">
                       {currentRevision.topicName}
                     </h3>
                     <p className="text-xs text-[#6B7280]">
@@ -167,7 +167,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
 
                   <div className="py-2 text-left space-y-2">
                     {topicMatch?.topic.notes ? (
-                      <p className="text-xs font-medium text-[#171717] dark:text-[#F5E6C8] whitespace-pre-line leading-relaxed">
+                      <p className="text-xs font-medium text-[#171717] dark:text-[#F5F5F7] whitespace-pre-line leading-relaxed">
                         {topicMatch.topic.notes}
                       </p>
                     ) : (

@@ -36,7 +36,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
   return (
     <div className="space-y-6 sm:space-y-8 pb-16">
       <div>
-        <h2 className="text-xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] tracking-tight font-serif flex items-center gap-2.5">
+        <h2 className="text-xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] tracking-tight font-serif flex items-center gap-2.5">
           <ShieldAlert className="w-6 h-6 text-[#B94A48]" />
           <span>Weak Areas & Examiner Traps Diagnostics</span>
         </h2>
@@ -46,35 +46,35 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
       </div>
 
       {/* Root Cause Distribution Banner */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-4">
-        <h3 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif uppercase tracking-wider">
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
+        <h3 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif uppercase tracking-wider">
           Root-Cause Fallacy Breakdown
         </h3>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
           <div className="p-3 rounded-xl bg-[#B94A48]/10 border border-[#B94A48]/25 text-center">
             <span className="text-[10px] font-bold text-[#B94A48] uppercase font-mono block">Conceptual</span>
-            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{conceptual}</h4>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono mt-0.5">{conceptual}</h4>
           </div>
 
           <div className="p-3 rounded-xl bg-[#C49A3A]/10 border border-[#C49A3A]/25 text-center">
             <span className="text-[10px] font-bold text-[#C49A3A] uppercase font-mono block">Calculation</span>
-            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{calculation}</h4>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono mt-0.5">{calculation}</h4>
           </div>
 
           <div className="p-3 rounded-xl bg-[#596B35]/10 border border-[#596B35]/25 text-center">
-            <span className="text-[10px] font-bold text-[#596B35] dark:text-[#A4B879] uppercase font-mono block">Formula</span>
-            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{formula}</h4>
+            <span className="text-[10px] font-bold text-[#596B35] dark:text-[#8B5CF6] uppercase font-mono block">Formula</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono mt-0.5">{formula}</h4>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#EEEEE8] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-center">
-            <span className="text-[10px] font-bold text-[#65675F] dark:text-[#A7AA9C] uppercase font-mono block">Silly Traps</span>
-            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{silly}</h4>
+          <div className="p-3 rounded-xl bg-[#EEEEE8] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-center">
+            <span className="text-[10px] font-bold text-[#65675F] dark:text-[#A1A1AA] uppercase font-mono block">Silly Traps</span>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono mt-0.5">{silly}</h4>
           </div>
 
           <div className="p-3 rounded-xl bg-[#8C773E]/10 border border-[#8C773E]/25 text-center">
             <span className="text-[10px] font-bold text-[#8C773E] uppercase font-mono block">Time Crunch</span>
-            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5">{timePressure}</h4>
+            <h4 className="text-xl sm:text-2xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono mt-0.5">{timePressure}</h4>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
             selectedSubject === 'all'
               ? 'bg-[#11120F] text-white border-transparent'
-              : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B]'
+              : 'bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730]'
           }`}
         >
           All Subjects ({weakTopics.length})
@@ -107,7 +107,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
                 selectedSubject === s.name
                   ? 'bg-[#11120F] text-white border-transparent'
-                  : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B]'
+                  : 'bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730]'
               }`}
             >
               {s.name} ({count})
@@ -119,9 +119,9 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
       {/* Weak Topics List */}
       <div className="space-y-3">
         {filteredWeakTopics.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-white dark:bg-[#151713] border border-dashed border-[#D8D8CF] dark:border-[#30342B] text-center space-y-2">
+          <div className="p-8 rounded-2xl bg-white dark:bg-[#18181D] border border-dashed border-[#D8D8CF] dark:border-[#272730] text-center space-y-2">
             <CheckCircle2 className="w-8 h-8 text-[#4F7A45] mx-auto" />
-            <h4 className="text-sm font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif">
+            <h4 className="text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
               Zero Weak Vulnerabilities Detected!
             </h4>
             <p className="text-xs text-[#85877E]">
@@ -133,11 +133,11 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
             <div
               key={topic.id}
               onClick={() => onOpenTopicDrawer(topic, subjectName, chapterName)}
-              className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35] transition-all shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer group active:scale-99"
+              className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer group active:scale-99"
             >
               <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-[#596B35] dark:text-[#A4B879]">
+                  <span className="text-[11px] font-bold text-[#596B35] dark:text-[#8B5CF6]">
                     {subjectName} • {chapterName}
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#B94A48]/15 text-[#B94A48]">
@@ -145,7 +145,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
                   </span>
                 </div>
 
-                <h4 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F4F4ED] group-hover:text-[#596B35] transition-colors truncate">
+                <h4 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F5F5F7] group-hover:text-[#596B35] transition-colors truncate">
                   {topic.name}
                 </h4>
 
@@ -156,7 +156,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({ onOpenTopicDrawe
                 )}
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#A4B879] group-hover:translate-x-1 transition-transform shrink-0">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] group-hover:translate-x-1 transition-transform shrink-0">
                 <span>Inspect Traps</span>
                 <ArrowRight className="w-4 h-4" />
               </div>

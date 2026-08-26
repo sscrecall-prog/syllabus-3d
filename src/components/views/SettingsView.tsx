@@ -186,7 +186,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
       {/* ═══════════════════════════════════════════════════
           1. PROFILE HERO CARD
           ═══════════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden rounded-[28px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-2xl shadow-[#D4AF37]/5">
+      <div className="relative overflow-hidden rounded-[28px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-2xl shadow-[#D4AF37]/5">
         {/* Decorative blobs */}
         <div className="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-gradient-to-br from-[#D4AF37]/15 to-purple-500/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-gradient-to-tr from-teal-500/10 to-cyan-500/10 blur-3xl pointer-events-none" />
@@ -218,7 +218,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
             {/* Profile Info */}
             <div className="flex-1 text-center sm:text-left space-y-2 min-w-0">
               <div>
-                <h2 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5E6C8] tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5F5F7] tracking-tight">
                   {user?.name || profile.name || 'Student'}
                 </h2>
                 <p className="text-xs font-semibold text-[#6B7280] flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
@@ -253,14 +253,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
                   <button onClick={handleLogout} className="px-3.5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shadow-sm cursor-pointer transition-colors">
                     Confirm
                   </button>
-                  <button onClick={() => setShowLogoutConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#1E1E1E] text-xs font-semibold text-[#6B7280] cursor-pointer">
+                  <button onClick={() => setShowLogoutConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#23232A] text-xs font-semibold text-[#6B7280] cursor-pointer">
                     Cancel
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowLogoutConfirm(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 hover:bg-rose-500/10 hover:text-rose-500 text-[#6B7280] border border-white/40 dark:border-[#2A2A2A] text-xs font-bold transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-rose-500/10 hover:text-rose-500 text-[#6B7280] border border-white/40 dark:border-[#272730] text-xs font-bold transition-all cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Log Out</span>
@@ -270,14 +270,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
           </div>
 
           {/* Edit Name */}
-          <form onSubmit={handleSaveProfile} className="mt-5 pt-4 border-t border-slate-200/60 dark:border-[#252525]">
+          <form onSubmit={handleSaveProfile} className="mt-5 pt-4 border-t border-slate-200/60 dark:border-[#272730]">
             <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">Display Name</label>
             <div className="flex items-center gap-2.5 max-w-md">
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 border border-slate-200/60 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
+                className="flex-1 px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
               />
               <button
                 type="submit"
@@ -293,14 +293,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
       {/* ═══════════════════════════════════════════════════
           2. EXAM COUNTDOWN CONFIGURATOR
           ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222] flex items-center justify-between">
+      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
+        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 border border-teal-500/20 flex items-center justify-center text-teal-500">
               <Target className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">Exam Countdown & Target</h3>
+              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Exam Countdown & Target</h3>
               <p className="text-[11px] text-[#6B7280]">Set your exam date to sync the live countdown clock</p>
             </div>
           </div>
@@ -330,7 +330,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
                   type="button"
                   key={p.label}
                   onClick={() => handleApplyPresetExam(p.label, p.year, p.days)}
-                  className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/70 dark:bg-[#1A1A1A]/70 hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] border border-slate-200/60 dark:border-[#2A2A2A] text-[#6B7280] transition-all cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/70 dark:bg-[#18181D]/70 hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] border border-slate-200/60 dark:border-[#272730] text-[#6B7280] transition-all cursor-pointer"
                 >
                   {p.label}
                 </button>
@@ -344,14 +344,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
               <input
                 type="text" value={examName} onChange={e => setExamName(e.target.value)}
                 placeholder="e.g. SSC CGL 2026"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 border border-slate-200/60 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
               />
             </div>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Year</label>
               <input
                 type="number" value={targetYear} onChange={e => setTargetYear(Number(e.target.value))} min={2025} max={2035}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 border border-slate-200/60 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
               />
             </div>
           </div>
@@ -362,14 +362,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <input
                 type="date" value={examDate} onChange={e => setExamDate(e.target.value)}
-                className="px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 border border-slate-200/60 dark:border-[#2A2A2A] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none cursor-pointer"
+                className="px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none cursor-pointer"
               />
               <div className="flex items-center gap-2">
                 {[{ label: '+30d', days: 30 }, { label: '+60d', days: 60 }, { label: '+90d', days: 90 }, { label: '+180d', days: 180 }].map(b => (
                   <button
                     type="button" key={b.label}
                     onClick={() => handleAddDays(b.days)}
-                    className="px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-100 dark:bg-[#1E1E1E] hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] text-[#6B7280] transition-all cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-100 dark:bg-[#23232A] hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] text-[#6B7280] transition-all cursor-pointer"
                   >
                     {b.label}
                   </button>
@@ -382,7 +382,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
           <div className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/5 to-emerald-500/5 border border-teal-500/15 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-teal-500" />
-              <span className="text-xs font-bold text-[#171717] dark:text-[#F5E6C8]">Countdown:</span>
+              <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7]">Countdown:</span>
               <span className="text-xs text-[#6B7280]">
                 {new Date(examDate).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
               </span>
@@ -412,14 +412,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
       {/* ═══════════════════════════════════════════════════
           3. FLOATING BACKGROUND TIMER
           ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222] flex items-center justify-between">
+      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
+        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/20 flex items-center justify-center text-teal-500">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">Floating Timer</h3>
+              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Floating Timer</h3>
               <p className="text-[11px] text-[#6B7280]">Always-visible draggable countdown pill</p>
             </div>
           </div>
@@ -440,9 +440,9 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
             { label: 'Pause / Resume Button', desc: 'Quick 1-tap circular control on the floating pill', checked: settings.showPauseButton, key: 'showPauseButton' as const },
             { label: 'Remember Position', desc: 'Keep floating timer where you placed it across sessions', checked: settings.rememberPosition, key: 'rememberPosition' as const },
           ].map(item => (
-            <div key={item.key} className="flex items-center justify-between p-3.5 rounded-2xl bg-white/50 dark:bg-[#1A1A1A]/50 border border-slate-200/50 dark:border-[#252525] hover:border-teal-500/20 transition-all">
+            <div key={item.key} className="flex items-center justify-between p-3.5 rounded-2xl bg-white/50 dark:bg-[#18181D]/50 border border-slate-200/50 dark:border-[#272730] hover:border-teal-500/20 transition-all">
               <div className="pr-3">
-                <span className="text-xs font-bold text-[#171717] dark:text-[#F5E6C8] block">{item.label}</span>
+                <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7] block">{item.label}</span>
                 <span className="text-[10px] text-[#6B7280]">{item.desc}</span>
               </div>
               <ToggleSwitch
@@ -454,8 +454,8 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
 
           {/* Size & Opacity */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-[#1A1A1A]/50 border border-slate-200/50 dark:border-[#252525] space-y-2">
-              <span className="text-xs font-bold text-[#171717] dark:text-[#F5E6C8] block">Widget Size</span>
+            <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-[#18181D]/50 border border-slate-200/50 dark:border-[#272730] space-y-2">
+              <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7] block">Widget Size</span>
               <div className="flex gap-2">
                 {(['standard', 'compact'] as const).map(s => (
                   <button
@@ -464,7 +464,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
                     className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       settings.size === s
                         ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-sm'
-                        : 'bg-white/70 dark:bg-[#1E1E1E] text-[#6B7280] border border-slate-200/60 dark:border-[#2A2A2A]'
+                        : 'bg-white/70 dark:bg-[#23232A] text-[#6B7280] border border-slate-200/60 dark:border-[#272730]'
                     }`}
                   >
                     {s === 'standard' ? 'Standard (360dp)' : 'Compact (320dp)'}
@@ -473,9 +473,9 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-[#1A1A1A]/50 border border-slate-200/50 dark:border-[#252525] space-y-2">
+            <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-[#18181D]/50 border border-slate-200/50 dark:border-[#272730] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#171717] dark:text-[#F5E6C8]">Opacity</span>
+                <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7]">Opacity</span>
                 <span className="text-xs font-mono font-bold text-teal-500">{Math.round((settings.opacity || 0.95) * 100)}%</span>
               </div>
               <input
@@ -506,7 +506,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
       {/* ═══════════════════════════════════════════════════
           4. PWA INSTALL STATUS
           ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
+      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center text-blue-500">
@@ -514,7 +514,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-extrabold text-[#171717] dark:text-[#F5E6C8]">
+                <h4 className="text-sm font-extrabold text-[#171717] dark:text-[#F5F5F7]">
                   {isInstalled ? 'App Installed ✓' : 'Install Mobile / Desktop App'}
                 </h4>
                 <span className={`px-2 py-0.5 text-[9px] font-bold rounded-md ${
@@ -543,14 +543,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
       {/* ═══════════════════════════════════════════════════
           5. DATA BACKUP & EXPORT
           ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#161616]/80 backdrop-blur-2xl border border-white/30 dark:border-[#2A2A2A] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#222]">
+      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
+        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center text-amber-500">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5E6C8]">Data Backup & Export</h3>
+              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Data Backup & Export</h3>
               <p className="text-[11px] text-[#6B7280]">Save your complete progress as JSON or restore from backup</p>
             </div>
           </div>
@@ -560,13 +560,13 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/30 text-[#171717] dark:text-[#F5E6C8] text-xs font-bold border border-slate-200/60 dark:border-[#2A2A2A] transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/30 text-[#171717] dark:text-[#F5F5F7] text-xs font-bold border border-slate-200/60 dark:border-[#272730] transition-all cursor-pointer"
             >
               <Download className="w-4 h-4 text-[#D4AF37]" />
               <span>Export Backup (.json)</span>
             </button>
 
-            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 hover:bg-blue-500/10 hover:border-blue-500/30 text-[#171717] dark:text-[#F5E6C8] text-xs font-bold border border-slate-200/60 dark:border-[#2A2A2A] transition-all cursor-pointer">
+            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-blue-500/10 hover:border-blue-500/30 text-[#171717] dark:text-[#F5F5F7] text-xs font-bold border border-slate-200/60 dark:border-[#272730] transition-all cursor-pointer">
               <Upload className="w-4 h-4 text-blue-500" />
               <span>Import Backup</span>
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />
@@ -587,7 +587,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
           )}
 
           {/* Danger Zone */}
-          <div className="pt-3 border-t border-slate-200/50 dark:border-[#252525]">
+          <div className="pt-3 border-t border-slate-200/50 dark:border-[#272730]">
             <p className="text-[10px] font-bold text-rose-500 uppercase tracking-wider mb-2">⚠ Danger Zone</p>
             <div className="flex flex-wrap gap-2">
               {showResetConfirm ? (
@@ -595,14 +595,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
                   <button onClick={() => { resetToDemo(); setShowResetConfirm(false); }} className="px-3.5 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm">
                     Yes, Reset All
                   </button>
-                  <button onClick={() => setShowResetConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#1E1E1E] text-xs font-semibold text-[#6B7280] cursor-pointer">
+                  <button onClick={() => setShowResetConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#23232A] text-xs font-semibold text-[#6B7280] cursor-pointer">
                     Cancel
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowResetConfirm(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[#6B7280] border border-slate-200/60 dark:border-[#2A2A2A] text-xs font-bold transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[#6B7280] border border-slate-200/60 dark:border-[#272730] text-xs font-bold transition-all cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset to Demo</span>
@@ -614,14 +614,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
                   <button onClick={() => { clearAllDemoData(); setShowClearConfirm(false); }} className="px-3.5 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm">
                     Yes, Clear All
                   </button>
-                  <button onClick={() => setShowClearConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#1E1E1E] text-xs font-semibold text-[#6B7280] cursor-pointer">
+                  <button onClick={() => setShowClearConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#23232A] text-xs font-semibold text-[#6B7280] cursor-pointer">
                     Cancel
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowClearConfirm(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#1A1A1A]/70 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[#6B7280] border border-slate-200/60 dark:border-[#2A2A2A] text-xs font-bold transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[#6B7280] border border-slate-200/60 dark:border-[#272730] text-xs font-bold transition-all cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Clear All Data</span>

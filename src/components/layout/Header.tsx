@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
   const examName = currentExam?.name || 'Academic Exam';
 
   return (
-    <header className="sticky top-0 z-30 bg-[#F7F6F0]/95 dark:bg-[#0D0E0C]/95 backdrop-blur-md border-b border-[#D8D8CF] dark:border-[#30342B] px-3 sm:px-6 py-2.5 transition-colors">
+    <header className="sticky top-0 z-30 bg-[#F7F6F0]/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#D8D8CF] dark:border-[#272730] px-3 sm:px-6 py-2.5 transition-colors">
       <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
         
         {/* Left Side: Mobile Menu Button or Back Button */}
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playClick();
                 onGoBack();
               }}
-              className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#191A17] dark:text-[#F4F4ED] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer flex items-center gap-1.5"
+              className="p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer flex items-center gap-1.5"
               title="Back"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <button
               onClick={onOpenMobileMenu}
-              className="md:hidden p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#191A17] dark:text-[#F4F4ED] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer"
+              className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer"
               title="Open Navigation Drawer"
             >
               <Menu className="w-4 h-4" />
@@ -87,15 +87,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="hidden md:flex relative">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35] transition-all cursor-pointer text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] shadow-subtle-depth"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth"
             >
-              <GraduationCap className="w-4 h-4 text-[#596B35] dark:text-[#A4B879]" />
+              <GraduationCap className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
               <span>{examName}</span>
               <ChevronDown className="w-3.5 h-3.5 text-[#85877E]" />
             </button>
 
             {isExamMenuOpen && (
-              <div className="absolute top-full left-0 mt-1.5 w-60 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-elevated-card p-1.5 z-40 animate-fade-in">
+              <div className="absolute top-full left-0 mt-1.5 w-60 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-elevated-card p-1.5 z-40 animate-fade-in">
                 {exams.map(ex => (
                   <button
                     key={ex.id}
@@ -105,8 +105,8 @@ export const Header: React.FC<HeaderProps> = ({
                     }}
                     className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
                       ex.id === currentExam?.id
-                        ? 'bg-[#DCE8B7] dark:bg-[#354126] text-[#11120F] dark:text-[#F4F4ED] font-bold'
-                        : 'hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] text-[#65675F] dark:text-[#A7AA9C]'
+                        ? 'bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#11120F] dark:text-[#F5F5F7] font-bold'
+                        : 'hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] text-[#65675F] dark:text-[#A1A1AA]'
                     }`}
                   >
                     <span>{ex.name}</span>
@@ -123,18 +123,18 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
-            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] dark:text-[#A7AA9C] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-2 cursor-pointer shadow-subtle-depth text-xs font-medium"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-2 cursor-pointer shadow-subtle-depth text-xs font-medium"
             title="Search Topics (Cmd + K)"
           >
-            <Search className="w-4 h-4 text-[#596B35] dark:text-[#A4B879]" />
+            <Search className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
             <span className="hidden sm:inline">Search...</span>
-            <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-[#EEEEE8] dark:bg-[#1D201A] rounded text-[#85877E]">⌘K</kbd>
+            <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-[#EEEEE8] dark:bg-[#23232A] rounded text-[#85877E]">⌘K</kbd>
           </button>
 
           {/* Streak Indicator */}
-          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth">
+          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
             <Flame className="w-4 h-4 text-[#C49A3A] fill-[#C49A3A]" />
-            <span className="text-xs font-bold text-[#191A17] dark:text-[#F4F4ED] font-mono">
+            <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] font-mono">
               {profile.currentStreak}d
             </span>
           </div>
@@ -142,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Theme Toggle (Light / Dark) */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#191A17] dark:text-[#A7AA9C] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
+            className="p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#191A17] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
             title="Toggle Light/Dark Theme"
           >
             {isDarkMode ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
@@ -151,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* User Profile Avatar */}
           <button
             onClick={onOpenSettings}
-            className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-[#DCE8B7] dark:text-[#A4B879] font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#DCE8B7] dark:text-[#8B5CF6] font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer"
           >
             {profile.name ? profile.name.charAt(0).toUpperCase() : 'A'}
           </button>

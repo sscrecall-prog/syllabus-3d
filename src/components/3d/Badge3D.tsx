@@ -22,11 +22,11 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
   return (
     <div className={`p-4 rounded-xl border transition-all shadow-subtle-depth flex flex-col justify-between h-full ${
       badge.unlocked
-        ? 'bg-white dark:bg-[#151713] border-[#596B35]/40'
-        : 'bg-[#F7F6F0] dark:bg-[#1D201A] border-dashed border-[#D8D8CF] dark:border-[#30342B] opacity-70'
+        ? 'bg-white dark:bg-[#18181D] border-[#596B35]/40'
+        : 'bg-[#F7F6F0] dark:bg-[#23232A] border-dashed border-[#D8D8CF] dark:border-[#272730] opacity-70'
     }`}>
       <div className="flex items-center justify-between gap-1 mb-2">
-        <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#EEEEE8] dark:bg-[#1D201A] text-[#596B35] dark:text-[#A4B879] uppercase font-mono">
+        <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[#596B35] dark:text-[#8B5CF6] uppercase font-mono">
           {badge.tier}
         </span>
         {badge.unlocked ? (
@@ -43,10 +43,10 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
       </div>
 
       <div className="flex flex-col items-center text-center my-2 space-y-1.5">
-        <div className="w-11 h-11 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] text-[#596B35] dark:text-[#A4B879] flex items-center justify-center shadow-sm">
+        <div className="w-11 h-11 rounded-xl bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#596B35] dark:text-[#8B5CF6] flex items-center justify-center shadow-sm">
           {badge.unlocked ? <IconComponent className="w-5 h-5" /> : <Lock className="w-4 h-4 text-[#85877E]" />}
         </div>
-        <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED] line-clamp-1">
+        <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] line-clamp-1">
           {badge.title}
         </h4>
         <p className="text-[10px] text-[#65675F] dark:text-[#85877E] line-clamp-2">
@@ -57,11 +57,11 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
       <div className="space-y-1 pt-2 border-t border-[#EEEEE8] dark:border-[#1D201A]">
         <div className="flex justify-between text-[10px] text-[#85877E] font-mono">
           <span>Progress</span>
-          <span className="font-bold text-[#191A17] dark:text-[#F4F4ED]">{badge.progress} / {badge.maxProgress}</span>
+          <span className="font-bold text-[#191A17] dark:text-[#F5F5F7]">{badge.progress} / {badge.maxProgress}</span>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-[#EEEEE8] dark:bg-[#1D201A] overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-[#EEEEE8] dark:bg-[#23232A] overflow-hidden">
           <div
-            className="h-full rounded-full bg-[#596B35] dark:bg-[#A4B879]"
+            className="h-full rounded-full bg-[#596B35] dark:bg-[#8B5CF6]"
             style={{ width: `${Math.min(100, (badge.progress / (badge.maxProgress || 1)) * 100)}%` }}
           />
         </div>

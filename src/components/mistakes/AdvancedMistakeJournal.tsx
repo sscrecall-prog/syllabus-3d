@@ -193,7 +193,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       case 'formula':
         return { label: 'Formula Error', icon: Compass, color: 'text-[#596B35] bg-[#596B35]/10 border-[#596B35]/30' };
       case 'silly':
-        return { label: 'Silly / Reading Trap', icon: Eye, color: 'text-[#3A3F33] dark:text-[#A7AA9C] bg-[#EEEEE8] dark:bg-[#1D201A] border-[#D8D8CF] dark:border-[#30342B]' };
+        return { label: 'Silly / Reading Trap', icon: Eye, color: 'text-[#3A3F33] dark:text-[#A1A1AA] bg-[#EEEEE8] dark:bg-[#23232A] border-[#D8D8CF] dark:border-[#272730]' };
       case 'time_pressure':
         return { label: 'Time Pressure Trap', icon: Clock, color: 'text-[#8C773E] bg-[#8C773E]/10 border-[#8C773E]/30' };
       default:
@@ -205,14 +205,14 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
     <div className="space-y-4">
       
       {/* 1. Header & KPI Metrics */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-subtle-depth space-y-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-[#B94A48]/15 text-[#B94A48] flex items-center justify-center shrink-0">
               <ShieldAlert className="w-5 h-5 stroke-[2]" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif">
+              <h3 className="text-sm sm:text-base font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
                 Mistake & Examiner Trap Journal
               </h3>
               <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
@@ -231,7 +231,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   setIsRevealed(false);
                   setIsFlashcardOpen(true);
                 }}
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-[#DCE8B7] dark:bg-[#354126] hover:bg-[#596B35] hover:text-white text-[#354126] dark:text-[#F4F4ED] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 hover:bg-[#596B35] hover:text-white text-[#354126] dark:text-[#F5F5F7] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Flashcard Mode</span>
@@ -251,21 +251,21 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
 
         {/* 3 Metric Cards */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-center">
+          <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-center">
             <span className="text-[10px] font-bold text-[#85877E] uppercase block font-mono">Total Logged</span>
-            <span className="text-base sm:text-lg font-extrabold text-[#11120F] dark:text-[#F4F4ED] font-mono mt-0.5 block">
+            <span className="text-base sm:text-lg font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono mt-0.5 block">
               {mistakes.length}
             </span>
           </div>
 
-          <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-center">
+          <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-center">
             <span className="text-[10px] font-bold text-[#B94A48] uppercase block font-mono">Active Traps</span>
             <span className="text-base sm:text-lg font-extrabold text-[#B94A48] font-mono mt-0.5 block">
               {activeCount}
             </span>
           </div>
 
-          <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-center">
+          <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-center">
             <span className="text-[10px] font-bold text-[#4F7A45] uppercase block font-mono">Resolution Rate</span>
             <span className="text-base sm:text-lg font-extrabold text-[#4F7A45] font-mono mt-0.5 block">
               {resolutionRate}%
@@ -283,7 +283,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search traps, golden rules, examiner tricks..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium text-[#191A17] dark:text-white focus:outline-none focus:border-[#596B35]"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-white focus:outline-none focus:border-[#596B35]"
           />
         </div>
 
@@ -308,7 +308,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer border ${
                 filterType === chip.id
                   ? 'bg-[#11120F] text-white border-transparent'
-                  : 'bg-white dark:bg-[#151713] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35]'
+                  : 'bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
               }`}
             >
               {chip.label}
@@ -320,11 +320,11 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       {/* 3. Mistakes List */}
       <div className="space-y-3">
         {filteredMistakes.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-white dark:bg-[#151713] border border-dashed border-[#D8D8CF] dark:border-[#30342B] text-center space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-[#EEEEE8] dark:bg-[#1D201A] text-[#596B35] mx-auto flex items-center justify-center">
+          <div className="p-8 rounded-2xl bg-white dark:bg-[#18181D] border border-dashed border-[#D8D8CF] dark:border-[#272730] text-center space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-[#EEEEE8] dark:bg-[#23232A] text-[#596B35] mx-auto flex items-center justify-center">
               <ShieldAlert className="w-5 h-5" />
             </div>
-            <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED] font-serif">
+            <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] font-serif">
               {searchTerm || filterType !== 'all' ? 'No traps match your filter' : 'No mistakes logged yet'}
             </h4>
             <p className="text-[11px] text-[#85877E] max-w-xs mx-auto">
@@ -341,8 +341,8 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 key={m.id}
                 className={`p-4 sm:p-5 rounded-2xl border transition-all shadow-subtle-depth space-y-3.5 ${
                   m.resolved
-                    ? 'bg-[#F7F6F0] dark:bg-[#151713] border-[#4F7A45]/40 opacity-85'
-                    : 'bg-white dark:bg-[#151713] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35]'
+                    ? 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#4F7A45]/40 opacity-85'
+                    : 'bg-white dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
                 }`}
               >
                 {/* Top Badge Row */}
@@ -366,7 +366,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     )}
 
                     {m.mockSource && (
-                      <span className="text-[10px] font-bold text-[#85877E] bg-[#EEEEE8] dark:bg-[#1D201A] px-2 py-0.5 rounded font-mono">
+                      <span className="text-[10px] font-bold text-[#85877E] bg-[#EEEEE8] dark:bg-[#23232A] px-2 py-0.5 rounded font-mono">
                         {m.mockSource}
                       </span>
                     )}
@@ -382,7 +382,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   <span className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider font-mono block">
                     Question / Problem Trap
                   </span>
-                  <p className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F4F4ED] leading-relaxed">
+                  <p className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] leading-relaxed">
                     {m.questionDescription}
                   </p>
                 </div>
@@ -396,7 +396,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                           <XCircle className="w-3 h-3" />
                           <span>My Wrong Logic / Fallacy</span>
                         </span>
-                        <p className="text-xs text-[#191A17] dark:text-[#F4F4ED]">
+                        <p className="text-xs text-[#191A17] dark:text-[#F5F5F7]">
                           {m.wrongLogic}
                         </p>
                       </div>
@@ -408,7 +408,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                           <AlertTriangle className="w-3 h-3" />
                           <span>The Examiner's Trap Mechanism</span>
                         </span>
-                        <p className="text-xs text-[#191A17] dark:text-[#F4F4ED]">
+                        <p className="text-xs text-[#191A17] dark:text-[#F5F5F7]">
                           {m.examinerTrap}
                         </p>
                       </div>
@@ -417,22 +417,22 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 )}
 
                 {/* Correct Approach & Golden Rule */}
-                <div className="p-3.5 rounded-xl bg-[#DCE8B7]/30 dark:bg-[#354126]/30 border border-[#596B35]/30 space-y-2">
+                <div className="p-3.5 rounded-xl bg-[#DCE8B7]/30 dark:bg-[#8B5CF6]/20/30 border border-[#596B35]/30 space-y-2">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-[#596B35] dark:text-[#A4B879] flex items-center gap-1 font-mono uppercase">
+                    <span className="text-[10px] font-bold text-[#596B35] dark:text-[#8B5CF6] flex items-center gap-1 font-mono uppercase">
                       <CheckCircle2 className="w-3 h-3" />
                       <span>Correct Approach & Solution</span>
                     </span>
-                    <p className="text-xs font-semibold text-[#191A17] dark:text-[#F4F4ED] whitespace-pre-line leading-relaxed">
+                    <p className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] whitespace-pre-line leading-relaxed">
                       {m.correctApproach}
                     </p>
                   </div>
 
                   {m.goldenRule && (
                     <div className="pt-2 border-t border-[#596B35]/20 flex items-start gap-2 text-xs">
-                      <Sparkles className="w-3.5 h-3.5 text-[#596B35] dark:text-[#A4B879] shrink-0 mt-0.5" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#596B35] dark:text-[#8B5CF6] shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-[#596B35] dark:text-[#A4B879] font-mono text-[10px] uppercase">Golden Rule: </span>
+                        <span className="font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono text-[10px] uppercase">Golden Rule: </span>
                         <span className="font-bold text-[#11120F] dark:text-white font-serif">{m.goldenRule}</span>
                       </div>
                     </div>
@@ -447,7 +447,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                       m.resolved
                         ? 'bg-[#4F7A45] text-white shadow-sm'
-                        : 'bg-[#EEEEE8] dark:bg-[#1D201A] text-[#191A17] dark:text-[#F4F4ED] hover:bg-[#DCE8B7] dark:hover:bg-[#354126]'
+                        : 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#DCE8B7] dark:hover:bg-[#8B5CF6]/20'
                     }`}
                   >
                     {m.resolved ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -485,15 +485,15 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       {/* ---------------------------------------------------------------- */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-lg max-h-[90vh] rounded-3xl bg-[#F7F6F0] dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-2xl p-5 sm:p-6 flex flex-col justify-between overflow-y-auto space-y-4 animate-scale-up">
+          <div className="w-full max-w-lg max-h-[90vh] rounded-3xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-5 sm:p-6 flex flex-col justify-between overflow-y-auto space-y-4 animate-scale-up">
             
-            <div className="flex items-center justify-between pb-3 border-b border-[#D8D8CF] dark:border-[#30342B]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#D8D8CF] dark:border-[#272730]">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-[#596B35] text-white flex items-center justify-center font-bold">
                   <ShieldAlert className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#11120F] dark:text-[#F4F4ED] font-serif">
+                  <h3 className="text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
                     {editingMistakeId ? 'Edit Examiner Trap' : 'Log New Exam Trap & Fallacy'}
                   </h3>
                   <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
@@ -533,7 +533,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                       className={`p-2 rounded-xl text-xs font-bold text-center border cursor-pointer transition-colors ${
                         mistakeType === t.id
                           ? 'bg-[#11120F] text-white border-transparent'
-                          : 'bg-white dark:bg-[#1D201A] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B]'
+                          : 'bg-white dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730]'
                       }`}
                     >
                       {t.label}
@@ -557,7 +557,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                         className={`flex-1 py-1.5 text-xs font-bold rounded-lg capitalize border cursor-pointer ${
                           severity === sev
                             ? 'bg-[#596B35] text-white border-transparent'
-                            : 'bg-white dark:bg-[#1D201A] border-[#D8D8CF] dark:border-[#30342B] text-[#65675F]'
+                            : 'bg-white dark:bg-[#23232A] border-[#D8D8CF] dark:border-[#272730] text-[#65675F]'
                         }`}
                       >
                         {sev}
@@ -575,14 +575,14 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     value={mockSource}
                     onChange={e => setMockSource(e.target.value)}
                     placeholder="e.g. Mock #05 Q.24"
-                    className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium text-[#191A17] dark:text-white focus:outline-none focus:border-[#596B35]"
+                    className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-white focus:outline-none focus:border-[#596B35]"
                   />
                 </div>
               </div>
 
               {/* Question Statement */}
               <div className="space-y-1">
-                <label className="block text-[11px] font-bold text-[#191A17] dark:text-[#F4F4ED]">
+                <label className="block text-[11px] font-bold text-[#191A17] dark:text-[#F5F5F7]">
                   Question / Problem Statement *
                 </label>
                 <textarea
@@ -591,7 +591,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   placeholder="Describe the exact question or problem where error occurred..."
                   rows={2}
                   required
-                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium text-[#191A17] dark:text-white focus:outline-none focus:border-[#596B35]"
+                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-white focus:outline-none focus:border-[#596B35]"
                 />
               </div>
 
@@ -606,7 +606,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     onChange={e => setWrongLogic(e.target.value)}
                     placeholder="What false assumption did you make?"
                     rows={2}
-                    className="w-full p-2.5 rounded-xl bg-white dark:bg-[#1D201A] border border-[#B94A48]/30 text-xs font-medium text-[#191A17] dark:text-white focus:outline-none"
+                    className="w-full p-2.5 rounded-xl bg-white dark:bg-[#23232A] border border-[#B94A48]/30 text-xs font-medium text-[#191A17] dark:text-white focus:outline-none"
                   />
                 </div>
 
@@ -619,14 +619,14 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     onChange={e => setExaminerTrap(e.target.value)}
                     placeholder="How was the question engineered to trick?"
                     rows={2}
-                    className="w-full p-2.5 rounded-xl bg-white dark:bg-[#1D201A] border border-[#C49A3A]/30 text-xs font-medium text-[#191A17] dark:text-white focus:outline-none"
+                    className="w-full p-2.5 rounded-xl bg-white dark:bg-[#23232A] border border-[#C49A3A]/30 text-xs font-medium text-[#191A17] dark:text-white focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Correct Approach & Solution */}
               <div className="space-y-1">
-                <label className="block text-[11px] font-bold text-[#596B35] dark:text-[#A4B879]">
+                <label className="block text-[11px] font-bold text-[#596B35] dark:text-[#8B5CF6]">
                   Correct Approach & Method *
                 </label>
                 <textarea
@@ -635,13 +635,13 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   placeholder="Step-by-step correct derivation or conceptual key..."
                   rows={3}
                   required
-                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#1D201A] border border-[#596B35]/40 text-xs font-medium text-[#191A17] dark:text-white focus:outline-none"
+                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#23232A] border border-[#596B35]/40 text-xs font-medium text-[#191A17] dark:text-white focus:outline-none"
                 />
               </div>
 
               {/* Golden Rule / Flashcard Key */}
               <div className="space-y-1">
-                <label className="block text-[11px] font-bold text-[#191A17] dark:text-[#F4F4ED] flex items-center gap-1 font-mono uppercase">
+                <label className="block text-[11px] font-bold text-[#191A17] dark:text-[#F5F5F7] flex items-center gap-1 font-mono uppercase">
                   <Sparkles className="w-3 h-3 text-[#596B35]" />
                   <span>Golden Rule Takeaway (1-liner memory anchor)</span>
                 </label>
@@ -650,7 +650,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   value={goldenRule}
                   onChange={e => setGoldenRule(e.target.value)}
                   placeholder="e.g. Always convert km/hr to m/s by 5/18 before distance formulas!"
-                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#596B35] dark:text-[#A4B879] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] focus:outline-none"
                 />
               </div>
 
@@ -681,10 +681,10 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       {/* ---------------------------------------------------------------- */}
       {isFlashcardOpen && mistakes.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-[#F7F6F0] dark:bg-[#151713] border border-[#D8D8CF] dark:border-[#30342B] shadow-2xl p-6 space-y-4 animate-scale-up">
+          <div className="w-full max-w-md rounded-3xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-6 space-y-4 animate-scale-up">
             
-            <div className="flex items-center justify-between pb-2 border-b border-[#D8D8CF] dark:border-[#30342B]">
-              <span className="text-xs font-bold text-[#596B35] dark:text-[#A4B879] font-mono">
+            <div className="flex items-center justify-between pb-2 border-b border-[#D8D8CF] dark:border-[#272730]">
+              <span className="text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono">
                 Flashcard {currentFlashcardIndex + 1} of {mistakes.length}
               </span>
               <button
@@ -696,12 +696,12 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             </div>
 
             {/* Flashcard Content */}
-            <div className="min-h-[220px] p-5 rounded-2xl bg-white dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] flex flex-col justify-between space-y-3">
+            <div className="min-h-[220px] p-5 rounded-2xl bg-white dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] flex flex-col justify-between space-y-3">
               <div className="space-y-2">
                 <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-[#B94A48]/15 text-[#B94A48] font-mono uppercase">
                   {mistakes[currentFlashcardIndex].mistakeType} Trap
                 </span>
-                <p className="text-sm font-bold text-[#191A17] dark:text-[#F4F4ED]">
+                <p className="text-sm font-bold text-[#191A17] dark:text-[#F5F5F7]">
                   {mistakes[currentFlashcardIndex].questionDescription}
                 </p>
 
@@ -713,15 +713,15 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
               </div>
 
               {isRevealed ? (
-                <div className="p-3 rounded-xl bg-[#DCE8B7]/40 dark:bg-[#354126]/40 border border-[#596B35]/40 space-y-2 animate-fade-in">
-                  <span className="text-[10px] font-bold text-[#596B35] dark:text-[#A4B879] font-mono uppercase block">
+                <div className="p-3 rounded-xl bg-[#DCE8B7]/40 dark:bg-[#8B5CF6]/20/40 border border-[#596B35]/40 space-y-2 animate-fade-in">
+                  <span className="text-[10px] font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono uppercase block">
                     ✓ Golden Solution & Rule:
                   </span>
-                  <p className="text-xs font-semibold text-[#191A17] dark:text-[#F4F4ED] whitespace-pre-line">
+                  <p className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] whitespace-pre-line">
                     {mistakes[currentFlashcardIndex].correctApproach}
                   </p>
                   {mistakes[currentFlashcardIndex].goldenRule && (
-                    <p className="text-xs font-bold text-[#596B35] dark:text-[#A4B879] font-serif pt-1 border-t border-[#596B35]/20">
+                    <p className="text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] font-serif pt-1 border-t border-[#596B35]/20">
                       ★ {mistakes[currentFlashcardIndex].goldenRule}
                     </p>
                   )}
@@ -730,7 +730,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsRevealed(true)}
-                  className="w-full py-3 rounded-xl bg-[#EEEEE8] dark:bg-[#151713] hover:bg-[#DCE8B7] dark:hover:bg-[#354126] text-xs font-bold text-[#596B35] dark:text-[#A4B879] border border-dashed border-[#596B35]/40 transition-colors cursor-pointer text-center"
+                  className="w-full py-3 rounded-xl bg-[#EEEEE8] dark:bg-[#18181D] hover:bg-[#DCE8B7] dark:hover:bg-[#8B5CF6]/20 text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] border border-dashed border-[#596B35]/40 transition-colors cursor-pointer text-center"
                 >
                   🔍 Click to Reveal Golden Solution
                 </button>
