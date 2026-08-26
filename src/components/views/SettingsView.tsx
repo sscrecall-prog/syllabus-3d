@@ -345,24 +345,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             onClick={() => { if (onSetThemeSystem) { soundManager.playCompleteChime(); onSetThemeSystem('spatial'); } }}
             className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer space-y-3 active:scale-[0.98] ${
               themeSystem === 'spatial'
-                ? 'border-cyan-400 bg-gradient-to-br from-cyan-500/10 to-purple-500/5 shadow-md shadow-cyan-500/10'
+                ? 'border-[#C9AF46] bg-gradient-to-br from-[#982A26]/10 to-[#C9AF46]/5 shadow-md shadow-[#982A26]/10'
                 : 'border-slate-200/60 dark:border-[#2A2A2A] bg-white/50 dark:bg-[#1A1A1A]/50 opacity-70 hover:opacity-100'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-[#171717] dark:text-[#F5E6C8]">🔮 Spatial Glass</span>
               {themeSystem === 'spatial' && (
-                <span className="px-2.5 py-0.5 text-[9px] font-black rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-sm">ACTIVE</span>
+                <span className="px-2.5 py-0.5 text-[9px] font-black rounded-full bg-gradient-to-r from-[#982A26] to-[#C9AF46] text-[#F2E7D0] shadow-sm">ACTIVE</span>
               )}
             </div>
             <p className="text-[11px] text-[#6B7280] leading-relaxed">
-              Frosted glass panels, holographic glow, and cosmic ambient depth. Futuristic VisionOS-inspired.
+              Deep maroon glass panels, crimson accents, warm cream typography, and golden glow. Regal & focused.
             </p>
             <div className="flex gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-slate-900 border border-slate-700" />
-              <span className="w-5 h-5 rounded-full bg-cyan-400" />
-              <span className="w-5 h-5 rounded-full bg-purple-500" />
-              <span className="w-5 h-5 rounded-full bg-teal-400" />
+              <span className="w-5 h-5 rounded-full bg-[#470503] border border-[#982A26]/40" />
+              <span className="w-5 h-5 rounded-full bg-[#982A26]" />
+              <span className="w-5 h-5 rounded-full bg-[#F2E7D0]" />
+              <span className="w-5 h-5 rounded-full bg-[#C9AF46]" />
             </div>
           </div>
         </div>
