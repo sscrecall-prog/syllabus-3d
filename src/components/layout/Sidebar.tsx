@@ -125,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               SYLLABUS 3D
             </h1>
             <p className="text-[10px] font-bold text-[#596B35] dark:text-[#8B5CF6]">
-              Academic Mastery System
+              Syllabus Mastery System
             </p>
           </div>
         </div>

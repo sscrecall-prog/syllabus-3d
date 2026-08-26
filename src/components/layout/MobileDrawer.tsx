@@ -117,7 +117,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
         <div className="pt-4 border-t border-[#D8D8CF] dark:border-[#272730]">
           <p className="text-[10px] text-[#85877E] text-center">
-            Syllabus 3D v2.0 • Academic Edition
+            Syllabus 3D v2.0 • Syllabus Edition
           </p>
         </div>
       </div>

@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
     setIsDarkMode(prev => !prev);
   };
 
-  const examName = currentExam?.name || 'Academic Exam';
+  const examName = currentExam?.name || 'Syllabus Exam';
 
   return (
     <header className="sticky top-0 z-30 bg-[#F7F6F0]/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#D8D8CF] dark:border-[#272730] px-3 sm:px-6 py-2.5 transition-colors">

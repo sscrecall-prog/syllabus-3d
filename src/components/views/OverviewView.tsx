@@ -69,7 +69,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       <div>
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold uppercase tracking-widest text-[#596B35] dark:text-[#8B5CF6] font-mono">
-            Academic Dashboard
+            Syllabus Dashboard
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#8B5CF6]" />
           <span className="text-[11px] text-[#65675F] dark:text-[#85877E] font-mono">
