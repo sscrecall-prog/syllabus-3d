@@ -295,7 +295,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   // Auto scroll tab into view
                   (e.currentTarget as HTMLElement).scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                 }}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border shrink-0 ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer border shrink-0 ${
                   isActive
                     ? 'bg-[#11120F] text-white border-transparent shadow-sm'
                     : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
@@ -413,7 +413,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-sm sm:text-base font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-wide truncate">
+                      <h3 className="text-sm sm:text-base font-medium text-[#191A17] dark:text-[#F5F5F7] tracking-normal truncate">
                         {chapter.name}
                       </h3>
                       {isAllCompleted && (

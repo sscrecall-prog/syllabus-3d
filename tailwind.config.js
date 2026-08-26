@@ -38,9 +38,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-        serif: ['Newsreader', 'Playfair Display', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'Menlo', 'monospace']
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'Menlo', 'monospace']
       },
       boxShadow: {
         'subtle-depth': '0 2px 8px -2px rgba(17, 18, 15, 0.05), 0 8px 16px -4px rgba(17, 18, 15, 0.04)',

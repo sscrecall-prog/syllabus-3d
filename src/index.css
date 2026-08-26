@@ -41,8 +41,9 @@
   body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -52,8 +53,15 @@
     color: #F5F5F7;
   }
 
-  h1, h2, h3, .font-serif {
-    font-family: 'Newsreader', Georgia, serif;
+  /* App Titles & Headings → Bold 700 */
+  h1, h2, h3, .font-serif, [class*="font-serif"], .app-title {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+  }
+
+  /* Body Text → Regular 400 */
+  p, span, label, input, textarea, select {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 }
 
