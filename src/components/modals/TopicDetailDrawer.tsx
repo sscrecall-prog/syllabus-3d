@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
@@ -18,7 +18,9 @@ import {
   Award,
   Sparkles,
   Zap,
-  Check
+  Check,
+  Save,
+  AlertTriangle
 } from 'lucide-react';
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
@@ -39,6 +41,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   onClose
 }) => {
   const {
+    exams,
     updateTopicStatus,
     updateTopicNotes,
     logStudySession,
@@ -51,6 +54,20 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     deleteTopicPdfAttachment,
     currentExam
   } = useSyllabus();
+
+  // Find live reactive topic from SyllabusContext exams state
+  const liveTopic = useMemo(() => {
+    if (!topic) return null;
+    for (const exam of exams) {
+      for (const subj of exam.subjects) {
+        for (const chap of subj.chapters) {
+          const found = chap.topics.find(t => t.id === topic.id);
+          if (found) return found;
+        }
+      }
+    }
+    return topic;
+  }, [exams, topic]);
 
   const [notes, setNotes] = useState('');
   const [accuracyInput, setAccuracyInput] = useState<number>(0);
@@ -66,25 +83,39 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [accuracySavedNotice, setAccuracySavedNotice] = useState(false);
   const [timeSavedNotice, setTimeSavedNotice] = useState(false);
+  const [editSavedNotice, setEditSavedNotice] = useState(false);
 
   // Live Drawer Stopwatch
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
+  // Synchronize state with live topic
   useEffect(() => {
-    if (topic) {
-      setNotes(topic.notes || '');
-      setAccuracyInput(topic.accuracy !== undefined ? topic.accuracy : 0);
-      setStudyMinutesInput(topic.studyTimeMinutes || 0);
-      setEditName(topic.name);
-      setEditDifficulty(topic.difficulty);
-      setEditWeightage(topic.weightage);
-      setTimerSeconds(0);
-      setIsTimerRunning(false);
-      setIsEditing(false);
-      setShowDeleteConfirm(false);
+    if (liveTopic) {
+      setNotes(liveTopic.notes || '');
+      setAccuracyInput(liveTopic.accuracy !== undefined ? liveTopic.accuracy : 0);
+      setStudyMinutesInput(liveTopic.studyTimeMinutes || 0);
+      setEditName(liveTopic.name);
+      setEditDifficulty(liveTopic.difficulty || 'Medium');
+      setEditWeightage(liveTopic.weightage || 4);
     }
-  }, [topic]);
+  }, [
+    liveTopic?.id,
+    liveTopic?.name,
+    liveTopic?.difficulty,
+    liveTopic?.weightage,
+    liveTopic?.accuracy,
+    liveTopic?.studyTimeMinutes,
+    liveTopic?.notes
+  ]);
+
+  // Reset stopwatch & edit mode when topic changes
+  useEffect(() => {
+    setTimerSeconds(0);
+    setIsTimerRunning(false);
+    setIsEditing(false);
+    setShowDeleteConfirm(false);
+  }, [topic?.id]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -96,16 +127,16 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
-  if (!topic) return null;
+  if (!liveTopic) return null;
 
   // Accuracy updater
   const handleSaveAccuracy = (newAcc: number) => {
-    const clamped = Math.max(0, Math.min(100, newAcc));
+    const clamped = Math.max(0, Math.min(100, Math.round(newAcc)));
     setAccuracyInput(clamped);
     if (updateTopicMetrics) {
-      updateTopicMetrics(topic.id, { accuracy: clamped });
+      updateTopicMetrics(liveTopic.id, { accuracy: clamped });
     } else {
-      editTopic(topic.id, { accuracy: clamped });
+      editTopic(liveTopic.id, { accuracy: clamped });
     }
     soundManager.playCompleteChime();
     setAccuracySavedNotice(true);
@@ -114,35 +145,21 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
   // Study Time Adders (+15m, +30m, etc.)
   const handleAddStudyMinutes = (minsToAdd: number) => {
-    const newTotal = (topic.studyTimeMinutes || 0) + minsToAdd;
+    const newTotal = (liveTopic.studyTimeMinutes || 0) + minsToAdd;
     setStudyMinutesInput(newTotal);
     if (updateTopicMetrics) {
-      updateTopicMetrics(topic.id, { addMinutes: minsToAdd });
+      updateTopicMetrics(liveTopic.id, { addMinutes: minsToAdd });
     } else {
-      logStudySession(minsToAdd, topic.id);
+      logStudySession(minsToAdd, liveTopic.id);
     }
     soundManager.playCompleteChime();
     setTimeSavedNotice(true);
     setTimeout(() => setTimeSavedNotice(false), 2000);
   };
 
-  // Direct manual study time save
-  const handleSaveManualStudyTime = (e: React.FormEvent) => {
-    e.preventDefault();
-    const targetMins = Math.max(0, Number(studyMinutesInput));
-    if (updateTopicMetrics) {
-      updateTopicMetrics(topic.id, { studyTimeMinutes: targetMins });
-    } else {
-      editTopic(topic.id, { studyTimeMinutes: targetMins });
-    }
-    soundManager.playClick();
-    setTimeSavedNotice(true);
-    setTimeout(() => setTimeSavedNotice(false), 2000);
-  };
-
   // Stop active Drawer stopwatch & log
   const handleStopAndLogStopwatch = () => {
-    if (timerSeconds >= 10) {
+    if (timerSeconds >= 5) {
       const minutes = Math.max(1, Math.round(timerSeconds / 60));
       handleAddStudyMinutes(minutes);
     }
@@ -152,37 +169,43 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
   const handleSaveNotes = (newNotes: string) => {
     setNotes(newNotes);
-    updateTopicNotes(topic.id, newNotes);
+    updateTopicNotes(liveTopic.id, newNotes);
     soundManager.playClick();
   };
 
   const handleSaveTopicDetails = (e: React.FormEvent) => {
     e.preventDefault();
-    editTopic(topic.id, {
-      name: editName,
+    if (!editName.trim()) return;
+
+    editTopic(liveTopic.id, {
+      name: editName.trim(),
       difficulty: editDifficulty,
-      weightage: Number(editWeightage)
+      weightage: Math.max(1, Math.min(10, Number(editWeightage)))
     });
+
+    soundManager.playCompleteChime();
+    setEditSavedNotice(true);
+    setTimeout(() => setEditSavedNotice(false), 2500);
     setIsEditing(false);
-    soundManager.playClick();
   };
 
   const handleAddSubtopicSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSubtopicInput.trim()) return;
-    addSubtopic(topic.id, newSubtopicInput.trim());
+    addSubtopic(liveTopic.id, newSubtopicInput.trim());
     setNewSubtopicInput('');
     soundManager.playClick();
   };
 
   const handleDelete = () => {
-    deleteTopic(topic.id);
+    deleteTopic(liveTopic.id);
     onClose();
     soundManager.playClick();
   };
 
-  const mistakesCount = topic.mistakes ? topic.mistakes.length : 0;
-  const activeMistakesCount = topic.mistakes ? topic.mistakes.filter(m => !m.resolved).length : 0;
+  const mistakesCount = liveTopic.mistakes ? liveTopic.mistakes.length : 0;
+  const activeMistakesCount = liveTopic.mistakes ? liveTopic.mistakes.filter(m => !m.resolved).length : 0;
+  const pdfCount = liveTopic.pdfAttachments ? liveTopic.pdfAttachments.length : 0;
 
   // Format Stopwatch Display
   const formatStopwatch = (totalSecs: number) => {
@@ -205,15 +228,22 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <span className="truncate">{chapterName || 'Chapter'}</span>
               </div>
               <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#F4F4ED] truncate mt-0.5 font-serif">
-                {topic.name}
+                {liveTopic.name}
               </h2>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={() => setIsEditing(p => !p)}
-                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#11120F] dark:hover:text-white transition-all cursor-pointer"
-                title="Edit Topic"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsEditing(p => !p);
+                }}
+                className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                  isEditing
+                    ? 'bg-[#596B35] text-white border-[#596B35] shadow-sm'
+                    : 'bg-[#F7F6F0] dark:bg-[#1D201A] border-[#D8D8CF] dark:border-[#30342B] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:border-[#596B35]'
+                }`}
+                title={isEditing ? 'Close Edit Form' : 'Edit Topic Information'}
               >
                 <Edit3 className="w-4 h-4" />
               </button>
@@ -221,11 +251,124 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               <button
                 onClick={onClose}
                 className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-[#85877E] hover:text-[#11120F] dark:hover:text-white transition-all cursor-pointer"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
+
+          {/* EDIT TOPIC FORM BANNER (INSTANTLY VISIBLE WHEN PENCIL IS CLICKED) */}
+          {isEditing && (
+            <div className="p-4 sm:p-5 bg-white dark:bg-[#151713] border-b border-[#596B35]/40 shadow-md animate-fade-in space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-[#596B35]/15 text-[#596B35] dark:text-[#A4B879] flex items-center justify-center">
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="text-xs font-bold text-[#11120F] dark:text-[#F4F4ED] uppercase font-mono tracking-wider">
+                    Edit Topic Details
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveTopicDetails} className="space-y-3">
+                {/* Topic Name */}
+                <div>
+                  <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A7AA9C] mb-1 uppercase font-mono">
+                    Topic Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="Enter topic name..."
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] focus:ring-1 focus:ring-[#596B35]"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                {/* Difficulty & Weightage Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Difficulty Selection */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A7AA9C] mb-1 uppercase font-mono">
+                      Difficulty Level
+                    </label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {(['Easy', 'Medium', 'Hard'] as DifficultyLevel[]).map(diff => (
+                        <button
+                          key={diff}
+                          type="button"
+                          onClick={() => setEditDifficulty(diff)}
+                          className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border text-center ${
+                            editDifficulty === diff
+                              ? diff === 'Easy'
+                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
+                                : diff === 'Medium'
+                                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+                                : 'bg-rose-500 text-white border-rose-500 shadow-sm'
+                              : 'bg-[#F7F6F0] dark:bg-[#1D201A] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B]'
+                          }`}
+                        >
+                          {diff}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Weightage Marks */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A7AA9C] mb-1 uppercase font-mono">
+                      Weightage (1 - 10 Marks)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={editWeightage}
+                      onChange={e => setEditWeightage(Number(e.target.value))}
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35]"
+                    />
+                  </div>
+                </div>
+
+                {/* Save / Cancel buttons */}
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#85877E] hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#596B35] hover:bg-[#4d5e2e] text-white text-xs font-bold shadow-md shadow-[#596B35]/20 transition-all cursor-pointer active:scale-95"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save Changes</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Edit Saved Confirmation Notice */}
+          {editSavedNotice && (
+            <div className="px-4 sm:px-6 py-2 bg-emerald-500/10 border-b border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
+              <Check className="w-4 h-4 stroke-[3]" />
+              <span>Topic details updated successfully!</span>
+            </div>
+          )}
 
           {/* Tab Navigation */}
           <div className="flex items-center px-4 sm:px-6 pt-3 pb-0 border-b border-[#D8D8CF] dark:border-[#30342B] bg-white dark:bg-[#151713] gap-2">
@@ -235,7 +378,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 id: 'notes',
                 label: 'Academic Notes',
                 icon: FileText,
-                badge: (topic.pdfAttachments && topic.pdfAttachments.length > 0) ? `${topic.pdfAttachments.length} PDF` : null,
+                badge: pdfCount > 0 ? `${pdfCount} PDF` : null,
                 badgeColor: 'bg-rose-500'
               },
               {
@@ -290,16 +433,16 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     </span>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl sm:text-3xl font-black text-[#11120F] dark:text-white font-mono">
-                        {topic.accuracy || 0}%
+                        {liveTopic.accuracy || 0}%
                       </span>
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                        (topic.accuracy || 0) >= 80
+                        (liveTopic.accuracy || 0) >= 80
                           ? 'bg-[#4F7A45]/20 text-[#4F7A45]'
-                          : (topic.accuracy || 0) >= 60
+                          : (liveTopic.accuracy || 0) >= 60
                           ? 'bg-[#C49A3A]/20 text-[#C49A3A]'
                           : 'bg-[#B94A48]/20 text-[#B94A48]'
                       }`}>
-                        {(topic.accuracy || 0) >= 80 ? 'Mastered' : (topic.accuracy || 0) >= 60 ? 'Moderate' : 'Needs Practice'}
+                        {(liveTopic.accuracy || 0) >= 80 ? 'Mastered' : (liveTopic.accuracy || 0) >= 60 ? 'Moderate' : 'Needs Practice'}
                       </span>
                     </div>
                   </div>
@@ -312,10 +455,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     </span>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl sm:text-3xl font-black text-[#11120F] dark:text-white font-mono">
-                        {topic.studyTimeMinutes || 0}m
+                        {liveTopic.studyTimeMinutes || 0}m
                       </span>
                       <span className="text-xs text-[#85877E] font-mono">
-                        ({Math.round(((topic.studyTimeMinutes || 0) / 60) * 10) / 10}h)
+                        ({Math.round(((liveTopic.studyTimeMinutes || 0) / 60) * 10) / 10}h)
                       </span>
                     </div>
                   </div>
@@ -351,9 +494,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       max="100"
                       step="5"
                       value={accuracyInput}
-                      onChange={e => setAccuracyInput(Number(e.target.value))}
-                      onMouseUp={() => handleSaveAccuracy(accuracyInput)}
-                      onTouchEnd={() => handleSaveAccuracy(accuracyInput)}
+                      onChange={e => {
+                        const val = Number(e.target.value);
+                        setAccuracyInput(val);
+                        handleSaveAccuracy(val);
+                      }}
                       className="w-full accent-[#596B35] cursor-pointer"
                     />
                   </div>
@@ -372,7 +517,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                         type="button"
                         onClick={() => handleSaveAccuracy(chip.val)}
                         className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                          topic.accuracy === chip.val
+                          liveTopic.accuracy === chip.val
                             ? 'bg-[#596B35] text-white'
                             : 'bg-[#F7F6F0] dark:bg-[#1D201A] text-[#65675F] dark:text-[#A7AA9C] hover:bg-[#DCE8B7] dark:hover:bg-[#354126]'
                         }`}
@@ -433,16 +578,18 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     <div className="flex items-center gap-2">
                       {!isTimerRunning ? (
                         <button
+                          type="button"
                           onClick={() => setIsTimerRunning(true)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black text-xs font-bold shadow-sm cursor-pointer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black text-xs font-bold shadow-sm cursor-pointer active:scale-95"
                         >
                           <Play className="w-3.5 h-3.5 fill-current" />
                           <span>Start</span>
                         </button>
                       ) : (
                         <button
+                          type="button"
                           onClick={handleStopAndLogStopwatch}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#4F7A45] text-white text-xs font-bold shadow-sm cursor-pointer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#4F7A45] text-white text-xs font-bold shadow-sm cursor-pointer active:scale-95"
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                           <span>Save ({Math.max(1, Math.round(timerSeconds / 60))}m)</span>
@@ -451,6 +598,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
                       {timerSeconds > 0 && !isTimerRunning && (
                         <button
+                          type="button"
                           onClick={() => setTimerSeconds(0)}
                           className="p-1.5 rounded-lg text-[#85877E] hover:text-[#B94A48] cursor-pointer"
                           title="Reset Stopwatch"
@@ -471,13 +619,15 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     {(['not_started', 'in_progress', 'completed', 'weak'] as TopicStatus[]).map((st) => (
                       <button
                         key={st}
+                        type="button"
                         onClick={() => {
-                          const targetAcc = st === 'completed' ? Math.max(85, topic.accuracy || 85) : topic.accuracy;
-                          updateTopicStatus(topic.id, st, targetAcc);
+                          const targetAcc = st === 'completed' ? Math.max(85, liveTopic.accuracy || 85) : liveTopic.accuracy;
+                          updateTopicStatus(liveTopic.id, st, targetAcc);
+                          soundManager.playCompleteChime();
                         }}
                         className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                          topic.status === st
-                            ? 'bg-[#11120F] text-white border-transparent shadow-sm'
+                          liveTopic.status === st
+                            ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-sm'
                             : 'bg-[#F7F6F0] dark:bg-[#1D201A] text-[#65675F] dark:text-[#A7AA9C] border-[#D8D8CF] dark:border-[#30342B] hover:border-[#596B35]'
                         }`}
                       >
@@ -496,17 +646,23 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     Subtopics & Concept Checklist
                   </span>
                   <div className="space-y-1.5">
-                    {topic.subtopics?.map((sub, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B]">
-                        <span className="text-xs font-semibold text-[#191A17] dark:text-[#F4F4ED]">• {sub}</span>
-                        <button
-                          onClick={() => deleteSubtopic(topic.id, idx)}
-                          className="text-xs text-[#85877E] hover:text-[#B94A48] p-1 cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
+                    {liveTopic.subtopics && liveTopic.subtopics.length > 0 ? (
+                      liveTopic.subtopics.map((sub, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B]">
+                          <span className="text-xs font-semibold text-[#191A17] dark:text-[#F4F4ED]">• {sub}</span>
+                          <button
+                            type="button"
+                            onClick={() => deleteSubtopic(liveTopic.id, idx)}
+                            className="text-xs text-[#85877E] hover:text-[#B94A48] p-1 cursor-pointer"
+                            title="Delete Subtopic"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-[#85877E] italic py-1">No subtopics added yet.</p>
+                    )}
                   </div>
 
                   <form onSubmit={handleAddSubtopicSubmit} className="flex gap-2 pt-1">
@@ -515,95 +671,39 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       value={newSubtopicInput}
                       onChange={(e) => setNewSubtopicInput(e.target.value)}
                       placeholder="Add new subtopic..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium"
+                      className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-medium focus:outline-none focus:border-[#596B35]"
                     />
                     <button
                       type="submit"
-                      className="px-4 py-2 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#A4B879] text-xs font-bold cursor-pointer transition-all active:scale-95"
                     >
                       Add
                     </button>
                   </form>
                 </div>
 
-                {/* Topic Edit Details Form (when toggled) */}
-                {isEditing && (
-                  <form onSubmit={handleSaveTopicDetails} className="p-4 rounded-2xl bg-white dark:bg-[#151713] border border-[#596B35] space-y-3">
-                    <h3 className="text-xs font-bold text-[#11120F] dark:text-[#F4F4ED] uppercase font-mono">
-                      Edit Topic Information
-                    </h3>
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#85877E] mb-1">Topic Name</label>
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={e => setEditName(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold text-[#11120F] dark:text-white"
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-bold text-[#85877E] mb-1">Difficulty</label>
-                        <select
-                          value={editDifficulty}
-                          onChange={e => setEditDifficulty(e.target.value as DifficultyLevel)}
-                          className="w-full px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold"
-                        >
-                          <option value="Easy">Easy</option>
-                          <option value="Medium">Medium</option>
-                          <option value="Hard">Hard</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-[#85877E] mb-1">Weightage (Marks)</label>
-                        <input
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={editWeightage}
-                          onChange={e => setEditWeightage(Number(e.target.value))}
-                          className="w-full px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1D201A] border border-[#D8D8CF] dark:border-[#30342B] text-xs font-bold"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setIsEditing(false)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#85877E]"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-1.5 rounded-lg bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </form>
-                )}
-
                 {/* Danger Zone */}
                 <div className="pt-4 border-t border-[#D8D8CF] dark:border-[#30342B] flex justify-between items-center">
                   {showDeleteConfirm ? (
                     <div className="flex items-center gap-2">
                       <button
+                        type="button"
                         onClick={handleDelete}
                         className="px-4 py-2 rounded-xl bg-[#B94A48] hover:bg-[#A33D3B] text-white text-xs font-bold cursor-pointer"
                       >
                         Yes, Delete Topic
                       </button>
                       <button
+                        type="button"
                         onClick={() => setShowDeleteConfirm(false)}
-                        className="px-3 py-2 rounded-xl bg-[#EEEEE8] dark:bg-[#1D201A] text-xs font-semibold"
+                        className="px-3 py-2 rounded-xl bg-[#EEEEE8] dark:bg-[#1D201A] text-xs font-semibold cursor-pointer"
                       >
                         Cancel
                       </button>
                     </div>
                   ) : (
                     <button
+                      type="button"
                       onClick={() => setShowDeleteConfirm(true)}
                       className="text-xs font-bold text-[#B94A48] hover:underline flex items-center gap-1.5 cursor-pointer"
                     >
@@ -621,24 +721,24 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <ProfessionalNotesEditor
                   initialContent={notes}
                   onSave={handleSaveNotes}
-                  topicName={topic.name}
+                  topicName={liveTopic.name}
                   subjectName={subjectName}
                   chapterName={chapterName}
                   examName={currentExam?.name}
                 />
 
                 <TopicPdfAttachmentsSection
-                  topicId={topic.id}
-                  topicName={topic.name}
-                  attachments={topic.pdfAttachments || []}
+                  topicId={liveTopic.id}
+                  topicName={liveTopic.name}
+                  attachments={liveTopic.pdfAttachments || []}
                   onAddAttachment={(newAttachment) => {
                     if (addTopicPdfAttachment) {
-                      addTopicPdfAttachment(topic.id, newAttachment);
+                      addTopicPdfAttachment(liveTopic.id, newAttachment);
                     }
                   }}
                   onDeleteAttachment={(attachmentId) => {
                     if (deleteTopicPdfAttachment) {
-                      deleteTopicPdfAttachment(topic.id, attachmentId);
+                      deleteTopicPdfAttachment(liveTopic.id, attachmentId);
                     }
                   }}
                 />
@@ -648,7 +748,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             {/* ADVANCED MISTAKES & TRAPS TAB */}
             {activeTab === 'mistakes' && (
               <AdvancedMistakeJournal
-                topic={topic}
+                topic={liveTopic}
                 subjectName={subjectName}
                 chapterName={chapterName}
               />
