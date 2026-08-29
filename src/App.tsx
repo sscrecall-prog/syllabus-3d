@@ -299,7 +299,10 @@ export const App: React.FC = () => {
           )}
 
           {currentView === 'weak' && (
-            <WeakTopicsView onOpenTopicDrawer={handleOpenTopicDrawer} />
+            <WeakTopicsView
+              onOpenTopicDrawer={handleOpenTopicDrawer}
+              onOpenFocus={handleLaunchFocus}
+            />
           )}
 
           {currentView === 'analytics' && <AnalyticsView />}
