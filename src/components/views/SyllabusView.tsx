@@ -538,7 +538,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       </div>
                     </div>
 
-                    {/* Right Action: 1-Click Status Toggle & Chevron Arrow */}
+                    {/* Right Action: 1-Click Status Toggle */}
                     <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EEEEE8] dark:border-[#292E42]">
                       <button
                         onClick={(e) => {
@@ -550,10 +550,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       >
                         {topicBadge.btnLabel}
                       </button>
-
-                      <div className="w-8 h-8 rounded-xl bg-[#F7F6F0] dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] text-[#85877E] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] flex items-center justify-center transition-colors">
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                      </div>
                     </div>
                   </div>
                 );
@@ -743,10 +739,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       }`}>
                         {chapterPercent}%
                       </div>
-
-                      <div className="w-8 h-8 rounded-xl bg-[#F7F6F0] dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] text-[#85877E] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] flex items-center justify-center transition-colors">
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                      </div>
                     </div>
                   </div>
                 );
@@ -926,10 +918,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         : 'bg-[#F7F6F0] dark:bg-[#16161E] text-slate-600 dark:text-slate-400 border border-[#D8D8CF] dark:border-[#292E42]'
                     }`}>
                       {percent}%
-                    </div>
-
-                    <div className="w-8 h-8 rounded-xl bg-[#F7F6F0] dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] text-[#85877E] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] flex items-center justify-center transition-colors">
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                     </div>
                   </div>
                 </div>
