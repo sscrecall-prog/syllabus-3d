@@ -40,13 +40,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     plannerTasks
   } = useSyllabus();
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
   const todayPlannerTasks = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress');
   const completedTodayTasks = plannerTasks.filter(t => t.status === 'completed');
   const totalTasksToday = todayPlannerTasks.length + completedTodayTasks.length;
@@ -65,28 +58,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   return (
     <div className="space-y-5 sm:space-y-7 pb-16">
       
-      {/* 1. EDITORIAL TOP GREETING SECTION (Clean & Uncluttered) */}
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-[#596B35] dark:text-[#8B5CF6] font-mono">
-            Syllabus Dashboard
-          </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#8B5CF6]" />
-          <span className="text-[11px] text-[#65675F] dark:text-[#85877E] font-mono">
-            {examName} ({examYear})
-          </span>
-        </div>
-
-        <h2 className="text-2xl sm:text-4xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] tracking-tight font-serif mt-1">
-          {getGreeting()}, {profile.name || 'Aspirant'}
-        </h2>
-
-        <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A1A1AA] mt-1 font-medium">
-          Your preparation is <span className="font-bold text-[#596B35] dark:text-[#8B5CF6]">{overallStats.completionPercentage}% complete</span>. Keep your daily streak active.
-        </p>
-      </div>
-
-      {/* 2. 3D VISUAL HERO ARTWORK BANNER (Full 100% Uncropped 16:9 Frame) */}
+      {/* 1. 3D VISUAL HERO ARTWORK BANNER (Full 100% Uncropped 16:9 Frame) */}
       <div className="relative rounded-3xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth bg-[#0B0F19] group">
         <div className="relative aspect-[16/9] w-full overflow-hidden">
           <img
