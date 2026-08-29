@@ -6,6 +6,7 @@ import {
   Topic,
   TopicStatus,
   TopicPdfAttachment,
+  TopicLecture,
   MistakeType,
   MistakeRecord,
   RevisionRecord,
@@ -161,6 +162,8 @@ interface SyllabusContextType {
   deleteSubtopic: (topicId: string, subtopicIndex: number) => void;
   addTopicPdfAttachment?: (topicId: string, attachment: TopicPdfAttachment) => void;
   deleteTopicPdfAttachment?: (topicId: string, attachmentId: string) => void;
+  addTopicLecture?: (topicId: string, lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => void;
+  deleteTopicLecture?: (topicId: string, lectureId: string) => void;
 
   logStudySession: (minutes: number, topicId?: string) => void;
   updateTopicMetrics?: (topicId: string, updates: { accuracy?: number; studyTimeMinutes?: number; addMinutes?: number }) => void;
@@ -1013,6 +1016,56 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  const addTopicLecture = (topicId: string, lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => {
+    const newLecture: TopicLecture = {
+      id: `lec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      title: lecture.title.trim(),
+      youtubeUrl: lecture.youtubeUrl.trim(),
+      addedAt: getTodayDateString(),
+      duration: lecture.duration,
+      notes: lecture.notes
+    };
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.lectures || [];
+            return {
+              ...t,
+              lectures: [...existing, newLecture]
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playCompleteChime();
+  };
+
+  const deleteTopicLecture = (topicId: string, lectureId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.lectures || [];
+            return {
+              ...t,
+              lectures: existing.filter(l => l.id !== lectureId)
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playClick();
+  };
+
   const logStudySession = (minutes: number, topicId?: string) => {
     const today = getTodayDateString();
     setActivityHistory(prev => {
@@ -1230,6 +1283,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deleteSubtopic,
         addTopicPdfAttachment,
         deleteTopicPdfAttachment,
+        addTopicLecture,
+        deleteTopicLecture,
         updateTopicMetrics,
         logStudySession,
         resetToDemo,

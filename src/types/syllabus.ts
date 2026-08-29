@@ -26,6 +26,15 @@ export interface TopicPdfAttachment {
   storageKey?: string;
 }
 
+export interface TopicLecture {
+  id: string;
+  title: string;
+  youtubeUrl: string;
+  addedAt: string;
+  duration?: string;
+  notes?: string;
+}
+
 export interface Topic {
   id: string;
   name: string;
@@ -44,6 +53,7 @@ export interface Topic {
   mistakes: MistakeRecord[];
   pdfAttachments?: TopicPdfAttachment[];
   pdfUrl?: string;
+  lectures?: TopicLecture[];
 }
 
 export interface Chapter {

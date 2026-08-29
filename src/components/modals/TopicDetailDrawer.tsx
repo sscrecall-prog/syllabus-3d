@@ -25,6 +25,7 @@ import {
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
 import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
+import { TopicLecturesSection, YoutubeIcon } from '../common/TopicLecturesSection';
 import { soundManager } from '../../utils/soundEffects';
 
 interface TopicDetailDrawerProps {
@@ -52,6 +53,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     updateTopicMetrics,
     addTopicPdfAttachment,
     deleteTopicPdfAttachment,
+    addTopicLecture,
+    deleteTopicLecture,
     currentExam
   } = useSyllabus();
 
@@ -72,7 +75,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const [notes, setNotes] = useState('');
   const [accuracyInput, setAccuracyInput] = useState<number>(0);
   const [studyMinutesInput, setStudyMinutesInput] = useState<number>(0);
-  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'mistakes'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'lectures' | 'mistakes'>('overview');
 
   // Edit Mode state
   const [isEditing, setIsEditing] = useState(false);
@@ -206,6 +209,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const mistakesCount = liveTopic.mistakes ? liveTopic.mistakes.length : 0;
   const activeMistakesCount = liveTopic.mistakes ? liveTopic.mistakes.filter(m => !m.resolved).length : 0;
   const pdfCount = liveTopic.pdfAttachments ? liveTopic.pdfAttachments.length : 0;
+  const lecturesCount = liveTopic.lectures ? liveTopic.lectures.length : 0;
 
   // Format Stopwatch Display
   const formatStopwatch = (totalSecs: number) => {
@@ -249,120 +253,150 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               </button>
 
               <button
-                onClick={onClose}
-                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#85877E] hover:text-[#11120F] dark:hover:text-white transition-all cursor-pointer"
-                title="Close"
+                onClick={() => {
+                  soundManager.playClick();
+                  onClose();
+                }}
+                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* EDIT TOPIC FORM BANNER (INSTANTLY VISIBLE WHEN PENCIL IS CLICKED) */}
+          {/* EDIT TOPIC FORM PANEL (Appears directly beneath header when pencil is clicked) */}
           {isEditing && (
-            <div className="p-4 sm:p-5 bg-white dark:bg-[#18181D] border-b border-[#596B35]/40 shadow-md animate-fade-in space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#596B35]/15 text-[#596B35] dark:text-[#8B5CF6] flex items-center justify-center">
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </div>
-                  <h3 className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] uppercase font-mono tracking-wider">
-                    Edit Topic Details
-                  </h3>
+            <div className="p-4 sm:p-6 bg-white dark:bg-[#18181D] border-b-2 border-[#596B35] dark:border-[#8B5CF6] shadow-md animate-fade-in">
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#D8D8CF] dark:border-[#272730]">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#8B5CF6]">
+                  <Edit3 className="w-4 h-4" />
+                  <span>Edit Topic Parameters</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white"
+                  className="text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
                 >
-                  Cancel
+                  Close Form ✕
                 </button>
               </div>
 
-              <form onSubmit={handleSaveTopicDetails} className="space-y-3">
+              <form onSubmit={handleSaveTopicDetails} className="space-y-3.5">
                 {/* Topic Name */}
                 <div>
-                  <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A1A1AA] mb-1 uppercase font-mono">
-                    Topic Name
+                  <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                    Topic Title
                   </label>
                   <input
                     type="text"
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    placeholder="Enter topic name..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] focus:ring-1 focus:ring-[#596B35]"
+                    className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
+                    placeholder="Topic Name"
                     required
-                    autoFocus
                   />
                 </div>
 
-                {/* Difficulty & Weightage Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Difficulty Selection */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Difficulty */}
                   <div>
-                    <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A1A1AA] mb-1 uppercase font-mono">
+                    <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
                       Difficulty Level
                     </label>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {(['Easy', 'Medium', 'Hard'] as DifficultyLevel[]).map(diff => (
-                        <button
-                          key={diff}
-                          type="button"
-                          onClick={() => setEditDifficulty(diff)}
-                          className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border text-center ${
-                            editDifficulty === diff
-                              ? diff === 'Easy'
-                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
-                                : diff === 'Medium'
-                                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                                : 'bg-rose-500 text-white border-rose-500 shadow-sm'
-                              : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730]'
-                          }`}
-                        >
-                          {diff}
-                        </button>
-                      ))}
-                    </div>
+                    <select
+                      value={editDifficulty}
+                      onChange={e => setEditDifficulty(e.target.value as DifficultyLevel)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
+                    >
+                      <option value="Easy">Easy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Hard">Hard</option>
+                    </select>
                   </div>
 
                   {/* Weightage Marks (Optional) */}
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="block text-[11px] font-bold text-[#65675F] dark:text-[#A1A1AA] uppercase font-mono">
-                        Weightage Marks
-                      </label>
-                      <span className="text-[10px] text-[#85877E] font-medium">(Optional)</span>
-                    </div>
+                    <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                      Weightage Marks <span className="text-[10px] text-[#85877E] font-normal">(Optional)</span>
+                    </label>
                     <input
                       type="number"
-                      min="0"
-                      max="100"
+                      min={0}
+                      max={100}
                       value={editWeightage !== undefined ? editWeightage : ''}
-                      placeholder="e.g. 4 (Optional)"
-                      onChange={e => {
-                        const val = e.target.value.trim();
-                        setEditWeightage(val === '' ? undefined : Number(val));
-                      }}
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35]"
+                      onChange={e => setEditWeightage(e.target.value === '' ? undefined : Number(e.target.value))}
+                      placeholder="e.g. 4 (optional)"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
                     />
                   </div>
                 </div>
 
-                {/* Save / Cancel buttons */}
-                <div className="flex items-center justify-end gap-2 pt-1">
+                {/* Subtopics Checklist Management */}
+                <div>
+                  <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                    Subtopics & Concept Checkpoints ({liveTopic.subtopics ? liveTopic.subtopics.length : 0})
+                  </label>
+                  
+                  {/* Existing Subtopics with Delete */}
+                  {liveTopic.subtopics && liveTopic.subtopics.length > 0 && (
+                    <div className="space-y-1.5 mb-2 max-h-36 overflow-y-auto pr-1">
+                      {liveTopic.subtopics.map((st, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs"
+                        >
+                          <span className="truncate text-[#191A17] dark:text-[#F5F5F7] font-medium">{st}</span>
+                          <button
+                            type="button"
+                            onClick={() => deleteSubtopic(liveTopic.id, idx)}
+                            className="p-1 rounded text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                            title="Remove subtopic"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add New Subtopic Input */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newSubtopicInput}
+                      onChange={e => setNewSubtopicInput(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddSubtopicSubmit(e);
+                        }
+                      }}
+                      placeholder="Add subtopic / checkpoint..."
+                      className="flex-1 px-3 py-1.5 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddSubtopicSubmit}
+                      className="px-3 py-1.5 rounded-xl bg-[#EEEEE8] dark:bg-[#23232A] hover:bg-[#596B35] hover:text-white text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D8D8CF] dark:border-[#272730]">
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-[#85877E] hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#596B35] hover:bg-[#4d5e2e] text-white text-xs font-bold shadow-md shadow-[#596B35]/20 transition-all cursor-pointer active:scale-95"
+                    className="px-5 py-2 rounded-xl bg-[#596B35] text-white text-xs font-bold hover:bg-[#4a5a2d] transition-colors cursor-pointer shadow-md shadow-[#596B35]/20"
                   >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Save Changes</span>
+                    Save Changes
                   </button>
                 </div>
               </form>
@@ -378,7 +412,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           )}
 
           {/* Tab Navigation */}
-          <div className="flex items-center px-4 sm:px-6 pt-3 pb-0 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-2">
+          <div className="flex items-center px-4 sm:px-6 pt-3 pb-0 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-2 overflow-x-auto no-scrollbar">
             {[
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
               {
@@ -387,6 +421,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 icon: FileText,
                 badge: pdfCount > 0 ? `${pdfCount} PDF` : null,
                 badgeColor: 'bg-rose-500'
+              },
+              {
+                id: 'lectures',
+                label: 'Lectures',
+                icon: YoutubeIcon,
+                badge: lecturesCount > 0 ? `${lecturesCount} Video` : null,
+                badgeColor: 'bg-red-500'
               },
               {
                 id: 'mistakes',
@@ -405,7 +446,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     soundManager.playClick();
                     setActiveTab(tab.id as any);
                   }}
-                  className={`flex items-center gap-2 px-4 py-2.5 border-b-2 text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 border-b-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'border-[#596B35] text-[#596B35] dark:text-[#8B5CF6]'
                       : 'border-transparent text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
@@ -746,6 +787,27 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   onDeleteAttachment={(attachmentId) => {
                     if (deleteTopicPdfAttachment) {
                       deleteTopicPdfAttachment(liveTopic.id, attachmentId);
+                    }
+                  }}
+                />
+              </div>
+            )}
+
+            {/* LECTURES TAB */}
+            {activeTab === 'lectures' && (
+              <div className="space-y-5">
+                <TopicLecturesSection
+                  topicId={liveTopic.id}
+                  topicName={liveTopic.name}
+                  lectures={liveTopic.lectures || []}
+                  onAddLecture={(lecture) => {
+                    if (addTopicLecture) {
+                      addTopicLecture(liveTopic.id, lecture);
+                    }
+                  }}
+                  onDeleteLecture={(lectureId) => {
+                    if (deleteTopicLecture) {
+                      deleteTopicLecture(liveTopic.id, lectureId);
                     }
                   }}
                 />
