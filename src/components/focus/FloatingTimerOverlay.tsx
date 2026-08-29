@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTimer } from '../../context/TimerContext';
-import { Play, Pause, X, Shield, Maximize2 } from 'lucide-react';
+import { Play, Pause, X, Maximize2, Zap } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 export const FloatingTimerOverlay: React.FC = () => {
@@ -18,8 +18,16 @@ export const FloatingTimerOverlay: React.FC = () => {
 
   const isVisible = isFloatingOverlayVisible && !isFullModalOpen && (session.status === 'running' || session.status === 'paused');
 
+  // Initial smart positioning (bottom-right corner, above bottom nav on mobile)
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
-    return settings.position || { x: typeof window !== 'undefined' && window.innerWidth > 640 ? window.innerWidth - 380 : 16, y: 100 };
+    if (typeof window !== 'undefined') {
+      const isMobile = window.innerWidth < 640;
+      const w = isMobile ? 200 : 240;
+      const defaultX = Math.max(12, window.innerWidth - w - 16);
+      const defaultY = isMobile ? window.innerHeight - 130 : 90;
+      return settings.position || { x: defaultX, y: defaultY };
+    }
+    return { x: 16, y: 90 };
   });
 
   const [isDragging, setIsDragging] = useState(false);
@@ -66,16 +74,16 @@ export const FloatingTimerOverlay: React.FC = () => {
       hasMovedRef.current = true;
     }
 
-    const overlayWidth = settings.size === 'compact' ? 320 : 360;
-    const overlayHeight = 80;
-    const maxX = Math.max(0, window.innerWidth - overlayWidth - 10);
-    const maxY = Math.max(0, window.innerHeight - overlayHeight - 10);
+    const overlayWidth = typeof window !== 'undefined' && window.innerWidth < 640 ? 200 : 240;
+    const overlayHeight = 44;
+    const maxX = Math.max(0, window.innerWidth - overlayWidth - 8);
+    const maxY = Math.max(0, window.innerHeight - overlayHeight - 60);
 
-    const nextX = Math.min(Math.max(10, dragStartRef.current.initialX + dx), maxX);
-    const nextY = Math.min(Math.max(10, dragStartRef.current.initialY + dy), maxY);
+    const nextX = Math.min(Math.max(8, dragStartRef.current.initialX + dx), maxX);
+    const nextY = Math.min(Math.max(8, dragStartRef.current.initialY + dy), maxY);
 
     setPosition({ x: nextX, y: nextY });
-  }, [isDragging, settings.size]);
+  }, [isDragging]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
@@ -84,7 +92,7 @@ export const FloatingTimerOverlay: React.FC = () => {
     if (overlayRef.current) {
       try {
         overlayRef.current.releasePointerCapture(e.pointerId);
-      } catch (err) {}
+      } catch {}
     }
 
     if (settings.rememberPosition) {
@@ -106,7 +114,7 @@ export const FloatingTimerOverlay: React.FC = () => {
   const secs = session.mode === 'stopwatch' ? session.stopwatchElapsedSec : session.remainingSec;
   const mins = Math.floor(secs / 60);
   const s = secs % 60;
-  const timeStr = String(mins).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  const timeStr = `${String(mins).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
   const isPaused = session.status === 'paused';
   const progressPercent = session.mode === 'stopwatch'
@@ -114,10 +122,6 @@ export const FloatingTimerOverlay: React.FC = () => {
     : session.totalDurationSec > 0
     ? (session.totalDurationSec - session.remainingSec) / session.totalDurationSec
     : 0;
-
-  const isCompact = settings.size === 'compact';
-  const widthClass = isCompact ? 'w-[320px] sm:w-[340px]' : 'w-[340px] sm:w-[380px]';
-  const heightClass = isCompact ? 'h-[70px]' : 'h-[78px]';
 
   return (
     <div
@@ -131,84 +135,96 @@ export const FloatingTimerOverlay: React.FC = () => {
         left: position.x,
         top: position.y,
         zIndex: 9999,
-        opacity: settings.opacity || 0.95,
+        opacity: settings.opacity || 0.96,
         touchAction: 'none'
       }}
-      className={`${widthClass} ${heightClass} rounded-[38px] bg-[#07090E]/92 dark:bg-[#07090E]/92 backdrop-blur-2xl border border-white/15 shadow-[0_16px_40px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.06),inset_0_1px_0_rgba(255,255,255,0.18)] select-none cursor-grab active:cursor-grabbing flex flex-col justify-between overflow-hidden transition-shadow duration-150 animate-scale-in group`}
-      title="Drag to reposition • Click to expand full timer"
+      className="w-[195px] sm:w-[230px] h-[40px] sm:h-[44px] rounded-full bg-[#07090E]/95 dark:bg-[#07090E]/95 backdrop-blur-2xl border border-white/20 shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] select-none cursor-grab active:cursor-grabbing flex flex-col justify-between overflow-hidden transition-all duration-150 animate-scale-in group"
+      title="Drag to reposition • Tap to expand full timer"
       role="region"
       aria-label="Floating Focus Timer"
     >
-      <div className="flex-1 flex items-center justify-between px-4 pt-1">
-        {settings.showPauseButton && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              soundManager.playClick();
-              if (session.status === 'running') {
-                pauseTimer();
-              } else {
-                resumeTimer();
-              }
-            }}
-            className="w-10 h-10 rounded-full bg-teal-500/15 hover:bg-teal-500/25 active:scale-95 border border-teal-400/40 text-teal-300 flex items-center justify-center transition-all shadow-sm shrink-0 cursor-pointer"
-            title={isPaused ? 'Resume Timer' : 'Pause Timer'}
-            aria-label={isPaused ? 'Resume Timer' : 'Pause Timer'}
-          >
-            {isPaused ? (
-              <Play className="w-4 h-4 fill-teal-300 translate-x-0.5" />
-            ) : (
-              <Pause className="w-4 h-4 fill-teal-300" />
-            )}
-          </button>
-        )}
+      <div className="flex-1 flex items-center justify-between px-2.5">
+        
+        {/* Play / Pause Mini Control */}
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            soundManager.playClick();
+            if (session.status === 'running') {
+              pauseTimer();
+            } else {
+              resumeTimer();
+            }
+          }}
+          className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shrink-0 active:scale-90 ${
+            isPaused
+              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+              : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+          }`}
+          title={isPaused ? 'Resume' : 'Pause'}
+          aria-label={isPaused ? 'Resume' : 'Pause'}
+        >
+          {isPaused ? (
+            <Play className="w-3 h-3 fill-current translate-x-0.5" />
+          ) : (
+            <Pause className="w-3 h-3 fill-current" />
+          )}
+        </button>
 
-        <div className="flex-1 flex flex-col items-center justify-center px-2 pointer-events-none">
-          <div className="flex items-center gap-1.5 leading-none">
-            <Shield className="w-4 h-4 text-teal-400 fill-teal-400/30 stroke-[2.2]" />
-            <span className="text-[23px] font-black font-mono tracking-tight text-white drop-shadow-md">
-              {timeStr}
-            </span>
-          </div>
-          <span className={`text-[10px] font-semibold tracking-wide uppercase mt-0.5 ${
-            isPaused ? 'text-amber-400 font-bold' : 'text-slate-400'
-          }`}>
-            {isPaused ? 'Paused' : session.mode === 'stopwatch' ? 'Stopwatch Elapsed' : 'Time remaining'}
+        {/* Center: Live Monospace Time & Pulsing Dot */}
+        <div className="flex items-center gap-1.5 px-1.5 pointer-events-none">
+          <span
+            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+              isPaused
+                ? 'bg-amber-400'
+                : session.mode === 'break'
+                ? 'bg-amber-400 animate-pulse'
+                : 'bg-emerald-400 animate-pulse'
+            }`}
+          />
+          <span className="text-sm sm:text-base font-black font-mono tracking-tight text-white drop-shadow-xs">
+            {timeStr}
           </span>
         </div>
 
+        {/* Right: Maximize & Close Actions */}
         <div className="flex items-center gap-1 shrink-0">
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               soundManager.playClick();
               openFullModal();
             }}
-            className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white/80 hover:text-white flex items-center justify-center transition-all cursor-pointer"
             title="Expand Full Timer"
             aria-label="Expand Full Timer"
           >
-            <Maximize2 className="w-3 h-3" />
+            <Maximize2 className="w-2.5 h-2.5" />
           </button>
 
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               soundManager.playClick();
               hideFloatingOverlay();
             }}
-            className="w-8 h-8 rounded-full bg-white/5 hover:bg-red-500/20 active:scale-95 border border-white/10 hover:border-red-500/30 text-slate-400 hover:text-red-300 flex items-center justify-center transition-all cursor-pointer"
-            title="Hide Floating Overlay (Timer keeps running)"
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 hover:bg-rose-500/30 active:scale-90 text-white/80 hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
+            title="Hide Floating Overlay"
             aria-label="Hide Floating Overlay"
           >
-            <X className="w-3.5 h-3.5 stroke-[2.5]" />
+            <X className="w-2.5 h-2.5 stroke-[2.5]" />
           </button>
         </div>
       </div>
 
-      <div className="w-full h-[2.5px] bg-white/10 overflow-hidden shrink-0">
+      {/* Ultra-Thin Glowing Progress Bar */}
+      <div className="w-full h-[2px] bg-white/10 overflow-hidden shrink-0">
         <div
-          className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 transition-all duration-300 shadow-[0_0_8px_rgba(45,212,191,0.8)]"
+          className={`h-full transition-all duration-300 ${
+            session.mode === 'break'
+              ? 'bg-gradient-to-r from-amber-500 to-orange-400 shadow-[0_0_6px_rgba(245,158,11,0.8)]'
+              : 'bg-gradient-to-r from-emerald-400 to-teal-300 shadow-[0_0_6px_rgba(52,211,153,0.8)]'
+          }`}
           style={{ width: `${Math.min(100, Math.max(0, progressPercent * 100))}%` }}
         />
       </div>
