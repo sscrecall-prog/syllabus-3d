@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   FileText,
@@ -18,7 +18,10 @@ import {
   ShieldAlert,
   Edit3,
   Eye,
-  CheckSquare
+  CheckSquare,
+  GripVertical,
+  ChevronsLeftRight,
+  RotateCcw
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
@@ -58,8 +61,17 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   const [isSaved, setIsSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Split View Layout Mode: '50-50' | 'pdf-focus' | 'notes-focus'
-  const [splitRatio, setSplitRatio] = useState<'50-50' | 'pdf-focus' | 'notes-focus'>('50-50');
+  // Free Draggable Split Ratio Percentage (15% to 85%)
+  const [pdfWidthPercent, setPdfWidthPercent] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('syllabus_split_study_width_percent');
+      return saved ? Math.min(Math.max(Number(saved), 15), 85) : 50;
+    } catch {
+      return 50;
+    }
+  });
+
+  const [isDragging, setIsDragging] = useState(false);
   
   // Mobile Active Tab: 'pdf' | 'notes'
   const [mobileTab, setMobileTab] = useState<'pdf' | 'notes'>('pdf');
@@ -111,6 +123,48 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
     };
   }, [isOpen, selectedAttachmentId, attachments]);
 
+  // Global mousemove & mouseup listeners for smooth dragging resizer
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth < 1024) return; // Only desktop side-by-side
+      const newPercent = (e.clientX / windowWidth) * 100;
+      const clampedPercent = Math.min(Math.max(newPercent, 15), 85);
+      setPdfWidthPercent(Math.round(clampedPercent));
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth < 1024 || !e.touches[0]) return;
+      const newPercent = (e.touches[0].clientX / windowWidth) * 100;
+      const clampedPercent = Math.min(Math.max(newPercent, 15), 85);
+      setPdfWidthPercent(Math.round(clampedPercent));
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      try {
+        localStorage.setItem('syllabus_split_study_width_percent', String(pdfWidthPercent));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isDragging, pdfWidthPercent]);
+
   if (!isOpen) return null;
 
   const currentAttachment = attachments.find(a => a.id === selectedAttachmentId) || attachments[0];
@@ -141,14 +195,27 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
     setNotesContent(prev => prev + citation);
   };
 
+  const setPresetRatio = (percent: number) => {
+    soundManager.playClick();
+    setPdfWidthPercent(percent);
+    try {
+      localStorage.setItem('syllabus_split_study_width_percent', String(percent));
+    } catch {}
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[#0B0B0D] text-[#F5F5F7] animate-fade-in select-none">
       
+      {/* Invisible overlay during dragging to prevent iframe from capturing mouse pointer */}
+      {isDragging && (
+        <div className="fixed inset-0 z-50 cursor-col-resize select-none" />
+      )}
+
       {/* 1. TOP HEADER TOOLBAR */}
-      <div className="px-4 sm:px-6 py-2.5 bg-[#18181D] border-b border-[#272730] flex items-center justify-between gap-3 shrink-0">
+      <div className="px-3 sm:px-6 py-2.5 bg-[#18181D] border-b border-[#272730] flex items-center justify-between gap-3 shrink-0">
         
         {/* Left: Topic & Breadcrumb info */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-xl bg-[#8B5CF6]/20 text-[#8B5CF6] border border-[#8B5CF6]/30 flex items-center justify-center shrink-0">
             <Columns className="w-4 h-4" />
           </div>
@@ -158,8 +225,8 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
               <span>{subjectName || 'Subject'}</span>
               <span>•</span>
               <span className="truncate">{chapterName || 'Chapter'}</span>
-              <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-[#8B5CF6]/20 text-[#C4B5FD]">
-                Split Study Mode
+              <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-[#8B5CF6]/20 text-[#C4B5FD] hidden xs:inline">
+                Drag to Resize
               </span>
             </div>
             <h2 className="text-xs sm:text-sm font-bold text-[#F5F5F7] truncate font-serif">
@@ -189,41 +256,44 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
           </div>
         )}
 
-        {/* Right: Controls & Split ratio buttons */}
+        {/* Right: Quick Adjust Presets & Controls */}
         <div className="flex items-center gap-2 shrink-0">
           
-          {/* Split Ratio Selector (Desktop) */}
+          {/* Quick Split Ratio Presets (Desktop) */}
           <div className="hidden lg:flex items-center gap-1 bg-[#23232A] p-1 rounded-xl border border-[#272730]">
+            <span className="text-[10px] font-mono font-bold text-[#C4B5FD] px-2">
+              {pdfWidthPercent}% PDF : {100 - pdfWidthPercent}% Notes
+            </span>
             <button
-              onClick={() => setSplitRatio('50-50')}
+              onClick={() => setPresetRatio(50)}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                splitRatio === '50-50'
-                  ? 'bg-[#8B5CF6] text-white shadow-sm'
+                pdfWidthPercent === 50
+                  ? 'bg-[#8B5CF6] text-white shadow-sm font-bold'
                   : 'text-[#A1A1AA] hover:text-white'
               }`}
-              title="50% PDF - 50% Notes"
+              title="50% PDF - 50% Notes (Balanced)"
             >
               50:50
             </button>
             <button
-              onClick={() => setSplitRatio('pdf-focus')}
+              onClick={() => setPresetRatio(65)}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                splitRatio === 'pdf-focus'
-                  ? 'bg-[#8B5CF6] text-white shadow-sm'
+                pdfWidthPercent === 65
+                  ? 'bg-[#8B5CF6] text-white shadow-sm font-bold'
                   : 'text-[#A1A1AA] hover:text-white'
               }`}
-              title="65% PDF - 35% Notes"
+              title="65% PDF - 35% Notes (Reading Focus)"
             >
               PDF Focus
             </button>
             <button
-              onClick={() => setSplitRatio('notes-focus')}
+              onClick={() => setPresetRatio(35)}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                splitRatio === 'notes-focus'
-                  ? 'bg-[#8B5CF6] text-white shadow-sm'
+                pdfWidthPercent === 35
+                  ? 'bg-[#8B5CF6] text-white shadow-sm font-bold'
                   : 'text-[#A1A1AA] hover:text-white'
               }`}
-              title="35% PDF - 65% Notes"
+              title="35% PDF - 65% Notes (Writing Focus)"
             >
               Notes Focus
             </button>
@@ -290,21 +360,18 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
         </button>
       </div>
 
-      {/* 3. MAIN SPLIT BODY CONTAINER */}
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
+      {/* 3. MAIN SPLIT BODY CONTAINER WITH DRAGGABLE RESIZER */}
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden relative">
         
         {/* LEFT PANEL: IN-APP PDF READER */}
         <div
-          className={`h-full flex flex-col bg-[#121216] border-r border-[#272730] min-h-0 ${
-            splitRatio === '50-50'
-              ? 'lg:w-1/2'
-              : splitRatio === 'pdf-focus'
-              ? 'lg:w-[65%]'
-              : 'lg:w-[35%]'
-          } ${mobileTab === 'pdf' ? 'flex' : 'hidden lg:flex'}`}
+          style={{ width: `${pdfWidthPercent}%` }}
+          className={`h-full flex flex-col bg-[#121216] min-h-0 transition-[width] ${
+            isDragging ? 'transition-none' : 'duration-150'
+          } ${mobileTab === 'pdf' ? 'w-full flex' : 'hidden lg:flex'}`}
         >
           {/* PDF Subheader Bar */}
-          <div className="px-4 py-2 bg-[#18181D]/80 border-b border-[#272730] flex items-center justify-between text-xs text-[#A1A1AA]">
+          <div className="px-4 py-2 bg-[#18181D]/90 border-b border-[#272730] flex items-center justify-between text-xs text-[#A1A1AA] shrink-0">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
               <span className="font-semibold text-white truncate max-w-xs">
@@ -344,7 +411,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
               <iframe
                 src={`${pdfBlobUrl}#toolbar=1&navpanes=0`}
                 title={currentAttachment?.name || 'PDF Viewer'}
-                className="w-full h-full border-0 bg-[#222]"
+                className={`w-full h-full border-0 bg-[#222] ${isDragging ? 'pointer-events-none' : ''}`}
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 space-y-3 text-[#A1A1AA]">
@@ -358,15 +425,51 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
           </div>
         </div>
 
+        {/* 🎛️ INTERACTIVE DRAGGABLE RESIZER DIVIDER (DESKTOP) */}
+        <div
+          onMouseDown={() => setIsDragging(true)}
+          onTouchStart={() => setIsDragging(true)}
+          className={`hidden lg:flex items-center justify-center relative w-3.5 hover:w-4 -mx-1.5 z-30 cursor-col-resize group transition-all shrink-0 ${
+            isDragging ? 'bg-[#8B5CF6]' : 'bg-transparent'
+          }`}
+          title="Drag left/right to resize PDF vs Notes area"
+        >
+          {/* Vertical line indicator */}
+          <div
+            className={`w-1 h-full transition-colors ${
+              isDragging
+                ? 'bg-[#8B5CF6]'
+                : 'bg-[#272730] group-hover:bg-[#8B5CF6] group-hover:shadow-[0_0_10px_rgba(139,92,246,0.8)]'
+            }`}
+          />
+
+          {/* Central Handle Grip Badge */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 w-6 h-12 rounded-xl flex items-center justify-center shadow-lg border transition-all ${
+              isDragging
+                ? 'bg-[#8B5CF6] border-white text-white scale-110 shadow-[#8B5CF6]/50'
+                : 'bg-[#18181D] border-[#383842] group-hover:border-[#8B5CF6] text-[#A1A1AA] group-hover:text-white group-hover:scale-105'
+            }`}
+          >
+            <ChevronsLeftRight className="w-3.5 h-3.5" />
+          </div>
+
+          {/* Floating Live Percentage Tooltip during Hover/Drag */}
+          <div
+            className={`absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#18181D] border border-[#8B5CF6] shadow-xl text-[10px] font-mono font-bold text-white whitespace-nowrap pointer-events-none transition-opacity ${
+              isDragging ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100'
+            }`}
+          >
+            {pdfWidthPercent}% PDF ⟷ {100 - pdfWidthPercent}% Notes
+          </div>
+        </div>
+
         {/* RIGHT PANEL: LIVE NOTES & FORMULAS WORKSPACE */}
         <div
-          className={`h-full flex flex-col bg-[#18181D] min-h-0 ${
-            splitRatio === '50-50'
-              ? 'lg:w-1/2'
-              : splitRatio === 'pdf-focus'
-              ? 'lg:w-[35%]'
-              : 'lg:w-[65%]'
-          } ${mobileTab === 'notes' ? 'flex' : 'hidden lg:flex'}`}
+          style={{ width: `${100 - pdfWidthPercent}%` }}
+          className={`h-full flex flex-col bg-[#18181D] min-h-0 border-l border-[#272730] transition-[width] ${
+            isDragging ? 'transition-none' : 'duration-150'
+          } ${mobileTab === 'notes' ? 'w-full flex' : 'hidden lg:flex'}`}
         >
           {/* Notes Subheader & Quick Tools */}
           <div className="p-3 bg-[#1C1C22] border-b border-[#272730] space-y-2 shrink-0">
