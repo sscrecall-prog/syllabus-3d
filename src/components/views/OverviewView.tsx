@@ -87,8 +87,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* 2. 3D Countdown Flip Clock & Rapid Focus Trigger */}
-      <ExamCountdown3D onOpenFocus={onOpenFocus} />
+      {/* 2. Clean 3D Target Countdown Flip Clock */}
+      <ExamCountdown3D />
 
       {/* 3. ASYMMETRICAL BENTO GRID */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
