@@ -199,7 +199,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     };
   }, [activeChapter, activeSubject, allTopicsInExam]);
 
-  // Subject Badge Helper (Matches reference dark stylized card thumbnails)
+  // 1. Subject Badge Helper (Level 1)
   const getSubjectBadgeStyle = (subjectName: string) => {
     const lower = subjectName.toLowerCase();
     if (lower.includes('quant') || lower.includes('math')) {
@@ -237,63 +237,96 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     };
   };
 
-  const getTopicCardStyle = (status: TopicStatus) => {
+  // 2. Chapter Badge Helper (Level 2)
+  const getChapterBadgeStyle = (subjectName: string, chapterIndex: number) => {
+    const formattedNum = (chapterIndex + 1).toString().padStart(2, '0');
+    const badgeText = `CH ${formattedNum}`;
+    const lower = subjectName.toLowerCase();
+
+    if (lower.includes('quant') || lower.includes('math')) {
+      return {
+        badgeText,
+        containerClass: 'bg-gradient-to-br from-[#2b080c] via-[#450a0a] to-[#1f0507] border border-red-500/40 text-[#FACC15] shadow-[0_0_12px_rgba(239,68,68,0.2)]',
+        accentColor: '#EF4444'
+      };
+    }
+    if (lower.includes('gk') || lower.includes('general awareness') || lower.includes('general knowledge') || lower.includes('gs')) {
+      return {
+        badgeText,
+        containerClass: 'bg-gradient-to-br from-[#0c1a2e] via-[#0f2744] to-[#08111e] border border-blue-500/40 text-[#FACC15] shadow-[0_0_12px_rgba(59,130,246,0.2)]',
+        accentColor: '#3B82F6'
+      };
+    }
+    if (lower.includes('reasoning') || lower.includes('intelligence')) {
+      return {
+        badgeText,
+        containerClass: 'bg-gradient-to-br from-[#1e0e33] via-[#2d124d] to-[#120820] border border-purple-500/40 text-[#FACC15] shadow-[0_0_12px_rgba(168,85,247,0.2)]',
+        accentColor: '#A855F7'
+      };
+    }
+    if (lower.includes('english') || lower.includes('comprehension')) {
+      return {
+        badgeText,
+        containerClass: 'bg-gradient-to-br from-[#2a0e0e] via-[#3d1414] to-[#1a0707] border border-rose-500/40 text-[#FACC15] shadow-[0_0_12px_rgba(244,63,94,0.2)]',
+        accentColor: '#F43F5E'
+      };
+    }
+    return {
+      badgeText,
+      containerClass: 'bg-gradient-to-br from-[#18181D] to-[#24283B] border border-[#292E42] text-[#FACC15] shadow-md',
+      accentColor: '#7AA2F7'
+    };
+  };
+
+  // 3. Topic Badge Helper (Level 3)
+  const getTopicBadgeStyle = (status: TopicStatus, topicIndex: number) => {
+    const formattedNum = (topicIndex + 1).toString().padStart(2, '0');
     switch (status) {
       case 'completed':
         return {
-          cardClasses: 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-500/30 border-l-4 border-l-emerald-500 hover:border-emerald-500 hover:shadow-md',
-          titleClasses: 'text-emerald-950 dark:text-emerald-200 font-bold',
-          badgeClasses: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/35 font-bold',
-          badgeLabel: 'Mastered ✓',
+          badgeText: `T-${formattedNum}`,
           badgeIcon: CheckCircle2,
+          containerClass: 'bg-gradient-to-br from-[#052417] via-[#083b27] to-[#03170e] border border-emerald-500/40 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]',
           btnClasses: 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm',
           btnLabel: 'Mastered ✓'
         };
       case 'in_progress':
         return {
-          cardClasses: 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-300 dark:border-amber-500/30 border-l-4 border-l-amber-500 hover:border-amber-500 hover:shadow-md',
-          titleClasses: 'text-amber-950 dark:text-amber-200 font-bold',
-          badgeClasses: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 font-bold animate-pulse',
-          badgeLabel: 'In Progress ⚡',
+          badgeText: `T-${formattedNum}`,
           badgeIcon: Zap,
+          containerClass: 'bg-gradient-to-br from-[#2b1f06] via-[#473307] to-[#171002] border border-amber-500/40 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.25)] animate-pulse',
           btnClasses: 'bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-sm',
           btnLabel: 'Mark Done ➔'
         };
       case 'weak':
         return {
-          cardClasses: 'bg-rose-50/75 dark:bg-rose-950/25 border-rose-300 dark:border-rose-500/35 border-l-4 border-l-rose-500 hover:border-rose-500 hover:shadow-md',
-          titleClasses: 'text-rose-950 dark:text-rose-200 font-bold',
-          badgeClasses: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40 font-bold',
-          badgeLabel: 'Weak Topic ⚠️',
+          badgeText: `T-${formattedNum}`,
           badgeIcon: AlertTriangle,
+          containerClass: 'bg-gradient-to-br from-[#2e090f] via-[#4d0c18] to-[#1a0307] border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]',
           btnClasses: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm',
-          btnLabel: 'Fix Weak Topic 🔥'
+          btnLabel: 'Fix Weak 🔥'
         };
       case 'revision_due':
         return {
-          cardClasses: 'bg-purple-50/70 dark:bg-purple-950/20 border-purple-300 dark:border-purple-500/30 border-l-4 border-l-purple-500 hover:border-purple-500 hover:shadow-md',
-          titleClasses: 'text-purple-950 dark:text-purple-200 font-bold',
-          badgeClasses: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/35 font-bold',
-          badgeLabel: 'Revise Due ⏳',
+          badgeText: `T-${formattedNum}`,
           badgeIcon: Clock,
+          containerClass: 'bg-gradient-to-br from-[#220c38] via-[#38115e] to-[#120521] border border-purple-500/40 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.25)]',
           btnClasses: 'bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-sm',
           btnLabel: 'Revise Now ⏳'
         };
       default: // not_started
         return {
-          cardClasses: 'bg-white dark:bg-[#24283B] border-slate-200 dark:border-[#292E42] border-l-4 border-l-slate-300 dark:border-l-slate-600 hover:border-slate-400 hover:shadow-sm',
-          titleClasses: 'text-[#191A17] dark:text-[#C0CAF5] font-bold',
-          badgeClasses: 'bg-slate-100 dark:bg-[#1F2335] text-slate-600 dark:text-slate-400 border-slate-300 dark:border-[#292E42] font-bold',
-          badgeLabel: 'Not Started ⭕',
+          badgeText: `T-${formattedNum}`,
           badgeIcon: Circle,
-          btnClasses: 'bg-[#EEEEE8] dark:bg-[#1F2335] text-[#191A17] dark:text-[#C0CAF5] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] font-bold',
+          containerClass: 'bg-gradient-to-br from-[#18181D] to-[#24283B] border border-[#292E42] text-slate-400 shadow-sm',
+          btnClasses: 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#191A17] dark:text-[#C0CAF5] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] font-bold',
           btnLabel: 'Start Topic ➔'
         };
     }
   };
 
   // ═══════════════════════════════════════════════════════════════════
-  // LEVEL 3: CHAPTER TOPICS & STUDY VIEW (When a chapter is clicked)
+  // LEVEL 3: CHAPTER TOPICS & STUDY VIEW (Matching Reference Hierarchy)
   // ═══════════════════════════════════════════════════════════════════
   if (activeSubject && activeChapter) {
     const totalInActiveChapter = activeChapter.topics.length;
@@ -301,118 +334,131 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const inProgressInActiveChapter = activeChapter.topics.filter(t => t.status === 'in_progress').length;
     const weakInActiveChapter = activeChapter.topics.filter(t => t.status === 'weak').length;
     const chapterPercent = totalInActiveChapter > 0 ? Math.round((completedInActiveChapter / totalInActiveChapter) * 100) : 0;
-    const isAllCompleted = totalInActiveChapter > 0 && completedInActiveChapter === totalInActiveChapter;
+    const chapterBadge = getChapterBadgeStyle(activeSubject.name, currentChapterIndex >= 0 ? currentChapterIndex : 0);
 
     return (
-      <div className="space-y-4 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+      <div className="space-y-6 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
-        {/* Navigation Top Header with Back to Chapters (Mobile-First 2-Tier Layout) */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-3 max-w-full overflow-hidden">
-          
-          {/* Row 1: Back to Chapters & Action Tools */}
-          <div className="flex items-center justify-between gap-2 w-full">
+        {/* 1. TOP CHAPTER HERO BANNER (Exact Reference Card Aesthetic) */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+            
+            {/* Left Visual Badge Thumbnail (e.g. CH 01) */}
+            <div className={`w-20 sm:w-28 h-14 sm:h-16 rounded-2xl flex flex-col items-center justify-center text-center p-2 shrink-0 shadow-lg relative overflow-hidden font-serif ${chapterBadge.containerClass}`}>
+              <span className="text-[10px] sm:text-xs font-black tracking-widest text-[#FACC15] uppercase">
+                {chapterBadge.badgeText}
+              </span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-slate-300 tracking-wider uppercase font-mono">
+                CHAPTER
+              </span>
+            </div>
+
+            {/* Banner Meta & Title */}
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                <span>{activeSubject.name}</span>
+                <span>•</span>
+                <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
+              </div>
+
+              <h1 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight font-serif break-words leading-snug">
+                {activeChapter.name}
+              </h1>
+
+              <div className="flex items-center gap-3 text-xs font-mono font-semibold text-[#85877E] dark:text-[#787C99] pt-0.5 flex-wrap">
+                <span>{totalInActiveChapter} Topics</span>
+                <span>•</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">{completedInActiveChapter} Mastered</span>
+                <span>•</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">{inProgressInActiveChapter} In Progress</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions (Back & Navigation) */}
+          <div className="flex items-center gap-2 shrink-0 self-stretch sm:self-auto justify-between sm:justify-end">
             <button
               onClick={handleBackToChapters}
-              className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
-              title="Return to all chapters"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
+              title="Return to All Chapters"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span>All Chapters</span>
             </button>
 
-            {/* Quick Actions / Mastery / Switcher */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* Mastery Badge */}
-              <div className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
-                <span>{completedInActiveChapter}/{totalInActiveChapter}</span>
-                <span>({chapterPercent}%)</span>
-              </div>
-
-              {/* Prev Chapter */}
-              {prevChapter && (
-                <button
-                  onClick={() => handleSelectChapter(prevChapter.id)}
-                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
-                  title={`Previous: ${prevChapter.name}`}
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">Prev</span>
-                </button>
-              )}
-
-              {/* Next Chapter */}
-              {nextChapter && (
-                <button
-                  onClick={() => handleSelectChapter(nextChapter.id)}
-                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
-                  title={`Next: ${nextChapter.name}`}
-                >
-                  <span className="hidden md:inline">Next</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              {/* Edit Chapter */}
+            {/* Prev Chapter */}
+            {prevChapter && (
               <button
-                onClick={() => setEditingChapter({ subjectId: activeSubject.id, chapter: activeChapter })}
-                className="p-1.5 sm:p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] border border-[#D8D8CF]/60 dark:border-[#292E42] transition-colors cursor-pointer"
-                title="Edit Chapter Details"
+                onClick={() => handleSelectChapter(prevChapter.id)}
+                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
+                title={`Previous: ${prevChapter.name}`}
               >
-                <Edit2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Row 2: Chapter Breadcrumb & Full Title with Safe Break-Word Wrapping */}
-          <div className="space-y-1 min-w-0 max-w-full pt-2.5 border-t border-[#EEEEE8] dark:border-[#292E42]">
-            <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
-              <span>{activeSubject.name}</span>
-              <span>•</span>
-              <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
-            </div>
-            <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#C0CAF5] font-serif leading-snug break-words">
-              {activeChapter.name}
-            </h2>
-          </div>
-        </div>
-
-        {/* Chapter Status Metrics Strip */}
-        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 max-w-full overflow-hidden">
-          <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono font-bold flex-wrap">
-            <span className="text-[#65675F] dark:text-[#A9B1D6]">{totalInActiveChapter} Topics Total</span>
-            <span className="text-emerald-600 dark:text-emerald-400">• {completedInActiveChapter} Mastered</span>
-            <span className="text-amber-600 dark:text-amber-400">• {inProgressInActiveChapter} In Progress</span>
-            <span className="text-rose-600 dark:text-rose-400">• {weakInActiveChapter} Weak</span>
-          </div>
-
-          <button
-            onClick={onOpenAddTopic}
-            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>+ Add Topic</span>
-          </button>
-        </div>
-
-        {/* Search & Status Filters for Chapter Topics */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 max-w-full">
-          <div className="relative flex-1 max-w-full sm:max-w-md">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search topics in this chapter..."
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors shadow-subtle-depth"
-            />
-            <Search className="w-4 h-4 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
             )}
+
+            {/* Next Chapter */}
+            {nextChapter && (
+              <button
+                onClick={() => handleSelectChapter(nextChapter.id)}
+                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
+                title={`Next: ${nextChapter.name}`}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Chapter Mastery Badge */}
+            <div className="flex items-center gap-1 px-3 py-2 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
+              <span>{chapterPercent}%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. TOPICS CONTENT CONTAINER (Matches Reference Content Tab & Search Layout) */}
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-5">
+          
+          {/* Content Tab & Search Toolbar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#EEEEE8] dark:border-[#292E42]">
+            
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => setActiveTab('content')}
+                className="pb-2 text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] border-b-2 border-[#596B35] dark:border-[#7AA2F7] cursor-pointer transition-colors relative"
+              >
+                <span>Topics Content ({totalInActiveChapter})</span>
+              </button>
+            </div>
+
+            {/* Search Topics in this Chapter */}
+            <div className="relative flex-1 max-w-full sm:max-w-xs flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search topics..."
+                  className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+                />
+                <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-2.5 top-1/2 -translate-y-1/2" />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <button
+                onClick={onOpenAddTopic}
+                className="px-3 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold cursor-pointer transition-all shadow-xs shrink-0 flex items-center gap-1"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Add</span>
+              </button>
+            </div>
           </div>
 
           {/* Status Filter Pills */}
@@ -430,88 +476,90 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                   statusFilter === st.id
                     ? `${st.activeColor} border-transparent shadow-sm`
-                    : 'bg-white dark:bg-[#24283B] text-[#65675F] dark:text-[#A9B1D6] border-[#D8D8CF] dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                    : 'bg-white dark:bg-[#1F2335] text-[#65675F] dark:text-[#A9B1D6] border-[#D8D8CF] dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
                 }`}
               >
                 <span>{st.label}</span>
                 <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                  statusFilter === st.id ? 'bg-white/20' : 'bg-[#EEEEE8] dark:bg-[#1F2335] text-[#85877E]'
+                  statusFilter === st.id ? 'bg-white/20' : 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#85877E]'
                 }`}>
                   {st.count}
                 </span>
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Chapter Topics List */}
-        <div className="space-y-2.5">
-          {filteredChapterTopics.length === 0 ? (
-            <div className="py-12 px-4 text-center rounded-2xl bg-white dark:bg-[#24283B] border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-3">
-              <FileText className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
-              <h4 className="text-sm font-bold text-[#191A17] dark:text-[#C0CAF5]">No topics found</h4>
-              <p className="text-xs text-[#85877E]">
-                {searchTerm ? 'No topics match the search filter.' : 'Click "+ Add Topic" to add the first topic to this chapter.'}
-              </p>
-              <button
-                onClick={onOpenAddTopic}
-                className="px-4 py-2 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#1A1B26] text-xs font-bold cursor-pointer"
-              >
-                + Add First Topic
-              </button>
-            </div>
-          ) : (
-            filteredChapterTopics.map(topic => {
-              const style = getTopicCardStyle(topic.status);
-              const BadgeIcon = style.badgeIcon;
+          {/* 3. TOPIC CARDS LIST (Exact Same Hierarchy & Left Thumbnail Card Layout) */}
+          <div className="space-y-3">
+            {filteredChapterTopics.length === 0 ? (
+              <div className="py-12 px-4 text-center rounded-2xl bg-[#F7F6F0]/50 dark:bg-[#1F2335]/50 border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-2">
+                <FileText className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+                <h4 className="text-sm font-bold text-[#191A17] dark:text-[#C0CAF5]">No topics found</h4>
+                <p className="text-xs text-[#85877E]">No topics match the search or filter query.</p>
+              </div>
+            ) : (
+              filteredChapterTopics.map((topic, tIdx) => {
+                const topicBadge = getTopicBadgeStyle(topic.status, tIdx);
+                const BadgeIcon = topicBadge.badgeIcon;
 
-              return (
-                <div
-                  key={topic.id}
-                  onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                  className={`p-3.5 sm:p-4 rounded-xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer group active:scale-99 shadow-xs ${style.cardClasses}`}
-                >
-                  <div className="space-y-1.5 min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className={`text-xs sm:text-sm ${style.titleClasses} group-hover:underline transition-colors flex items-center gap-1.5`}>
-                        <span>{topic.name}</span>
-                      </h4>
+                return (
+                  <div
+                    key={topic.id}
+                    onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
+                    className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 cursor-pointer shadow-xs group flex flex-col sm:flex-row sm:items-center justify-between gap-3.5"
+                  >
+                    <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
                       
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] border font-mono ${style.badgeClasses}`}>
-                        <BadgeIcon className="w-3 h-3" />
-                        <span>{style.badgeLabel}</span>
-                      </span>
+                      {/* Left Dark Stylized Topic Thumbnail Badge (e.g. T-01, T-02) */}
+                      <div className={`w-14 sm:w-16 h-10 sm:h-12 rounded-xl flex items-center justify-center font-mono font-black text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 ${topicBadge.containerClass}`}>
+                        <div className="flex items-center gap-1">
+                          <BadgeIcon className="w-3 h-3" />
+                          <span>{topicBadge.badgeText}</span>
+                        </div>
+                      </div>
+
+                      {/* Topic Title & Subtitle Meta */}
+                      <div className="min-w-0 space-y-0.5">
+                        <h4 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#C0CAF5] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
+                          {topic.name}
+                        </h4>
+                        
+                        <div className="flex items-center gap-2 text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] flex-wrap font-mono">
+                          {topic.subtopics && topic.subtopics.length > 0 ? (
+                            <span>📄 {topic.subtopics.length} subtopics</span>
+                          ) : (
+                            <span>📄 Core Concept</span>
+                          )}
+                          <span>•</span>
+                          <span>⏱️ {topic.studyTimeMinutes}m</span>
+                          <span>•</span>
+                          <span>🎯 {topic.accuracy}% acc</span>
+                        </div>
+                      </div>
                     </div>
 
-                    {topic.subtopics && topic.subtopics.length > 0 && (
-                      <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6] line-clamp-1">
-                        {topic.subtopics.join(' • ')}
-                      </p>
-                    )}
-                  </div>
+                    {/* Right Action: 1-Click Status Toggle & Chevron Arrow */}
+                    <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EEEEE8] dark:border-[#292E42]">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
+                          updateTopicStatus(topic.id, nextStatus);
+                        }}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${topicBadge.btnClasses}`}
+                      >
+                        {topicBadge.btnLabel}
+                      </button>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-black/5 dark:border-white/5">
-                    <div className="flex items-center gap-2 text-[10px] text-[#85877E] font-mono">
-                      <span>Acc: <strong className="text-[#191A17] dark:text-[#C0CAF5]">{topic.accuracy}%</strong></span>
-                      <span>•</span>
-                      <span>Study: <strong className="text-[#191A17] dark:text-[#C0CAF5]">{topic.studyTimeMinutes}m</strong></span>
+                      <div className="w-8 h-8 rounded-xl bg-[#F7F6F0] dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] text-[#85877E] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] flex items-center justify-center transition-colors">
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
                     </div>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
-                        updateTopicStatus(topic.id, nextStatus);
-                      }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${style.btnClasses}`}
-                    >
-                      {style.btnLabel}
-                    </button>
                   </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
 
         {/* Edit Chapter Modal */}
@@ -528,20 +576,55 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  // LEVEL 2: SUBJECT CHAPTERS DIRECTORY (When a Subject is clicked)
+  // LEVEL 2: SUBJECT CHAPTERS DIRECTORY (Matching Reference Hierarchy)
   // ═══════════════════════════════════════════════════════════════════
   if (activeSubject && !selectedChapterId) {
     const totalSubjectTopics = activeSubject.chapters.reduce((a, c) => a + c.topics.length, 0);
     const completedSubjectTopics = activeSubject.chapters.reduce((a, c) => a + c.topics.filter(t => t.status === 'completed').length, 0);
     const subjectPercent = totalSubjectTopics > 0 ? Math.round((completedSubjectTopics / totalSubjectTopics) * 100) : 0;
-    const badgeStyle = getSubjectBadgeStyle(activeSubject.name);
+    const subjectBadge = getSubjectBadgeStyle(activeSubject.name);
 
     return (
-      <div className="space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+      <div className="space-y-6 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
-        {/* Navigation Top Header: Back to Batch Portal */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* 1. TOP SUBJECT HERO BANNER (Exact Reference Card Aesthetic) */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="flex items-center gap-4 sm:gap-5 min-w-0">
+            
+            {/* Left Visual Badge Thumbnail (e.g. MATHS, GK, REASONING, ENGLISH) */}
+            <div className={`w-20 sm:w-28 h-14 sm:h-16 rounded-2xl flex flex-col items-center justify-center text-center p-2 shrink-0 shadow-lg relative overflow-hidden font-serif ${subjectBadge.containerClass}`}>
+              <span className="text-[10px] sm:text-xs font-black tracking-widest text-[#FACC15] uppercase">
+                {subjectBadge.badgeText}
+              </span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-slate-300 tracking-wider uppercase font-mono">
+                SUBJECT
+              </span>
+            </div>
+
+            {/* Banner Meta & Title */}
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                <span>{currentExam.name}</span>
+                <span>•</span>
+                <span>Subject Content</span>
+              </div>
+
+              <h1 className="text-lg sm:text-2xl font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight font-serif uppercase truncate">
+                {activeSubject.name} – CHAPTERS
+              </h1>
+
+              <div className="flex items-center gap-3 text-xs font-mono font-semibold text-[#85877E] dark:text-[#787C99] pt-0.5 flex-wrap">
+                <span>{activeSubject.chapters.length} Chapters</span>
+                <span>•</span>
+                <span>{totalSubjectTopics} Files / Topics</span>
+                <span>•</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">{subjectPercent}% Mastered</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions (Back & Edit) */}
+          <div className="flex items-center gap-2.5 shrink-0 self-stretch sm:self-auto justify-between sm:justify-end">
             <button
               onClick={handleBackToSubjects}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
@@ -550,25 +633,6 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span>All Content</span>
             </button>
-
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#7AA2F7]">
-                <span>{currentExam.name}</span>
-                <span>•</span>
-                <span>Subject Directory</span>
-              </div>
-              <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#C0CAF5] font-serif truncate mt-0.5 flex items-center gap-2">
-                <span>{activeSubject.name}</span>
-              </h2>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
-            {/* Subject Mastery Progress Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
-              <span>{completedSubjectTopics}/{totalSubjectTopics} Topics</span>
-              <span>({subjectPercent}%)</span>
-            </div>
 
             <button
               onClick={() => setEditingSubject(activeSubject)}
@@ -580,108 +644,115 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           </div>
         </div>
 
-        {/* Search & Actions Bar for Chapters */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div className="relative flex-1 max-w-full sm:max-w-md">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={`Search chapters in ${activeSubject.name}...`}
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors shadow-subtle-depth"
-            />
-            <Search className="w-4 h-4 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
-            {searchTerm && (
+        {/* 2. CHAPTERS CONTENT CONTAINER (Matches Reference Content Tab & Search Layout) */}
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-5">
+          
+          {/* Content Tab & Search Toolbar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#EEEEE8] dark:border-[#292E42]">
+            
+            <div className="flex items-center gap-6">
               <button
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
+                onClick={() => setActiveTab('content')}
+                className="pb-2 text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] border-b-2 border-[#596B35] dark:border-[#7AA2F7] cursor-pointer transition-colors relative"
               >
-                <X className="w-3.5 h-3.5" />
+                <span>Chapters ({activeSubject.chapters.length})</span>
               </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#65675F] dark:text-[#A9B1D6]">
-            <span>{filteredChapters.length} Chapters</span>
-            <span>•</span>
-            <span>{totalSubjectTopics} Total Topics</span>
-          </div>
-        </div>
-
-        {/* Clean Chapters List (Matching Reference UI Style) */}
-        <div className="space-y-3">
-          {filteredChapters.length === 0 ? (
-            <div className="py-12 px-4 text-center rounded-2xl bg-white dark:bg-[#24283B] border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-2">
-              <FolderOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
-              <h4 className="text-sm font-bold text-[#191A17] dark:text-[#C0CAF5]">No chapters found</h4>
-              <p className="text-xs text-[#85877E]">No chapters match your search query.</p>
             </div>
-          ) : (
-            filteredChapters.map((chapter, idx) => {
-              const totalInChapter = chapter.topics.length;
-              const completedInChapter = chapter.topics.filter(t => t.status === 'completed').length;
-              const chapterPercent = totalInChapter > 0 ? Math.round((completedInChapter / totalInChapter) * 100) : 0;
-              const isAllCompleted = totalInChapter > 0 && completedInChapter === totalInChapter;
 
-              return (
-                <div
-                  key={chapter.id}
-                  onClick={() => handleSelectChapter(chapter.id)}
-                  className={`rounded-2xl border transition-all duration-200 shadow-subtle-depth overflow-hidden cursor-pointer group hover:scale-[1.006] active:scale-[0.995] ${
-                    isAllCompleted
-                      ? 'bg-[#F7F6F0] dark:bg-[#24283B] border-[#596B35]/30 dark:border-[#7AA2F7]/30 hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
-                      : 'bg-white dark:bg-[#24283B] border-[#D8D8CF] dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
-                  }`}
-                >
-                  <div className="p-4 sm:p-5 flex items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#C0CAF5] tracking-normal truncate group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif">
+            {/* Search Chapters Input */}
+            <div className="relative flex-1 max-w-full sm:max-w-xs flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={`Search in ${activeSubject.name}...`}
+                  className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+                />
+                <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-2.5 top-1/2 -translate-y-1/2" />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="px-3.5 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold cursor-pointer transition-all shadow-xs"
+              >
+                Search
+              </button>
+            </div>
+          </div>
+
+          {/* 3. CHAPTER CARDS LIST (Exact Same Hierarchy & Left Thumbnail Card Layout) */}
+          <div className="space-y-3">
+            {filteredChapters.length === 0 ? (
+              <div className="py-12 px-4 text-center rounded-2xl bg-[#F7F6F0]/50 dark:bg-[#1F2335]/50 border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-2">
+                <FolderOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+                <h4 className="text-sm font-bold text-[#191A17] dark:text-[#C0CAF5]">No chapters found</h4>
+                <p className="text-xs text-[#85877E]">No chapters match your search query.</p>
+              </div>
+            ) : (
+              filteredChapters.map((chapter, idx) => {
+                const totalInChapter = chapter.topics.length;
+                const completedInChapter = chapter.topics.filter(t => t.status === 'completed').length;
+                const chapterPercent = totalInChapter > 0 ? Math.round((completedInChapter / totalInChapter) * 100) : 0;
+                const chapterBadge = getChapterBadgeStyle(activeSubject.name, idx);
+
+                return (
+                  <div
+                    key={chapter.id}
+                    onClick={() => handleSelectChapter(chapter.id)}
+                    className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 cursor-pointer shadow-xs group flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                      
+                      {/* Left Dark Stylized Chapter Thumbnail Badge (e.g. CH 01, CH 02) */}
+                      <div className={`w-16 sm:w-20 h-10 sm:h-12 rounded-xl flex items-center justify-center font-black font-serif text-xs sm:text-sm shrink-0 tracking-wider transition-transform group-hover:scale-105 ${chapterBadge.containerClass}`}>
+                        <span>{chapterBadge.badgeText}</span>
+                      </div>
+
+                      {/* Chapter Title & Subtitle */}
+                      <div className="min-w-0">
+                        <h3 className="text-xs sm:text-base font-extrabold text-[#11120F] dark:text-[#C0CAF5] tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
                           {chapter.name}
                         </h3>
-                        {isAllCompleted && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4F7A45]/15 text-[#4F7A45] flex items-center gap-1 font-mono">
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>Unit Complete</span>
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center gap-2 text-[11px] text-[#65675F] dark:text-[#A9B1D6] mt-1 flex-wrap font-mono">
-                        <span>📄 {totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
-                        {completedInChapter > 0 && (
-                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} Mastered</span>
-                        )}
+                        
+                        <div className="flex items-center gap-2 text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] mt-0.5 font-mono">
+                          <span>📄 {totalInChapter} files / topics</span>
+                          {completedInChapter > 0 && (
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} mastered</span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
+                      {/* Progress Badge */}
                       <div className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold ${
-                        isAllCompleted
+                        chapterPercent === 100
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                           : chapterPercent > 0
                           ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                          : 'bg-slate-100 dark:bg-[#1F2335] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-[#292E42]'
+                          : 'bg-[#F7F6F0] dark:bg-[#16161E] text-slate-600 dark:text-slate-400 border border-[#D8D8CF] dark:border-[#292E42]'
                       }`}>
                         {chapterPercent}%
                       </div>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingChapter({ subjectId: activeSubject.id, chapter });
-                        }}
-                        className="p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] transition-colors cursor-pointer"
-                        title="Edit Chapter"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="w-8 h-8 rounded-xl bg-[#F7F6F0] dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] text-[#85877E] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] flex items-center justify-center transition-colors">
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
 
         {/* Modals */}
@@ -788,7 +859,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   onClick={() => setSearchTerm('')}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
