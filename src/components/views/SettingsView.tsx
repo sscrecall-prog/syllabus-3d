@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTimer } from '../../context/TimerContext';
+import { useTheme } from '../../context/ThemeContext';
 import {
   Settings,
   Download,
@@ -61,6 +62,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
 
   const { user, logout, updateUserSession } = useAuth();
   const { settings, updateSettings, showFloatingOverlay, openPermissionModal } = useTimer();
+  const { theme, setTheme } = useTheme();
   const [testLaunched, setTestLaunched] = useState(false);
   const { isInstalled, isOnline } = usePWA();
   const [showPwaModal, setShowPwaModal] = useState(false);
@@ -291,7 +293,79 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          2. EXAM COUNTDOWN CONFIGURATOR
+          2. THEME & APPEARANCE (PERSISTENT LIGHT / DARK MODE)
+          ═══════════════════════════════════════════════════ */}
+      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
+        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+              <Palette className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Appearance & Theme</h3>
+              <p className="text-[11px] text-[#6B7280]">Choose your preferred theme. Your choice is automatically remembered on every launch.</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 capitalize">
+            {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+          </span>
+        </div>
+
+        <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Dark Mode Option */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setTheme('dark');
+            }}
+            className={`p-4 rounded-2xl border flex items-center gap-3.5 text-left transition-all cursor-pointer ${
+              theme === 'dark'
+                ? 'bg-[#18181D] border-[#8B5CF6] ring-2 ring-[#8B5CF6]/30 text-white shadow-md'
+                : 'bg-white/70 dark:bg-[#18181D]/50 border-slate-200/60 dark:border-[#272730] text-[#6B7280] hover:border-slate-300'
+            }`}
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#23232A] border border-[#272730] flex items-center justify-center text-[#8B5CF6]">
+              <Moon className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white block">Obsidian Dark Theme</span>
+                {theme === 'dark' && <Check className="w-4 h-4 text-[#8B5CF6]" />}
+              </div>
+              <span className="text-[11px] text-[#A1A1AA] block mt-0.5">High-contrast dark palette for night study & OLED screens.</span>
+            </div>
+          </button>
+
+          {/* Light Mode Option */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setTheme('light');
+            }}
+            className={`p-4 rounded-2xl border flex items-center gap-3.5 text-left transition-all cursor-pointer ${
+              theme === 'light'
+                ? 'bg-white border-[#596B35] ring-2 ring-[#596B35]/30 text-[#191A17] shadow-md'
+                : 'bg-white/70 dark:bg-[#18181D]/50 border-slate-200/60 dark:border-[#272730] text-[#6B7280] hover:border-slate-300'
+            }`}
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#D8D8CF] flex items-center justify-center text-[#596B35]">
+              <Sun className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#191A17] dark:text-white block">Classic Paper Light Theme</span>
+                {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
+              </div>
+              <span className="text-[11px] text-[#65675F] dark:text-[#A1A1AA] block mt-0.5">Warm academic palette for daytime study & reading.</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════
+          3. EXAM COUNTDOWN CONFIGURATOR
           ═══════════════════════════════════════════════════ */}
       <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
         <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">

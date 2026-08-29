@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import {
   Search,
   Flame,
@@ -37,20 +38,12 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
   const { user } = useAuth();
+  const { toggleTheme: handleThemeToggle, isDark } = useTheme();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   const toggleTheme = () => {
     soundManager.playClick();
-    setIsDarkMode(prev => !prev);
+    handleThemeToggle();
   };
 
   const examName = currentExam?.name || 'Syllabus Exam';
@@ -143,9 +136,9 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={toggleTheme}
             className="p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#191A17] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
-            title="Toggle Light/Dark Theme"
+            title={isDark ? "Switch to Light Theme" : "Switch to Dark Theme"}
           >
-            {isDarkMode ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
+            {isDark ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
           </button>
 
           {/* User Profile Avatar */}

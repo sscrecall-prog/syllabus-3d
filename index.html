@@ -12,6 +12,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <title>Syllabus 3D — Syllabus Mastery Engine</title>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('syllabus3d_theme');
+          if (saved === 'light') {
+            document.documentElement.classList.remove('dark');
+          } else if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            // Default to dark mode
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body class="bg-[#F7F6F0] dark:bg-[#0B0B0D] text-[#191A17] dark:text-[#F5F5F7] antialiased selection:bg-[#8B5CF6]/20 selection:text-[#8B5CF6]">
     <div id="root"></div>
