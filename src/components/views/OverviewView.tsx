@@ -86,7 +86,34 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </p>
       </div>
 
-      {/* 2. 3D Countdown Flip Clock */}
+      {/* 2. 3D VISUAL HERO ARTWORK BANNER (Mobile-Friendly & High Aesthetic) */}
+      <div className="relative rounded-3xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth bg-[#0B0F19] group">
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
+          <img
+            src="/dashboard-hero.jpg"
+            alt="Focus Plan Achieve - Syllabus 3D Mastery"
+            className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-102"
+          />
+          {/* Subtle gradient vignette to blend seamlessly */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          
+          {/* Bottom Overlay Info Pill */}
+          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-none">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/15 text-white shadow-lg">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] sm:text-xs font-mono font-bold tracking-wide">
+                Target: {examName} ({examYear})
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FACC15]/20 backdrop-blur-md border border-[#FACC15]/30 text-[#FACC15] text-[11px] sm:text-xs font-bold shadow-lg">
+              <span>🏆 {overallStats.completionPercentage}% Mastered</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. 3D Countdown Flip Clock */}
       <ExamCountdown3D />
 
       {/* 3. ASYMMETRICAL BENTO GRID */}
