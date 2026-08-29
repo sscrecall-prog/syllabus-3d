@@ -308,79 +308,81 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const isAllCompleted = totalInActiveChapter > 0 && completedInActiveChapter === totalInActiveChapter;
 
     return (
-      <div className="space-y-5 pb-16 animate-fade-in select-none">
+      <div className="space-y-4 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden">
         
-        {/* Navigation Top Header with Back to Chapters */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth">
+        {/* Navigation Top Header with Back to Chapters (Mobile-First Responsive Layout) */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-3 max-w-full overflow-hidden">
           
-          <div className="flex items-center gap-3 min-w-0">
+          {/* Row 1: Back to Chapters & Action Tools */}
+          <div className="flex items-center justify-between gap-2 w-full">
             <button
               onClick={handleBackToChapters}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
               title="Return to all chapters"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span>All Chapters</span>
             </button>
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#7AA2F7]">
-                <span>{activeSubject.name}</span>
-                <span>•</span>
-                <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
+            {/* Quick Actions / Mastery / Switcher */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Mastery Badge */}
+              <div className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
+                <span>{completedInActiveChapter}/{totalInActiveChapter}</span>
+                <span>({chapterPercent}%)</span>
               </div>
-              <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#C0CAF5] truncate font-serif mt-0.5">
-                {activeChapter.name}
-              </h2>
+
+              {/* Prev Chapter */}
+              {prevChapter && (
+                <button
+                  onClick={() => handleSelectChapter(prevChapter.id)}
+                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
+                  title={`Previous: ${prevChapter.name}`}
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Prev</span>
+                </button>
+              )}
+
+              {/* Next Chapter */}
+              {nextChapter && (
+                <button
+                  onClick={() => handleSelectChapter(nextChapter.id)}
+                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
+                  title={`Next: ${nextChapter.name}`}
+                >
+                  <span className="hidden md:inline">Next</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+
+              {/* Edit Chapter */}
+              <button
+                onClick={() => setEditingChapter({ subjectId: activeSubject.id, chapter: activeChapter })}
+                className="p-1.5 sm:p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] border border-[#D8D8CF]/60 dark:border-[#292E42] transition-colors cursor-pointer"
+                title="Edit Chapter Details"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 
-          {/* Chapter Quick Switcher / Actions */}
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#D8D8CF]/50 dark:border-[#292E42]">
-            {/* Prev Chapter */}
-            {prevChapter && (
-              <button
-                onClick={() => handleSelectChapter(prevChapter.id)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
-                title={`Previous: ${prevChapter.name}`}
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Prev</span>
-              </button>
-            )}
-
-            {/* Chapter Mastery Badge */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
-              <span>{completedInActiveChapter}/{totalInActiveChapter}</span>
-              <span>({chapterPercent}%)</span>
+          {/* Row 2: Chapter Breadcrumb & Full Title with Safe Break-Word Wrapping */}
+          <div className="space-y-1 min-w-0 max-w-full pt-2.5 border-t border-[#EEEEE8] dark:border-[#292E42]">
+            <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+              <span>{activeSubject.name}</span>
+              <span>•</span>
+              <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
             </div>
-
-            {/* Next Chapter */}
-            {nextChapter && (
-              <button
-                onClick={() => handleSelectChapter(nextChapter.id)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
-                title={`Next: ${nextChapter.name}`}
-              >
-                <span className="hidden md:inline">Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            )}
-
-            {/* Edit Chapter */}
-            <button
-              onClick={() => setEditingChapter({ subjectId: activeSubject.id, chapter: activeChapter })}
-              className="p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] border border-transparent hover:border-[#D8D8CF] dark:hover:border-[#292E42] transition-colors cursor-pointer"
-              title="Edit Chapter Details"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-            </button>
+            <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#C0CAF5] font-serif leading-snug break-words">
+              {activeChapter.name}
+            </h2>
           </div>
         </div>
 
         {/* Chapter Status Metrics Strip */}
-        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2 sm:gap-4 text-xs font-mono font-bold flex-wrap">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 max-w-full overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono font-bold flex-wrap">
             <span className="text-[#65675F] dark:text-[#A9B1D6]">{totalInActiveChapter} Topics Total</span>
             <span className="text-emerald-600 dark:text-emerald-400">• {completedInActiveChapter} Mastered</span>
             <span className="text-amber-600 dark:text-amber-400">• {inProgressInActiveChapter} In Progress</span>
@@ -389,7 +391,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
           <button
             onClick={onOpenAddTopic}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm ml-auto"
+            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm shrink-0"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>+ Add Topic</span>
@@ -397,13 +399,13 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* Search & Status Filters for Chapter Topics */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div className="relative flex-1 max-w-md">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 max-w-full">
+          <div className="relative flex-1 max-w-full sm:max-w-md">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={`Search in ${activeChapter.name}...`}
+              placeholder="Search topics in this chapter..."
               className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors shadow-subtle-depth"
             />
             <Search className="w-4 h-4 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
