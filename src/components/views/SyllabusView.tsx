@@ -215,7 +215,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     };
   }, [activeChapter, activeSubject, allTopicsInExam]);
 
-  // 1. Subject Badge Helper (Level 1) - Mobile Optimized with Safe Scaling
+  // 1. Subject Badge Helper (Level 1)
   const getSubjectBadgeStyle = (subjectName: string) => {
     const lower = subjectName.toLowerCase();
     if (lower.includes('quant') || lower.includes('math')) {
@@ -294,55 +294,70 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     };
   };
 
-  // 3. Topic Badge Helper (Level 3)
-  const getTopicBadgeStyle = (status: TopicStatus, topicIndex: number) => {
+  // 3. Topic Card & Badge Styling Helper (Level 3)
+  const getTopicCardDesign = (status: TopicStatus, topicIndex: number) => {
     const formattedNum = (topicIndex + 1).toString().padStart(2, '0');
     switch (status) {
       case 'completed':
         return {
-          badgeText: `T-${formattedNum}`,
+          badgeNum: formattedNum,
+          badgeLabel: 'DONE',
           badgeIcon: CheckCircle2,
-          containerClass: 'bg-gradient-to-br from-[#052417] via-[#083b27] to-[#03170e] border border-emerald-500/40 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.25)]',
+          boxClass: 'bg-gradient-to-br from-[#052417] via-[#083b27] to-[#03170e] border border-emerald-500/45 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]',
+          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-emerald-50/40 dark:hover:bg-[#24283B] border-emerald-500/40 hover:border-emerald-500 shadow-xs border-l-4 border-l-emerald-500',
+          titleColor: 'text-emerald-950 dark:text-emerald-200',
           btnClasses: 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm',
           btnLabel: 'Mastered ✓'
         };
       case 'in_progress':
         return {
-          badgeText: `T-${formattedNum}`,
+          badgeNum: formattedNum,
+          badgeLabel: 'DOING',
           badgeIcon: Zap,
-          containerClass: 'bg-gradient-to-br from-[#2b1f06] via-[#473307] to-[#171002] border border-amber-500/40 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.25)] animate-pulse',
+          boxClass: 'bg-gradient-to-br from-[#2b1f06] via-[#473307] to-[#171002] border border-amber-500/45 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)] animate-pulse',
+          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-amber-50/40 dark:hover:bg-[#24283B] border-amber-500/40 hover:border-amber-500 shadow-xs border-l-4 border-l-amber-500',
+          titleColor: 'text-amber-950 dark:text-amber-200',
           btnClasses: 'bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-sm',
           btnLabel: 'Mark Done ➔'
         };
       case 'weak':
         return {
-          badgeText: `T-${formattedNum}`,
+          badgeNum: formattedNum,
+          badgeLabel: 'WEAK',
           badgeIcon: AlertTriangle,
-          containerClass: 'bg-gradient-to-br from-[#2e090f] via-[#4d0c18] to-[#1a0307] border border-rose-500/40 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.25)]',
+          boxClass: 'bg-gradient-to-br from-[#2e090f] via-[#4d0c18] to-[#1a0307] border border-rose-500/45 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.2)]',
+          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-rose-50/40 dark:hover:bg-[#24283B] border-rose-500/40 hover:border-rose-500 shadow-xs border-l-4 border-l-rose-500',
+          titleColor: 'text-rose-950 dark:text-rose-200',
           btnClasses: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm',
           btnLabel: 'Fix Weak 🔥'
         };
       case 'revision_due':
         return {
-          badgeText: `T-${formattedNum}`,
+          badgeNum: formattedNum,
+          badgeLabel: 'REVISE',
           badgeIcon: Clock,
-          containerClass: 'bg-gradient-to-br from-[#220c38] via-[#38115e] to-[#120521] border border-purple-500/40 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.25)]',
+          boxClass: 'bg-gradient-to-br from-[#220c38] via-[#38115e] to-[#120521] border border-purple-500/45 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]',
+          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-purple-50/40 dark:hover:bg-[#24283B] border-purple-500/40 hover:border-purple-500 shadow-xs border-l-4 border-l-purple-500',
+          titleColor: 'text-purple-950 dark:text-purple-200',
           btnClasses: 'bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-sm',
           btnLabel: 'Revise Now ⏳'
         };
       default: // not_started
         return {
-          badgeText: `T-${formattedNum}`,
+          badgeNum: formattedNum,
+          badgeLabel: 'TODO',
           badgeIcon: Circle,
-          containerClass: 'bg-gradient-to-br from-[#18181D] to-[#24283B] border border-[#292E42] text-slate-400 shadow-sm',
-          btnClasses: 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#191A17] dark:text-[#C0CAF5] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] font-bold',
+          boxClass: 'bg-gradient-to-br from-[#18181D] to-[#24283B] border border-[#292E42] text-slate-300 shadow-sm',
+          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-xs border-l-4 border-l-slate-300 dark:border-l-slate-600',
+          titleColor: 'text-[#11120F] dark:text-[#C0CAF5]',
+          btnClasses: 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#191A17] dark:text-[#C0CAF5] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] border border-slate-300 dark:border-[#292E42] font-bold shadow-2xs',
           btnLabel: 'Start Topic ➔'
         };
     }
   };
 
   // ═══════════════════════════════════════════════════════════════════
-  // LEVEL 3: CHAPTER TOPICS & STUDY VIEW (Matching Reference Hierarchy)
+  // LEVEL 3: CHAPTER TOPICS & STUDY VIEW (Polished Mobile-First Layout)
   // ═══════════════════════════════════════════════════════════════════
   if (activeSubject && activeChapter) {
     const totalInActiveChapter = activeChapter.topics.length;
@@ -355,17 +370,18 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     return (
       <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
-        {/* 1. TOP CHAPTER HERO BANNER (Mobile-Friendly Clean Layout) */}
+        {/* 1. TOP CHAPTER HERO BANNER (Clean & Responsive) */}
         <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-3.5">
           <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3 min-w-0">
+              
               {/* Left Visual Badge Thumbnail */}
               <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 shadow-md relative overflow-hidden font-serif ${chapterBadge.containerClass}`}>
                 <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none">
                   {chapterBadge.badgeText}
                 </span>
                 <span className="text-[8px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
-                  UNIT
+                  CHAPTER
                 </span>
               </div>
 
@@ -479,8 +495,8 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
           </div>
 
-          {/* Status Filter Pills */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Status Filter Pills (Horizontal Scrollable on Mobile) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
             {[
               { id: 'all', label: 'All', count: statusCounts.all, activeColor: 'bg-[#11120F] dark:bg-white text-white dark:text-black' },
               { id: 'completed', label: '✓ Mastered', count: statusCounts.completed, activeColor: 'bg-emerald-600 text-white shadow-sm' },
@@ -491,7 +507,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               <button
                 key={st.id}
                 onClick={() => setStatusFilter(st.id as any)}
-                className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer border ${
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 ${
                   statusFilter === st.id
                     ? `${st.activeColor} border-transparent shadow-sm`
                     : 'bg-white dark:bg-[#1F2335] text-[#65675F] dark:text-[#A9B1D6] border-[#D8D8CF] dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
@@ -507,7 +523,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             ))}
           </div>
 
-          {/* 3. TOPIC CARDS LIST (Clean Direct-Touch Mobile Cards) */}
+          {/* 3. TOPIC CARDS LIST (Polished Modern Course Style with Rich Preparation Visuals) */}
           <div className="space-y-2.5">
             {filteredChapterTopics.length === 0 ? (
               <div className="py-10 px-4 text-center rounded-2xl bg-[#F7F6F0]/50 dark:bg-[#1F2335]/50 border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-2">
@@ -517,55 +533,63 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               </div>
             ) : (
               filteredChapterTopics.map((topic, tIdx) => {
-                const topicBadge = getTopicBadgeStyle(topic.status, tIdx);
-                const BadgeIcon = topicBadge.badgeIcon;
+                const design = getTopicCardDesign(topic.status, tIdx);
+                const BadgeIcon = design.badgeIcon;
 
                 return (
                   <div
                     key={topic.id}
                     onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                    className="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 cursor-pointer shadow-xs group flex items-center justify-between gap-3 active:scale-[0.99]"
+                    className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-3 active:scale-[0.99] ${design.cardBorderClass}`}
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {/* Left Dark Stylized Topic Thumbnail Badge */}
-                      <div className={`w-12 sm:w-14 h-9 sm:h-10 rounded-xl flex items-center justify-center font-mono font-bold text-[10px] sm:text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 ${topicBadge.containerClass}`}>
-                        <div className="flex items-center gap-0.5">
-                          <BadgeIcon className="w-3 h-3" />
-                          <span>{topicBadge.badgeText}</span>
+                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                      
+                      {/* Left Modern Index / Status Box */}
+                      <div className={`w-12 sm:w-14 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 transition-transform group-hover:scale-105 ${design.boxClass}`}>
+                        <span className="text-xs sm:text-sm font-black font-mono leading-none">
+                          {design.badgeNum}
+                        </span>
+                        <div className="flex items-center gap-0.5 text-[8px] font-extrabold uppercase font-mono mt-1 opacity-90">
+                          <BadgeIcon className="w-2.5 h-2.5" />
+                          <span>{design.badgeLabel}</span>
                         </div>
                       </div>
 
                       {/* Topic Title & Subtitle Meta */}
-                      <div className="min-w-0 space-y-0.5">
-                        <h4 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#C0CAF5] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
+                      <div className="min-w-0 space-y-1">
+                        <h4 className={`text-xs sm:text-sm font-bold ${design.titleColor} group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug line-clamp-2`}>
                           {topic.name}
                         </h4>
                         
                         <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] flex-wrap font-mono">
                           {topic.subtopics && topic.subtopics.length > 0 ? (
-                            <span>📄 {topic.subtopics.length} subtopics</span>
+                            <span className="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5">
+                              📄 {topic.subtopics.length} subtopics
+                            </span>
                           ) : (
-                            <span>📄 Core Concept</span>
+                            <span className="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5">
+                              📄 Core Concept
+                            </span>
                           )}
                           <span>•</span>
-                          <span>⏱️ {topic.studyTimeMinutes}m</span>
+                          <span>⏱️ {topic.studyTimeMinutes}m study</span>
                           <span>•</span>
-                          <span>🎯 {topic.accuracy}%</span>
+                          <span>🎯 {topic.accuracy}% acc</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Right 1-Click Status Toggle Action */}
-                    <div className="shrink-0">
+                    <div className="flex items-center justify-end shrink-0 pt-1 sm:pt-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
                           updateTopicStatus(topic.id, nextStatus);
                         }}
-                        className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 ${topicBadge.btnClasses}`}
+                        className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 ${design.btnClasses}`}
                       >
-                        {topicBadge.btnLabel}
+                        {design.btnLabel}
                       </button>
                     </div>
                   </div>
