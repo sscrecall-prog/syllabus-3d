@@ -15,12 +15,15 @@ import {
   Columns
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
-import { savePdfToStorage, getPdfBlobUrl, deletePdfFromStorage, openPdfInNewTab } from '../../utils/pdfStorage';
+import { savePdfToStorage, getPdfBlobUrl, deletePdfFromStorage } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
+import { InAppPdfReaderModal } from './InAppPdfReaderModal';
 
 interface TopicPdfAttachmentsSectionProps {
   topicId: string;
   topicName: string;
+  subjectName?: string;
+  chapterName?: string;
   attachments?: TopicPdfAttachment[];
   onAddAttachment: (attachment: TopicPdfAttachment) => void;
   onDeleteAttachment: (attachmentId: string) => void;
@@ -30,6 +33,8 @@ interface TopicPdfAttachmentsSectionProps {
 export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProps> = ({
   topicId,
   topicName,
+  subjectName,
+  chapterName,
   attachments = [],
   onAddAttachment,
   onDeleteAttachment,
@@ -41,6 +46,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
   const [urlLink, setUrlLink] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
+  const [viewingAttachmentId, setViewingAttachmentId] = useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const formatFileSize = (bytes?: number) => {
@@ -115,23 +121,9 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
     setTimeout(() => setSuccessNotice(null), 3000);
   };
 
-  const handleOpenPdf = async (attachment: TopicPdfAttachment) => {
+  const handleOpenPdf = (attachment: TopicPdfAttachment) => {
     soundManager.playClick();
-    if (attachment.url) {
-      openPdfInNewTab(attachment.url, attachment.name);
-      return;
-    }
-
-    if (attachment.storageKey || attachment.id) {
-      const id = attachment.storageKey || attachment.id;
-      const blobUrl = await getPdfBlobUrl(id);
-      if (blobUrl) {
-        openPdfInNewTab(blobUrl, attachment.name);
-      } else {
-        setErrorMessage('PDF file not found in local storage.');
-        setTimeout(() => setErrorMessage(null), 3000);
-      }
-    }
+    setViewingAttachmentId(attachment.id);
   };
 
   const handleDownloadPdf = async (attachment: TopicPdfAttachment) => {
@@ -190,7 +182,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
               </span>
             </h4>
             <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
-              Attach coaching notes, formulas, or textbook PDFs to open in a new Chrome tab.
+              Attach coaching notes, formulas, or textbook PDFs to view directly in-app.
             </p>
           </div>
         </div>
@@ -334,18 +326,18 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
                   </button>
                 )}
 
-                {/* 1. View PDF Button (Icon + Label) */}
+                {/* 1. In-App View PDF Button */}
                 <button
                   type="button"
                   onClick={() => handleOpenPdf(att)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/25 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
-                  title="View PDF in new Chrome Tab"
+                  title="Read PDF in distraction-free In-App Viewer"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>View</span>
                 </button>
 
-                {/* 2. Download PDF Button (Icon + Label) */}
+                {/* 2. Download PDF Button */}
                 <button
                   type="button"
                   onClick={() => handleDownloadPdf(att)}
@@ -369,6 +361,20 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
             </div>
           ))}
         </div>
+      )}
+
+      {/* FULLSCREEN IN-APP PDF READER MODAL */}
+      {viewingAttachmentId && (
+        <InAppPdfReaderModal
+          isOpen={Boolean(viewingAttachmentId)}
+          onClose={() => setViewingAttachmentId(null)}
+          topicName={topicName}
+          subjectName={subjectName}
+          chapterName={chapterName}
+          attachments={attachments}
+          initialAttachmentId={viewingAttachmentId}
+          onOpenSplitStudy={onOpenSplitStudy}
+        />
       )}
     </div>
   );

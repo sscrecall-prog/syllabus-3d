@@ -854,6 +854,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <TopicPdfAttachmentsSection
                   topicId={liveTopic.id}
                   topicName={liveTopic.name}
+                  subjectName={subjectName}
+                  chapterName={chapterName}
                   attachments={liveTopic.pdfAttachments || []}
                   onAddAttachment={(newAttachment) => {
                     if (addTopicPdfAttachment) {
