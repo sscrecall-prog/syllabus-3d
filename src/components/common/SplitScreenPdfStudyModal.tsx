@@ -21,7 +21,8 @@ import {
   CheckSquare,
   GripVertical,
   ChevronsLeftRight,
-  RotateCcw
+  RotateCcw,
+  Image as ImageIcon
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
@@ -193,6 +194,38 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
     soundManager.playClick();
     const citation = `\n> 📌 **Ref [${currentAttachment.name}]**: \n`;
     setNotesContent(prev => prev + citation);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          e.preventDefault();
+          soundManager.playClick();
+
+          const reader = new FileReader();
+          reader.onload = (loadEvt) => {
+            const base64 = loadEvt.target?.result as string;
+            if (base64) {
+              const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              const markdownImage = `\n![Screenshot ${timeStr}](${base64})\n`;
+              setNotesContent(prev => {
+                const updated = prev + markdownImage;
+                onSaveNotes(updated);
+                return updated;
+              });
+              soundManager.playCompleteChime();
+            }
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+      }
+    }
   };
 
   const setPresetRatio = (percent: number) => {
@@ -535,7 +568,8 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                 // Trigger auto-save debounce
                 onSaveNotes(e.target.value);
               }}
-              placeholder="Type your study notes, formulas, shortcuts, and key points while reading the PDF on the left side..."
+              onPaste={handlePaste}
+              placeholder="Type your study notes, formulas, shortcuts, and key points while reading the PDF on the left side...\n\n📸 Tip: Press Ctrl + V to paste any screenshot directly!"
               className="w-full flex-1 p-3.5 rounded-xl bg-[#18181D] border border-[#272730] text-xs sm:text-sm font-medium text-[#F5F5F7] placeholder-[#71717A] focus:outline-none focus:border-[#8B5CF6] resize-none leading-relaxed font-sans"
             />
 

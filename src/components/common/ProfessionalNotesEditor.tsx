@@ -20,7 +20,11 @@ import {
   ExternalLink,
   Columns,
   Mic,
-  MicOff
+  MicOff,
+  Image as ImageIcon,
+  Maximize2,
+  Download,
+  X
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -51,8 +55,104 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [zoomImageSrc, setZoomImageSrc] = useState<string | null>(null);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const speechRecognitionRef = useRef<any>(null);
+  const fileInputImageRef = useRef<HTMLInputElement>(null);
+
+  // Compress image before embedding to keep notes lightweight
+  const compressAndReadImage = (file: File | Blob): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/webp', 0.85));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target?.result as string);
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Direct Screenshot / Image Paste Handler (Ctrl + V)
+  const handlePaste = async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          e.preventDefault();
+          soundManager.playClick();
+          setIsProcessingImage(true);
+
+          try {
+            const base64Data = await compressAndReadImage(file);
+            const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+            const markdownImage = `\n![Screenshot ${timeStr}](${base64Data})\n`;
+            
+            insertText(markdownImage, '', '');
+            soundManager.playCompleteChime();
+          } catch (err) {
+            console.error('Failed to paste screenshot:', err);
+          } finally {
+            setIsProcessingImage(false);
+          }
+          return;
+        }
+      }
+    }
+  };
+
+  // Image Upload File Dialog Handler
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, WEBP, etc.)');
+      return;
+    }
+
+    setIsProcessingImage(true);
+    soundManager.playClick();
+
+    try {
+      const base64Data = await compressAndReadImage(file);
+      const markdownImage = `\n![${file.name}](${base64Data})\n`;
+      insertText(markdownImage, '', '');
+      soundManager.playCompleteChime();
+    } catch (err) {
+      console.error('Failed to upload image:', err);
+    } finally {
+      setIsProcessingImage(false);
+      if (fileInputImageRef.current) fileInputImageRef.current.value = '';
+    }
+  };
 
   // Toggle Voice Typing (Speech-to-Text)
   const toggleVoiceTyping = () => {
@@ -351,6 +451,46 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       else if (line.trim() === '') {
         elements.push(<div key={i} className="h-2" />);
       }
+      // Markdown Images: ![alt](url)
+      else if (line.trim().match(/^!\[(.*?)\]\((.*?)\)$/)) {
+        const imageMatch = line.trim().match(/^!\[(.*?)\]\((.*?)\)$/);
+        const altText = imageMatch ? imageMatch[1] : 'Study Image / Diagram';
+        const imgSrc = imageMatch ? imageMatch[2] : '';
+        elements.push(
+          <div key={i} className="my-3 max-w-xl rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] bg-[#141418] shadow-md group">
+            <div className="relative">
+              <img
+                src={imgSrc}
+                alt={altText}
+                onClick={() => setZoomImageSrc(imgSrc)}
+                className="w-full max-h-80 object-contain cursor-zoom-in hover:opacity-95 transition-opacity"
+                loading="lazy"
+              />
+              <button
+                type="button"
+                onClick={() => setZoomImageSrc(imgSrc)}
+                className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                title="View Fullscreen"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="px-3 py-1.5 bg-[#18181D]/90 border-t border-[#272730] flex items-center justify-between text-[11px] text-[#A1A1AA]">
+              <span className="truncate font-medium flex items-center gap-1.5">
+                <ImageIcon className="w-3 h-3 text-[#8B5CF6]" />
+                {altText}
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoomImageSrc(imgSrc)}
+                className="text-[10px] font-bold text-[#8B5CF6] hover:underline cursor-pointer"
+              >
+                Click to Enlarge 🔍
+              </button>
+            </div>
+          </div>
+        );
+      }
       // Regular Paragraph with formatting highlights
       else {
         elements.push(
@@ -532,50 +672,120 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <CheckSquare className="w-3 h-3" />
               <span>Checklist</span>
             </button>
+
+            {/* Hidden Image Input */}
+            <input
+              type="file"
+              ref={fileInputImageRef}
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            {/* Insert / Paste Image Button */}
+            <button
+              type="button"
+              onClick={() => fileInputImageRef.current?.click()}
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 border border-blue-500/30 flex items-center gap-1 cursor-pointer"
+              title="Upload Image or Paste Screenshot (Ctrl+V supported)"
+            >
+              <ImageIcon className="w-3 h-3" />
+              <span>+ Image</span>
+            </button>
           </div>
 
           {/* Preset Templates */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Quick Templates:</span>
-            <button
-              type="button"
-              onClick={insertFormulaTemplate}
-              className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-medium transition-colors"
-            >
-              + Formula Sheet
-            </button>
-            <button
-              type="button"
-              onClick={insertGrammarRuleTemplate}
-              className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-medium transition-colors"
-            >
-              + Rule & Exception Sheet
-            </button>
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Quick Templates:</span>
+              <button
+                type="button"
+                onClick={insertFormulaTemplate}
+                className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-medium transition-colors"
+              >
+                + Formula Sheet
+              </button>
+              <button
+                type="button"
+                onClick={insertGrammarRuleTemplate}
+                className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-medium transition-colors"
+              >
+                + Rule & Exception Sheet
+              </button>
+            </div>
+
+            <span className="text-[10px] text-purple-600 dark:text-purple-400 font-medium">
+              💡 Press <strong>Ctrl + V</strong> to paste any screenshot
+            </span>
           </div>
+        </div>
+      )}
+
+      {/* Processing Image Notice */}
+      {isProcessingImage && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold animate-pulse">
+          <ImageIcon className="w-4 h-4 animate-bounce" />
+          <span>Processing and embedding screenshot into notes...</span>
         </div>
       )}
 
       {/* Editor Content Body */}
       {isEditing ? (
-        <div className="space-y-2">
+        <div className="space-y-2" onPaste={handlePaste}>
           <textarea
             ref={textareaRef}
             value={content}
             onChange={e => setContent(e.target.value)}
-            placeholder="Paste or write formulas, rules, tips, and shortcuts here...\n\nTip: You can use:\n> [!FORMULA]\n> Your formula here\n\n> [!WARNING]\n> Common trap here\n\n- [ ] Checklist item"
+            onPaste={handlePaste}
+            placeholder={"Paste or write formulas, rules, tips, and shortcuts here...\n\n📸 Tip: Press Ctrl + V to directly paste any Screenshot or diagram into your notes!\n\n> [!FORMULA]\n> Your formula here\n\n> [!WARNING]\n> Common trap here\n\n- [ ] Checklist item"}
             rows={14}
             className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-xs sm:text-[13px] text-slate-900 dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-inner"
           />
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
             <span>{wordCount} words · {charCount} characters</span>
-            <span>Markdown & LaTeX formula tags supported</span>
+            <span>Markdown, Images & LaTeX formula tags supported</span>
           </div>
         </div>
       ) : (
         /* Rendered Study Mode */
         <div className="p-4 sm:p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm min-h-[260px]">
           {renderFormattedNotes()}
+        </div>
+      )}
+
+      {/* High-Res Image Zoom Lightbox Modal */}
+      {zoomImageSrc && (
+        <div
+          onClick={() => setZoomImageSrc(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="relative max-w-5xl max-h-[90vh] flex flex-col items-center cursor-default"
+          >
+            <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+              <a
+                href={zoomImageSrc}
+                download="study-screenshot.png"
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors"
+                title="Download Image"
+              >
+                <Download className="w-4 h-4" />
+              </a>
+              <button
+                onClick={() => setZoomImageSrc(null)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-rose-500/80 text-white backdrop-blur-md transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <img
+              src={zoomImageSrc}
+              alt="Zoomed Screenshot"
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+            />
+          </div>
         </div>
       )}
     </div>
