@@ -288,37 +288,39 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
           {attachments.map(att => (
             <div
               key={att.id}
-              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 hover:border-rose-500/30 transition-all group"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-[#141418] border border-slate-200 dark:border-[#272730] hover:border-rose-500/30 transition-all gap-3 group"
             >
               {/* File details */}
-              <div className="flex items-center gap-3 min-w-0 flex-1 pr-2">
-                <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0">
-                  <FileText className="w-4 h-4" />
+              <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-500 transition-colors">
+                  <h5 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-500 transition-colors">
                     {att.name}
                   </h5>
-                  <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
-                    <span>{formatFileSize(att.fileSize)}</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-0.5">
-                      <Clock className="w-2.5 h-2.5" />
-                      {new Date(att.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                  <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5 flex-wrap">
+                    <span className="px-1.5 py-0.2 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[10px] font-bold text-rose-600 dark:text-rose-400 font-mono">
+                      {formatFileSize(att.fileSize)}
                     </span>
-                    {att.url && <span className="text-blue-400">(Web Link)</span>}
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[#85877E]" />
+                      <span>{new Date(att.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                    </span>
+                    {att.url && <span className="text-blue-400 font-bold">(Web Link)</span>}
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+              <div className="flex items-center gap-1.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#D8D8CF]/60 dark:border-[#272730] justify-end flex-wrap">
                 {/* 0. Split-Screen Study Mode Button */}
                 {onOpenSplitStudy && (
                   <button
                     type="button"
                     onClick={() => onOpenSplitStudy(att.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] dark:text-[#C4B5FD] border border-[#8B5CF6]/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] dark:text-[#C4B5FD] border border-[#8B5CF6]/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
                     title="Open PDF and Notes side-by-side in Split Study Mode"
                   >
                     <Columns className="w-3.5 h-3.5" />
@@ -330,7 +332,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
                 <button
                   type="button"
                   onClick={() => handleOpenPdf(att)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/25 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-600 dark:text-blue-400 border border-blue-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
                   title="Read PDF in distraction-free In-App Viewer"
                 >
                   <Eye className="w-3.5 h-3.5" />
@@ -341,7 +343,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
                 <button
                   type="button"
                   onClick={() => handleDownloadPdf(att)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
                   title="Download PDF to device"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -352,7 +354,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
                 <button
                   type="button"
                   onClick={() => handleDelete(att)}
-                  className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer shrink-0"
                   title="Remove PDF"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
