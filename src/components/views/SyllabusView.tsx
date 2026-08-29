@@ -720,43 +720,35 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               >
                 {/* Chapter Card Content */}
                 <div className="p-4 sm:p-5 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    
-                    {/* Chapter Icon / Button */}
-                    <div className="w-10 h-10 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center shrink-0 group-hover:bg-[#596B35] group-hover:text-white dark:group-hover:bg-[#7AA2F7] dark:group-hover:text-[#1A1B26] transition-colors shadow-xs">
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#C0CAF5] tracking-normal truncate group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif">
+                        {chapter.name}
+                      </h3>
+                      {isAllCompleted && (
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4F7A45]/15 text-[#4F7A45] flex items-center gap-1 font-mono">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Unit Complete</span>
+                        </span>
+                      )}
                     </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#C0CAF5] tracking-normal truncate group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif">
-                          {chapter.name}
-                        </h3>
-                        {isAllCompleted && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4F7A45]/15 text-[#4F7A45] flex items-center gap-1 font-mono">
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>Unit Complete</span>
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Chapter status indicators strip */}
-                      <div className="flex items-center gap-2 text-[11px] text-[#65675F] dark:text-[#A9B1D6] mt-0.5 flex-wrap font-mono">
-                        <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
-                        {completedInChapter > 0 && (
-                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} Mastered</span>
-                        )}
-                        {inProgressInChapter > 0 && (
-                          <span className="text-amber-600 dark:text-amber-400 font-bold">• {inProgressInChapter} In Progress</span>
-                        )}
-                        {weakInChapter > 0 && (
-                          <span className="text-rose-600 dark:text-rose-400 font-bold">• {weakInChapter} Weak</span>
-                        )}
-                      </div>
+                    
+                    {/* Chapter status indicators strip */}
+                    <div className="flex items-center gap-2 text-[11px] text-[#65675F] dark:text-[#A9B1D6] mt-1 flex-wrap font-mono">
+                      <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
+                      {completedInChapter > 0 && (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} Mastered</span>
+                      )}
+                      {inProgressInChapter > 0 && (
+                        <span className="text-amber-600 dark:text-amber-400 font-bold">• {inProgressInChapter} In Progress</span>
+                      )}
+                      {weakInChapter > 0 && (
+                        <span className="text-rose-600 dark:text-rose-400 font-bold">• {weakInChapter} Weak</span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                     {/* Progress Badge */}
                     <div className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold ${
                       isAllCompleted
