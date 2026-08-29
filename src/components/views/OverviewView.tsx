@@ -60,27 +60,27 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   return (
     <div className="space-y-5 sm:space-y-7 pb-16">
       
-      {/* 1. 3D VISUAL HERO ARTWORK BANNER (Widescreen Sleek Banner) */}
+      {/* 1. 3D VISUAL HERO ARTWORK BANNER (Full 100% Uncropped 16:9 Frame) */}
       <div className="relative rounded-3xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth bg-[#0B0F19] group">
-        <div className="relative w-full h-[220px] sm:h-[280px] md:h-[320px] overflow-hidden">
+        <div className="relative aspect-[16/9] w-full overflow-hidden">
           <img
             src="/dashboard-hero.jpg"
-            alt="Syllabus 3D Mastery"
-            className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-[1.02]"
+            alt="Focus Plan Achieve - Syllabus 3D Mastery"
+            className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-[1.01]"
           />
-          {/* Subtle gradient vignette */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />
+          {/* Subtle gradient vignette to blend seamlessly */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           
           {/* Bottom Overlay Info Pill */}
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-none">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/20 text-white shadow-lg">
+          <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3.5 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-none">
+            <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/15 text-white shadow-lg">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] sm:text-xs font-mono font-bold tracking-wide">
+              <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wide">
                 Target: {examName} ({examYear})
               </span>
             </div>
             
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FACC15]/25 backdrop-blur-md border border-[#FACC15]/40 text-[#FACC15] text-[11px] sm:text-xs font-mono font-bold shadow-lg">
+            <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[#FACC15]/20 backdrop-blur-md border border-[#FACC15]/30 text-[#FACC15] text-[10px] sm:text-xs font-bold shadow-lg">
               <span>🏆 {overallStats.completionPercentage}% Mastered</span>
             </div>
           </div>
