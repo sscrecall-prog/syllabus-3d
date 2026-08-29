@@ -544,15 +544,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   >
                     <div className="flex items-center gap-3.5 min-w-0 flex-1">
                       
-                      {/* Left Modern Index / Status Box */}
-                      <div className={`w-12 sm:w-14 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 transition-transform group-hover:scale-105 ${design.boxClass}`}>
-                        <span className="text-xs sm:text-sm font-black font-mono leading-none">
+                      {/* Left Fixed Study Emblem Box (Preserves Exact Shape & Size) */}
+                      <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex items-center justify-center gap-1.5 px-2 shrink-0 transition-transform group-hover:scale-105 ${design.boxClass}`}>
+                        <span className="text-base sm:text-lg select-none leading-none filter drop-shadow-xs">
+                          📖
+                        </span>
+                        <span className="text-xs sm:text-sm font-black font-mono leading-none tracking-tight">
                           {design.badgeNum}
                         </span>
-                        <div className="flex items-center gap-0.5 text-[8px] font-extrabold uppercase font-mono mt-1 opacity-90">
-                          <BadgeIcon className="w-2.5 h-2.5" />
-                          <span>{design.badgeLabel}</span>
-                        </div>
                       </div>
 
                       {/* Topic Title & Subtitle Meta */}
