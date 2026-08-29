@@ -85,6 +85,17 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   const [isDragging, setIsDragging] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mobileTab, setMobileTab] = useState<'pdf' | 'notes'>('pdf');
+  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
+    return typeof window !== 'undefined' ? window.innerWidth >= 1024 : true;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Auto clean legacy base64 strings from notesContent
   useEffect(() => {
@@ -361,7 +372,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
         
         {/* LEFT PANEL: PDF VIEWER */}
         <div
-          style={{ width: `${pdfWidthPercent}%` }}
+          style={{ width: isDesktop ? `${pdfWidthPercent}%` : '100%' }}
           className={`h-full flex flex-col bg-[#111114] min-h-0 transition-[width] ${
             isDragging ? 'transition-none' : 'duration-150'
           } ${mobileTab === 'pdf' ? 'w-full flex' : 'hidden lg:flex'}`}
@@ -476,7 +487,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
 
         {/* RIGHT PANEL: LIVE NOTES & FORMULAS WORKSPACE */}
         <div
-          style={{ width: `${100 - pdfWidthPercent}%` }}
+          style={{ width: isDesktop ? `${100 - pdfWidthPercent}%` : '100%' }}
           className={`h-full flex flex-col bg-[#18181D] min-h-0 border-l border-[#272730] transition-[width] ${
             isDragging ? 'transition-none' : 'duration-150'
           } ${mobileTab === 'notes' ? 'w-full flex' : 'hidden lg:flex'}`}
