@@ -35,6 +35,16 @@ export interface TopicLecture {
   notes?: string;
 }
 
+export interface TopicAudioMemo {
+  id: string;
+  title: string;
+  durationSeconds: number;
+  recordedAt: string;
+  storageKey?: string;
+  audioDataUrl?: string;
+  transcript?: string;
+}
+
 export interface Topic {
   id: string;
   name: string;
@@ -54,6 +64,7 @@ export interface Topic {
   pdfAttachments?: TopicPdfAttachment[];
   pdfUrl?: string;
   lectures?: TopicLecture[];
+  audioMemos?: TopicAudioMemo[];
 }
 
 export interface Chapter {

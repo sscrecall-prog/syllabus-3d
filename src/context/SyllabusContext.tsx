@@ -7,6 +7,7 @@ import {
   TopicStatus,
   TopicPdfAttachment,
   TopicLecture,
+  TopicAudioMemo,
   MistakeType,
   MistakeRecord,
   RevisionRecord,
@@ -164,6 +165,8 @@ interface SyllabusContextType {
   deleteTopicPdfAttachment?: (topicId: string, attachmentId: string) => void;
   addTopicLecture?: (topicId: string, lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => void;
   deleteTopicLecture?: (topicId: string, lectureId: string) => void;
+  addTopicAudioMemo?: (topicId: string, memo: { title: string; durationSeconds: number; storageKey?: string; audioDataUrl?: string; transcript?: string }) => void;
+  deleteTopicAudioMemo?: (topicId: string, memoId: string) => void;
 
   logStudySession: (minutes: number, topicId?: string) => void;
   updateTopicMetrics?: (topicId: string, updates: { accuracy?: number; studyTimeMinutes?: number; addMinutes?: number }) => void;
@@ -1066,6 +1069,57 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  const addTopicAudioMemo = (topicId: string, memo: { title: string; durationSeconds: number; storageKey?: string; audioDataUrl?: string; transcript?: string }) => {
+    const newMemo: TopicAudioMemo = {
+      id: `audio_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      title: memo.title.trim(),
+      durationSeconds: memo.durationSeconds,
+      recordedAt: getTodayDateString(),
+      storageKey: memo.storageKey,
+      audioDataUrl: memo.audioDataUrl,
+      transcript: memo.transcript
+    };
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.audioMemos || [];
+            return {
+              ...t,
+              audioMemos: [...existing, newMemo]
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playCompleteChime();
+  };
+
+  const deleteTopicAudioMemo = (topicId: string, memoId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.audioMemos || [];
+            return {
+              ...t,
+              audioMemos: existing.filter(m => m.id !== memoId)
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playClick();
+  };
+
   const logStudySession = (minutes: number, topicId?: string) => {
     const today = getTodayDateString();
     setActivityHistory(prev => {
@@ -1285,6 +1339,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deleteTopicPdfAttachment,
         addTopicLecture,
         deleteTopicLecture,
+        addTopicAudioMemo,
+        deleteTopicAudioMemo,
         updateTopicMetrics,
         logStudySession,
         resetToDemo,

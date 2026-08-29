@@ -26,6 +26,7 @@ import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
 import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
 import { TopicLecturesSection, YoutubeIcon } from '../common/TopicLecturesSection';
+import { TopicAudioMemosSection } from '../common/TopicAudioMemosSection';
 import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -56,6 +57,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     deleteTopicPdfAttachment,
     addTopicLecture,
     deleteTopicLecture,
+    addTopicAudioMemo,
+    deleteTopicAudioMemo,
     currentExam
   } = useSyllabus();
 
@@ -214,6 +217,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const mistakesCount = liveTopic.mistakes ? liveTopic.mistakes.length : 0;
   const activeMistakesCount = liveTopic.mistakes ? liveTopic.mistakes.filter(m => !m.resolved).length : 0;
   const pdfCount = liveTopic.pdfAttachments ? liveTopic.pdfAttachments.length : 0;
+  const audioCount = liveTopic.audioMemos ? liveTopic.audioMemos.length : 0;
   const lecturesCount = liveTopic.lectures ? liveTopic.lectures.length : 0;
 
   // Format Stopwatch Display
@@ -424,7 +428,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 id: 'notes',
                 label: 'Notes',
                 icon: FileText,
-                badge: pdfCount > 0 ? `${pdfCount} PDF` : null,
+                badge: (pdfCount > 0 || audioCount > 0)
+                  ? `${pdfCount > 0 ? `${pdfCount} PDF` : ''}${pdfCount > 0 && audioCount > 0 ? ' • ' : ''}${audioCount > 0 ? `${audioCount} 🎙️` : ''}`
+                  : null,
                 badgeColor: 'bg-rose-500'
               },
               {
@@ -783,6 +789,27 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     setIsSplitPdfOpen(true);
                   }}
                   hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
+                />
+
+                <TopicAudioMemosSection
+                  topicId={liveTopic.id}
+                  topicName={liveTopic.name}
+                  audioMemos={liveTopic.audioMemos || []}
+                  onAddAudioMemo={(memo) => {
+                    if (addTopicAudioMemo) {
+                      addTopicAudioMemo(liveTopic.id, memo);
+                    }
+                  }}
+                  onDeleteAudioMemo={(memoId) => {
+                    if (deleteTopicAudioMemo) {
+                      deleteTopicAudioMemo(liveTopic.id, memoId);
+                    }
+                  }}
+                  onInsertTranscriptToNotes={(text) => {
+                    const updated = notes ? notes + '\n' + text : text;
+                    setNotes(updated);
+                    handleSaveNotes(updated);
+                  }}
                 />
 
                 <TopicPdfAttachmentsSection

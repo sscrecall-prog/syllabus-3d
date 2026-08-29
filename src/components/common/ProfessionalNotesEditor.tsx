@@ -18,7 +18,9 @@ import {
   FileDown,
   Printer,
   ExternalLink,
-  Columns
+  Columns,
+  Mic,
+  MicOff
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -48,7 +50,65 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [isEditing, setIsEditing] = useState(!initialContent || initialContent.trim().length === 0);
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const speechRecognitionRef = useRef<any>(null);
+
+  // Toggle Voice Typing (Speech-to-Text)
+  const toggleVoiceTyping = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.');
+      return;
+    }
+
+    if (isListening) {
+      if (speechRecognitionRef.current) {
+        try { speechRecognitionRef.current.stop(); } catch {}
+      }
+      setIsListening(false);
+      soundManager.playClick();
+    } else {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = 'en-IN'; // Highly accurate for Indian English / Hinglish speech
+
+        recognition.onstart = () => {
+          setIsListening(true);
+          soundManager.playCompleteChime();
+        };
+
+        recognition.onresult = (event: any) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              transcript += event.results[i][0].transcript + ' ';
+            }
+          }
+          if (transcript) {
+            setContent(prev => (prev ? prev + ' ' + transcript.trim() : transcript.trim()));
+          }
+        };
+
+        recognition.onerror = (event: any) => {
+          console.warn('Speech recognition error:', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognition.start();
+        speechRecognitionRef.current = recognition;
+      } catch (err) {
+        console.error('Speech recognition start failed:', err);
+        setIsListening(false);
+      }
+    }
+  };
 
   // Sync if topic changes
   React.useEffect(() => {
@@ -350,6 +410,21 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <span>Split Study</span>
             </button>
           )}
+
+          {/* Voice Typing / Speech-to-Text Button */}
+          <button
+            type="button"
+            onClick={toggleVoiceTyping}
+            title={isListening ? 'Click to Stop Voice Typing' : 'Speak to Type Notes (Voice Typing)'}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm ${
+              isListening
+                ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/30'
+                : 'bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-600 dark:text-purple-400'
+            }`}
+          >
+            {isListening ? <MicOff className="w-3.5 h-3.5 animate-bounce" /> : <Mic className="w-3.5 h-3.5" />}
+            <span>{isListening ? 'Listening...' : 'Voice Typing'}</span>
+          </button>
 
           <button
             onClick={handleExportPdf}
