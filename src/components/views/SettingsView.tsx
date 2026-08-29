@@ -11,13 +11,8 @@ import {
   Smartphone,
   CheckCircle2,
   Trash2,
-  User,
   Calendar,
-  Layers,
-  Sparkles,
-  ExternalLink,
   LogOut,
-  ShieldCheck,
   Target,
   Clock,
   Check,
@@ -25,29 +20,22 @@ import {
   Shield,
   PictureInPicture2,
   Play,
-  Star,
-  Trophy,
   Flame,
-  TrendingUp,
-  BookOpen,
-  Award,
+  Star,
   Zap,
-  ChevronRight,
-  Database,
-  HardDrive,
-  Lock,
-  Eye,
-  EyeOff,
   Moon,
-  Sun
+  Sun,
+  Database,
+  Edit2,
+  Save
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
 import { PWAInstallModal } from '../modals/PWAInstallModal';
 
-interface SettingsViewProps {}
+type SettingsTab = 'exam' | 'appearance' | 'timer' | 'data';
 
-export const SettingsView: React.FC<SettingsViewProps> = () => {
+export const SettingsView: React.FC = () => {
   const {
     profile,
     updateProfile,
@@ -63,12 +51,14 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
   const { user, logout, updateUserSession } = useAuth();
   const { settings, updateSettings, showFloatingOverlay, openPermissionModal } = useTimer();
   const { theme, setTheme } = useTheme();
-  const [testLaunched, setTestLaunched] = useState(false);
   const { isInstalled, isOnline } = usePWA();
   const [showPwaModal, setShowPwaModal] = useState(false);
 
-  // Profile state
+  const [activeTab, setActiveTab] = useState<SettingsTab>('exam');
+
+  // Profile Edit State
   const [name, setName] = useState(user?.name || profile.name);
+  const [isEditingName, setIsEditingName] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
 
   // Exam Countdown Settings state
@@ -81,8 +71,8 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [testLaunched, setTestLaunched] = useState(false);
 
-  // Sync state when currentExam changes
   useEffect(() => {
     if (currentExam) {
       setExamName(currentExam.name);
@@ -128,6 +118,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
     updateProfile({ name });
     updateUserSession({ name });
     soundManager.playClick();
+    setIsEditingName(false);
     setProfileSaved(true);
     setTimeout(() => setProfileSaved(false), 3000);
   };
@@ -138,7 +129,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'syllabus_3d_backup_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = `syllabus_3d_backup_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     soundManager.playCompleteChime();
@@ -148,250 +139,192 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = evt => {
       const content = evt.target?.result as string;
       if (content) {
         const success = importData(content);
-        if (success) { setImportStatus('success'); soundManager.playCompleteChime(); }
-        else { setImportStatus('error'); }
+        if (success) {
+          setImportStatus('success');
+          soundManager.playCompleteChime();
+        } else {
+          setImportStatus('error');
+        }
       }
     };
     reader.readAsText(file);
   };
 
-  const handleLogout = async () => { soundManager.playClick(); await logout(); };
+  const handleLogout = async () => {
+    soundManager.playClick();
+    await logout();
+  };
 
-  /* ── Toggle Helper ── */
   const ToggleSwitch: React.FC<{ checked: boolean; onChange: (val: boolean) => void }> = ({ checked, onChange }) => (
     <label className="relative inline-flex items-center cursor-pointer shrink-0">
       <input
         type="checkbox"
         checked={checked}
-        onChange={e => { soundManager.playClick(); onChange(e.target.checked); }}
+        onChange={e => {
+          soundManager.playClick();
+          onChange(e.target.checked);
+        }}
         className="sr-only peer"
       />
-      <div className="w-11 h-6 bg-slate-300 dark:bg-[#333] rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-teal-500 peer-checked:to-emerald-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm transition-all" />
+      <div className="w-10 h-5 bg-[#D8D8CF] dark:bg-[#292E42] rounded-full peer peer-checked:bg-[#596B35] dark:peer-checked:bg-[#7AA2F7] peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-[#0B0B0D] after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-xs transition-colors" />
     </label>
   );
 
-  /* ── Level Progress Ring ── */
-  const xpPercent = Math.min((profile.xp % 1000) / 10, 100);
-  const ringSize = 80;
-  const ringStroke = 5;
-  const ringRadius = (ringSize - ringStroke) / 2;
-  const ringCircumference = 2 * Math.PI * ringRadius;
-  const ringOffset = ringCircumference - (xpPercent / 100) * ringCircumference;
-
   return (
-    <div className="space-y-5 sm:space-y-6 pb-20 max-w-4xl mx-auto">
-
+    <div className="space-y-4 sm:space-y-5 pb-20 max-w-4xl mx-auto select-none font-sans animate-fade-in">
+      
       {/* ═══════════════════════════════════════════════════
-          1. PROFILE HERO CARD
+          1. COMPACT PROFILE & LEVEL STRIP
           ═══════════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden rounded-[28px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-2xl shadow-[#D4AF37]/5">
-        {/* Decorative blobs */}
-        <div className="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-gradient-to-br from-[#D4AF37]/15 to-purple-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-gradient-to-tr from-teal-500/10 to-cyan-500/10 blur-3xl pointer-events-none" />
-
-        <div className="relative p-5 sm:p-7">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            {/* Avatar + Level Ring */}
-            <div className="relative shrink-0">
-              <svg width={ringSize} height={ringSize} className="transform -rotate-90">
-                <circle cx={ringSize / 2} cy={ringSize / 2} r={ringRadius} fill="none" stroke="currentColor" className="text-slate-200 dark:text-[#2A2A2A]" strokeWidth={ringStroke} />
-                <circle cx={ringSize / 2} cy={ringSize / 2} r={ringRadius} fill="none" stroke="url(#profileGrad)" strokeWidth={ringStroke} strokeLinecap="round" strokeDasharray={ringCircumference} strokeDashoffset={ringOffset} className="transition-all duration-1000" />
-                <defs>
-                  <linearGradient id="profileGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#D4AF37" />
-                    <stop offset="100%" stopColor="#10B981" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[60px] h-[60px] rounded-full bg-gradient-to-br from-[#D4AF37] to-[#C9A22E] flex items-center justify-center text-white text-xl font-black shadow-lg shadow-[#D4AF37]/30">
-                  {(user?.name || profile.name || 'S').charAt(0).toUpperCase()}
-                </div>
-              </div>
-              <div className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-black shadow-md">
-                Lv.{profile.level}
-              </div>
-            </div>
-
-            {/* Profile Info */}
-            <div className="flex-1 text-center sm:text-left space-y-2 min-w-0">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5F5F7] tracking-tight">
-                  {user?.name || profile.name || 'Student'}
-                </h2>
-                <p className="text-xs font-semibold text-[#6B7280] flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
-                  <Star className="w-3.5 h-3.5 text-purple-500" />
-                  <span>{profile.levelTitle}</span>
-                  <span className="w-1 h-1 rounded-full bg-[#6B7280]/40" />
-                  <span className="font-mono text-[#D4AF37]">{profile.xp} XP</span>
-                </p>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 dark:bg-orange-500/15 border border-orange-500/20">
-                  <Flame className="w-3.5 h-3.5 text-orange-500" />
-                  <span className="text-[11px] font-bold text-orange-600 dark:text-orange-400">{profile.currentStreak}d Streak</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">{overallStats.completedCount}/{overallStats.totalTopics} Topics</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 dark:bg-blue-500/15 border border-blue-500/20">
-                  <Clock className="w-3.5 h-3.5 text-blue-500" />
-                  <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">{overallStats.totalStudyHours.toFixed(0)}h Study</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Logout */}
-            <div className="shrink-0">
-              {showLogoutConfirm ? (
-                <div className="flex items-center gap-2">
-                  <button onClick={handleLogout} className="px-3.5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shadow-sm cursor-pointer transition-colors">
-                    Confirm
-                  </button>
-                  <button onClick={() => setShowLogoutConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#23232A] text-xs font-semibold text-[#6B7280] cursor-pointer">
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowLogoutConfirm(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-rose-500/10 hover:text-rose-500 text-[#6B7280] border border-white/40 dark:border-[#272730] text-xs font-bold transition-all cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Log Out</span>
-                </button>
-              )}
-            </div>
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        {/* Left: Avatar + Name + Level Pill */}
+        <div className="flex items-center gap-3.5 min-w-0 w-full sm:w-auto">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center text-lg font-black shrink-0 shadow-md">
+            {(user?.name || profile.name || 'A').charAt(0).toUpperCase()}
           </div>
 
-          {/* Edit Name */}
-          <form onSubmit={handleSaveProfile} className="mt-5 pt-4 border-t border-slate-200/60 dark:border-[#272730]">
-            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">Display Name</label>
-            <div className="flex items-center gap-2.5 max-w-md">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
-              />
+          <div className="space-y-1 min-w-0 flex-1">
+            {isEditingName ? (
+              <form onSubmit={handleSaveProfile} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  className="px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-xs cursor-pointer"
+                >
+                  Save
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight truncate font-serif">
+                  {user?.name || profile.name || 'Aspirant'}
+                </h2>
+                <button
+                  onClick={() => setIsEditingName(true)}
+                  className="p-1 rounded-lg hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer transition-colors"
+                  title="Edit Name"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+                Lvl {profile.level} • {profile.levelTitle}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400 font-bold">
+                <Flame className="w-3.5 h-3.5 fill-current" />
+                {profile.currentStreak}d Streak
+              </span>
+              <span>•</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                {overallStats.completedCount}/{overallStats.totalTopics} Topics ({overallStats.completionPercentage}%)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Logout Action */}
+        <div className="shrink-0 w-full sm:w-auto flex justify-end">
+          {showLogoutConfirm ? (
+            <div className="flex items-center gap-2">
               <button
-                type="submit"
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C9A22E] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/20 hover:shadow-lg transition-all cursor-pointer active:scale-[0.97]"
+                onClick={handleLogout}
+                className="px-3.5 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shadow-xs cursor-pointer"
               >
-                {profileSaved ? '✓ Saved!' : 'Save'}
+                Confirm Logout
+              </button>
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+              >
+                Cancel
               </button>
             </div>
-          </form>
+          ) : (
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out</span>
+            </button>
+          )}
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          2. THEME & APPEARANCE (PERSISTENT LIGHT / DARK MODE)
+          2. CONCISE CATEGORY NAVIGATION TABS
           ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <Palette className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Appearance & Theme</h3>
-              <p className="text-[11px] text-[#6B7280]">Choose your preferred theme. Your choice is automatically remembered on every launch.</p>
-            </div>
-          </div>
-          <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 capitalize">
-            {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-          </span>
-        </div>
-
-        <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          {/* Dark Mode Option */}
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              setTheme('dark');
-            }}
-            className={`p-4 rounded-2xl border flex items-center gap-3.5 text-left transition-all cursor-pointer ${
-              theme === 'dark'
-                ? 'bg-[#18181D] border-[#8B5CF6] ring-2 ring-[#8B5CF6]/30 text-white shadow-md'
-                : 'bg-white/70 dark:bg-[#18181D]/50 border-slate-200/60 dark:border-[#272730] text-[#6B7280] hover:border-slate-300'
-            }`}
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#23232A] border border-[#272730] flex items-center justify-center text-[#8B5CF6]">
-              <Moon className="w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white block">Tokyo Night Dark Theme</span>
-                {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
-              </div>
-              <span className="text-[11px] text-[#A9B1D6] block mt-0.5">#1A1B26 Background, #A9B1D6 Foreground, #7AA2F7 Accent.</span>
-            </div>
-          </button>
-
-          {/* Light Mode Option */}
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              setTheme('light');
-            }}
-            className={`p-4 rounded-2xl border flex items-center gap-3.5 text-left transition-all cursor-pointer ${
-              theme === 'light'
-                ? 'bg-white border-[#596B35] ring-2 ring-[#596B35]/30 text-[#191A17] shadow-md'
-                : 'bg-white/70 dark:bg-[#18181D]/50 border-slate-200/60 dark:border-[#272730] text-[#6B7280] hover:border-slate-300'
-            }`}
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#D8D8CF] flex items-center justify-center text-[#596B35]">
-              <Sun className="w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#191A17] dark:text-white block">Classic Paper Light Theme</span>
-                {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
-              </div>
-              <span className="text-[11px] text-[#65675F] dark:text-[#A1A1AA] block mt-0.5">Warm academic palette for daytime study & reading.</span>
-            </div>
-          </button>
-        </div>
+      <div className="flex items-center justify-between p-1 rounded-2xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-xs gap-1 overflow-x-auto scrollbar-none">
+        {[
+          { id: 'exam' as SettingsTab, label: 'Exam Target', icon: Target },
+          { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
+          { id: 'timer' as SettingsTab, label: 'Focus & Timer', icon: Clock },
+          { id: 'data' as SettingsTab, label: 'Backup & App', icon: Database }
+        ].map(tab => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                soundManager.playClick();
+                setActiveTab(tab.id);
+              }}
+              className={`flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
+                isActive
+                  ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-sm'
+                  : 'text-[#65675F] dark:text-[#A9B1D6] hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335]'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          3. EXAM COUNTDOWN CONFIGURATOR
+          3. TAB CONTENT SECTIONS
           ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 border border-teal-500/20 flex items-center justify-center text-teal-500">
-              <Target className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Exam Countdown & Target</h3>
-              <p className="text-[11px] text-[#6B7280]">Set your exam date to sync the live countdown clock</p>
-            </div>
-          </div>
-          <div className={`px-3.5 py-1.5 rounded-xl text-xs font-black font-mono ${
-            daysRemaining <= 30 ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' :
-            daysRemaining <= 90 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' :
-            'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-          }`}>
-            {daysRemaining}d left
-          </div>
-        </div>
 
-        <form onSubmit={handleSaveExamSettings} className="p-5 sm:p-6 space-y-5">
+      {/* TAB 1: EXAM TARGET & COUNTDOWN CONFIG */}
+      {activeTab === 'exam' && (
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+            <div>
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
+                Exam Target & Live Countdown
+              </h3>
+              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+                Configure your target exam name and exam date to sync the live flip clock.
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-xl text-xs font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+              {daysRemaining} Days Left
+            </span>
+          </div>
+
           {/* Quick Presets */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Quick Presets</label>
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+              Quick Exam Presets
+            </span>
+            <div className="flex flex-wrap gap-1.5">
               {[
                 { label: 'SSC CGL 2026', year: 2026, days: 90 },
                 { label: 'SSC CHSL 2026', year: 2026, days: 120 },
@@ -404,7 +337,7 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
                   type="button"
                   key={p.label}
                   onClick={() => handleApplyPresetExam(p.label, p.year, p.days)}
-                  className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/70 dark:bg-[#18181D]/70 hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] border border-slate-200/60 dark:border-[#272730] text-[#6B7280] transition-all cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer"
                 >
                   {p.label}
                 </button>
@@ -412,301 +345,376 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Exam Name</label>
-              <input
-                type="text" value={examName} onChange={e => setExamName(e.target.value)}
-                placeholder="e.g. SSC CGL 2026"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Year</label>
-              <input
-                type="number" value={targetYear} onChange={e => setTargetYear(Number(e.target.value))} min={2025} max={2035}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none"
-              />
-            </div>
-          </div>
+          {/* Form */}
+          <form onSubmit={handleSaveExamSettings} className="space-y-3.5 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="sm:col-span-2 space-y-1">
+                <label className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+                  Exam Title
+                </label>
+                <input
+                  type="text"
+                  value={examName}
+                  onChange={e => setExamName(e.target.value)}
+                  placeholder="e.g. SSC CGL 2026"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                />
+              </div>
 
-          {/* Date + Quick Adjusters */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Exam Date</label>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <input
-                type="date" value={examDate} onChange={e => setExamDate(e.target.value)}
-                className="px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 border border-slate-200/60 dark:border-[#272730] text-xs font-bold text-[#171717] dark:text-white focus:ring-2 focus:ring-[#D4AF37]/50 focus:outline-none cursor-pointer"
-              />
-              <div className="flex items-center gap-2">
-                {[{ label: '+30d', days: 30 }, { label: '+60d', days: 60 }, { label: '+90d', days: 90 }, { label: '+180d', days: 180 }].map(b => (
-                  <button
-                    type="button" key={b.label}
-                    onClick={() => handleAddDays(b.days)}
-                    className="px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-slate-100 dark:bg-[#23232A] hover:bg-[#D4AF37]/15 hover:text-[#D4AF37] text-[#6B7280] transition-all cursor-pointer"
-                  >
-                    {b.label}
-                  </button>
-                ))}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+                  Target Year
+                </label>
+                <input
+                  type="number"
+                  value={targetYear}
+                  onChange={e => setTargetYear(Number(e.target.value))}
+                  min={2025}
+                  max={2035}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                />
               </div>
             </div>
-          </div>
 
-          {/* Live Preview */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/5 to-emerald-500/5 border border-teal-500/15 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-teal-500" />
-              <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7]">Countdown:</span>
-              <span className="text-xs text-[#6B7280]">
-                {new Date(examDate).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
+            {/* Exam Date & Adjusters */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+                Exam Date
+              </label>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <input
+                  type="date"
+                  value={examDate}
+                  onChange={e => setExamDate(e.target.value)}
+                  className="px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] cursor-pointer"
+                />
+                <div className="flex items-center gap-1.5">
+                  {[{ label: '+30d', days: 30 }, { label: '+60d', days: 60 }, { label: '+90d', days: 90 }, { label: '+180d', days: 180 }].map(b => (
+                    <button
+                      type="button"
+                      key={b.label}
+                      onClick={() => handleAddDays(b.days)}
+                      className="px-2 py-1 rounded-lg text-[10px] font-mono font-bold bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-            <span className="text-xs font-black font-mono text-teal-600 dark:text-teal-400">
-              {daysRemaining} Days
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs transition-all cursor-pointer active:scale-95 flex items-center gap-2"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Schedule</span>
+              </button>
+              {examSaved && (
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
+                  <Check className="w-4 h-4 stroke-[3]" />
+                  <span>Countdown synced across app!</span>
+                </span>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* TAB 2: APPEARANCE & THEME */}
+      {activeTab === 'appearance' && (
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+            <div>
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
+                Color Theme & Palette
+              </h3>
+              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+                Switch between high-contrast Tokyo Night Dark and Classic Paper Light mode.
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7] capitalize">
+              {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C9A22E] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/20 hover:shadow-lg transition-all cursor-pointer active:scale-[0.97]"
-            >
-              Save Schedule
-            </button>
-            {examSaved && (
-              <span className="text-xs text-emerald-500 font-bold flex items-center gap-1">
-                <Check className="w-4 h-4 stroke-[3]" />
-                <span>Countdown synced across app!</span>
-              </span>
-            )}
-          </div>
-        </form>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════
-          3. FLOATING BACKGROUND TIMER
-          ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 border border-teal-500/20 flex items-center justify-center text-teal-500">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Floating Timer</h3>
-              <p className="text-[11px] text-[#6B7280]">Always-visible draggable countdown pill</p>
-            </div>
-          </div>
-          <button
-            onClick={() => { soundManager.playClick(); showFloatingOverlay(); setTestLaunched(true); setTimeout(() => setTestLaunched(false), 2500); }}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-500/15 to-emerald-500/10 hover:from-teal-500/25 hover:to-emerald-500/15 border border-teal-500/25 text-teal-600 dark:text-teal-400 text-xs font-bold transition-all cursor-pointer active:scale-[0.97]"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{testLaunched ? 'Visible!' : 'Preview'}</span>
-          </button>
-        </div>
-
-        <div className="p-5 sm:p-6 space-y-3">
-          {/* Toggle Items */}
-          {[
-            { label: 'Floating Timer Enabled', desc: 'Show compact draggable pill when focus timer is active', checked: settings.enabled, key: 'enabled' as const },
-            { label: 'Show in Background', desc: 'Auto-launch Android overlay or Picture-in-Picture', checked: settings.showWhenBackgrounded, key: 'showWhenBackgrounded' as const },
-            { label: 'Pause / Resume Button', desc: 'Quick 1-tap circular control on the floating pill', checked: settings.showPauseButton, key: 'showPauseButton' as const },
-            { label: 'Remember Position', desc: 'Keep floating timer where you placed it across sessions', checked: settings.rememberPosition, key: 'rememberPosition' as const },
-          ].map(item => (
-            <div key={item.key} className="flex items-center justify-between p-3.5 rounded-2xl bg-white/50 dark:bg-[#18181D]/50 border border-slate-200/50 dark:border-[#272730] hover:border-teal-500/20 transition-all">
-              <div className="pr-3">
-                <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7] block">{item.label}</span>
-                <span className="text-[10px] text-[#6B7280]">{item.desc}</span>
-              </div>
-              <ToggleSwitch
-                checked={item.checked}
-                onChange={val => updateSettings({ [item.key]: val })}
-              />
-            </div>
-          ))}
-
-          {/* Size & Opacity */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-[#18181D]/50 border border-slate-200/50 dark:border-[#272730] space-y-2">
-              <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7] block">Widget Size</span>
-              <div className="flex gap-2">
-                {(['standard', 'compact'] as const).map(s => (
-                  <button
-                    key={s} type="button"
-                    onClick={() => { soundManager.playClick(); updateSettings({ size: s }); }}
-                    className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      settings.size === s
-                        ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-sm'
-                        : 'bg-white/70 dark:bg-[#23232A] text-[#6B7280] border border-slate-200/60 dark:border-[#272730]'
-                    }`}
-                  >
-                    {s === 'standard' ? 'Standard (360dp)' : 'Compact (320dp)'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-[#18181D]/50 border border-slate-200/50 dark:border-[#272730] space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#171717] dark:text-[#F5F5F7]">Opacity</span>
-                <span className="text-xs font-mono font-bold text-teal-500">{Math.round((settings.opacity || 0.95) * 100)}%</span>
-              </div>
-              <input
-                type="range" min="50" max="100"
-                value={Math.round((settings.opacity || 0.95) * 100)}
-                onChange={e => updateSettings({ opacity: Number(e.target.value) / 100 })}
-                className="w-full accent-teal-500 cursor-pointer"
-              />
-            </div>
-          </div>
-
-          {/* Android Permission */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/5 to-cyan-500/5 border border-teal-500/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <span className="text-xs font-bold text-teal-600 dark:text-teal-400 block">Native Overlay & PiP</span>
-              <span className="text-[10px] text-[#6B7280]">Grant overlay permission on Android for floating above apps</span>
-            </div>
+            {/* Dark Mode Card */}
             <button
-              onClick={() => { soundManager.playClick(); openPermissionModal(); }}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-xs font-bold shadow-md shadow-teal-500/20 hover:shadow-lg active:scale-[0.97] transition-all shrink-0 cursor-pointer"
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setTheme('dark');
+              }}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                theme === 'dark'
+                  ? 'bg-[#1F2335] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/30 shadow-sm'
+                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+              }`}
             >
-              Check Permissions
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════
-          4. PWA INSTALL STATUS
-          ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center text-blue-500">
-              <Smartphone className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h4 className="text-sm font-extrabold text-[#171717] dark:text-[#F5F5F7]">
-                  {isInstalled ? 'App Installed ✓' : 'Install Mobile / Desktop App'}
-                </h4>
-                <span className={`px-2 py-0.5 text-[9px] font-bold rounded-md ${
-                  isOnline
-                    ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                    : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
-                }`}>
-                  {isOnline ? '● Online' : '○ Offline'}
+              <div className="w-10 h-10 rounded-xl bg-[#16161E] border border-[#292E42] flex items-center justify-center text-[#7AA2F7] shrink-0">
+                <Moon className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                    Tokyo Night Dark
+                  </span>
+                  {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
+                </div>
+                <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                  Deep dark glassmorphism for night study sessions
                 </span>
               </div>
-              <p className="text-[11px] text-[#6B7280] mt-0.5">
-                Launch directly from Home Screen with zero-lag offline access
+            </button>
+
+            {/* Light Mode Card */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setTheme('light');
+              }}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                theme === 'light'
+                  ? 'bg-[#FAF8F5] border-[#596B35] ring-2 ring-[#596B35]/30 shadow-sm'
+                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="w-10 h-10 rounded-xl bg-white border border-[#D8D8CF] flex items-center justify-center text-[#596B35] shrink-0">
+                <Sun className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                    Classic Paper Light
+                  </span>
+                  {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
+                </div>
+                <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                  Warm academic paper tones for bright daylight reading
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: FOCUS CHAMBER & FLOATING TIMER */}
+      {activeTab === 'timer' && (
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+            <div>
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
+                Floating Timer & Picture-in-Picture
+              </h3>
+              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+                Control the draggable timer overlay that stays active while studying notes.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                showFloatingOverlay();
+                setTestLaunched(true);
+                setTimeout(() => setTestLaunched(false), 2500);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold transition-all cursor-pointer active:scale-95"
+            >
+              <Play className="w-3 h-3 fill-current" />
+              <span>{testLaunched ? 'Visible!' : 'Preview Pill'}</span>
+            </button>
+          </div>
+
+          <div className="space-y-2.5 pt-1">
+            {[
+              { label: 'Floating Timer Enabled', desc: 'Show compact draggable pill when focus timer is active', checked: settings.enabled, key: 'enabled' as const },
+              { label: 'Auto-launch on Background', desc: 'Minimize to Picture-in-Picture when switching browser tabs', checked: settings.showWhenBackgrounded, key: 'showWhenBackgrounded' as const },
+              { label: 'Quick Pause / Resume Controls', desc: '1-tap control button directly on the floating pill', checked: settings.showPauseButton, key: 'showPauseButton' as const },
+              { label: 'Remember Draggable Position', desc: 'Keep the floating timer at the exact spot you placed it', checked: settings.rememberPosition, key: 'rememberPosition' as const }
+            ].map(item => (
+              <div key={item.key} className="flex items-center justify-between p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+                <div className="pr-3">
+                  <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] block">{item.label}</span>
+                  <span className="text-[10px] text-[#85877E] dark:text-[#787C99]">{item.desc}</span>
+                </div>
+                <ToggleSwitch
+                  checked={item.checked}
+                  onChange={val => updateSettings({ [item.key]: val })}
+                />
+              </div>
+            ))}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-1.5">
+                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] block">Widget Width</span>
+                <div className="flex gap-2">
+                  {(['standard', 'compact'] as const).map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        updateSettings({ size: s });
+                      }}
+                      className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        settings.size === s
+                          ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
+                          : 'bg-white dark:bg-[#16161E] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42]'
+                      }`}
+                    >
+                      {s === 'standard' ? 'Standard (360px)' : 'Compact (320px)'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">Opacity</span>
+                  <span className="text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                    {Math.round((settings.opacity || 0.95) * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="50"
+                  max="100"
+                  value={Math.round((settings.opacity || 0.95) * 100)}
+                  onChange={e => updateSettings({ opacity: Number(e.target.value) / 100 })}
+                  className="w-full accent-[#596B35] dark:accent-[#7AA2F7] cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: BACKUP, RESTORE & STORAGE */}
+      {activeTab === 'data' && (
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+            <div>
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
+                Data Backup & Device Storage
+              </h3>
+              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+                Export your syllabus progress to JSON or install the offline web application.
               </p>
             </div>
           </div>
 
-          <button
-            onClick={() => setShowPwaModal(true)}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-500/20 hover:shadow-lg transition-all cursor-pointer shrink-0 active:scale-[0.97]"
-          >
-            {isInstalled ? 'App Status' : 'Install App 📲'}
-          </button>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════
-          5. DATA BACKUP & EXPORT
-          ═══════════════════════════════════════════════════ */}
-      <div className="rounded-[24px] bg-white/60 dark:bg-[#18181D]/80 backdrop-blur-2xl border border-white/30 dark:border-[#272730] shadow-lg overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-[#272730]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center text-amber-500">
-              <Database className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-[#171717] dark:text-[#F5F5F7]">Data Backup & Export</h3>
-              <p className="text-[11px] text-[#6B7280]">Save your complete progress as JSON or restore from backup</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-5 sm:p-6 space-y-4">
-          <div className="flex flex-wrap gap-3">
+          {/* Backup Action Buttons */}
+          <div className="flex flex-wrap gap-2.5 pt-1">
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/30 text-[#171717] dark:text-[#F5F5F7] text-xs font-bold border border-slate-200/60 dark:border-[#272730] transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-95"
             >
-              <Download className="w-4 h-4 text-[#D4AF37]" />
+              <Download className="w-4 h-4" />
               <span>Export Backup (.json)</span>
             </button>
 
-            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-blue-500/10 hover:border-blue-500/30 text-[#171717] dark:text-[#F5F5F7] text-xs font-bold border border-slate-200/60 dark:border-[#272730] transition-all cursor-pointer">
-              <Upload className="w-4 h-4 text-blue-500" />
+            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-xs font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95">
+              <Upload className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
               <span>Import Backup</span>
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             </label>
+
+            <button
+              onClick={() => setShowPwaModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-xs font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95"
+            >
+              <Smartphone className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+              <span>{isInstalled ? 'App Installed ✓' : 'Install PWA App 📲'}</span>
+            </button>
           </div>
 
           {importStatus === 'success' && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <div className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Backup restored successfully!</span>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                Backup restored successfully! All topics and chapters synced.
+              </span>
             </div>
           )}
+
           {importStatus === 'error' && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
+            <div className="flex items-center gap-2 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
               <Trash2 className="w-4 h-4 text-rose-500" />
-              <span className="text-xs font-bold text-rose-600 dark:text-rose-400">Invalid JSON format. Please check your file.</span>
+              <span className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                Invalid JSON format. Please verify your backup file.
+              </span>
             </div>
           )}
 
           {/* Danger Zone */}
-          <div className="pt-3 border-t border-slate-200/50 dark:border-[#272730]">
-            <p className="text-[10px] font-bold text-rose-500 uppercase tracking-wider mb-2">⚠ Danger Zone</p>
+          <div className="pt-3 border-t border-[#EEEEE8] dark:border-[#24283B] space-y-2">
+            <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider block font-mono">
+              ⚠ Danger Zone
+            </span>
             <div className="flex flex-wrap gap-2">
               {showResetConfirm ? (
                 <div className="flex items-center gap-2">
-                  <button onClick={() => { resetToDemo(); setShowResetConfirm(false); }} className="px-3.5 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm">
-                    Yes, Reset All
+                  <button
+                    onClick={() => {
+                      resetToDemo();
+                      setShowResetConfirm(false);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-xs"
+                  >
+                    Yes, Reset Demo
                   </button>
-                  <button onClick={() => setShowResetConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#23232A] text-xs font-semibold text-[#6B7280] cursor-pointer">
+                  <button
+                    onClick={() => setShowResetConfirm(false)}
+                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                  >
                     Cancel
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowResetConfirm(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[#6B7280] border border-slate-200/60 dark:border-[#272730] text-xs font-bold transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset to Demo</span>
+                  <span>Reset Demo Data</span>
                 </button>
               )}
 
               {showClearConfirm ? (
                 <div className="flex items-center gap-2">
-                  <button onClick={() => { clearAllDemoData(); setShowClearConfirm(false); }} className="px-3.5 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-sm">
-                    Yes, Clear All
+                  <button
+                    onClick={() => {
+                      clearAllDemoData();
+                      setShowClearConfirm(false);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-xs"
+                  >
+                    Yes, Wipe All Data
                   </button>
-                  <button onClick={() => setShowClearConfirm(false)} className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#23232A] text-xs font-semibold text-[#6B7280] cursor-pointer">
+                  <button
+                    onClick={() => setShowClearConfirm(false)}
+                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                  >
                     Cancel
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowClearConfirm(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/70 dark:bg-[#18181D]/70 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[#6B7280] border border-slate-200/60 dark:border-[#272730] text-xs font-bold transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Clear All Data</span>
+                  <span>Clear All Custom Data</span>
                 </button>
               )}
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* PWA Modal */}
+      {/* PWA Install Modal */}
       <PWAInstallModal isOpen={showPwaModal} onClose={() => setShowPwaModal(false)} />
     </div>
   );
