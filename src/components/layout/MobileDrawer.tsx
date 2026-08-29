@@ -40,7 +40,6 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
     { id: 'planner' as AppView, label: 'Study Planner', icon: CalendarCheck },
     { id: 'mindmap' as AppView, label: 'Concept Mind Map', icon: BrainCircuit },
     { id: 'syllabus' as AppView, label: 'Syllabus Explorer', icon: BookOpen },
-    { id: 'subjects' as AppView, label: 'Subjects & Chapters', icon: Layers },
     { id: 'revision' as AppView, label: 'Spaced Revision', icon: RotateCw, badge: dueRevisions.length },
     { id: 'weak' as AppView, label: 'Weak Topics', icon: AlertTriangle, badge: weakTopics.length },
     { id: 'analytics' as AppView, label: 'Analytics & Heatmap', icon: BarChart3 },

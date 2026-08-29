@@ -76,13 +76,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badgeColor: ''
     },
     {
-      id: 'subjects' as AppView,
-      label: 'Subjects & Chapters',
-      icon: Layers,
-      badge: null,
-      badgeColor: ''
-    },
-    {
       id: 'revision' as AppView,
       label: 'Spaced Revision',
       icon: RotateCw,
