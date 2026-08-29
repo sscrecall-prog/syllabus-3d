@@ -8,9 +8,10 @@ import {
   Minimize2,
   ChevronDown,
   Columns,
-  Sparkles,
-  BookOpen,
-  Eye,
+  ZoomIn,
+  ZoomOut,
+  ChevronLeft,
+  ChevronRight,
   AlertCircle
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
@@ -46,6 +47,9 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.0);
 
   // Sync selected attachment when initialAttachmentId changes
   useEffect(() => {
@@ -137,13 +141,6 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
 
   const currentAttachment = attachments.find(a => a.id === selectedAttachmentId) || attachments[0];
 
-  const formatFileSize = (bytes?: number) => {
-    if (!bytes || bytes === 0) return 'PDF Document';
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
   const handleDownload = () => {
     if (!currentAttachment) return;
     soundManager.playCompleteChime();
@@ -160,71 +157,96 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#0B0B0D] text-[#F5F5F7] animate-fade-in select-none overflow-hidden">
-      {/* TOP HEADER: NAVIGATION, TITLE & ACTIONS */}
-      <div className="px-3 sm:px-6 py-2.5 bg-[#18181D] border-b border-[#272730] flex items-center justify-between gap-3 shrink-0 shadow-lg">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#111114] text-[#F5F5F7] animate-fade-in select-none overflow-hidden">
+      
+      {/* 1. SINGLE SLEEK COMPACT TOP HEADER BAR */}
+      <div className="px-3 sm:px-5 py-2 bg-[#18181D]/95 backdrop-blur-md border-b border-[#272730] flex items-center justify-between gap-2 shrink-0 z-30 shadow-md">
         
-        {/* Left: Back Button & Topic Info */}
-        <div className="flex items-center gap-3 min-w-0">
+        {/* Left: Back Arrow & Document Info */}
+        <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={() => {
               soundManager.playClick();
               onClose();
             }}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-[#23232A] hover:bg-[#8B5CF6] text-white text-xs font-bold transition-all border border-[#272730] hover:border-[#8B5CF6] cursor-pointer shadow-sm active:scale-95 group"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#23232A] hover:bg-[#8B5CF6] text-white text-xs font-bold transition-all border border-[#272730] hover:border-[#8B5CF6] cursor-pointer shadow-sm active:scale-95 group shrink-0"
             title="Go back to Topic Notes (Esc)"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="hidden sm:inline">Back to Topic</span>
-            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">Back</span>
           </button>
 
-          <div className="h-6 w-px bg-[#272730] hidden sm:block" />
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B5CF6]">
-              <span>{subjectName || 'Subject'}</span>
-              <span>•</span>
-              <span className="truncate">{chapterName || 'Chapter'}</span>
-            </div>
-            <h3 className="text-xs sm:text-sm font-extrabold text-white truncate flex items-center gap-2">
-              <span className="truncate">{topicName}</span>
-              <span className="hidden md:inline px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">
-                In-App PDF Reader Mode
-              </span>
-            </h3>
+          <div className="min-w-0 flex items-center gap-2">
+            {attachments.length > 1 ? (
+              <div className="relative max-w-[200px] sm:max-w-xs">
+                <select
+                  value={selectedAttachmentId}
+                  onChange={e => {
+                    soundManager.playClick();
+                    setSelectedAttachmentId(e.target.value);
+                  }}
+                  className="w-full pl-2.5 pr-7 py-1 rounded-xl bg-[#23232A] border border-[#272730] text-xs font-bold text-white focus:outline-none focus:border-[#8B5CF6] appearance-none cursor-pointer truncate"
+                >
+                  {attachments.map(att => (
+                    <option key={att.id} value={att.id}>
+                      📑 {att.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-[#A1A1AA] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            ) : (
+              <div className="truncate flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-[#8B5CF6] shrink-0" />
+                <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[160px] sm:max-w-sm">
+                  {currentAttachment?.name || topicName}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Center: Multi-PDF Attachment Switcher Dropdown */}
-        {attachments.length > 1 && (
-          <div className="hidden lg:flex items-center gap-2">
-            <span className="text-[11px] font-bold text-[#A1A1AA] uppercase font-mono">
-              Switch PDF:
-            </span>
-            <div className="relative min-w-[220px]">
-              <select
-                value={selectedAttachmentId}
-                onChange={e => {
-                  soundManager.playClick();
-                  setSelectedAttachmentId(e.target.value);
-                }}
-                className="w-full pl-3 pr-8 py-1.5 rounded-xl bg-[#23232A] border border-[#272730] text-xs font-semibold text-white focus:outline-none focus:border-[#8B5CF6] appearance-none cursor-pointer"
-              >
-                {attachments.map(att => (
-                  <option key={att.id} value={att.id}>
-                    📑 {att.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-[#A1A1AA] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+        {/* Center: Live Page Tracker */}
+        {totalPages > 0 && (
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#23232A] border border-[#272730] text-xs font-mono font-bold text-[#A1A1AA]">
+            <span>Page</span>
+            <span className="text-white">{currentPage}</span>
+            <span>/</span>
+            <span className="text-[#8B5CF6]">{totalPages}</span>
           </div>
         )}
 
-        {/* Right Actions: Split Study, Download, Fullscreen & Close */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right Action Tools: Zoom, Split Study, Download & Close */}
+        <div className="flex items-center gap-1.5 shrink-0">
           
+          {/* Zoom Controls */}
+          <div className="flex items-center bg-[#23232A] p-0.5 rounded-xl border border-[#272730]">
+            <button
+              type="button"
+              onClick={() => setScale(s => Math.max(s - 0.2, 0.6))}
+              className="p-1.5 rounded-lg hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white cursor-pointer"
+              title="Zoom Out (-)"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setScale(1.0)}
+              className="px-2 py-0.5 text-[11px] font-mono font-bold text-[#8B5CF6] hover:bg-[#2E2E38] rounded-md cursor-pointer"
+              title="Reset Zoom (100%)"
+            >
+              {Math.round(scale * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={() => setScale(s => Math.min(s + 0.2, 2.5))}
+              className="p-1.5 rounded-lg hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white cursor-pointer"
+              title="Zoom In (+)"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           {/* Split Study Quick Switch */}
           {onOpenSplitStudy && (
             <button
@@ -234,10 +256,10 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
                 onOpenSplitStudy(selectedAttachmentId);
               }}
               title="Open Split-Screen to read this PDF and take notes side-by-side"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] dark:text-[#C4B5FD] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] text-xs font-bold transition-all cursor-pointer shadow-sm"
             >
               <Columns className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Split Study</span>
+              <span>Split Study</span>
             </button>
           )}
 
@@ -246,20 +268,20 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             <button
               onClick={handleDownload}
               title={`Download ${currentAttachment.name}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Download</span>
             </button>
           )}
 
-          {/* Native Fullscreen Toggle */}
+          {/* Fullscreen Toggle */}
           <button
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            className="p-2 rounded-xl bg-[#23232A] hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white border border-[#272730] transition-colors cursor-pointer hidden sm:flex"
+            className="p-1.5 rounded-xl bg-[#23232A] hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white border border-[#272730] transition-colors cursor-pointer hidden sm:flex"
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
 
           {/* Close Button */}
@@ -268,7 +290,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               soundManager.playClick();
               onClose();
             }}
-            className="p-2 rounded-xl bg-[#23232A] hover:bg-rose-500/20 text-[#A1A1AA] hover:text-rose-400 border border-[#272730] transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl bg-[#23232A] hover:bg-rose-500/20 text-[#A1A1AA] hover:text-rose-400 border border-[#272730] transition-colors cursor-pointer"
             title="Close PDF View (Esc)"
           >
             <X className="w-4 h-4" />
@@ -276,48 +298,14 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         </div>
       </div>
 
-      {/* SUB-BAR FOR MOBILE PDF SELECTOR & METRICS */}
-      <div className="px-4 py-2 bg-[#141418] border-b border-[#272730] flex items-center justify-between text-xs text-[#A1A1AA]">
-        <div className="flex items-center gap-2 truncate">
-          <FileText className="w-3.5 h-3.5 text-[#8B5CF6] shrink-0" />
-          <span className="font-semibold text-[#F5F5F7] truncate">
-            {currentAttachment?.name || 'Document'}
-          </span>
-          {currentAttachment?.fileSize ? (
-            <span className="text-[10px] font-mono text-[#85877E] shrink-0">
-              ({formatFileSize(currentAttachment.fileSize)})
-            </span>
-          ) : null}
-        </div>
-
-        {attachments.length > 1 && (
-          <div className="flex lg:hidden items-center gap-1">
-            <select
-              value={selectedAttachmentId}
-              onChange={e => {
-                soundManager.playClick();
-                setSelectedAttachmentId(e.target.value);
-              }}
-              className="px-2 py-1 rounded-lg bg-[#23232A] border border-[#272730] text-[11px] font-semibold text-white focus:outline-none focus:border-[#8B5CF6]"
-            >
-              {attachments.map(att => (
-                <option key={att.id} value={att.id}>
-                  📑 {att.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* MAIN PDF CANVAS VIEWER DISPLAY (EDGE-TO-EDGE DISTRACTION FREE FOR ALL DEVICES) */}
-      <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex flex-col">
+      {/* 2. PURE FULLSCREEN PDF CANVAS VIEWER (100% WIDTH EDGE-TO-EDGE) */}
+      <div className="flex-1 relative min-h-0 bg-[#111114] flex flex-col overflow-hidden">
         {isLoading ? (
           <div className="m-auto flex flex-col items-center gap-3.5 text-center p-6">
             <div className="w-10 h-10 rounded-full border-3 border-[#8B5CF6] border-t-transparent animate-spin" />
             <div>
-              <h4 className="text-sm font-bold text-white">Opening PDF in App...</h4>
-              <p className="text-xs text-[#A1A1AA] mt-1 font-mono">Loading document data seamlessly</p>
+              <h4 className="text-sm font-bold text-white">Opening Full Screen PDF...</h4>
+              <p className="text-xs text-[#A1A1AA] mt-1 font-mono">Loading high-resolution pages</p>
             </div>
           </div>
         ) : loadError ? (
@@ -338,7 +326,18 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             </button>
           </div>
         ) : pdfBlobUrl ? (
-          <PdfCanvasViewer pdfUrl={pdfBlobUrl} className="flex-1 min-h-0" />
+          <PdfCanvasViewer
+            pdfUrl={pdfBlobUrl}
+            scale={scale}
+            onScaleChange={setScale}
+            onLoadSuccess={(total) => setTotalPages(total)}
+            onPageChange={(page, total) => {
+              setCurrentPage(page);
+              setTotalPages(total);
+            }}
+            showInlineControls={false}
+            className="flex-1 min-h-0 w-full"
+          />
         ) : (
           <div className="m-auto text-center p-6 space-y-2">
             <FileText className="w-10 h-10 text-[#383842] mx-auto" />
@@ -347,7 +346,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         )}
       </div>
 
-      {/* FLOATING QUICK-BACK PILL ON MOBILE FOR FAST EXIT */}
+      {/* 3. FLOATING QUICK-BACK PILL FOR MOBILE */}
       <button
         onClick={() => {
           soundManager.playClick();
