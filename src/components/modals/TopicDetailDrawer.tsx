@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
@@ -139,6 +139,32 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     setShowDeleteConfirm(false);
   }, [topic?.id]);
 
+  // Mobile Swipe-Down to Dismiss Touch Gesture State
+  const touchStartY = useRef<number | null>(null);
+  const [dragOffsetY, setDragOffsetY] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+    if (diff > 0) {
+      setDragOffsetY(diff);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (dragOffsetY > 85) {
+      soundManager.playClick();
+      onClose();
+    }
+    setDragOffsetY(0);
+    touchStartY.current = null;
+  };
+
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isTimerRunning) {
@@ -242,10 +268,31 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm animate-fade-in select-none">
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
-        <div className="w-screen max-w-2xl bg-[#F7F6F0] dark:bg-[#0B0B0D] border-l border-[#D8D8CF] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors">
+        <div
+          style={{
+            transform: dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
+            transition: dragOffsetY === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
+          }}
+          className="w-screen max-w-2xl bg-[#F7F6F0] dark:bg-[#0B0B0D] border-l border-[#D8D8CF] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none"
+        >
           
+          {/* Mobile Pull-Down Drag Handle */}
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="sm:hidden pt-3 pb-1 flex items-center justify-center cursor-grab active:cursor-grabbing bg-white dark:bg-[#18181D]"
+          >
+            <div className="w-12 h-1.5 rounded-full bg-[#D8D8CF] dark:bg-[#3B4261]" />
+          </div>
+
           {/* Header */}
-          <div className="p-4 sm:p-6 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4">
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="p-4 sm:p-6 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4"
+          >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#8B5CF6]">
                 <span>{subjectName || 'Subject'}</span>
@@ -266,7 +313,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   soundManager.playClick();
                   setIsEditing(p => !p);
                 }}
-                className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                className={`p-2.5 sm:p-2 min-w-[40px] min-h-[40px] rounded-xl border transition-all cursor-pointer flex items-center justify-center active:scale-95 ${
                   isEditing
                     ? 'bg-[#596B35] text-white border-[#596B35] shadow-sm'
                     : 'bg-[#F7F6F0] dark:bg-[#23232A] border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:border-[#596B35]'
@@ -281,7 +328,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   soundManager.playClick();
                   onClose();
                 }}
-                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 transition-colors cursor-pointer"
+                className="p-2.5 sm:p-2 min-w-[40px] min-h-[40px] rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
               >
                 <X className="w-4 h-4" />
               </button>
