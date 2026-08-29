@@ -29,6 +29,7 @@ import { TopicLecturesSection, YoutubeIcon } from '../common/TopicLecturesSectio
 import { TopicAudioMemosSection } from '../common/TopicAudioMemosSection';
 import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
 import { SplitScreenLectureStudyModal } from '../common/SplitScreenLectureStudyModal';
+import { StatusBadge } from '../common/StatusBadge';
 import { soundManager } from '../../utils/soundEffects';
 
 interface TopicDetailDrawerProps {
@@ -251,9 +252,12 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <span>•</span>
                 <span className="truncate">{chapterName || 'Chapter'}</span>
               </div>
-              <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] truncate mt-0.5 font-serif">
-                {liveTopic.name}
-              </h2>
+              <div className="flex items-center gap-2.5 flex-wrap mt-0.5">
+                <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] truncate font-serif">
+                  {liveTopic.name}
+                </h2>
+                <StatusBadge status={liveTopic.status || 'not_started'} size="sm" />
+              </div>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
@@ -690,25 +694,27 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     Preparation Status
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {(['not_started', 'in_progress', 'completed', 'weak'] as TopicStatus[]).map((st) => (
+                    {[
+                      { id: 'not_started', label: 'Not Started ⭕', activeClasses: 'bg-slate-700 text-white border-transparent shadow-sm' },
+                      { id: 'in_progress', label: 'In Progress ⚡', activeClasses: 'bg-amber-500 text-white border-transparent shadow-sm shadow-amber-500/20' },
+                      { id: 'completed', label: 'Mastered ✓', activeClasses: 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20' },
+                      { id: 'weak', label: 'Weak ⚠️', activeClasses: 'bg-rose-600 text-white border-transparent shadow-sm shadow-rose-600/20' },
+                    ].map((st) => (
                       <button
-                        key={st}
+                        key={st.id}
                         type="button"
                         onClick={() => {
-                          const targetAcc = st === 'completed' ? Math.max(85, liveTopic.accuracy || 85) : liveTopic.accuracy;
-                          updateTopicStatus(liveTopic.id, st, targetAcc);
+                          const targetAcc = st.id === 'completed' ? Math.max(85, liveTopic.accuracy || 85) : liveTopic.accuracy;
+                          updateTopicStatus(liveTopic.id, st.id as TopicStatus, targetAcc);
                           soundManager.playCompleteChime();
                         }}
-                        className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                          liveTopic.status === st
-                            ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-sm'
+                        className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border active:scale-95 ${
+                          (liveTopic.status || 'not_started') === st.id
+                            ? st.activeClasses
                             : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
                         }`}
                       >
-                        {st === 'not_started' && 'Not Started'}
-                        {st === 'in_progress' && 'In Progress ⚡'}
-                        {st === 'completed' && 'Mastered ✓'}
-                        {st === 'weak' && 'Weak ⚠️'}
+                        {st.label}
                       </button>
                     ))}
                   </div>

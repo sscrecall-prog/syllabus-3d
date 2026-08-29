@@ -18,7 +18,11 @@ import {
   Layers,
   X,
   ChevronsUpDown,
-  CheckCircle2
+  CheckCircle2,
+  Zap,
+  Circle,
+  Clock,
+  RotateCw
 } from 'lucide-react';
 import { formatTimeAgo } from '../../utils/dateUtils';
 import { EditSubjectModal } from '../modals/EditSubjectModal';
@@ -200,32 +204,69 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     ? Math.round((completedTopicsInSubject / totalTopicsInSubject) * 100)
     : 0;
 
-  const getStatusBadgeUI = (status: TopicStatus) => {
+  const statusCounts = useMemo(() => {
+    if (!activeSubject) return { all: 0, completed: 0, in_progress: 0, weak: 0, not_started: 0 };
+    const allTopics = activeSubject.chapters.flatMap(ch => ch.topics);
+    return {
+      all: allTopics.length,
+      completed: allTopics.filter(t => t.status === 'completed').length,
+      in_progress: allTopics.filter(t => t.status === 'in_progress').length,
+      weak: allTopics.filter(t => t.status === 'weak').length,
+      not_started: allTopics.filter(t => t.status === 'not_started' || !t.status).length,
+    };
+  }, [activeSubject]);
+
+  const getTopicCardStyle = (status: TopicStatus) => {
     switch (status) {
       case 'completed':
         return {
-          label: 'Mastered ✓',
-          classes: 'bg-[#4F7A45]/15 text-[#4F7A45] border-[#4F7A45]/30 font-bold'
+          cardClasses: 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-500/30 border-l-4 border-l-emerald-500 hover:border-emerald-500 hover:shadow-md',
+          titleClasses: 'text-emerald-950 dark:text-emerald-200 font-bold',
+          badgeClasses: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/35 font-bold',
+          badgeLabel: 'Mastered ✓',
+          badgeIcon: CheckCircle2,
+          btnClasses: 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm',
+          btnLabel: 'Mastered ✓'
         };
       case 'in_progress':
         return {
-          label: 'In Progress ⚡',
-          classes: 'bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#354126] dark:text-[#8B5CF6] border-[#596B35]/30 font-bold'
-        };
-      case 'revision_due':
-        return {
-          label: 'Revise Due ⏳',
-          classes: 'bg-[#C49A3A]/15 text-[#C49A3A] border-[#C49A3A]/30 font-bold'
+          cardClasses: 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-300 dark:border-amber-500/30 border-l-4 border-l-amber-500 hover:border-amber-500 hover:shadow-md',
+          titleClasses: 'text-amber-950 dark:text-amber-200 font-bold',
+          badgeClasses: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 font-bold animate-pulse',
+          badgeLabel: 'In Progress ⚡',
+          badgeIcon: Zap,
+          btnClasses: 'bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-sm',
+          btnLabel: 'Mark Done ➔'
         };
       case 'weak':
         return {
-          label: 'Weak Topic ⚠️',
-          classes: 'bg-[#B94A48]/15 text-[#B94A48] border-[#B94A48]/30 font-bold'
+          cardClasses: 'bg-rose-50/75 dark:bg-rose-950/25 border-rose-300 dark:border-rose-500/35 border-l-4 border-l-rose-500 hover:border-rose-500 hover:shadow-md',
+          titleClasses: 'text-rose-950 dark:text-rose-200 font-bold',
+          badgeClasses: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40 font-bold',
+          badgeLabel: 'Weak Topic ⚠️',
+          badgeIcon: AlertTriangle,
+          btnClasses: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm',
+          btnLabel: 'Fix Weak Topic 🔥'
         };
-      default:
+      case 'revision_due':
         return {
-          label: 'Not Started ⭕',
-          classes: 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#85877E] border-[#D8D8CF] dark:border-[#272730]'
+          cardClasses: 'bg-purple-50/70 dark:bg-purple-950/20 border-purple-300 dark:border-purple-500/30 border-l-4 border-l-purple-500 hover:border-purple-500 hover:shadow-md',
+          titleClasses: 'text-purple-950 dark:text-purple-200 font-bold',
+          badgeClasses: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/35 font-bold',
+          badgeLabel: 'Revise Due ⏳',
+          badgeIcon: Clock,
+          btnClasses: 'bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-sm',
+          btnLabel: 'Revise Now ⏳'
+        };
+      default: // not_started
+        return {
+          cardClasses: 'bg-white dark:bg-[#18181D] border-slate-200 dark:border-[#272730] border-l-4 border-l-slate-300 dark:border-l-slate-600 hover:border-slate-400 hover:shadow-sm',
+          titleClasses: 'text-[#191A17] dark:text-[#F5F5F7] font-bold',
+          badgeClasses: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700 font-bold',
+          badgeLabel: 'Not Started ⭕',
+          badgeIcon: Circle,
+          btnClasses: 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#596B35] hover:text-white font-bold',
+          btnLabel: 'Start Topic ➔'
         };
     }
   };
@@ -301,12 +342,12 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
                 }`}
               >
-                <IconComponent className={`w-3.5 h-3.5 ${isActive ? 'text-[#DCE8B7]' : 'text-[#596B35]'}`} />
+                <IconComponent className="w-3.5 h-3.5" />
                 <span>{subj.name}</span>
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
                   isActive ? 'bg-white/20 text-white' : 'bg-[#EEEEE8] dark:bg-[#18181D] text-[#85877E]'
                 }`}>
-                  {subj.chapters.length}
+                  {subj.chapters.reduce((a, c) => a + c.topics.length, 0)}
                 </span>
               </button>
             );
@@ -325,59 +366,72 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           <ChevronRight className="w-4 h-4 stroke-[2.5]" />
         </button>
 
-        {/* Edit Active Subject Button */}
-        {activeSubject && (
+        {/* Edit Subject Action Button */}
+        <div className="pl-1 border-l border-[#D8D8CF] dark:border-[#272730] shrink-0">
           <button
             onClick={() => setEditingSubject(activeSubject)}
-            className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white transition-all cursor-pointer shrink-0 shadow-sm"
+            className="p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F7F6F0] dark:hover:bg-[#23232A] transition-colors cursor-pointer"
             title="Edit Subject"
           >
-            <Edit2 className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
+            <Edit2 className="w-4 h-4" />
           </button>
-        )}
+        </div>
       </div>
 
-      {/* 3. Search and Status Filters */}
+      {/* 3. SEARCH & STATUS FILTER TOOLBAR */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E]" />
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search topics, subtopics..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35] shadow-subtle-depth"
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] transition-colors shadow-subtle-depth"
           />
+          <Search className="w-4 h-4 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17]"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
+        {/* Status Filters & Expand All */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={handleToggleAllChapters}
-            className="px-3 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth"
+            className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth"
           >
             <ChevronsUpDown className="w-3.5 h-3.5" />
             <span>{areAllExpanded ? 'Collapse All' : 'Expand All'}</span>
           </button>
 
-          {(['all', 'completed', 'in_progress', 'weak'] as const).map(st => (
+          {[
+            { id: 'all', label: 'All', count: statusCounts.all, activeColor: 'bg-[#11120F] dark:bg-white text-white dark:text-black' },
+            { id: 'completed', label: '✓ Mastered', count: statusCounts.completed, activeColor: 'bg-emerald-600 text-white shadow-sm' },
+            { id: 'in_progress', label: '⚡ In Progress', count: statusCounts.in_progress, activeColor: 'bg-amber-500 text-white shadow-sm' },
+            { id: 'weak', label: '⚠️ Weak', count: statusCounts.weak, activeColor: 'bg-rose-600 text-white shadow-sm' },
+            { id: 'not_started', label: '⭕ Not Started', count: statusCounts.not_started, activeColor: 'bg-slate-700 text-white' },
+          ].map(st => (
             <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all capitalize cursor-pointer border ${
-                statusFilter === st
-                  ? 'bg-[#11120F] text-white border-transparent shadow-sm'
+              key={st.id}
+              onClick={() => setStatusFilter(st.id as any)}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                statusFilter === st.id
+                  ? `${st.activeColor} border-transparent shadow-sm`
                   : 'bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
               }`}
             >
-              {st === 'all' ? 'All' : st === 'completed' ? '✓ Mastered' : st === 'in_progress' ? '⚡ In Progress' : '⚠️ Weak'}
+              <span>{st.label}</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                statusFilter === st.id ? 'bg-white/20' : 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#85877E]'
+              }`}>
+                {st.count}
+              </span>
             </button>
           ))}
         </div>
@@ -389,6 +443,8 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           const isExpanded = expandedChapters[chapter.id] ?? false;
           const totalInChapter = chapter.topics.length;
           const completedInChapter = chapter.topics.filter(t => t.status === 'completed').length;
+          const inProgressInChapter = chapter.topics.filter(t => t.status === 'in_progress').length;
+          const weakInChapter = chapter.topics.filter(t => t.status === 'weak').length;
           const chapterPercent = totalInChapter > 0 ? Math.round((completedInChapter / totalInChapter) * 100) : 0;
           const isAllCompleted = totalInChapter > 0 && completedInChapter === totalInChapter;
 
@@ -423,11 +479,20 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         </span>
                       )}
                     </div>
-                    {chapter.description && (
-                      <p className="text-xs text-[#65675F] dark:text-[#85877E] mt-0.5 truncate">
-                        {chapter.description}
-                      </p>
-                    )}
+                    
+                    {/* Chapter status indicators strip */}
+                    <div className="flex items-center gap-2 text-[11px] text-[#65675F] dark:text-[#85877E] mt-0.5 flex-wrap font-mono">
+                      <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
+                      {completedInChapter > 0 && (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} Mastered</span>
+                      )}
+                      {inProgressInChapter > 0 && (
+                        <span className="text-amber-600 dark:text-amber-400 font-bold">• {inProgressInChapter} In Progress</span>
+                      )}
+                      {weakInChapter > 0 && (
+                        <span className="text-rose-600 dark:text-rose-400 font-bold">• {weakInChapter} Weak</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -449,30 +514,33 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 </div>
               </div>
 
-              {/* Topics List (Collapsible) */}
+              {/* Topics List (Collapsible) with Distinct Color-Coded Cards */}
               {isExpanded && (
-                <div className="p-3 sm:p-5 pt-0 space-y-2 border-t border-[#EEEEE8] dark:border-[#1D201A] bg-[#F7F6F0]/40 dark:bg-[#0B0B0D]/40">
+                <div className="p-3 sm:p-5 pt-0 space-y-2.5 border-t border-[#EEEEE8] dark:border-[#1D201A] bg-[#F7F6F0]/40 dark:bg-[#0B0B0D]/40">
                   {chapter.topics.length === 0 ? (
                     <p className="text-xs text-[#85877E] py-3 text-center">
                       No topics match the filter.
                     </p>
                   ) : (
                     chapter.topics.map(topic => {
-                      const badgeUI = getStatusBadgeUI(topic.status);
+                      const style = getTopicCardStyle(topic.status);
+                      const BadgeIcon = style.badgeIcon;
 
                       return (
                         <div
                           key={topic.id}
                           onClick={() => onOpenTopicDrawer(topic, activeSubject.name, chapter.name)}
-                          className="p-3 sm:p-4 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer group shadow-sm active:scale-99"
+                          className={`p-3 sm:p-4 rounded-xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer group active:scale-99 shadow-xs ${style.cardClasses}`}
                         >
-                          <div className="space-y-1 min-w-0 flex-1">
+                          <div className="space-y-1.5 min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#596B35] transition-colors">
-                                {topic.name}
+                              <h4 className={`text-xs sm:text-sm ${style.titleClasses} group-hover:underline transition-colors flex items-center gap-1.5`}>
+                                <span>{topic.name}</span>
                               </h4>
-                              <span className={`px-2 py-0.5 rounded text-[10px] border font-mono ${badgeUI.classes}`}>
-                                {badgeUI.label}
+                              
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] border font-mono ${style.badgeClasses}`}>
+                                <BadgeIcon className="w-3 h-3" />
+                                <span>{style.badgeLabel}</span>
                               </span>
                             </div>
 
@@ -483,7 +551,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                             )}
                           </div>
 
-                          <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EEEEE8] dark:border-[#1D201A]">
+                          <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-black/5 dark:border-white/5">
                             <div className="flex items-center gap-2 text-[10px] text-[#85877E] font-mono">
                               <span>Acc: <strong className="text-[#191A17] dark:text-[#F5F5F7]">{topic.accuracy}%</strong></span>
                               <span>•</span>
@@ -496,13 +564,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                                 const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
                                 updateTopicStatus(topic.id, nextStatus);
                               }}
-                              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                                topic.status === 'completed'
-                                  ? 'bg-[#4F7A45] text-white shadow-sm'
-                                  : 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#DCE8B7] dark:hover:bg-[#8B5CF6]/20'
-                              }`}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${style.btnClasses}`}
                             >
-                              {topic.status === 'completed' ? 'Mastered ✓' : 'Mark Done'}
+                              {style.btnLabel}
                             </button>
                           </div>
                         </div>
