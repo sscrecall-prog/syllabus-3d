@@ -330,10 +330,10 @@ export const SettingsView: React.FC<SettingsViewProps> = () => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white block">Obsidian Dark Theme</span>
-                {theme === 'dark' && <Check className="w-4 h-4 text-[#8B5CF6]" />}
+                <span className="text-xs font-bold text-white block">Tokyo Night Dark Theme</span>
+                {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
               </div>
-              <span className="text-[11px] text-[#A1A1AA] block mt-0.5">High-contrast dark palette for night study & OLED screens.</span>
+              <span className="text-[11px] text-[#A9B1D6] block mt-0.5">#1A1B26 Background, #A9B1D6 Foreground, #7AA2F7 Accent.</span>
             </div>
           </button>
 
