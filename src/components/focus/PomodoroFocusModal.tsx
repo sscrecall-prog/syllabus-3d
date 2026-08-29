@@ -212,22 +212,17 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* Picture-in-Picture / Floating Button */}
+            {/* Minimize to In-App Floating Capsule */}
             <button
-              onClick={async () => {
+              onClick={() => {
                 soundManager.playClick();
-                const opened = await requestPictureInPicture();
-                if (opened) {
-                  onClose();
-                } else {
-                  showFloatingOverlay();
-                  onClose();
-                }
+                showFloatingOverlay();
+                onClose();
               }}
               className="p-2 rounded-xl bg-white dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] transition-all cursor-pointer shadow-xs active:scale-95"
-              title="Minimize to Floating / Picture-in-Picture Timer"
+              title="Minimize to In-App Floating Timer Capsule"
             >
-              <PictureInPicture2 className="w-4 h-4" />
+              <Minimize2 className="w-4 h-4" />
             </button>
 
             {/* Settings Toggle */}
