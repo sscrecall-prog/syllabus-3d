@@ -34,6 +34,9 @@ interface TopicLecturesSectionProps {
   lectures: TopicLecture[];
   onAddLecture: (lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => void;
   onDeleteLecture: (lectureId: string) => void;
+  onOpenSplitStudy?: (lectureId: string, seekSeconds?: number) => void;
+  onAddTimestamp?: (lectureId: string, timestamp: { timeSeconds: number; timeLabel: string; title: string }) => void;
+  onDeleteTimestamp?: (lectureId: string, timestampId: string) => void;
 }
 
 export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
@@ -41,7 +44,10 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
   topicName,
   lectures = [],
   onAddLecture,
-  onDeleteLecture
+  onDeleteLecture,
+  onOpenSplitStudy,
+  onAddTimestamp,
+  onDeleteTimestamp
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -377,12 +383,59 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                         Click to Open in YouTube ↗
                       </span>
                     </div>
+
+                    {/* Attached Timestamps Chips */}
+                    {lecture.timestamps && lecture.timestamps.length > 0 && (
+                      <div className="flex items-center gap-1.5 flex-wrap pt-1.5">
+                        {lecture.timestamps.slice(0, 5).map(ts => (
+                          <button
+                            key={ts.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              soundManager.playClick();
+                              if (onOpenSplitStudy) {
+                                onOpenSplitStudy(lecture.id, ts.timeSeconds);
+                              } else {
+                                openYouTubeLectureInNewTab(lecture.youtubeUrl, ts.timeSeconds);
+                              }
+                            }}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#23232A] hover:bg-red-600 text-red-400 hover:text-white border border-[#272730] hover:border-red-500 text-[10px] font-mono font-bold transition-colors cursor-pointer"
+                            title={`Jump to ${ts.title} (${ts.timeLabel})`}
+                          >
+                            <Play className="w-2 h-2 fill-current" />
+                            <span>{ts.timeLabel}</span>
+                          </button>
+                        ))}
+                        {lecture.timestamps.length > 5 && (
+                          <span className="text-[10px] text-[#85877E] font-mono">
+                            +{lecture.timestamps.length - 5} more
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Right Side Action Buttons */}
-                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#D8D8CF]/60 dark:border-[#272730] justify-end">
+                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#D8D8CF]/60 dark:border-[#272730] justify-end flex-wrap">
                   
+                  {/* Split Study with Synced Notes Button */}
+                  {onOpenSplitStudy && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        soundManager.playClick();
+                        onOpenSplitStudy(lecture.id, 0);
+                      }}
+                      title="Watch Lecture & Take Synced Notes Side-by-Side"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-600 dark:text-purple-400 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                    >
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>Sync Notes</span>
+                    </button>
+                  )}
+
                   {/* Play In-App Button */}
                   <button
                     onClick={(e) => handlePlayEmbedded(e, lecture)}
@@ -401,7 +454,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                     className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
                   >
                     <YoutubeIcon className="w-4 h-4 fill-white" />
-                    <span>Watch Lecture</span>
+                    <span>Watch</span>
                     <ExternalLink className="w-3 h-3" />
                   </button>
 

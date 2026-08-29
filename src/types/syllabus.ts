@@ -26,6 +26,13 @@ export interface TopicPdfAttachment {
   storageKey?: string;
 }
 
+export interface LectureTimestamp {
+  id: string;
+  timeSeconds: number;
+  timeLabel: string;
+  title: string;
+}
+
 export interface TopicLecture {
   id: string;
   title: string;
@@ -33,6 +40,7 @@ export interface TopicLecture {
   addedAt: string;
   duration?: string;
   notes?: string;
+  timestamps?: LectureTimestamp[];
 }
 
 export interface TopicAudioMemo {

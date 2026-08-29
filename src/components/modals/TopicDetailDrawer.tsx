@@ -28,6 +28,7 @@ import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection
 import { TopicLecturesSection, YoutubeIcon } from '../common/TopicLecturesSection';
 import { TopicAudioMemosSection } from '../common/TopicAudioMemosSection';
 import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
+import { SplitScreenLectureStudyModal } from '../common/SplitScreenLectureStudyModal';
 import { soundManager } from '../../utils/soundEffects';
 
 interface TopicDetailDrawerProps {
@@ -57,6 +58,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     deleteTopicPdfAttachment,
     addTopicLecture,
     deleteTopicLecture,
+    addLectureTimestamp,
+    deleteLectureTimestamp,
     addTopicAudioMemo,
     deleteTopicAudioMemo,
     addTopicImageAttachment,
@@ -97,6 +100,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   // In-App Split-Screen PDF Study Mode state
   const [isSplitPdfOpen, setIsSplitPdfOpen] = useState(false);
   const [splitPdfAttachmentId, setSplitPdfAttachmentId] = useState<string | undefined>(undefined);
+
+  // In-App Split-Screen Lecture Timestamp Sync state
+  const [isSplitLectureOpen, setIsSplitLectureOpen] = useState(false);
+  const [splitLectureId, setSplitLectureId] = useState<string | undefined>(undefined);
+  const [splitLectureSeekSeconds, setSplitLectureSeekSeconds] = useState<number>(0);
 
   // Live Drawer Stopwatch
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -798,6 +806,21 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       deleteTopicLecture(liveTopic.id, lectureId);
                     }
                   }}
+                  onOpenSplitStudy={(lectureId, seekSeconds) => {
+                    setSplitLectureId(lectureId);
+                    setSplitLectureSeekSeconds(seekSeconds || 0);
+                    setIsSplitLectureOpen(true);
+                  }}
+                  onAddTimestamp={(lectureId, ts) => {
+                    if (addLectureTimestamp) {
+                      addLectureTimestamp(liveTopic.id, lectureId, ts);
+                    }
+                  }}
+                  onDeleteTimestamp={(lectureId, tsId) => {
+                    if (deleteLectureTimestamp) {
+                      deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
+                    }
+                  }}
                 />
               </div>
             )}
@@ -817,6 +840,12 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     setIsSplitPdfOpen(true);
                   }}
                   hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
+                  lectures={liveTopic.lectures || []}
+                  onOpenSplitLecture={(lectureId, seekSeconds) => {
+                    setSplitLectureId(lectureId || liveTopic.lectures?.[0]?.id);
+                    setSplitLectureSeekSeconds(seekSeconds || 0);
+                    setIsSplitLectureOpen(true);
+                  }}
                   images={liveTopic.images || []}
                   onAddImage={(img) => {
                     if (addTopicImageAttachment) {
@@ -909,6 +938,32 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           onDeleteImage={(imgId) => {
             if (deleteTopicImageAttachment) {
               deleteTopicImageAttachment(liveTopic.id, imgId);
+            }
+          }}
+        />
+      )}
+
+      {/* IN-APP SPLIT-SCREEN LECTURE & TIMESTAMP SYNC MODAL */}
+      {isSplitLectureOpen && (
+        <SplitScreenLectureStudyModal
+          isOpen={isSplitLectureOpen}
+          onClose={() => setIsSplitLectureOpen(false)}
+          topicName={liveTopic.name}
+          subjectName={subjectName}
+          chapterName={chapterName}
+          lectures={liveTopic.lectures || []}
+          initialLectureId={splitLectureId}
+          initialSeekSeconds={splitLectureSeekSeconds}
+          initialNotes={notes}
+          onSaveNotes={handleSaveNotes}
+          onAddTimestamp={(lectureId, ts) => {
+            if (addLectureTimestamp) {
+              addLectureTimestamp(liveTopic.id, lectureId, ts);
+            }
+          }}
+          onDeleteTimestamp={(lectureId, tsId) => {
+            if (deleteLectureTimestamp) {
+              deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
             }
           }}
         />

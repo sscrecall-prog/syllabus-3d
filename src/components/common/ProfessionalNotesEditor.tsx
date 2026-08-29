@@ -22,11 +22,14 @@ import {
   Download,
   Trash2,
   X,
-  Plus
+  Plus,
+  Clock,
+  Play
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
-import { TopicImageAttachment } from '../../types/syllabus';
+import { TopicImageAttachment, TopicLecture } from '../../types/syllabus';
+import { parseTimestampToSeconds } from '../../utils/youtubeUtils';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -37,6 +40,8 @@ interface ProfessionalNotesEditorProps {
   onSave: (content: string) => void;
   onOpenSplitPdf?: () => void;
   hasPdfAttachments?: boolean;
+  lectures?: TopicLecture[];
+  onOpenSplitLecture?: (lectureId?: string, seekSeconds?: number) => void;
   images?: TopicImageAttachment[];
   onAddImage?: (image: { title?: string; dataUrl: string; fileSize?: number }) => void;
   onDeleteImage?: (imageId: string) => void;
@@ -51,6 +56,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   onSave,
   onOpenSplitPdf,
   hasPdfAttachments = false,
+  lectures = [],
+  onOpenSplitLecture,
   images = [],
   onAddImage,
   onDeleteImage
@@ -460,16 +467,47 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </div>
         );
       }
-      // Bullet list
+      // Bullet list with timestamp support
       else if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
-        elements.push(
-          <div key={i} className="flex items-start gap-2.5 my-1 pl-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-2 shrink-0" />
-            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-              {line.trim().substring(2)}
-            </p>
-          </div>
-        );
+        const rawBullet = line.trim().substring(2);
+        const tsMatch = rawBullet.match(/^(?:⏱️\s*)?(?:\[|@)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(.*)$/);
+
+        if (tsMatch && tsMatch[1]) {
+          const timeStr = tsMatch[1];
+          const seconds = parseTimestampToSeconds(timeStr);
+          const restText = tsMatch[2];
+
+          elements.push(
+            <div key={i} className="flex items-start gap-2.5 my-1.5 pl-1 group/ts">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  if (onOpenSplitLecture) {
+                    onOpenSplitLecture(lectures?.[0]?.id, seconds);
+                  }
+                }}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-white border border-red-500/30 text-xs font-mono font-bold cursor-pointer transition-all active:scale-95 shadow-xs shrink-0 mt-0.5"
+                title={`Click to open lecture video at ${timeStr} ⏱️`}
+              >
+                <Play className="w-2.5 h-2.5 fill-current" />
+                <span>{timeStr}</span>
+              </button>
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                {restText}
+              </p>
+            </div>
+          );
+        } else {
+          elements.push(
+            <div key={i} className="flex items-start gap-2.5 my-1 pl-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-2 shrink-0" />
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                {rawBullet}
+              </p>
+            </div>
+          );
+        }
       }
       // Horizontal Rule
       else if (line.trim() === '---' || line.trim() === '***') {
@@ -575,7 +613,21 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] dark:text-[#C4B5FD] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
             >
               <Columns className="w-3.5 h-3.5" />
-              <span>Split Study</span>
+              <span>Split PDF</span>
+            </button>
+          )}
+
+          {onOpenSplitLecture && (
+            <button
+              onClick={() => onOpenSplitLecture(lectures?.[0]?.id, 0)}
+              title="Watch Video Lecture & Take Synchronized Notes"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>Lecture Sync</span>
+              <span className="text-[9px] px-1 py-0.2 rounded bg-red-600 text-white font-mono font-bold">
+                SYNC
+              </span>
             </button>
           )}
 
@@ -699,6 +751,17 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             >
               <CheckSquare className="w-3 h-3" />
               <span>Checklist</span>
+            </button>
+
+            {/* Timestamp Sync Button */}
+            <button
+              type="button"
+              onClick={() => insertText('\n- ⏱️ [00:00] **Key Concept**: ', '', '')}
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/30 flex items-center gap-1 cursor-pointer"
+              title="Insert Clickable Timestamp Tag (e.g. ⏱️ [12:34])"
+            >
+              <Clock className="w-3 h-3" />
+              <span>+ Timestamp</span>
             </button>
 
             {/* Hidden Image Input */}

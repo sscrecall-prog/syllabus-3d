@@ -9,6 +9,7 @@ import {
   TopicLecture,
   TopicAudioMemo,
   TopicImageAttachment,
+  LectureTimestamp,
   MistakeType,
   MistakeRecord,
   RevisionRecord,
@@ -166,6 +167,8 @@ interface SyllabusContextType {
   deleteTopicPdfAttachment?: (topicId: string, attachmentId: string) => void;
   addTopicLecture?: (topicId: string, lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => void;
   deleteTopicLecture?: (topicId: string, lectureId: string) => void;
+  addLectureTimestamp?: (topicId: string, lectureId: string, timestamp: { timeSeconds: number; timeLabel: string; title: string }) => void;
+  deleteLectureTimestamp?: (topicId: string, lectureId: string, timestampId: string) => void;
   addTopicAudioMemo?: (topicId: string, memo: { title: string; durationSeconds: number; storageKey?: string; audioDataUrl?: string; transcript?: string }) => void;
   deleteTopicAudioMemo?: (topicId: string, memoId: string) => void;
   addTopicImageAttachment?: (topicId: string, image: { title?: string; dataUrl: string; fileSize?: number }) => void;
@@ -1072,6 +1075,66 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  const addLectureTimestamp = (
+    topicId: string,
+    lectureId: string,
+    timestamp: { timeSeconds: number; timeLabel: string; title: string }
+  ) => {
+    const newTs: LectureTimestamp = {
+      id: `ts_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      timeSeconds: timestamp.timeSeconds,
+      timeLabel: timestamp.timeLabel.trim(),
+      title: timestamp.title.trim()
+    };
+
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const lectures = (t.lectures || []).map(lec => {
+              if (lec.id !== lectureId) return lec;
+              const existingTimestamps = lec.timestamps || [];
+              return {
+                ...lec,
+                timestamps: [...existingTimestamps, newTs].sort((a, b) => a.timeSeconds - b.timeSeconds)
+              };
+            });
+            return { ...t, lectures };
+          })
+        }))
+      }))
+    })));
+    soundManager.playCompleteChime();
+  };
+
+  const deleteLectureTimestamp = (topicId: string, lectureId: string, timestampId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const lectures = (t.lectures || []).map(lec => {
+              if (lec.id !== lectureId) return lec;
+              return {
+                ...lec,
+                timestamps: (lec.timestamps || []).filter(ts => ts.id !== timestampId)
+              };
+            });
+            return { ...t, lectures };
+          })
+        }))
+      }))
+    })));
+    soundManager.playClick();
+  };
+
   const addTopicAudioMemo = (topicId: string, memo: { title: string; durationSeconds: number; storageKey?: string; audioDataUrl?: string; transcript?: string }) => {
     const newMemo: TopicAudioMemo = {
       id: `audio_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -1392,6 +1455,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deleteTopicPdfAttachment,
         addTopicLecture,
         deleteTopicLecture,
+        addLectureTimestamp,
+        deleteLectureTimestamp,
         addTopicAudioMemo,
         deleteTopicAudioMemo,
         addTopicImageAttachment,
