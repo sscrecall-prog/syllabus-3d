@@ -39,8 +39,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"Google Sans Text"', '"Google Sans"', '"Outfit"', '"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Google Sans"', '"Outfit"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Google Sans"', '"Outfit"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Menlo', 'monospace']
       },
       boxShadow: {

@@ -1,3 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Google Sans & Google Sans Text Official Typefaces (Antigravity Signature) */
+@font-face {
+  font-family: 'Google Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Google Sans Regular'), local('Google Sans'), local('Product Sans'), url('https://fonts.gstatic.com/s/googlesans/v58/4UaGrEr9qkbt3KP-5ATFX5pO.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Google Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Google Sans Medium'), local('Google Sans-Medium'), url('https://fonts.gstatic.com/s/googlesans/v58/4UabrEr9qkbt3KP-5ATFOkJb_w.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Google Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Google Sans Bold'), local('Google Sans-Bold'), url('https://fonts.gstatic.com/s/googlesans/v58/4UabrEr9qkbt3KP-5ATFOkJb_w.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Google Sans Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Google Sans Text'), local('Google Sans Text Regular'), url('https://fonts.gstatic.com/s/googlesanstext/v21/5aUu9-KzpRiLCAt4Unrc-xIKmCU5qEp2iw.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Google Sans Text';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Google Sans Text Medium'), local('Google Sans Text-Medium'), url('https://fonts.gstatic.com/s/googlesanstext/v21/5aUo9-KzpRiLCAt4Unrc-xIKmCU5FEZ0jg.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Google Sans Text';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Google Sans Text Bold'), local('Google Sans Text-Bold'), url('https://fonts.gstatic.com/s/googlesanstext/v21/5aUo9-KzpRiLCAt4Unrc-xIKmCU5GkZ0jg.woff2') format('woff2');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -41,7 +87,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Google Sans Text', 'Google Sans', 'Outfit', 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
@@ -53,15 +99,16 @@
     color: #A9B1D6;
   }
 
-  /* App Titles & Headings → Bold 700 */
+  /* App Titles & Headings → Google Sans Bold */
   h1, h2, h3, .font-serif, [class*="font-serif"], .app-title {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Google Sans', 'Google Sans Text', 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-weight: 700;
+    letter-spacing: -0.015em;
   }
 
-  /* Body Text → Regular 400 */
+  /* Body Text → Google Sans Text */
   p, span, label, input, textarea, select {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Google Sans Text', 'Google Sans', 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 }
 
