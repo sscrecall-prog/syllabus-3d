@@ -425,6 +425,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             {[
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
               {
+                id: 'lectures',
+                label: 'Lectures',
+                icon: YoutubeIcon,
+                badge: lecturesCount > 0 ? `${lecturesCount} Video` : null,
+                badgeColor: 'bg-red-500'
+              },
+              {
                 id: 'notes',
                 label: 'Notes',
                 icon: FileText,
@@ -432,13 +439,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   ? `${pdfCount > 0 ? `${pdfCount} PDF` : ''}${pdfCount > 0 && audioCount > 0 ? ' • ' : ''}${audioCount > 0 ? `${audioCount} 🎙️` : ''}`
                   : null,
                 badgeColor: 'bg-rose-500'
-              },
-              {
-                id: 'lectures',
-                label: 'Lectures',
-                icon: YoutubeIcon,
-                badge: lecturesCount > 0 ? `${lecturesCount} Video` : null,
-                badgeColor: 'bg-red-500'
               },
               {
                 id: 'mistakes',
@@ -774,6 +774,27 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               </div>
             )}
 
+            {/* LECTURES TAB */}
+            {activeTab === 'lectures' && (
+              <div className="space-y-5">
+                <TopicLecturesSection
+                  topicId={liveTopic.id}
+                  topicName={liveTopic.name}
+                  lectures={liveTopic.lectures || []}
+                  onAddLecture={(lecture) => {
+                    if (addTopicLecture) {
+                      addTopicLecture(liveTopic.id, lecture);
+                    }
+                  }}
+                  onDeleteLecture={(lectureId) => {
+                    if (deleteTopicLecture) {
+                      deleteTopicLecture(liveTopic.id, lectureId);
+                    }
+                  }}
+                />
+              </div>
+            )}
+
             {/* NOTES TAB */}
             {activeTab === 'notes' && (
               <div className="space-y-5">
@@ -829,27 +850,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   onOpenSplitStudy={(attachmentId) => {
                     setSplitPdfAttachmentId(attachmentId);
                     setIsSplitPdfOpen(true);
-                  }}
-                />
-              </div>
-            )}
-
-            {/* LECTURES TAB */}
-            {activeTab === 'lectures' && (
-              <div className="space-y-5">
-                <TopicLecturesSection
-                  topicId={liveTopic.id}
-                  topicName={liveTopic.name}
-                  lectures={liveTopic.lectures || []}
-                  onAddLecture={(lecture) => {
-                    if (addTopicLecture) {
-                      addTopicLecture(liveTopic.id, lecture);
-                    }
-                  }}
-                  onDeleteLecture={(lectureId) => {
-                    if (deleteTopicLecture) {
-                      deleteTopicLecture(liveTopic.id, lectureId);
-                    }
                   }}
                 />
               </div>
