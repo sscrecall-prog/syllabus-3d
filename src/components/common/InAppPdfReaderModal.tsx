@@ -14,8 +14,9 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
-import { getPdfBlobUrl, downloadPdfFile } from '../../utils/pdfStorage';
+import { getPdfBlobUrl } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
+import { PdfCanvasViewer } from './PdfCanvasViewer';
 
 interface InAppPdfReaderModalProps {
   isOpen: boolean;
@@ -309,10 +310,10 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         )}
       </div>
 
-      {/* MAIN PDF VIEWER DISPLAY (EDGE-TO-EDGE DISTRACTION FREE) */}
-      <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex items-center justify-center">
+      {/* MAIN PDF CANVAS VIEWER DISPLAY (EDGE-TO-EDGE DISTRACTION FREE FOR ALL DEVICES) */}
+      <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex flex-col">
         {isLoading ? (
-          <div className="flex flex-col items-center gap-3.5 text-center p-6">
+          <div className="m-auto flex flex-col items-center gap-3.5 text-center p-6">
             <div className="w-10 h-10 rounded-full border-3 border-[#8B5CF6] border-t-transparent animate-spin" />
             <div>
               <h4 className="text-sm font-bold text-white">Opening PDF in App...</h4>
@@ -320,7 +321,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             </div>
           </div>
         ) : loadError ? (
-          <div className="text-center p-8 max-w-md space-y-3">
+          <div className="m-auto text-center p-8 max-w-md space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto">
               <AlertCircle className="w-6 h-6" />
             </div>
@@ -337,13 +338,9 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             </button>
           </div>
         ) : pdfBlobUrl ? (
-          <iframe
-            src={`${pdfBlobUrl}#toolbar=1&navpanes=0&view=FitH`}
-            className="w-full h-full border-none bg-white"
-            title={currentAttachment?.name || 'In-App PDF Reader'}
-          />
+          <PdfCanvasViewer pdfUrl={pdfBlobUrl} className="flex-1 min-h-0" />
         ) : (
-          <div className="text-center p-6 space-y-2">
+          <div className="m-auto text-center p-6 space-y-2">
             <FileText className="w-10 h-10 text-[#383842] mx-auto" />
             <p className="text-xs text-[#A1A1AA]">No PDF document is available to view.</p>
           </div>

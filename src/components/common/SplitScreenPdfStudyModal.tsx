@@ -28,6 +28,7 @@ import {
 import { TopicPdfAttachment, TopicImageAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
+import { PdfCanvasViewer } from './PdfCanvasViewer';
 
 interface SplitScreenPdfStudyModalProps {
   isOpen: boolean;
@@ -416,21 +417,17 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
             </div>
           </div>
 
-          {/* PDF Viewer Frame */}
-          <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex items-center justify-center">
+          {/* PDF Canvas Viewer Frame */}
+          <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex flex-col">
             {isLoadingPdf ? (
-              <div className="flex flex-col items-center gap-3">
+              <div className="m-auto flex flex-col items-center gap-3">
                 <div className="w-8 h-8 rounded-full border-2 border-[#8B5CF6] border-t-transparent animate-spin" />
                 <span className="text-xs text-[#A1A1AA] font-mono">Loading PDF Notes...</span>
               </div>
             ) : pdfBlobUrl ? (
-              <iframe
-                src={`${pdfBlobUrl}#toolbar=1&navpanes=0&view=FitH`}
-                className="w-full h-full border-none"
-                title="PDF Document Viewer"
-              />
+              <PdfCanvasViewer pdfUrl={pdfBlobUrl} className="flex-1 min-h-0" />
             ) : (
-              <div className="text-center p-6 space-y-2">
+              <div className="m-auto text-center p-6 space-y-2">
                 <FileText className="w-10 h-10 text-[#383842] mx-auto" />
                 <p className="text-xs text-[#A1A1AA]">No PDF is currently loaded for this topic.</p>
               </div>
