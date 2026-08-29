@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-[#F7F6F0] dark:bg-[#0B0B0D] border-r border-[#D8D8CF] dark:border-[#272730] p-4 justify-between transition-colors z-20 shrink-0 select-none overflow-y-auto">
+    <aside className="hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-[#F7F6F0] dark:bg-[#0B0B0D] border-r border-[#D8D8CF] dark:border-[#272730] p-4 justify-between transition-colors z-30 shrink-0 select-none overflow-y-auto">
       <div className="space-y-3.5">
         {/* App Branding */}
         <div className="flex items-center gap-3 px-2 py-1">
