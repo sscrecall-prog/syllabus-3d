@@ -788,15 +788,12 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
           
           {/* Left Visual Badge Banner */}
-          <div className="w-20 sm:w-28 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19] via-[#161F36] to-[#0A0D14] border border-[#292E42] flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden">
-            <span className="text-[9px] sm:text-[10px] font-black tracking-wider text-slate-300 uppercase font-sans leading-none">
-              FAST
+          <div className="w-20 sm:w-28 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19] via-[#161F36] to-[#0A0D14] border border-[#292E42] flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden font-serif">
+            <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.4)] uppercase leading-none">
+              SYLLABUS
             </span>
-            <span className="text-xs sm:text-sm font-black tracking-tight text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.4)] font-serif leading-none mt-0.5">
-              REVISION
-            </span>
-            <span className="text-[8px] sm:text-[9px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-0.5">
-              BATCH
+            <span className="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-1">
+              EXPLORER
             </span>
           </div>
 
@@ -805,7 +802,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
-                <span>Expiry: {formattedExamDate}</span>
+                <span>Exam Date: {formattedExamDate}</span>
               </span>
               {daysRemaining > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
@@ -815,7 +812,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
 
             <h1 className="text-sm sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight font-serif truncate">
-              {currentExam.name ? `${currentExam.name.toUpperCase()} – BATCH` : 'FAST REVISION BATCH – 2026'}
+              {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
             </h1>
 
             <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-[#85877E] dark:text-[#787C99] flex-wrap">
