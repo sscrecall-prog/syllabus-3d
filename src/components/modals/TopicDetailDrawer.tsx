@@ -59,6 +59,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     deleteTopicLecture,
     addTopicAudioMemo,
     deleteTopicAudioMemo,
+    addTopicImageAttachment,
+    deleteTopicImageAttachment,
     currentExam
   } = useSyllabus();
 
@@ -219,6 +221,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const pdfCount = liveTopic.pdfAttachments ? liveTopic.pdfAttachments.length : 0;
   const audioCount = liveTopic.audioMemos ? liveTopic.audioMemos.length : 0;
   const lecturesCount = liveTopic.lectures ? liveTopic.lectures.length : 0;
+  const imagesCount = liveTopic.images ? liveTopic.images.length : 0;
 
   // Format Stopwatch Display
   const formatStopwatch = (totalSecs: number) => {
@@ -435,9 +438,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 id: 'notes',
                 label: 'Notes',
                 icon: FileText,
-                badge: (pdfCount > 0 || audioCount > 0)
-                  ? `${pdfCount > 0 ? `${pdfCount} PDF` : ''}${pdfCount > 0 && audioCount > 0 ? ' • ' : ''}${audioCount > 0 ? `${audioCount} 🎙️` : ''}`
-                  : null,
+                badge: (() => {
+                  const items: string[] = [];
+                  if (imagesCount > 0) items.push(`${imagesCount} 📸`);
+                  if (pdfCount > 0) items.push(`${pdfCount} PDF`);
+                  if (audioCount > 0) items.push(`${audioCount} 🎙️`);
+                  return items.length > 0 ? items.join(' • ') : null;
+                })(),
                 badgeColor: 'bg-rose-500'
               },
               {
@@ -810,6 +817,17 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     setIsSplitPdfOpen(true);
                   }}
                   hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
+                  images={liveTopic.images || []}
+                  onAddImage={(img) => {
+                    if (addTopicImageAttachment) {
+                      addTopicImageAttachment(liveTopic.id, img);
+                    }
+                  }}
+                  onDeleteImage={(imgId) => {
+                    if (deleteTopicImageAttachment) {
+                      deleteTopicImageAttachment(liveTopic.id, imgId);
+                    }
+                  }}
                 />
 
                 <TopicAudioMemosSection
@@ -880,6 +898,17 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           attachments={liveTopic.pdfAttachments || []}
           initialAttachmentId={splitPdfAttachmentId}
           onSaveNotes={handleSaveNotes}
+          images={liveTopic.images || []}
+          onAddImage={(img) => {
+            if (addTopicImageAttachment) {
+              addTopicImageAttachment(liveTopic.id, img);
+            }
+          }}
+          onDeleteImage={(imgId) => {
+            if (deleteTopicImageAttachment) {
+              deleteTopicImageAttachment(liveTopic.id, imgId);
+            }
+          }}
         />
       )}
     </div>

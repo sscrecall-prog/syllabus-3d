@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Edit3,
   Eye,
@@ -10,24 +10,23 @@ import {
   FileText,
   Sigma,
   CheckSquare,
-  Table as TableIcon,
-  Sparkles,
   BookOpen,
   Info,
   Hash,
   FileDown,
-  Printer,
-  ExternalLink,
   Columns,
   Mic,
   MicOff,
   Image as ImageIcon,
   Maximize2,
   Download,
-  X
+  Trash2,
+  X,
+  Plus
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
+import { TopicImageAttachment } from '../../types/syllabus';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -38,6 +37,9 @@ interface ProfessionalNotesEditorProps {
   onSave: (content: string) => void;
   onOpenSplitPdf?: () => void;
   hasPdfAttachments?: boolean;
+  images?: TopicImageAttachment[];
+  onAddImage?: (image: { title?: string; dataUrl: string; fileSize?: number }) => void;
+  onDeleteImage?: (imageId: string) => void;
 }
 
 export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = ({
@@ -48,20 +50,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   examName,
   onSave,
   onOpenSplitPdf,
-  hasPdfAttachments = false
+  hasPdfAttachments = false,
+  images = [],
+  onAddImage,
+  onDeleteImage
 }) => {
   const [content, setContent] = useState(initialContent || '');
   const [isEditing, setIsEditing] = useState(!initialContent || initialContent.trim().length === 0);
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [zoomImageSrc, setZoomImageSrc] = useState<string | null>(null);
+  const [zoomImage, setZoomImage] = useState<{ src: string; title: string } | null>(null);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
+  const [showImageToast, setShowImageToast] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const speechRecognitionRef = useRef<any>(null);
   const fileInputImageRef = useRef<HTMLInputElement>(null);
 
-  // Compress image before embedding to keep notes lightweight
+  // Compress image before embedding to keep storage lightweight
   const compressAndReadImage = (file: File | Blob): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -113,10 +119,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           try {
             const base64Data = await compressAndReadImage(file);
             const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-            const markdownImage = `\n![Screenshot ${timeStr}](${base64Data})\n`;
+            const title = file.name && file.name !== 'image.png' ? file.name : `Screenshot ${timeStr}`;
             
-            insertText(markdownImage, '', '');
+            if (onAddImage) {
+              onAddImage({ title, dataUrl: base64Data, fileSize: file.size });
+            }
             soundManager.playCompleteChime();
+            setShowImageToast(true);
+            setTimeout(() => setShowImageToast(false), 2500);
           } catch (err) {
             console.error('Failed to paste screenshot:', err);
           } finally {
@@ -143,9 +153,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
     try {
       const base64Data = await compressAndReadImage(file);
-      const markdownImage = `\n![${file.name}](${base64Data})\n`;
-      insertText(markdownImage, '', '');
+      if (onAddImage) {
+        onAddImage({ title: file.name, dataUrl: base64Data, fileSize: file.size });
+      }
       soundManager.playCompleteChime();
+      setShowImageToast(true);
+      setTimeout(() => setShowImageToast(false), 2500);
     } catch (err) {
       console.error('Failed to upload image:', err);
     } finally {
@@ -210,9 +223,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }
   };
 
-  // Sync if topic changes
-  React.useEffect(() => {
-    setContent(initialContent || '');
+  // Sync if topic changes & auto-migrate any legacy base64 image strings to image attachments
+  useEffect(() => {
+    if (initialContent && initialContent.includes('data:image/')) {
+      const regex = /!\[(.*?)\]\((data:image\/[^\)]+)\)/g;
+      let match;
+      while ((match = regex.exec(initialContent)) !== null) {
+        const title = match[1] || 'Screenshot';
+        const dataUrl = match[2];
+        if (onAddImage && (!images || !images.some(img => img.dataUrl === dataUrl))) {
+          onAddImage({ title, dataUrl });
+        }
+      }
+      const cleaned = initialContent.replace(regex, '').trim();
+      setContent(cleaned);
+      onSave(cleaned);
+    } else {
+      setContent(initialContent || '');
+    }
     setIsEditing(!initialContent || initialContent.trim().length === 0);
   }, [initialContent]);
 
@@ -295,7 +323,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
   // Custom Markdown & Callout Parser
   const renderFormattedNotes = () => {
-    if (!content || content.trim().length === 0) {
+    if ((!content || content.trim().length === 0) && (!images || images.length === 0)) {
       return (
         <div className="py-12 px-4 text-center space-y-4">
           <div className="w-14 h-14 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center mx-auto">
@@ -306,7 +334,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               No notes added for this topic yet
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
-              Paste your formulas, high-yield rules, shortcuts, or summary notes to turn them into an interactive professional cheat sheet.
+              Type or paste your formulas, rules, shortcuts, or simply paste a screenshot (Ctrl + V) to start building your notes.
             </p>
           </div>
           <button
@@ -336,7 +364,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
         // Collect all consecutive callout lines
         while (i < lines.length && lines[i].trim().startsWith('>')) {
-          const l = lines[i].trim().replace(/^>s*/, '');
+          const l = lines[i].trim().replace(/^>\s*/, '');
           if (!l.startsWith('[!')) {
             calloutLines.push(l);
           }
@@ -451,24 +479,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       else if (line.trim() === '') {
         elements.push(<div key={i} className="h-2" />);
       }
-      // Markdown Images: ![alt](url)
+      // Inline Markdown Images: ![alt](url) (for URLs or any other images)
       else if (line.trim().match(/^!\[(.*?)\]\((.*?)\)$/)) {
-        const imageMatch = line.trim().match(/^!\[(.*?)\]\((.*?)\)$/);
-        const altText = imageMatch ? imageMatch[1] : 'Study Image / Diagram';
-        const imgSrc = imageMatch ? imageMatch[2] : '';
+        const imgMatch = line.trim().match(/^!\[(.*?)\]\((.*?)\)$/);
+        const altText = imgMatch ? imgMatch[1] : 'Image';
+        const imgSrc = imgMatch ? imgMatch[2] : '';
         elements.push(
           <div key={i} className="my-3 max-w-xl rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] bg-[#141418] shadow-md group">
             <div className="relative">
               <img
                 src={imgSrc}
                 alt={altText}
-                onClick={() => setZoomImageSrc(imgSrc)}
+                onClick={() => setZoomImage({ src: imgSrc, title: altText })}
                 className="w-full max-h-80 object-contain cursor-zoom-in hover:opacity-95 transition-opacity"
                 loading="lazy"
               />
               <button
                 type="button"
-                onClick={() => setZoomImageSrc(imgSrc)}
+                onClick={() => setZoomImage({ src: imgSrc, title: altText })}
                 className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 title="View Fullscreen"
               >
@@ -482,7 +510,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               </span>
               <button
                 type="button"
-                onClick={() => setZoomImageSrc(imgSrc)}
+                onClick={() => setZoomImage({ src: imgSrc, title: altText })}
                 className="text-[10px] font-bold text-[#8B5CF6] hover:underline cursor-pointer"
               >
                 Click to Enlarge 🔍
@@ -510,7 +538,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const charCount = content.length;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" onPaste={handlePaste}>
       {/* Editor & View Control Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 shadow-sm">
         <div className="flex items-center gap-1">
@@ -535,7 +563,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             }`}
           >
             <Edit3 className="w-3.5 h-3.5" />
-            <span>Edit / Paste</span>
+            <span>Edit Notes</span>
           </button>
         </div>
 
@@ -689,7 +717,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               title="Upload Image or Paste Screenshot (Ctrl+V supported)"
             >
               <ImageIcon className="w-3 h-3" />
-              <span>+ Image</span>
+              <span>+ Image / Screenshot</span>
             </button>
           </div>
 
@@ -714,7 +742,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             </div>
 
             <span className="text-[10px] text-purple-600 dark:text-purple-400 font-medium">
-              💡 Press <strong>Ctrl + V</strong> to paste any screenshot
+              💡 Press <strong>Ctrl + V</strong> anywhere to paste screenshot
             </span>
           </div>
         </div>
@@ -724,7 +752,69 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       {isProcessingImage && (
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold animate-pulse">
           <ImageIcon className="w-4 h-4 animate-bounce" />
-          <span>Processing and embedding screenshot into notes...</span>
+          <span>Processing and saving screenshot...</span>
+        </div>
+      )}
+
+      {/* Screenshot Success Toast */}
+      {showImageToast && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold animate-fade-in">
+          <Check className="w-4 h-4 stroke-[3]" />
+          <span>Screenshot attached successfully to this topic!</span>
+        </div>
+      )}
+
+      {/* Attached Screenshots Strip (in Edit Mode) */}
+      {isEditing && images && images.length > 0 && (
+        <div className="p-3 rounded-2xl bg-white/70 dark:bg-[#18181D]/80 border border-[#D8D8CF] dark:border-[#272730] space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-[#8B5CF6]" />
+              Attached Screenshots & Images ({images.length})
+            </span>
+            <span className="text-[10px] text-[#85877E]">Click to view • Press Ctrl+V to paste more</span>
+          </div>
+          <div className="flex items-center gap-2.5 overflow-x-auto py-1 no-scrollbar">
+            {images.map((img) => (
+              <div
+                key={img.id}
+                className="relative group shrink-0 w-24 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-[#383842] bg-black/20 shadow-sm"
+              >
+                <img
+                  src={img.dataUrl}
+                  alt={img.title}
+                  onClick={() => setZoomImage({ src: img.dataUrl, title: img.title })}
+                  className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 pointer-events-none">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setZoomImage({ src: img.dataUrl, title: img.title });
+                    }}
+                    className="p-1 rounded-md bg-white/20 hover:bg-white/40 text-white pointer-events-auto cursor-pointer"
+                    title="Zoom Image"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </button>
+                  {onDeleteImage && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteImage(img.id);
+                      }}
+                      className="p-1 rounded-md bg-rose-500/80 hover:bg-rose-600 text-white pointer-events-auto cursor-pointer"
+                      title="Delete Image"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -736,54 +826,121 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             value={content}
             onChange={e => setContent(e.target.value)}
             onPaste={handlePaste}
-            placeholder={"Paste or write formulas, rules, tips, and shortcuts here...\n\n📸 Tip: Press Ctrl + V to directly paste any Screenshot or diagram into your notes!\n\n> [!FORMULA]\n> Your formula here\n\n> [!WARNING]\n> Common trap here\n\n- [ ] Checklist item"}
-            rows={14}
+            placeholder={"Type your notes, formulas, rules, and memory tips here...\n\n📸 Tip: Press Ctrl + V anytime to paste a screenshot directly!\n\n> [!FORMULA]\n> Your formula here\n\n> [!WARNING]\n> Common trap here\n\n- [ ] Checklist item"}
+            rows={12}
             className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-xs sm:text-[13px] text-slate-900 dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-inner"
           />
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
             <span>{wordCount} words · {charCount} characters</span>
-            <span>Markdown, Images & LaTeX formula tags supported</span>
+            <span>Markdown & LaTeX formula tags supported</span>
           </div>
         </div>
       ) : (
         /* Rendered Study Mode */
-        <div className="p-4 sm:p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm min-h-[260px]">
-          {renderFormattedNotes()}
+        <div className="space-y-4">
+          <div className="p-4 sm:p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm min-h-[200px]">
+            {renderFormattedNotes()}
+          </div>
+
+          {/* Attached Screenshots Gallery (in Study View) */}
+          {images && images.length > 0 && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-white/70 dark:bg-[#18181D]/90 border border-[#D8D8CF] dark:border-[#272730] shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5 font-serif">
+                  <ImageIcon className="w-4 h-4 text-[#8B5CF6]" />
+                  Attached Screenshots & Diagrams ({images.length})
+                </span>
+                <span className="text-[10px] text-[#85877E]">Click image to view in full resolution</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {images.map((img) => (
+                  <div
+                    key={img.id}
+                    className="relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-[#272730] bg-[#121216] shadow-sm"
+                  >
+                    <div className="relative aspect-video flex items-center justify-center bg-black/40">
+                      <img
+                        src={img.dataUrl}
+                        alt={img.title}
+                        onClick={() => setZoomImage({ src: img.dataUrl, title: img.title })}
+                        className="w-full h-full object-contain cursor-zoom-in hover:opacity-95 transition-opacity"
+                        loading="lazy"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setZoomImage({ src: img.dataUrl, title: img.title })}
+                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                        title="View Fullscreen"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="px-3 py-2 bg-[#18181D]/95 border-t border-[#272730] flex items-center justify-between text-[11px] text-[#A1A1AA]">
+                      <span className="truncate font-medium max-w-[150px]">{img.title}</span>
+                      <div className="flex items-center gap-1.5">
+                        <a
+                          href={img.dataUrl}
+                          download={`${img.title || 'screenshot'}.png`}
+                          className="p-1 rounded hover:text-white cursor-pointer"
+                          title="Download"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                        {onDeleteImage && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteImage(img.id)}
+                            className="p-1 rounded hover:text-rose-400 cursor-pointer"
+                            title="Delete Screenshot"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* High-Res Image Zoom Lightbox Modal */}
-      {zoomImageSrc && (
+      {zoomImage && (
         <div
-          onClick={() => setZoomImageSrc(null)}
+          onClick={() => setZoomImage(null)}
           className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="relative max-w-5xl max-h-[90vh] flex flex-col items-center cursor-default"
+            className="relative max-w-5xl max-h-[90vh] flex flex-col items-center cursor-default bg-[#18181D] p-3 rounded-2xl border border-[#272730] shadow-2xl"
           >
-            <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
-              <a
-                href={zoomImageSrc}
-                download="study-screenshot.png"
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors"
-                title="Download Image"
-              >
-                <Download className="w-4 h-4" />
-              </a>
-              <button
-                onClick={() => setZoomImageSrc(null)}
-                className="p-2 rounded-xl bg-white/10 hover:bg-rose-500/80 text-white backdrop-blur-md transition-colors cursor-pointer"
-                title="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
+            <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-[#272730] text-white">
+              <span className="text-xs font-bold truncate max-w-md">{zoomImage.title}</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={zoomImage.src}
+                  download={`${zoomImage.title || 'screenshot'}.png`}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                  title="Download Image"
+                >
+                  <Download className="w-4 h-4" />
+                </a>
+                <button
+                  onClick={() => setZoomImage(null)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-rose-500/80 text-white transition-colors cursor-pointer"
+                  title="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <img
-              src={zoomImageSrc}
-              alt="Zoomed Screenshot"
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+              src={zoomImage.src}
+              alt={zoomImage.title}
+              className="max-w-full max-h-[75vh] object-contain rounded-xl"
             />
           </div>
         </div>

@@ -22,9 +22,10 @@ import {
   GripVertical,
   ChevronsLeftRight,
   RotateCcw,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Trash2
 } from 'lucide-react';
-import { TopicPdfAttachment } from '../../types/syllabus';
+import { TopicPdfAttachment, TopicImageAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -38,6 +39,9 @@ interface SplitScreenPdfStudyModalProps {
   attachments: TopicPdfAttachment[];
   initialAttachmentId?: string;
   onSaveNotes: (newNotes: string) => void;
+  images?: TopicImageAttachment[];
+  onAddImage?: (image: { title?: string; dataUrl: string; fileSize?: number }) => void;
+  onDeleteImage?: (imageId: string) => void;
 }
 
 export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> = ({
@@ -49,7 +53,10 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   initialNotes,
   attachments = [],
   initialAttachmentId,
-  onSaveNotes
+  onSaveNotes,
+  images = [],
+  onAddImage,
+  onDeleteImage
 }) => {
   const [selectedAttachmentId, setSelectedAttachmentId] = useState<string>(
     initialAttachmentId || (attachments.length > 0 ? attachments[0].id : '')
@@ -61,6 +68,8 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   const [notesContent, setNotesContent] = useState(initialNotes || '');
   const [isSaved, setIsSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [zoomImage, setZoomImage] = useState<{ src: string; title: string } | null>(null);
+  const [showImageNotice, setShowImageNotice] = useState(false);
 
   // Free Draggable Split Ratio Percentage (15% to 85%)
   const [pdfWidthPercent, setPdfWidthPercent] = useState<number>(() => {
@@ -73,49 +82,60 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   });
 
   const [isDragging, setIsDragging] = useState(false);
-  
-  // Mobile Active Tab: 'pdf' | 'notes'
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [mobileTab, setMobileTab] = useState<'pdf' | 'notes'>('pdf');
 
-  // Update initial selected attachment when modal opens or initialAttachmentId changes
+  // Auto clean legacy base64 strings from notesContent
   useEffect(() => {
-    if (initialAttachmentId) {
-      setSelectedAttachmentId(initialAttachmentId);
-    } else if (attachments.length > 0 && !selectedAttachmentId) {
-      setSelectedAttachmentId(attachments[0].id);
+    if (initialNotes && initialNotes.includes('data:image/')) {
+      const regex = /!\[(.*?)\]\((data:image\/[^\)]+)\)/g;
+      let match;
+      while ((match = regex.exec(initialNotes)) !== null) {
+        const title = match[1] || 'Screenshot';
+        const dataUrl = match[2];
+        if (onAddImage && (!images || !images.some(img => img.dataUrl === dataUrl))) {
+          onAddImage({ title, dataUrl });
+        }
+      }
+      const cleaned = initialNotes.replace(regex, '').trim();
+      setNotesContent(cleaned);
+      onSaveNotes(cleaned);
+    } else {
+      setNotesContent(initialNotes || '');
     }
-  }, [initialAttachmentId, attachments]);
-
-  useEffect(() => {
-    setNotesContent(initialNotes || '');
   }, [initialNotes]);
 
-  // Load PDF Blob URL for current selected attachment
+  // Load PDF Blob on select
   useEffect(() => {
     let isMounted = true;
+    if (!isOpen) return;
+
     const loadPdf = async () => {
-      const activeAttachment = attachments.find(a => a.id === selectedAttachmentId);
-      if (!activeAttachment) {
+      const current = attachments.find(a => a.id === selectedAttachmentId) || attachments[0];
+      if (!current) {
         setPdfBlobUrl(null);
         return;
       }
 
       setIsLoadingPdf(true);
-      if (activeAttachment.url) {
-        setPdfBlobUrl(activeAttachment.url);
-        setIsLoadingPdf(false);
-      } else if (activeAttachment.storageKey) {
-        const blobUrl = await getPdfBlobUrl(activeAttachment.storageKey);
+      try {
+        const url = await getPdfBlobUrl(current.id);
         if (isMounted) {
-          setPdfBlobUrl(blobUrl);
+          setPdfBlobUrl(url || current.url || null);
+        }
+      } catch (err) {
+        console.error('Failed to load PDF in Split Study:', err);
+        if (isMounted) {
+          setPdfBlobUrl(current.url || null);
+        }
+      } finally {
+        if (isMounted) {
           setIsLoadingPdf(false);
         }
-      } else {
-        setIsLoadingPdf(false);
       }
     };
 
-    if (isOpen && selectedAttachmentId) {
+    if (attachments.length > 0) {
       loadPdf();
     }
 
@@ -212,13 +232,13 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
             const base64 = loadEvt.target?.result as string;
             if (base64) {
               const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-              const markdownImage = `\n![Screenshot ${timeStr}](${base64})\n`;
-              setNotesContent(prev => {
-                const updated = prev + markdownImage;
-                onSaveNotes(updated);
-                return updated;
-              });
+              const title = file.name && file.name !== 'image.png' ? file.name : `Screenshot ${timeStr}`;
+              if (onAddImage) {
+                onAddImage({ title, dataUrl: base64, fileSize: file.size });
+              }
               soundManager.playCompleteChime();
+              setShowImageNotice(true);
+              setTimeout(() => setShowImageNotice(false), 2500);
             }
           };
           reader.readAsDataURL(file);
@@ -248,224 +268,184 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
       <div className="px-3 sm:px-6 py-2.5 bg-[#18181D] border-b border-[#272730] flex items-center justify-between gap-3 shrink-0">
         
         {/* Left: Topic & Breadcrumb info */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-[#8B5CF6]/20 text-[#8B5CF6] border border-[#8B5CF6]/30 flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] shrink-0">
             <Columns className="w-4 h-4" />
           </div>
-
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#A1A1AA] truncate">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B5CF6]">
               <span>{subjectName || 'Subject'}</span>
               <span>•</span>
               <span className="truncate">{chapterName || 'Chapter'}</span>
-              <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-[#8B5CF6]/20 text-[#C4B5FD] hidden xs:inline">
-                Drag to Resize
-              </span>
             </div>
-            <h2 className="text-xs sm:text-sm font-bold text-[#F5F5F7] truncate font-serif">
-              {topicName}
-            </h2>
+            <h3 className="text-xs sm:text-sm font-extrabold text-white truncate">
+              {topicName} <span className="font-normal text-[#A1A1AA]">(Split-Screen Study Mode)</span>
+            </h3>
           </div>
         </div>
 
-        {/* Center: PDF Selector Dropdown if multiple attachments exist */}
-        {attachments.length > 1 && (
-          <div className="hidden md:flex items-center gap-2 bg-[#23232A] px-3 py-1.5 rounded-xl border border-[#272730]">
-            <FileText className="w-3.5 h-3.5 text-rose-400" />
-            <select
-              value={selectedAttachmentId}
-              onChange={e => {
-                soundManager.playClick();
-                setSelectedAttachmentId(e.target.value);
-              }}
-              className="bg-transparent text-xs font-semibold text-[#F5F5F7] focus:outline-none cursor-pointer max-w-xs truncate"
+        {/* Center: Split-Ratio Quick Presets */}
+        <div className="hidden md:flex items-center gap-1 bg-[#23232A] p-1 rounded-xl border border-[#272730]">
+          <span className="text-[10px] font-bold text-[#A1A1AA] px-2 font-mono uppercase">
+            Ratio:
+          </span>
+          {[
+            { label: '30:70', val: 30, desc: 'More Notes' },
+            { label: '50:50', val: 50, desc: 'Balanced' },
+            { label: '70:30', val: 70, desc: 'More PDF' }
+          ].map(preset => (
+            <button
+              key={preset.val}
+              type="button"
+              onClick={() => setPresetRatio(preset.val)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                pdfWidthPercent === preset.val
+                  ? 'bg-[#8B5CF6] text-white shadow-sm'
+                  : 'text-[#A1A1AA] hover:text-white hover:bg-[#2E2E38]'
+              }`}
+              title={preset.desc}
             >
-              {attachments.map(att => (
-                <option key={att.id} value={att.id} className="bg-[#18181D] text-white">
-                  {att.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+              {preset.label}
+            </button>
+          ))}
+          <div className="h-3 w-px bg-[#383842] mx-1" />
+          <span className="text-[11px] font-mono text-[#8B5CF6] font-bold pr-2">
+            {pdfWidthPercent}% / {100 - pdfWidthPercent}%
+          </span>
+        </div>
 
-        {/* Right: Quick Adjust Presets & Controls */}
+        {/* Right Action Tools */}
         <div className="flex items-center gap-2 shrink-0">
           
-          {/* Quick Split Ratio Presets (Desktop) */}
-          <div className="hidden lg:flex items-center gap-1 bg-[#23232A] p-1 rounded-xl border border-[#272730]">
-            <span className="text-[10px] font-mono font-bold text-[#C4B5FD] px-2">
-              {pdfWidthPercent}% PDF : {100 - pdfWidthPercent}% Notes
-            </span>
+          {/* Mobile Toggle Button */}
+          <div className="flex lg:hidden bg-[#23232A] p-0.5 rounded-lg border border-[#272730]">
             <button
-              onClick={() => setPresetRatio(50)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                pdfWidthPercent === 50
-                  ? 'bg-[#8B5CF6] text-white shadow-sm font-bold'
-                  : 'text-[#A1A1AA] hover:text-white'
+              onClick={() => setMobileTab('pdf')}
+              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-colors ${
+                mobileTab === 'pdf' ? 'bg-[#8B5CF6] text-white' : 'text-[#A1A1AA]'
               }`}
-              title="50% PDF - 50% Notes (Balanced)"
             >
-              50:50
+              PDF View
             </button>
             <button
-              onClick={() => setPresetRatio(65)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                pdfWidthPercent === 65
-                  ? 'bg-[#8B5CF6] text-white shadow-sm font-bold'
-                  : 'text-[#A1A1AA] hover:text-white'
+              onClick={() => setMobileTab('notes')}
+              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-colors ${
+                mobileTab === 'notes' ? 'bg-[#8B5CF6] text-white' : 'text-[#A1A1AA]'
               }`}
-              title="65% PDF - 35% Notes (Reading Focus)"
             >
-              PDF Focus
-            </button>
-            <button
-              onClick={() => setPresetRatio(35)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                pdfWidthPercent === 35
-                  ? 'bg-[#8B5CF6] text-white shadow-sm font-bold'
-                  : 'text-[#A1A1AA] hover:text-white'
-              }`}
-              title="35% PDF - 65% Notes (Writing Focus)"
-            >
-              Notes Focus
+              Notes View
             </button>
           </div>
 
-          {/* Open in Chrome Tab Button */}
-          {pdfBlobUrl && (
-            <button
-              onClick={() => openPdfInNewTab(pdfBlobUrl, currentAttachment?.name)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#23232A] hover:bg-[#2E2E38] text-[#F5F5F7] border border-[#272730] text-xs font-semibold transition-all cursor-pointer"
-              title="Open PDF in Chrome New Tab"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>New Tab</span>
-            </button>
-          )}
-
-          {/* Save Notes Button */}
           <button
             onClick={handleManualSave}
-            className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
           >
-            {isSaved ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Save className="w-3.5 h-3.5" />}
-            <span>{isSaved ? 'Saved!' : 'Save Notes'}</span>
+            {isSaved ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">{isSaved ? 'Saved!' : 'Save Notes'}</span>
           </button>
 
-          {/* Close Modal Button */}
           <button
-            onClick={() => {
-              soundManager.playClick();
-              onClose();
-            }}
+            onClick={onClose}
             className="p-1.5 rounded-xl bg-[#23232A] hover:bg-rose-500/20 text-[#A1A1AA] hover:text-rose-400 border border-[#272730] transition-colors cursor-pointer"
-            title="Exit Split Study Mode"
+            title="Close Split-Screen Study"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* 2. MOBILE TAB SWITCHER (For Small Screens) */}
-      <div className="lg:hidden flex items-center bg-[#18181D] border-b border-[#272730] px-3 py-1.5 gap-2">
-        <button
-          onClick={() => setMobileTab('pdf')}
-          className={`flex-1 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
-            mobileTab === 'pdf'
-              ? 'bg-[#8B5CF6] text-white shadow-sm'
-              : 'bg-[#23232A] text-[#A1A1AA]'
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          <span>📑 PDF Viewer</span>
-        </button>
-        <button
-          onClick={() => setMobileTab('notes')}
-          className={`flex-1 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
-            mobileTab === 'notes'
-              ? 'bg-[#8B5CF6] text-white shadow-sm'
-              : 'bg-[#23232A] text-[#A1A1AA]'
-          }`}
-        >
-          <Edit3 className="w-3.5 h-3.5" />
-          <span>📝 Notes & Formulas</span>
-        </button>
-      </div>
-
-      {/* 3. MAIN SPLIT BODY CONTAINER WITH DRAGGABLE RESIZER */}
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden relative">
+      {/* 2. SPLIT RESIZABLE MAIN WORKSPACE */}
+      <div className="flex-1 flex min-h-0 relative overflow-hidden">
         
-        {/* LEFT PANEL: IN-APP PDF READER */}
+        {/* LEFT PANEL: PDF VIEWER */}
         <div
           style={{ width: `${pdfWidthPercent}%` }}
-          className={`h-full flex flex-col bg-[#121216] min-h-0 transition-[width] ${
+          className={`h-full flex flex-col bg-[#111114] min-h-0 transition-[width] ${
             isDragging ? 'transition-none' : 'duration-150'
           } ${mobileTab === 'pdf' ? 'w-full flex' : 'hidden lg:flex'}`}
         >
-          {/* PDF Subheader Bar */}
-          <div className="px-4 py-2 bg-[#18181D]/90 border-b border-[#272730] flex items-center justify-between text-xs text-[#A1A1AA] shrink-0">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-              <span className="font-semibold text-white truncate max-w-xs">
-                {currentAttachment?.name || 'Document'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={handleInsertCitation}
-                className="px-2.5 py-1 rounded-lg bg-[#23232A] hover:bg-[#8B5CF6]/20 text-[#C4B5FD] hover:text-white border border-[#272730] text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-all"
-                title="Insert reference citation to your notes"
-              >
-                <span>+ Ref Citation</span>
-              </button>
-
-              {pdfBlobUrl && (
-                <button
-                  onClick={() => downloadPdfFile(pdfBlobUrl, currentAttachment?.name || 'notes.pdf')}
-                  className="p-1 rounded-lg hover:bg-[#23232A] text-[#A1A1AA] hover:text-white cursor-pointer"
-                  title="Download PDF"
+          {/* PDF Controls & Attachment Selector Bar */}
+          <div className="p-2.5 bg-[#18181D] border-b border-[#272730] flex items-center justify-between gap-2 shrink-0">
+            {attachments.length > 1 ? (
+              <div className="relative flex-1 max-w-sm">
+                <select
+                  value={selectedAttachmentId}
+                  onChange={e => setSelectedAttachmentId(e.target.value)}
+                  className="w-full pl-3 pr-8 py-1.5 rounded-xl bg-[#23232A] border border-[#272730] text-xs font-semibold text-white focus:outline-none focus:border-[#8B5CF6] appearance-none cursor-pointer"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                </button>
+                  {attachments.map(att => (
+                    <option key={att.id} value={att.id}>
+                      📑 {att.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-[#A1A1AA] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            ) : currentAttachment ? (
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-white truncate">
+                <FileText className="w-4 h-4 text-[#8B5CF6] shrink-0" />
+                <span className="truncate">{currentAttachment.name}</span>
+              </div>
+            ) : (
+              <span className="text-xs text-[#A1A1AA] italic">No PDF document attached</span>
+            )}
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {currentAttachment && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleInsertCitation}
+                    className="px-2.5 py-1 rounded-lg bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] text-xs font-bold flex items-center gap-1 cursor-pointer"
+                    title="Insert Citation Reference into Notes"
+                  >
+                    <span>+ Cite PDF</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => openPdfInNewTab(pdfBlobUrl || currentAttachment.url || '', currentAttachment.name)}
+                    className="p-1.5 rounded-lg bg-[#23232A] hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white cursor-pointer"
+                    title="Open in Full Chrome Tab"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </button>
+                </>
               )}
             </div>
           </div>
 
-          {/* PDF Viewer Canvas */}
-          <div className="flex-1 relative bg-[#0B0B0D] min-h-0">
+          {/* PDF Viewer Frame */}
+          <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex items-center justify-center">
             {isLoadingPdf ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3">
-                <div className="w-8 h-8 border-3 border-[#8B5CF6] border-t-transparent rounded-full animate-spin" />
-                <p className="text-xs text-[#A1A1AA] font-medium">Loading In-App PDF Document...</p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 rounded-full border-2 border-[#8B5CF6] border-t-transparent animate-spin" />
+                <span className="text-xs text-[#A1A1AA] font-mono">Loading PDF Notes...</span>
               </div>
             ) : pdfBlobUrl ? (
               <iframe
-                src={`${pdfBlobUrl}#toolbar=1&navpanes=0`}
-                title={currentAttachment?.name || 'PDF Viewer'}
-                className={`w-full h-full border-0 bg-[#222] ${isDragging ? 'pointer-events-none' : ''}`}
+                src={`${pdfBlobUrl}#toolbar=1&navpanes=0&view=FitH`}
+                className="w-full h-full border-none"
+                title="PDF Document Viewer"
               />
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 space-y-3 text-[#A1A1AA]">
-                <FileText className="w-12 h-12 stroke-[1.5] text-[#71717A]" />
-                <p className="text-xs font-semibold text-white">No PDF file selected or available.</p>
-                <p className="text-[11px] text-[#71717A] max-w-xs">
-                  Attach or upload a PDF document to view and study it side-by-side with your notes.
-                </p>
+              <div className="text-center p-6 space-y-2">
+                <FileText className="w-10 h-10 text-[#383842] mx-auto" />
+                <p className="text-xs text-[#A1A1AA]">No PDF is currently loaded for this topic.</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* 🎛️ INTERACTIVE DRAGGABLE RESIZER DIVIDER (DESKTOP) */}
+        {/* DRAGGABLE RESIZER HANDLE SPLITTER BAR */}
         <div
           onMouseDown={() => setIsDragging(true)}
           onTouchStart={() => setIsDragging(true)}
-          className={`hidden lg:flex items-center justify-center relative w-3.5 hover:w-4 -mx-1.5 z-30 cursor-col-resize group transition-all shrink-0 ${
-            isDragging ? 'bg-[#8B5CF6]' : 'bg-transparent'
+          className={`hidden lg:flex w-2.5 relative items-center justify-center bg-[#18181D] hover:bg-[#8B5CF6]/30 cursor-col-resize select-none z-30 group transition-colors ${
+            isDragging ? 'bg-[#8B5CF6]/50 shadow-[0_0_15px_rgba(139,92,246,0.5)]' : ''
           }`}
-          title="Drag left/right to resize PDF vs Notes area"
+          title="Drag left or right to adjust PDF / Notes workspace width"
         >
           {/* Vertical line indicator */}
           <div
@@ -559,6 +539,62 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
             </div>
           </div>
 
+          {/* Screenshot Toast */}
+          {showImageNotice && (
+            <div className="px-4 py-2 bg-emerald-500/10 border-b border-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+              <Check className="w-4 h-4 stroke-[3]" />
+              <span>Screenshot attached successfully to topic images!</span>
+            </div>
+          )}
+
+          {/* Attached Screenshots Strip */}
+          {images && images.length > 0 && (
+            <div className="p-2.5 bg-[#18181D] border-b border-[#272730] space-y-1.5 shrink-0">
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#A1A1AA]">
+                <span className="flex items-center gap-1.5">
+                  <ImageIcon className="w-3 h-3 text-[#8B5CF6]" />
+                  Attached Screenshots ({images.length})
+                </span>
+                <span className="text-[10px] text-[#71717A]">Ctrl+V to paste more</span>
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+                {images.map((img) => (
+                  <div
+                    key={img.id}
+                    className="relative group shrink-0 w-20 h-14 rounded-lg overflow-hidden border border-[#272730] bg-black/40"
+                  >
+                    <img
+                      src={img.dataUrl}
+                      alt={img.title}
+                      onClick={() => setZoomImage({ src: img.dataUrl, title: img.title })}
+                      className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setZoomImage({ src: img.dataUrl, title: img.title })}
+                        className="p-1 rounded bg-white/20 hover:bg-white/40 text-white cursor-pointer"
+                        title="Zoom"
+                      >
+                        <Maximize2 className="w-3 h-3" />
+                      </button>
+                      {onDeleteImage && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteImage(img.id)}
+                          className="p-1 rounded bg-rose-500/80 hover:bg-rose-600 text-white cursor-pointer"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Notes Live Textarea */}
           <div className="flex-1 p-4 relative flex flex-col min-h-0 bg-[#141418]">
             <textarea
@@ -569,7 +605,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                 onSaveNotes(e.target.value);
               }}
               onPaste={handlePaste}
-              placeholder="Type your study notes, formulas, shortcuts, and key points while reading the PDF on the left side...\n\n📸 Tip: Press Ctrl + V to paste any screenshot directly!"
+              placeholder={"Type your study notes, formulas, shortcuts, and key points while reading the PDF on the left side...\n\n📸 Tip: Press Ctrl + V to paste any screenshot directly!"}
               className="w-full flex-1 p-3.5 rounded-xl bg-[#18181D] border border-[#272730] text-xs sm:text-sm font-medium text-[#F5F5F7] placeholder-[#71717A] focus:outline-none focus:border-[#8B5CF6] resize-none leading-relaxed font-sans"
             />
 
@@ -587,6 +623,45 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
         </div>
 
       </div>
+
+      {/* High-Res Image Zoom Lightbox Modal */}
+      {zoomImage && (
+        <div
+          onClick={() => setZoomImage(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="relative max-w-5xl max-h-[90vh] flex flex-col items-center cursor-default bg-[#18181D] p-3 rounded-2xl border border-[#272730] shadow-2xl"
+          >
+            <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-[#272730] text-white">
+              <span className="text-xs font-bold truncate max-w-md">{zoomImage.title}</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={zoomImage.src}
+                  download={`${zoomImage.title || 'screenshot'}.png`}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                  title="Download Image"
+                >
+                  <Download className="w-4 h-4" />
+                </a>
+                <button
+                  onClick={() => setZoomImage(null)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-rose-500/80 text-white transition-colors cursor-pointer"
+                  title="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <img
+              src={zoomImage.src}
+              alt={zoomImage.title}
+              className="max-w-full max-h-[75vh] object-contain rounded-xl"
+            />
+          </div>
+        </div>
+      )}
 
     </div>
   );

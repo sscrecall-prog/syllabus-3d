@@ -8,6 +8,7 @@ import {
   TopicPdfAttachment,
   TopicLecture,
   TopicAudioMemo,
+  TopicImageAttachment,
   MistakeType,
   MistakeRecord,
   RevisionRecord,
@@ -167,6 +168,8 @@ interface SyllabusContextType {
   deleteTopicLecture?: (topicId: string, lectureId: string) => void;
   addTopicAudioMemo?: (topicId: string, memo: { title: string; durationSeconds: number; storageKey?: string; audioDataUrl?: string; transcript?: string }) => void;
   deleteTopicAudioMemo?: (topicId: string, memoId: string) => void;
+  addTopicImageAttachment?: (topicId: string, image: { title?: string; dataUrl: string; fileSize?: number }) => void;
+  deleteTopicImageAttachment?: (topicId: string, imageId: string) => void;
 
   logStudySession: (minutes: number, topicId?: string) => void;
   updateTopicMetrics?: (topicId: string, updates: { accuracy?: number; studyTimeMinutes?: number; addMinutes?: number }) => void;
@@ -1120,6 +1123,56 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  const addTopicImageAttachment = (topicId: string, image: { title?: string; dataUrl: string; fileSize?: number }) => {
+    const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const newImage: TopicImageAttachment = {
+      id: `img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      title: image.title ? image.title.trim() : `Screenshot ${timeStr}`,
+      dataUrl: image.dataUrl,
+      addedAt: getTodayDateString(),
+      fileSize: image.fileSize
+    };
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.images || [];
+            return {
+              ...t,
+              images: [...existing, newImage]
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playCompleteChime();
+  };
+
+  const deleteTopicImageAttachment = (topicId: string, imageId: string) => {
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.images || [];
+            return {
+              ...t,
+              images: existing.filter(img => img.id !== imageId)
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playClick();
+  };
+
   const logStudySession = (minutes: number, topicId?: string) => {
     const today = getTodayDateString();
     setActivityHistory(prev => {
@@ -1341,6 +1394,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         deleteTopicLecture,
         addTopicAudioMemo,
         deleteTopicAudioMemo,
+        addTopicImageAttachment,
+        deleteTopicImageAttachment,
         updateTopicMetrics,
         logStudySession,
         resetToDemo,

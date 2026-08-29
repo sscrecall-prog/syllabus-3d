@@ -45,6 +45,14 @@ export interface TopicAudioMemo {
   transcript?: string;
 }
 
+export interface TopicImageAttachment {
+  id: string;
+  title: string;
+  dataUrl: string;
+  addedAt: string;
+  fileSize?: number;
+}
+
 export interface Topic {
   id: string;
   name: string;
@@ -65,6 +73,7 @@ export interface Topic {
   pdfUrl?: string;
   lectures?: TopicLecture[];
   audioMemos?: TopicAudioMemo[];
+  images?: TopicImageAttachment[];
 }
 
 export interface Chapter {
