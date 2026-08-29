@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTimer } from '../../context/TimerContext';
-import { Play, Pause, X, Maximize2, Zap } from 'lucide-react';
+import { Play, Pause, X, Maximize2, Zap, Minus } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 export const FloatingTimerOverlay: React.FC = () => {
@@ -17,6 +17,9 @@ export const FloatingTimerOverlay: React.FC = () => {
   } = useTimer();
 
   const isVisible = isFloatingOverlayVisible && !isFullModalOpen && (session.status === 'running' || session.status === 'paused');
+
+  // State to track whether it's collapsed into a small cute emoji bubble
+  const [isCollapsedToEmoji, setIsCollapsedToEmoji] = useState(false);
 
   // Initial smart positioning (bottom-right corner, above bottom nav on mobile)
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
@@ -74,8 +77,9 @@ export const FloatingTimerOverlay: React.FC = () => {
       hasMovedRef.current = true;
     }
 
-    const overlayWidth = typeof window !== 'undefined' && window.innerWidth < 640 ? 200 : 240;
-    const overlayHeight = 44;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const overlayWidth = isCollapsedToEmoji ? 50 : isMobile ? 200 : 240;
+    const overlayHeight = isCollapsedToEmoji ? 50 : 44;
     const maxX = Math.max(0, window.innerWidth - overlayWidth - 8);
     const maxY = Math.max(0, window.innerHeight - overlayHeight - 60);
 
@@ -83,7 +87,7 @@ export const FloatingTimerOverlay: React.FC = () => {
     const nextY = Math.min(Math.max(8, dragStartRef.current.initialY + dy), maxY);
 
     setPosition({ x: nextX, y: nextY });
-  }, [isDragging]);
+  }, [isDragging, isCollapsedToEmoji]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
@@ -100,15 +104,6 @@ export const FloatingTimerOverlay: React.FC = () => {
     }
   }, [isDragging, position, settings.rememberPosition, updateSettings]);
 
-  const handleBodyClick = useCallback((e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('button')) return;
-    if (hasMovedRef.current) return;
-
-    soundManager.playClick();
-    openFullModal();
-  }, [openFullModal]);
-
   if (!isVisible) return null;
 
   const secs = session.mode === 'stopwatch' ? session.stopwatchElapsedSec : session.remainingSec;
@@ -123,13 +118,76 @@ export const FloatingTimerOverlay: React.FC = () => {
     ? (session.totalDurationSec - session.remainingSec) / session.totalDurationSec
     : 0;
 
+  // ═══════════════════════════════════════════════════════════════════
+  // MODE A: COLLAPSED ULTRA-COMPACT TIMER EMOJI ORB (Tap to expand)
+  // ═══════════════════════════════════════════════════════════════════
+  if (isCollapsedToEmoji) {
+    return (
+      <div
+        ref={overlayRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onClick={e => {
+          if (hasMovedRef.current) return;
+          soundManager.playClick();
+          setIsCollapsedToEmoji(false);
+        }}
+        style={{
+          position: 'fixed',
+          left: position.x,
+          top: position.y,
+          zIndex: 9999,
+          opacity: settings.opacity || 0.96,
+          touchAction: 'none'
+        }}
+        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#07090E]/95 dark:bg-[#07090E]/95 backdrop-blur-2xl border border-white/25 shadow-[0_10px_30px_rgba(0,0,0,0.65),0_0_0_1.5px_rgba(255,255,255,0.15)] select-none cursor-grab active:cursor-grabbing flex items-center justify-center transition-transform hover:scale-110 active:scale-95 animate-scale-in group"
+        title="Timer is running • Tap to expand"
+        role="button"
+        aria-label="Floating Timer Emoji Orb - Tap to expand"
+      >
+        {/* Animated Pulsing Progress Glow Ring */}
+        <div
+          className={`absolute inset-0 rounded-full border-2 border-t-transparent pointer-events-none ${
+            isPaused
+              ? 'border-amber-400'
+              : session.mode === 'break'
+              ? 'border-amber-400 animate-spin [animation-duration:4s]'
+              : 'border-emerald-400 animate-spin [animation-duration:3s]'
+          }`}
+        />
+
+        {/* Live Study Emoji Icon */}
+        <span className="text-xl sm:text-2xl select-none filter drop-shadow-md transform group-hover:scale-110 transition-transform">
+          {session.mode === 'break' ? '☕' : '⏱️'}
+        </span>
+
+        {/* Mini Live Status Indicator Dot */}
+        <span
+          className={`absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#07090E] ${
+            isPaused ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'
+          }`}
+        />
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // MODE B: EXPANDED SLIM FLOATING CAPSULE (195px × 40px)
+  // ═══════════════════════════════════════════════════════════════════
   return (
     <div
       ref={overlayRef}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onClick={handleBodyClick}
+      onClick={e => {
+        const target = e.target as HTMLElement;
+        if (target.closest('button')) return;
+        if (hasMovedRef.current) return;
+        soundManager.playClick();
+        openFullModal();
+      }}
       style={{
         position: 'fixed',
         left: position.x,
@@ -187,7 +245,7 @@ export const FloatingTimerOverlay: React.FC = () => {
           </span>
         </div>
 
-        {/* Right: Maximize & Close Actions */}
+        {/* Right: Maximize & Collapse to Emoji Orb Actions */}
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={e => {
@@ -196,23 +254,24 @@ export const FloatingTimerOverlay: React.FC = () => {
               openFullModal();
             }}
             className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white/80 hover:text-white flex items-center justify-center transition-all cursor-pointer"
-            title="Expand Full Timer"
-            aria-label="Expand Full Timer"
+            title="Expand Full 3D Chamber"
+            aria-label="Expand Full 3D Chamber"
           >
             <Maximize2 className="w-2.5 h-2.5" />
           </button>
 
+          {/* Collapse to Emoji Bubble */}
           <button
             onClick={e => {
               e.stopPropagation();
               soundManager.playClick();
-              hideFloatingOverlay();
+              setIsCollapsedToEmoji(true);
             }}
-            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 hover:bg-rose-500/30 active:scale-90 text-white/80 hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
-            title="Hide Floating Overlay"
-            aria-label="Hide Floating Overlay"
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 hover:bg-amber-500/30 active:scale-90 text-white/80 hover:text-amber-300 flex items-center justify-center transition-all cursor-pointer"
+            title="Collapse to Mini ⏱️ Emoji Bubble"
+            aria-label="Collapse to Mini ⏱️ Emoji Bubble"
           >
-            <X className="w-2.5 h-2.5 stroke-[2.5]" />
+            <Minus className="w-2.5 h-2.5 stroke-[2.5]" />
           </button>
         </div>
       </div>
