@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { Calendar, Clock, Flame, ShieldAlert, Sparkles } from 'lucide-react';
+import { Calendar, Clock, Flame, Zap, Sparkles, Target, ArrowRight } from 'lucide-react';
+import { soundManager } from '../../utils/soundEffects';
 
-export const ExamCountdown3D: React.FC = () => {
+interface ExamCountdown3DProps {
+  onOpenFocus?: () => void;
+}
+
+export const ExamCountdown3D: React.FC<ExamCountdown3DProps> = ({ onOpenFocus }) => {
   const { currentExam } = useSyllabus();
 
   const [timeLeft, setTimeLeft] = useState<{
@@ -36,38 +41,80 @@ export const ExamCountdown3D: React.FC = () => {
   }, [currentExam.examDate]);
 
   const cards = [
-    { label: 'Days', value: timeLeft.days },
-    { label: 'Hours', value: timeLeft.hours },
-    { label: 'Mins', value: timeLeft.minutes },
-    { label: 'Secs', value: timeLeft.seconds }
+    { label: 'DAYS', value: timeLeft.days, color: 'text-amber-500 dark:text-amber-400' },
+    { label: 'HOURS', value: timeLeft.hours, color: 'text-blue-500 dark:text-[#7AA2F7]' },
+    { label: 'MINS', value: timeLeft.minutes, color: 'text-emerald-500 dark:text-emerald-400' },
+    { label: 'SECS', value: timeLeft.seconds, color: 'text-rose-500 dark:text-rose-400' }
   ];
 
+  const formattedDate = (() => {
+    try {
+      const d = new Date(currentExam.examDate);
+      return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return currentExam.examDate;
+    }
+  })();
+
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex flex-col md:flex-row items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#596B35] dark:text-[#8B5CF6] flex items-center justify-center shrink-0">
-          <Calendar className="w-5 h-5 stroke-[2]" />
+    <div className="relative rounded-3xl bg-gradient-to-br from-white via-white to-[#F7F6F0] dark:from-[#18181D] dark:via-[#16161E] dark:to-[#121216] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth p-4 sm:p-6 overflow-hidden space-y-4">
+      
+      {/* Top Meta Header & Urgency Pill */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center shrink-0 shadow-md">
+            <Target className="w-5 h-5 stroke-[2.5]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs sm:text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wider">
+                {currentExam.name} TARGET COUNTDOWN
+              </h3>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+                Live Sync
+              </span>
+            </div>
+            <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6] flex items-center gap-1.5 mt-0.5">
+              <Calendar className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
+              <span>Exam Date: {formattedDate}</span>
+              <span>•</span>
+              <span className="font-bold text-amber-600 dark:text-amber-400 font-mono">{timeLeft.days} Days Left</span>
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] font-serif uppercase tracking-wider">
-            {currentExam.name} Countdown
-          </h3>
-          <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
-            Target Date: {new Date(currentExam.examDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-          </p>
-        </div>
+
+        {/* 1-Click Launch Focus Chamber Action */}
+        {onOpenFocus && (
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              onOpenFocus();
+            }}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-extrabold shadow-sm transition-all cursor-pointer active:scale-95 shrink-0 self-end sm:self-auto group"
+            title="Launch 3D Deep Study Focus Chamber"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>3D Focus Chamber</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        )}
       </div>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full md:w-auto">
+      {/* 3D Holographic Digital Flip Clock Cards */}
+      <div className="grid grid-cols-4 gap-2 sm:gap-3.5">
         {cards.map(c => (
           <div
             key={c.label}
-            className="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-center min-w-[60px]"
+            className="relative p-2.5 sm:p-4 rounded-2xl bg-gradient-to-b from-[#F7F6F0] to-[#EAE9E0] dark:from-[#1F2335] dark:to-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] text-center shadow-xs flex flex-col items-center justify-center group hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all"
           >
-            <span className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-mono block">
+            {/* Center Split Horizontal Line for Flip-Clock Aesthetic */}
+            <div className="absolute inset-x-0 top-1/2 h-px bg-black/5 dark:bg-white/5 pointer-events-none" />
+
+            <span className={`text-xl sm:text-3xl md:text-4xl font-black font-mono tracking-tight block ${c.color} drop-shadow-xs`}>
               {String(c.value).padStart(2, '0')}
             </span>
-            <span className="text-[9px] font-bold text-[#596B35] dark:text-[#8B5CF6] uppercase tracking-wider block font-mono">
+            <span className="text-[9px] sm:text-[10px] font-black text-[#65675F] dark:text-[#A9B1D6] uppercase tracking-widest block font-mono mt-1">
               {c.label}
             </span>
           </div>

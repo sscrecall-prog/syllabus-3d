@@ -22,6 +22,7 @@ interface OverviewViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
   onOpenRevisionSession: () => void;
   onOpenAddTopic?: () => void;
+  onOpenFocus?: () => void;
 }
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
@@ -29,7 +30,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   onNavigateToSubject,
   onOpenTopicDrawer,
   onOpenRevisionSession,
-  onOpenAddTopic
+  onOpenAddTopic,
+  onOpenFocus
 }) => {
   const {
     overallStats,
@@ -85,8 +87,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* 3. 3D Countdown Flip Clock */}
-      <ExamCountdown3D />
+      {/* 2. 3D Countdown Flip Clock & Rapid Focus Trigger */}
+      <ExamCountdown3D onOpenFocus={onOpenFocus} />
 
       {/* 3. ASYMMETRICAL BENTO GRID */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">

@@ -253,6 +253,7 @@ export const App: React.FC = () => {
                 setIsAddTopicOpen(true);
                 window.history.pushState({ modal: 'add_topic' }, '');
               }}
+              onOpenFocus={() => handleLaunchFocus(undefined)}
             />
           )}
 
