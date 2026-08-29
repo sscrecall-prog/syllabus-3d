@@ -7,17 +7,17 @@ import { SyllabusProvider } from './context/SyllabusContext';
 import { TimerProvider } from './context/TimerContext';
 import './index.css';
 
-// Register PWA Service Worker
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+// Register PWA Service Worker for Offline Reliability
+if ('serviceWorker' in navigator && (import.meta.env.PROD || window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(
-      (registration) => {
-        console.log('PWA ServiceWorker registered with scope: ', registration.scope);
-      },
-      (err) => {
-        console.log('PWA ServiceWorker registration failed: ', err);
-      }
-    );
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('[PWA] ServiceWorker active with scope:', registration.scope);
+      })
+      .catch((err) => {
+        console.warn('[PWA] ServiceWorker registration warning:', err);
+      });
   });
 }
 

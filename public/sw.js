@@ -1,67 +1,105 @@
-const CACHE_NAME = 'syllabus-3d-cache-v1';
-const ASSETS_TO_CACHE = [
+// ═══════════════════════════════════════════════════════════════════
+// SYLLABUS 3D — ULTRA-RELIABLE OFFLINE-FIRST SERVICE WORKER (PWA)
+// ═══════════════════════════════════════════════════════════════════
+
+const CACHE_NAME = 'syllabus-3d-v2-stable';
+const DYNAMIC_CACHE = 'syllabus-3d-dynamic-v2';
+
+const PRECACHE_ASSETS = [
   '/',
   '/index.html',
+  '/manifest.json',
+  '/favicon.png',
   '/logo.png',
-  '/mock_tracker_logo.png',
-  '/manifest.json'
+  '/dashboard-hero.jpg',
+  '/mock_tracker_logo.png'
 ];
 
+// 1. INSTALL EVENT: Pre-cache core shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch(() => {});
-    })
+      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
+        console.warn('[SW] Pre-cache partial warning:', err);
+      });
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
+// 2. ACTIVATE EVENT: Clear old legacy caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((name) => {
-          if (name !== CACHE_NAME) {
+          if (name !== CACHE_NAME && name !== DYNAMIC_CACHE) {
             return caches.delete(name);
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// 3. FETCH EVENT: Stale-While-Revalidate & Offline Fallback
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const { request } = event;
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch in background to update cache
-        fetch(event.request).then((networkResponse) => {
+  // Only intercept GET requests (ignore chrome-extension and unsupported schemes)
+  if (request.method !== 'GET' || !request.url.startsWith('http')) return;
+
+  // Strategy A: Navigation requests (HTML pages) → Network first with /index.html offline fallback
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse.clone());
-            });
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
           }
-        }).catch(() => {});
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(request).then((cached) => cached || caches.match('/index.html'));
+        })
+    );
+    return;
+  }
+
+  // Strategy B: Static JS, CSS, Web Fonts, Images → Cache First / Stale-While-Revalidate
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Fetch update in background for next time
+        fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, networkResponse));
+            }
+          })
+          .catch(() => {});
         return cachedResponse;
       }
 
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+      // If not in cache, fetch from network and dynamically cache
+      return fetch(request)
+        .then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200) {
+            return networkResponse;
+          }
+          const responseToCache = networkResponse.clone();
+          caches.open(DYNAMIC_CACHE).then((cache) => {
+            cache.put(request, responseToCache);
+          });
           return networkResponse;
-        }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+        })
+        .catch(() => {
+          // Offline fallback for images
+          if (request.destination === 'image') {
+            return caches.match('/dashboard-hero.jpg');
+          }
+          return new Response('Offline content unavailable', { status: 503, statusText: 'Offline' });
         });
-        return networkResponse;
-      }).catch(() => {
-        if (event.request.destination === 'document') {
-          return caches.match('/index.html');
-        }
-      });
     })
   );
 });

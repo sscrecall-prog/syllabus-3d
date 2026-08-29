@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -11,7 +11,8 @@ import {
   Menu,
   ArrowLeft,
   GraduationCap,
-  Sparkles
+  Sparkles,
+  WifiOff
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -40,6 +41,18 @@ export const Header: React.FC<HeaderProps> = ({
   const { user } = useAuth();
   const { toggleTheme: handleThemeToggle, isDark } = useTheme();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const toggleTheme = () => {
     soundManager.playClick();
@@ -113,6 +126,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Side Tools */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {!isOnline && (
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold animate-pulse">
+              <WifiOff className="w-3 h-3" />
+              <span className="hidden sm:inline">Offline Mode • Local Cache Active</span>
+              <span className="sm:hidden">Offline</span>
+            </div>
+          )}
+
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
