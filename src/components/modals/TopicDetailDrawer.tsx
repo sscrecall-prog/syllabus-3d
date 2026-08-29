@@ -26,6 +26,7 @@ import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
 import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
 import { TopicLecturesSection, YoutubeIcon } from '../common/TopicLecturesSection';
+import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
 import { soundManager } from '../../utils/soundEffects';
 
 interface TopicDetailDrawerProps {
@@ -87,6 +88,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const [accuracySavedNotice, setAccuracySavedNotice] = useState(false);
   const [timeSavedNotice, setTimeSavedNotice] = useState(false);
   const [editSavedNotice, setEditSavedNotice] = useState(false);
+
+  // In-App Split-Screen PDF Study Mode state
+  const [isSplitPdfOpen, setIsSplitPdfOpen] = useState(false);
+  const [splitPdfAttachmentId, setSplitPdfAttachmentId] = useState<string | undefined>(undefined);
 
   // Live Drawer Stopwatch
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -773,6 +778,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   subjectName={subjectName}
                   chapterName={chapterName}
                   examName={currentExam?.name}
+                  onOpenSplitPdf={() => {
+                    setSplitPdfAttachmentId(undefined);
+                    setIsSplitPdfOpen(true);
+                  }}
+                  hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
                 />
 
                 <TopicPdfAttachmentsSection
@@ -788,6 +798,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     if (deleteTopicPdfAttachment) {
                       deleteTopicPdfAttachment(liveTopic.id, attachmentId);
                     }
+                  }}
+                  onOpenSplitStudy={(attachmentId) => {
+                    setSplitPdfAttachmentId(attachmentId);
+                    setIsSplitPdfOpen(true);
                   }}
                 />
               </div>
@@ -826,6 +840,21 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* IN-APP SPLIT-SCREEN PDF STUDY MODAL */}
+      {isSplitPdfOpen && (
+        <SplitScreenPdfStudyModal
+          isOpen={isSplitPdfOpen}
+          onClose={() => setIsSplitPdfOpen(false)}
+          topicName={liveTopic.name}
+          subjectName={subjectName}
+          chapterName={chapterName}
+          initialNotes={notes}
+          attachments={liveTopic.pdfAttachments || []}
+          initialAttachmentId={splitPdfAttachmentId}
+          onSaveNotes={handleSaveNotes}
+        />
+      )}
     </div>
   );
 };

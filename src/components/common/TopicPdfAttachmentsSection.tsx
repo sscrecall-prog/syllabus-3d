@@ -11,7 +11,8 @@ import {
   Check,
   AlertCircle,
   Clock,
-  HardDrive
+  HardDrive,
+  Columns
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { savePdfToStorage, getPdfBlobUrl, deletePdfFromStorage, openPdfInNewTab } from '../../utils/pdfStorage';
@@ -23,6 +24,7 @@ interface TopicPdfAttachmentsSectionProps {
   attachments?: TopicPdfAttachment[];
   onAddAttachment: (attachment: TopicPdfAttachment) => void;
   onDeleteAttachment: (attachmentId: string) => void;
+  onOpenSplitStudy?: (attachmentId: string) => void;
 }
 
 export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProps> = ({
@@ -30,7 +32,8 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
   topicName,
   attachments = [],
   onAddAttachment,
-  onDeleteAttachment
+  onDeleteAttachment,
+  onOpenSplitStudy
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -318,6 +321,19 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
 
               {/* Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+                {/* 0. Split-Screen Study Mode Button */}
+                {onOpenSplitStudy && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenSplitStudy(att.id)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] dark:text-[#C4B5FD] border border-[#8B5CF6]/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                    title="Open PDF and Notes side-by-side in Split Study Mode"
+                  >
+                    <Columns className="w-3.5 h-3.5" />
+                    <span>Split Study</span>
+                  </button>
+                )}
+
                 {/* 1. View PDF Button (Icon + Label) */}
                 <button
                   type="button"

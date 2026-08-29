@@ -17,7 +17,8 @@ import {
   Hash,
   FileDown,
   Printer,
-  ExternalLink
+  ExternalLink,
+  Columns
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -29,6 +30,8 @@ interface ProfessionalNotesEditorProps {
   chapterName?: string;
   examName?: string;
   onSave: (content: string) => void;
+  onOpenSplitPdf?: () => void;
+  hasPdfAttachments?: boolean;
 }
 
 export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = ({
@@ -37,7 +40,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   subjectName,
   chapterName,
   examName,
-  onSave
+  onSave,
+  onOpenSplitPdf,
+  hasPdfAttachments = false
 }) => {
   const [content, setContent] = useState(initialContent || '');
   const [isEditing, setIsEditing] = useState(!initialContent || initialContent.trim().length === 0);
@@ -335,6 +340,17 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">
+          {onOpenSplitPdf && hasPdfAttachments && (
+            <button
+              onClick={onOpenSplitPdf}
+              title="Study Attached PDF and Take Notes Side-by-Side in Split-Screen"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] dark:text-[#C4B5FD] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>Split Study</span>
+            </button>
+          )}
+
           <button
             onClick={handleExportPdf}
             title="Export and Open Academic Notes as PDF in Chrome New Tab"
