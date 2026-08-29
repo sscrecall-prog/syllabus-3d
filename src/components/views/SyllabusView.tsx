@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { Topic, TopicStatus, Chapter, Subject } from '../../types/syllabus';
 import {
@@ -38,6 +38,8 @@ interface SyllabusViewProps {
   onOpenFocus?: (topicId?: string) => void;
   initialSubjectId?: string;
   onSelectSubjectId?: (id: string) => void;
+  onBackToDashboard?: () => void;
+  onRegisterBackHandler?: (handler: (() => boolean) | null) => void;
 }
 
 export const SyllabusView: React.FC<SyllabusViewProps> = ({
@@ -45,7 +47,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onOpenAddTopic,
   onOpenFocus,
   initialSubjectId,
-  onSelectSubjectId
+  onSelectSubjectId,
+  onBackToDashboard,
+  onRegisterBackHandler
 }) => {
   const { currentExam, deleteTopic, updateTopicStatus } = useSyllabus();
 
@@ -64,18 +68,26 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     }
   }, [initialSubjectId, currentExam]);
 
-  // Handle hardware / browser popstate back button across 3 levels
-  useEffect(() => {
-    const handlePopState = () => {
-      if (selectedChapterId) {
-        setSelectedChapterId(null);
-      } else if (selectedSubjectId) {
-        setSelectedSubjectId(null);
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+  // Master Step-by-Step Back Handler for Syllabus Hierarchy
+  const handleSyllabusBack = useCallback(() => {
+    if (selectedChapterId) {
+      setSelectedChapterId(null);
+      return true; // handled Level 3 -> Level 2
+    }
+    if (selectedSubjectId) {
+      setSelectedSubjectId(null);
+      return true; // handled Level 2 -> Level 1
+    }
+    return false; // at Level 1, allow parent to navigate to previous view / overview
   }, [selectedChapterId, selectedSubjectId]);
+
+  // Register with Parent App for unified popstate and Header back button
+  useEffect(() => {
+    if (onRegisterBackHandler) {
+      onRegisterBackHandler(handleSyllabusBack);
+      return () => onRegisterBackHandler(null);
+    }
+  }, [onRegisterBackHandler, handleSyllabusBack]);
 
   if (!currentExam) return null;
 
@@ -822,15 +834,28 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
           {/* Banner Meta Info */}
           <div className="space-y-1 min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
-                <span>Exam Date: {formattedExamDate}</span>
-              </span>
-              {daysRemaining > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
-                  {daysRemaining}d left
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
+                  <span>Exam Date: {formattedExamDate}</span>
                 </span>
+                {daysRemaining > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+                    {daysRemaining}d left
+                  </span>
+                )}
+              </div>
+
+              {onBackToDashboard && (
+                <button
+                  onClick={onBackToDashboard}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
+                  title="Return to Dashboard"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                  <span>Dashboard</span>
+                </button>
               )}
             </div>
 

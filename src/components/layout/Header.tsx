@@ -52,27 +52,27 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-30 bg-[#F7F6F0]/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#D8D8CF] dark:border-[#272730] px-3 sm:px-6 py-2.5 transition-colors">
       <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
         
-        {/* Left Side: Mobile Menu Button or Back Button */}
+        {/* Left Side: Mobile Menu Button & Global Back Navigation */}
         <div className="flex items-center gap-2">
-          {canGoBack && onGoBack ? (
+          <button
+            onClick={onOpenMobileMenu}
+            className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0"
+            title="Open Navigation Menu"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+
+          {canGoBack && onGoBack && (
             <button
               onClick={() => {
                 soundManager.playClick();
                 onGoBack();
               }}
-              className="p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer flex items-center gap-1.5"
-              title="Back"
+              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 group shrink-0"
+              title="Navigate Back (Previous Step)"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline text-xs font-bold">{currentViewTitle}</span>
-            </button>
-          ) : (
-            <button
-              onClick={onOpenMobileMenu}
-              className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer"
-              title="Open Navigation Drawer"
-            >
-              <Menu className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="text-xs font-extrabold">Back</span>
             </button>
           )}
 

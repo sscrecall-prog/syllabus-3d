@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Sidebar, AppView } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { MobileNav } from './components/layout/MobileNav';
@@ -62,6 +62,8 @@ export const App: React.FC = () => {
     chapterName: string;
   } | null>(null);
 
+  const syllabusBackHandlerRef = useRef<(() => boolean) | null>(null);
+
   // Navigate with History Push
   const handleNavigate = useCallback((newView: AppView) => {
     if (newView === currentView) return;
@@ -76,12 +78,14 @@ export const App: React.FC = () => {
     handleNavigate('syllabus');
   };
 
-  // Master Back Navigation Handler
+  // Master Back Navigation Handler (Seamless Step-by-Step across Modals, Syllabus Levels & Views)
   const handleGoBack = useCallback(() => {
+    // 1. Close open Topic Drawer if active
     if (selectedTopic) {
       setSelectedTopic(null);
       return;
     }
+    // 2. Close active full screen modals if open
     if (isFullModalOpen) {
       closeFullModal();
       return;
@@ -103,6 +107,13 @@ export const App: React.FC = () => {
       return;
     }
 
+    // 3. If in Syllabus Explorer, check if internal Level 3 -> Level 2 or Level 2 -> Level 1 back is handled
+    if (currentView === 'syllabus' && syllabusBackHandlerRef.current) {
+      const handled = syllabusBackHandlerRef.current();
+      if (handled) return;
+    }
+
+    // 4. Navigate back through View History
     if (viewHistory.length > 0) {
       const prevView = viewHistory[viewHistory.length - 1];
       setViewHistory(prev => prev.slice(0, prev.length - 1));
@@ -118,8 +129,8 @@ export const App: React.FC = () => {
     isAddTopicOpen,
     isSearchOpen,
     isMobileDrawerOpen,
-    viewHistory,
-    currentView
+    currentView,
+    viewHistory
   ]);
 
   // Intercept Mobile Hardware / Browser Back Gesture
@@ -265,6 +276,10 @@ export const App: React.FC = () => {
               }}
               initialSubjectId={targetSubjectId}
               onSelectSubjectId={setTargetSubjectId}
+              onBackToDashboard={() => handleNavigate('overview')}
+              onRegisterBackHandler={(handler) => {
+                syllabusBackHandlerRef.current = handler;
+              }}
             />
           )}
 
