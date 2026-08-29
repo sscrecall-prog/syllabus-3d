@@ -66,6 +66,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [isEditing, setIsEditing] = useState(!initialContent || initialContent.trim().length === 0);
   const [copied, setCopied] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
+  const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [zoomImage, setZoomImage] = useState<{ src: string; title: string } | null>(null);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
@@ -73,6 +75,50 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const speechRecognitionRef = useRef<any>(null);
   const fileInputImageRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isFirstMount = useRef(true);
+
+  // Debounced Auto-Save
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+
+    setSaveStatus('saving');
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      onSave(content);
+      setSaveStatus('saved');
+      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }, 600);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [content, onSave]);
+
+  // Keyboard shortcut Ctrl+S / Cmd+S for instant manual save
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        onSave(content);
+        soundManager.playCompleteChime();
+        setSaveStatus('saved');
+        setSaveSuccess(true);
+        setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        setTimeout(() => setSaveSuccess(false), 2000);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [content, onSave]);
 
   // Compress image before embedding to keep storage lightweight
   const compressAndReadImage = (file: File | Blob): Promise<string> => {
@@ -667,13 +713,36 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
           </button>
 
+          {/* Real-Time Auto-Save Status Badge */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[11px] font-mono font-bold">
+            {saveStatus === 'saving' ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-amber-600 dark:text-amber-400">Saving...</span>
+              </>
+            ) : saveStatus === 'saved' ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
+                <span className="text-emerald-600 dark:text-emerald-400">
+                  Auto-Saved {lastSavedTime ? `• ${lastSavedTime}` : ''}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#85877E]" />
+                <span className="text-[#85877E]">Ready</span>
+              </>
+            )}
+          </div>
+
           {isEditing && (
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95"
+              title="Manual Instant Save (Ctrl + S)"
             >
               {saveSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{saveSuccess ? 'Saved!' : 'Save Notes'}</span>
+              <span>{saveSuccess ? 'Saved!' : 'Save'}</span>
             </button>
           )}
         </div>
