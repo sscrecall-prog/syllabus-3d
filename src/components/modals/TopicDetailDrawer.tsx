@@ -218,7 +218,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const handleSaveNotes = (newNotes: string) => {
     setNotes(newNotes);
     updateTopicNotes(liveTopic.id, newNotes);
-    soundManager.playClick();
   };
 
   const handleSaveTopicDetails = (e: React.FormEvent) => {
@@ -520,7 +519,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => {
-                    soundManager.playClick();
                     setActiveTab(tab.id as any);
                   }}
                   className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 border-b-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
