@@ -25,6 +25,11 @@ export default {
           warning: '#C49A3A',
           error: '#B94A48',
         },
+        brand: {
+          400: '#6B7F3A',
+          500: '#596B35',
+          600: '#4A5A2B',
+        },
         // Dark Mode System: Background #1A1B26, Foreground #A9B1D6, Accent #7AA2F7
         dark: {
           bg: '#1A1B26',

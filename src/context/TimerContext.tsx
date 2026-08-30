@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { TimerSessionState, FloatingTimerSettings, TimerMode } from '../types/timer';
 import { useSyllabus } from './SyllabusContext';
 import { soundManager } from '../utils/soundEffects';
@@ -486,34 +486,51 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
+  const contextValue = useMemo(() => ({
+    session,
+    settings,
+    isFloatingOverlayVisible,
+    isFullModalOpen,
+    isPermissionModalOpen,
+    isPiPActive,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    resetTimer,
+    stopTimer,
+    setSessionMode,
+    setSessionTopic,
+    updateSettings,
+    openFullModal: () => setIsFullModalOpen(true),
+    closeFullModal: () => setIsFullModalOpen(false),
+    showFloatingOverlay: () => setIsFloatingOverlayVisible(true),
+    hideFloatingOverlay: () => setIsFloatingOverlayVisible(false),
+    toggleFloatingOverlay: () => setIsFloatingOverlayVisible(prev => !prev),
+    requestPictureInPicture,
+    exitPictureInPicture,
+    openPermissionModal: () => setIsPermissionModalOpen(true),
+    closePermissionModal: () => setIsPermissionModalOpen(false)
+  }), [
+    session,
+    settings,
+    isFloatingOverlayVisible,
+    isFullModalOpen,
+    isPermissionModalOpen,
+    isPiPActive,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    resetTimer,
+    stopTimer,
+    setSessionMode,
+    setSessionTopic,
+    updateSettings,
+    requestPictureInPicture,
+    exitPictureInPicture
+  ]);
+
   return (
-    <TimerContext.Provider
-      value={{
-        session,
-        settings,
-        isFloatingOverlayVisible,
-        isFullModalOpen,
-        isPermissionModalOpen,
-        isPiPActive,
-        startTimer,
-        pauseTimer,
-        resumeTimer,
-        resetTimer,
-        stopTimer,
-        setSessionMode,
-        setSessionTopic,
-        updateSettings,
-        openFullModal: () => setIsFullModalOpen(true),
-        closeFullModal: () => setIsFullModalOpen(false),
-        showFloatingOverlay: () => setIsFloatingOverlayVisible(true),
-        hideFloatingOverlay: () => setIsFloatingOverlayVisible(false),
-        toggleFloatingOverlay: () => setIsFloatingOverlayVisible(prev => !prev),
-        requestPictureInPicture,
-        exitPictureInPicture,
-        openPermissionModal: () => setIsPermissionModalOpen(true),
-        closePermissionModal: () => setIsPermissionModalOpen(false)
-      }}
-    >
+    <TimerContext.Provider value={contextValue}>
       {children}
     </TimerContext.Provider>
   );

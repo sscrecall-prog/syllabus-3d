@@ -59,24 +59,7 @@ export const authService = {
         throw new Error('Incorrect password. Please verify and try again.');
       }
     } else {
-      // 2. Cross-device universal fallback:
-      // If user registered on PC with this email and is now logging in on Mobile,
-      // allow instant account creation/link with the password they provided!
-      const fallbackName = normalizedEmail.split('@')[0];
-      const capitalizedName = fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1);
-
-      matchedUser = {
-        id: 'usr_' + Math.random().toString(36).substr(2, 9),
-        name: capitalizedName || 'Aspirant Scholar',
-        email: normalizedEmail,
-        passwordHash: password,
-        provider: 'email',
-        createdAt: new Date().toISOString(),
-        lastLoginAt: new Date().toISOString()
-      };
-
-      users.push(matchedUser);
-      saveUsersDB(users);
+      throw new Error('No account found with this email. Please sign up first.');
     }
 
     const authUser: AuthUser = {

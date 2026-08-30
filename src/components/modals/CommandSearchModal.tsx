@@ -7,7 +7,7 @@ import { Topic } from '../../types/syllabus';
 interface CommandSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectTopic: (topic: Topic) => void;
+  onSelectTopic: (topic: Topic, subjectName: string, chapterName: string) => void;
 }
 
 export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
@@ -17,7 +17,21 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
 }) => {
   const { allTopics } = useSyllabus();
   const [query, setQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [query]);
+
+  useEffect(() => {
+    if (isOpen && itemRefs.current[selectedIndex]) {
+      itemRefs.current[selectedIndex]?.scrollIntoView({
+        block: 'nearest',
+      });
+    }
+  }, [selectedIndex, isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -44,8 +58,6 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const filteredTopics = allTopics.filter(item => {
     const q = query.toLowerCase();
     return (
@@ -55,6 +67,27 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
       item.topic.subtopics.some(s => s.toLowerCase().includes(q))
     );
   }).slice(0, 12);
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (filteredTopics.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % filteredTopics.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + filteredTopics.length) % filteredTopics.length);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const selected = filteredTopics[selectedIndex];
+        if (selected) {
+          onSelectTopic(selected.topic, selected.subjectName, selected.chapterName);
+          onClose();
+        }
+      }
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-950/80 backdrop-blur-sm">
@@ -66,6 +99,7 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
+            onKeyDown={handleInputKeyDown}
             placeholder="Type a topic, chapter, or subject name..."
             className="flex-1 bg-transparent text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
           />
@@ -79,14 +113,19 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
 
         <div className="max-h-96 overflow-y-auto p-2 space-y-1">
           {filteredTopics.length > 0 ? (
-            filteredTopics.map(item => (
+            filteredTopics.map((item, index) => (
               <div
                 key={item.topic.id}
+                ref={el => itemRefs.current[index] = el}
                 onClick={() => {
-                  onSelectTopic(item.topic);
+                  onSelectTopic(item.topic, item.subjectName, item.chapterName);
                   onClose();
                 }}
-                className="group flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors"
+                className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${
+                  index === selectedIndex
+                    ? 'bg-[#DCE8B7] dark:bg-[#8B5CF6]/20'
+                    : 'hover:bg-slate-100 dark:hover:bg-slate-800/80'
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <div

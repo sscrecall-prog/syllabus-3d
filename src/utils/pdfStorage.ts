@@ -155,3 +155,13 @@ export function downloadPdfFile(url: string, fileName: string): void {
   a.click();
   document.body.removeChild(a);
 }
+
+/**
+ * Revoke a previously created Blob URL to free memory.
+ * Call this in component cleanup / useEffect return.
+ */
+export function revokePdfBlobUrl(url: string | null): void {
+  if (url && url.startsWith('blob:')) {
+    URL.revokeObjectURL(url);
+  }
+}

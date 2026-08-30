@@ -11,19 +11,13 @@ import {
   Menu,
   ArrowLeft,
   GraduationCap,
-  Sparkles,
   WifiOff
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
-export type ThemeSystemMode = 'academic';
-
 interface HeaderProps {
   onOpenSearch: () => void;
-  onOpenSettings: () => void;
-  onOpenAddTopic?: () => void;
-  onOpenFocus?: () => void;
-  onOpenMobileMenu?: () => void;
+  onOpenSettings: () => void;onOpenMobileMenu?: () => void;
   canGoBack?: boolean;
   onGoBack?: () => void;
   currentViewTitle?: string;
@@ -38,7 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
   currentViewTitle = 'SYLLABUS 3D'
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
-  const { user } = useAuth();
   const { toggleTheme: handleThemeToggle, isDark } = useTheme();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine : true);

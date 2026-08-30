@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { Badge3D } from '../3d/Badge3D';
-import { Trophy, Target, CheckCircle2, Award, Zap, Layers } from 'lucide-react';
+import { Trophy, Target, CheckCircle2, Award, Zap} from 'lucide-react';
 
 export const AnalyticsView: React.FC = () => {
-  const { profile, achievements, overallStats, subjectStats } = useSyllabus();
+  const { profile, achievements, overallStats } = useSyllabus();
 
   const unLockedBadges = achievements.filter(b => b.unlocked);
   const readinessScore = Math.round(

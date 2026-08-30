@@ -11,17 +11,10 @@ import {
   Play,
   Pause,
   RotateCcw,
-  CheckCircle2,
   Trash2,
   Plus,
   Edit3,
-  Award,
-  Sparkles,
-  Zap,
-  Check,
-  Save,
-  AlertTriangle
-} from 'lucide-react';
+  Check} from 'lucide-react';
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
 import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';

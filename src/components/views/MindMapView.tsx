@@ -5,15 +5,7 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize2,
-  Filter,
-  Sparkles,
-  Layers,
   BookOpen,
-  Info,
-  CheckCircle2,
-  RotateCw,
-  AlertTriangle,
-  Clock,
   ChevronRight
 } from 'lucide-react';
 import { Topic, Subject, Chapter } from '../../types/syllabus';

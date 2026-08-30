@@ -7,7 +7,6 @@ import {
   Check,
   Zap,
   AlertTriangle,
-  FileText,
   Sigma,
   CheckSquare,
   BookOpen,
@@ -22,7 +21,6 @@ import {
   Download,
   Trash2,
   X,
-  Plus,
   Clock,
   Play
 } from 'lucide-react';

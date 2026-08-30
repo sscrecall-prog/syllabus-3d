@@ -74,7 +74,7 @@ self.addEventListener('fetch', (event) => {
         fetch(request)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
-              caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, networkResponse));
+              caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, networkResponse.clone()));
             }
           })
           .catch(() => {});
@@ -96,7 +96,9 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           // Offline fallback for images
           if (request.destination === 'image') {
-            return caches.match('/dashboard-hero.jpg');
+            return new Response('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', {
+              headers: { 'Content-Type': 'image/png' }
+            });
           }
           return new Response('Offline content unavailable', { status: 503, statusText: 'Offline' });
         });

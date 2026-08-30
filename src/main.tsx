@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator && (import.meta.env.PROD || window.location.pro
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        console.log('[PWA] ServiceWorker active with scope:', registration.scope);
+        if (import.meta.env.DEV) { console.log('[PWA] ServiceWorker active with scope:', registration.scope); }
       })
       .catch((err) => {
         console.warn('[PWA] ServiceWorker registration warning:', err);

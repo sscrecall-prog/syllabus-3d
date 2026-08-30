@@ -145,7 +145,7 @@ export const HeatmapView: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto pb-2">
-          <div className="grid grid-flow-col grid-rows-7 gap-1.5 width-fit">
+          <div className="grid grid-flow-col grid-rows-7 gap-1.5 w-fit">
             {gridDays.map((day, i) => (
               <div
                 key={day.date || i}

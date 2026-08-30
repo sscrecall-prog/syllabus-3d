@@ -15,6 +15,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
 }) => {
   const { dueRevisions, completeRevisionCard, allTopics } = useSyllabus();
 
+  const [sessionQueue] = useState(() => [...dueRevisions]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [sessionCompleted, setSessionCompleted] = useState(false);
@@ -22,7 +23,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
 
   if (!isOpen) return null;
 
-  const activeQueue = dueRevisions.length > 0 ? dueRevisions : [];
+  const activeQueue = sessionQueue.length > 0 ? sessionQueue : [];
   const currentRevision = activeQueue[currentIndex];
 
   const topicMatch = currentRevision

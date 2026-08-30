@@ -10,15 +10,11 @@ import {
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
-  Zap,
   Search,
-  BookOpen,
   Filter,
-  Sparkles,
-  Award,
   ChevronRight,
-  Flame,
-  Check
+  Check,
+  Zap
 } from 'lucide-react';
 import { Topic, MistakeType } from '../../types/syllabus';
 import { soundManager } from '../../utils/soundEffects';

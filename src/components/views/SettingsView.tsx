@@ -4,25 +4,19 @@ import { useAuth } from '../../context/AuthContext';
 import { useTimer } from '../../context/TimerContext';
 import { useTheme } from '../../context/ThemeContext';
 import {
-  Settings,
   Download,
   Upload,
   RotateCcw,
   Smartphone,
   CheckCircle2,
   Trash2,
-  Calendar,
   LogOut,
   Target,
   Clock,
   Check,
   Palette,
-  Shield,
-  PictureInPicture2,
   Play,
   Flame,
-  Star,
-  Zap,
   Moon,
   Sun,
   Database,
@@ -49,9 +43,9 @@ export const SettingsView: React.FC = () => {
   } = useSyllabus();
 
   const { user, logout, updateUserSession } = useAuth();
-  const { settings, updateSettings, showFloatingOverlay, openPermissionModal } = useTimer();
+  const { updateSettings, showFloatingOverlay, settings } = useTimer();
   const { theme, setTheme } = useTheme();
-  const { isInstalled, isOnline } = usePWA();
+  const { isInstalled,} = usePWA();
   const [showPwaModal, setShowPwaModal] = useState(false);
 
   const [activeTab, setActiveTab] = useState<SettingsTab>('exam');

@@ -51,13 +51,10 @@ export const App: React.FC = () => {
   const [viewHistory, setViewHistory] = useState<AppView[]>([]);
   const [targetSubjectId, setTargetSubjectId] = useState<string>('');
 
-  useEffect(() => {
-    localStorage.removeItem('syllabus3d_theme_system');
-    document.documentElement.classList.remove('theme-spatial');
-  }, []);
-
   // 3D Animated Startup Logo Experience
-  const [showIntro, setShowIntro] = useState<boolean>(true);
+  const [showIntro, setShowIntro] = useState<boolean>(() => {
+    return !sessionStorage.getItem('syllabus3d_intro_seen');
+  });
 
   // Mobile Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -254,7 +251,10 @@ export const App: React.FC = () => {
       
       {/* 3D Animated Startup Intro */}
       {showIntro && (
-        <AnimatedLogoIntro onComplete={() => setShowIntro(false)} />
+        <AnimatedLogoIntro onComplete={() => {
+          sessionStorage.setItem('syllabus3d_intro_seen', '1');
+          setShowIntro(false);
+        }} />
       )}
 
       {/* Desktop Sidebar Navigation */}
@@ -414,7 +414,7 @@ export const App: React.FC = () => {
           <CommandSearchModal
             isOpen={isSearchOpen}
             onClose={() => setIsSearchOpen(false)}
-            onSelectTopic={(topic) => handleOpenTopicDrawer(topic, '', '')}
+            onSelectTopic={(topic, subjectName, chapterName) => handleOpenTopicDrawer(topic, subjectName || '', chapterName || '')}
           />
         )}
 

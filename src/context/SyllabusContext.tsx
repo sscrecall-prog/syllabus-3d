@@ -269,27 +269,27 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Save to LocalStorage
   useEffect(() => {
-    localStorage.setItem('syllabus3d_exams', JSON.stringify(exams));
+    try { localStorage.setItem('syllabus3d_exams', JSON.stringify(exams)); } catch(e) { console.warn(e); }
   }, [exams]);
 
   useEffect(() => {
-    localStorage.setItem('syllabus3d_profile', JSON.stringify(profile));
+    try { localStorage.setItem('syllabus3d_profile', JSON.stringify(profile)); } catch(e) { console.warn(e); }
   }, [profile]);
 
   useEffect(() => {
-    localStorage.setItem('syllabus3d_achievements', JSON.stringify(achievements));
+    try { localStorage.setItem('syllabus3d_achievements', JSON.stringify(achievements)); } catch(e) { console.warn(e); }
   }, [achievements]);
 
   useEffect(() => {
-    localStorage.setItem('syllabus3d_activity', JSON.stringify(activityHistory));
+    try { localStorage.setItem('syllabus3d_activity', JSON.stringify(activityHistory)); } catch(e) { console.warn(e); }
   }, [activityHistory]);
 
   useEffect(() => {
-    localStorage.setItem('syllabus3d_revisions', JSON.stringify(revisions));
+    try { localStorage.setItem('syllabus3d_revisions', JSON.stringify(revisions)); } catch(e) { console.warn(e); }
   }, [revisions]);
 
   useEffect(() => {
-    localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks));
+    try { localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks)); } catch(e) { console.warn(e); }
   }, [plannerTasks]);
 
   const currentExam = useMemo(() => {
@@ -1409,66 +1409,79 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  return (
-    <SyllabusContext.Provider
-      value={{
-        exams,
-        currentExam,
-        selectedExamId: profile.selectedExamId,
-        setSelectedExamId,
-        updateCurrentExamDetails,
-        profile,
-        updateProfile,
-        achievements,
-        activityHistory,
-        overallStats,
-        subjectStats,
-        allTopics,
-        weakTopics,
-        revisions,
-        dueRevisions,
-        plannerTasks,
-        addPlannerTask,
-        togglePlannerTask,
-        movePlannerTask,
-        deletePlannerTask,
-        clearCompletedPlannerTasks,
-        updateTopicStatus,
-        updateTopicNotes,
-        addTopicMistake,
-        resolveTopicMistake,
+  const contextValue = useMemo(() => ({
+    exams,
+    currentExam,
+    selectedExamId: profile.selectedExamId,
+    setSelectedExamId,
+    updateCurrentExamDetails,
+    profile,
+    updateProfile,
+    achievements,
+    activityHistory,
+    overallStats,
+    subjectStats,
+    allTopics,
+    weakTopics,
+    revisions,
+    dueRevisions,
+    plannerTasks,
+    addPlannerTask,
+    togglePlannerTask,
+    movePlannerTask,
+    deletePlannerTask,
+    clearCompletedPlannerTasks,
+    updateTopicStatus,
+    updateTopicNotes,
+    addTopicMistake,
+    resolveTopicMistake,
     deleteTopicMistake,
     editTopicMistake,
-        completeRevisionCard,
-        addTopic,
-        addCustomTopicWithHierarchy,
-        addMultipleCustomTopicsWithHierarchy,
-        editSubject,
-        deleteSubject,
-        editChapter,
-        deleteChapter,
-        editTopic,
-        deleteTopic,
-        addSubtopic,
-        deleteSubtopic,
-        addTopicPdfAttachment,
-        deleteTopicPdfAttachment,
-        addTopicLecture,
-        deleteTopicLecture,
-        addLectureTimestamp,
-        deleteLectureTimestamp,
-        addTopicAudioMemo,
-        deleteTopicAudioMemo,
-        addTopicImageAttachment,
-        deleteTopicImageAttachment,
-        updateTopicMetrics,
-        logStudySession,
-        resetToDemo,
-        clearAllDemoData,
-        exportData,
-        importData
-      }}
-    >
+    completeRevisionCard,
+    addTopic,
+    addCustomTopicWithHierarchy,
+    addMultipleCustomTopicsWithHierarchy,
+    editSubject,
+    deleteSubject,
+    editChapter,
+    deleteChapter,
+    editTopic,
+    deleteTopic,
+    addSubtopic,
+    deleteSubtopic,
+    addTopicPdfAttachment,
+    deleteTopicPdfAttachment,
+    addTopicLecture,
+    deleteTopicLecture,
+    addLectureTimestamp,
+    deleteLectureTimestamp,
+    addTopicAudioMemo,
+    deleteTopicAudioMemo,
+    addTopicImageAttachment,
+    deleteTopicImageAttachment,
+    updateTopicMetrics,
+    logStudySession,
+    resetToDemo,
+    clearAllDemoData,
+    exportData,
+    importData
+  }), [
+    exams,
+    currentExam,
+    profile,
+    achievements,
+    activityHistory,
+    overallStats,
+    subjectStats,
+    allTopics,
+    weakTopics,
+    revisions,
+    dueRevisions,
+    plannerTasks
+  ]);
+
+  return (
+    <SyllabusContext.Provider value={contextValue}>
       {children}
     </SyllabusContext.Provider>
   );

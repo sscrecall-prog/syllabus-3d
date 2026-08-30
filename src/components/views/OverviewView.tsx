@@ -2,8 +2,6 @@ import React from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
   Target,
-  Flame,
-  RotateCw,
   CalendarCheck,
   CheckCircle2,
   Clock,
@@ -28,17 +26,12 @@ interface OverviewViewProps {
 export const OverviewView: React.FC<OverviewViewProps> = ({
   onNavigate,
   onNavigateToSubject,
-  onOpenTopicDrawer,
-  onOpenRevisionSession,
-  onOpenAddTopic,
-  onOpenFocus
 }) => {
   const {
     overallStats,
     subjectStats,
     profile,
     currentExam,
-    dueRevisions,
     plannerTasks
   } = useSyllabus();
 

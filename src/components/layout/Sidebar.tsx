@@ -6,16 +6,13 @@ import {
   CalendarCheck,
   BrainCircuit,
   BookOpen,
-  Layers,
   RotateCw,
   AlertTriangle,
   BarChart3,
   Plus,
   Settings,
   ExternalLink,
-  Timer,
-  Sparkles
-} from 'lucide-react';
+  Timer} from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 export type AppView =
@@ -44,8 +41,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenFocus
 }) => {
   const { profile, dueRevisions, weakTopics, plannerTasks } = useSyllabus();
-  const { logout, user } = useAuth();
-
   const navItems = [
     {
       id: 'overview' as AppView,

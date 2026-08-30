@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import * as THREE from 'three';
 
 interface ProgressOrbProps {
@@ -13,11 +13,11 @@ export const ProgressOrb: React.FC<ProgressOrbProps> = ({
   const mountRef = useRef<HTMLDivElement>(null);
   const [webGlSupported, setWebGlSupported] = useState(true);
 
-  const dimensions = {
+  const dimensions = useMemo(() => ({
     sm: { width: 140, height: 140 },
     md: { width: 220, height: 220 },
     lg: { width: 300, height: 300 },
-  }[size];
+  }[size]), [size]);
 
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -138,6 +138,12 @@ export const ProgressOrb: React.FC<ProgressOrbProps> = ({
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      coreGeometry.dispose();
+      coreMaterial.dispose();
+      wireGeometry.dispose();
+      wireMaterial.dispose();
+      particleGeometry.dispose();
+      particleMaterial.dispose();
     };
   }, [dimensions]);
 

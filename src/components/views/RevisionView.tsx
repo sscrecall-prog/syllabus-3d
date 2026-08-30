@@ -3,24 +3,13 @@ import { useSyllabus } from '../../context/SyllabusContext';
 import {
   RotateCw,
   Play,
-  CheckCircle2,
   Calendar,
-  Layers,
-  Sparkles,
-  Zap,
-  BookOpen,
   Filter,
   Search,
   X,
   Trophy,
   ArrowRight,
-  Clock,
-  Flame,
-  Check,
-  BrainCircuit,
-  Award,
-  ChevronRight
-} from 'lucide-react';
+  Clock} from 'lucide-react';
 import { getTodayDateString, formatDateReadable, isDatePastOrToday } from '../../utils/dateUtils';
 import { RevisionRecord, Topic } from '../../types/syllabus';
 import { soundManager } from '../../utils/soundEffects';
@@ -33,9 +22,7 @@ interface RevisionViewProps {
 
 export const RevisionView: React.FC<RevisionViewProps> = ({
   onOpenRevisionSession,
-  onOpenTopicDrawer,
-  onOpenFocus
-}) => {
+  onOpenTopicDrawer}) => {
   const { revisions, dueRevisions, allTopics, currentExam } = useSyllabus();
 
   const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'history'>('today');
