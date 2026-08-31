@@ -106,39 +106,55 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
   return (
     <div className="space-y-4 sm:space-y-6 pb-20 max-w-5xl mx-auto font-sans select-none animate-fade-in">
       
-      {/* 1. TOP HEADER DIAGNOSTICS BANNER */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-gradient-to-br from-white via-white to-[#F7F6F0] dark:from-[#18181D] dark:via-[#16161E] dark:to-[#121216] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      {/* 1. TOP HEADER DIAGNOSTICS BANNER WITH 3D CYBER CHESS TRAP MAZE BACKGROUND */}
+      <div className="p-5 sm:p-7 rounded-[32px] bg-[#0A0B12] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-4">
+        
+        {/* 3D Glowing Crystal Chess & Laser Trap Maze Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-right md:bg-right pointer-events-none opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
+          style={{ backgroundImage: `url('/weak_traps_banner.png')` }}
+        />
+
+        {/* Multi-layered Glass Gradients for 100% Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0B12] via-[#0A0B12]/85 md:via-[#0A0B12]/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0B12]/85 via-transparent to-transparent pointer-events-none" />
+        
+        {/* Subtle Ambient Glow Orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Top Header Row */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-500/35 text-rose-400 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
               <ShieldAlert className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-tight">
+                <h2 className="text-base sm:text-xl font-black text-white font-serif uppercase tracking-tight drop-shadow-sm">
                   Weak Areas & Examiner Traps Diagnostics
                 </h2>
               </div>
-              <p className="text-xs text-[#65675F] dark:text-[#A9B1D6]">
+              <p className="text-xs text-[#C5C8D8]">
                 Targeted mistake analytics to eliminate blindspots and convert errors into guaranteed marks.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-            <div className="px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-mono font-bold">
+            <div className="px-3.5 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-mono font-bold backdrop-blur-md">
               <span>{weakTopics.length} Weak Topics</span>
             </div>
-            <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-mono font-bold">
+            <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold backdrop-blur-md">
               <span>{fallacyStats.totalTraps} Logged Traps</span>
             </div>
           </div>
         </div>
 
         {/* 2. ROOT-CAUSE FALLACY INTERACTIVE TILES */}
-        <div>
+        <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider font-mono">
+            <span className="text-[10px] font-bold text-[#C5C8D8] uppercase tracking-wider font-mono">
               Root-Cause Fallacy Breakdown (Click to Filter)
             </span>
             {selectedFallacy !== 'all' && (
@@ -147,7 +163,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                   soundManager.playClick();
                   setSelectedFallacy('all');
                 }}
-                className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline cursor-pointer"
+                className="text-[11px] font-bold text-[#7AA2F7] hover:underline cursor-pointer"
               >
                 Clear Filter
               </button>
@@ -156,11 +172,11 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5">
             {[
-              { id: 'conceptual' as MistakeType, label: 'Conceptual', count: fallacyStats.conceptual, color: 'text-rose-500 dark:text-rose-400 bg-rose-500/10 border-rose-500/25', icon: Brain },
-              { id: 'calculation' as MistakeType, label: 'Calculation', count: fallacyStats.calculation, color: 'text-amber-500 dark:text-amber-400 bg-amber-500/10 border-amber-500/25', icon: Calculator },
-              { id: 'formula' as MistakeType, label: 'Formula', count: fallacyStats.formula, color: 'text-purple-500 dark:text-purple-400 bg-purple-500/10 border-purple-500/25', icon: Compass },
-              { id: 'silly' as MistakeType, label: 'Silly Traps', count: fallacyStats.silly, color: 'text-blue-500 dark:text-blue-400 bg-blue-500/10 border-blue-500/25', icon: Eye },
-              { id: 'time_pressure' as MistakeType, label: 'Time Crunch', count: fallacyStats.timePressure, color: 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25', icon: Clock }
+              { id: 'conceptual' as MistakeType, label: 'Conceptual', count: fallacyStats.conceptual, color: 'text-rose-300 bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25', icon: Brain },
+              { id: 'calculation' as MistakeType, label: 'Calculation', count: fallacyStats.calculation, color: 'text-amber-300 bg-amber-500/15 border-amber-500/30 hover:bg-amber-500/25', icon: Calculator },
+              { id: 'formula' as MistakeType, label: 'Formula', count: fallacyStats.formula, color: 'text-purple-300 bg-purple-500/15 border-purple-500/30 hover:bg-purple-500/25', icon: Compass },
+              { id: 'silly' as MistakeType, label: 'Silly Traps', count: fallacyStats.silly, color: 'text-sky-300 bg-sky-500/15 border-sky-500/30 hover:bg-sky-500/25', icon: Eye },
+              { id: 'time_pressure' as MistakeType, label: 'Time Crunch', count: fallacyStats.timePressure, color: 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30 hover:bg-emerald-500/25', icon: Clock }
             ].map(tile => {
               const Icon = tile.icon;
               const isSelected = selectedFallacy === tile.id;
@@ -171,8 +187,8 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                     soundManager.playClick();
                     setSelectedFallacy(prev => (prev === tile.id ? 'all' : tile.id));
                   }}
-                  className={`p-2.5 sm:p-3 rounded-2xl border transition-all cursor-pointer text-center relative ${tile.color} ${
-                    isSelected ? 'ring-2 ring-current shadow-md scale-102' : 'hover:opacity-90 opacity-80'
+                  className={`p-2.5 sm:p-3 rounded-2xl border backdrop-blur-xl transition-all cursor-pointer text-center relative ${tile.color} ${
+                    isSelected ? 'ring-2 ring-current shadow-lg scale-102 bg-white/20' : 'shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-0.5">
@@ -181,7 +197,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                       {tile.label}
                     </span>
                   </div>
-                  <h4 className="text-xl sm:text-2xl font-black font-mono tracking-tight">
+                  <h4 className="text-xl sm:text-2xl font-black font-mono tracking-tight text-white">
                     {tile.count}
                   </h4>
                 </div>
