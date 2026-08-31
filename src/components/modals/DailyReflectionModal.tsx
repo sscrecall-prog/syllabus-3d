@@ -8,11 +8,13 @@ import {
   Smile,
   Coffee,
   BatteryLow,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
   Trophy,
-  History
+  History,
+  ArrowRight,
+  Target,
+  ShieldAlert,
+  Sunrise,
+  CheckCircle2
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { DailyMood, DistractionCategory } from '../../types/syllabus';
@@ -68,52 +70,146 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
     onClose();
   };
 
-  const moodOptions: Array<{ id: DailyMood; label: string; icon: any; color: string; desc: string }> = [
-    { id: 'fire', label: 'Unstoppable', icon: Flame, color: 'text-orange-500 bg-orange-500/10 border-orange-500/30', desc: '100% Locked In' },
-    { id: 'lightning', label: 'Productive', icon: Zap, color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/30', desc: 'Solid Output' },
-    { id: 'happy', label: 'Moderate', icon: Smile, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30', desc: 'Good Progress' },
-    { id: 'tired', label: 'Distracted', icon: Coffee, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30', desc: 'Lost Focus' },
-    { id: 'stressed', label: 'Low Energy', icon: BatteryLow, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30', desc: 'Need Recovery' }
+  const moodOptions: Array<{
+    id: DailyMood;
+    label: string;
+    icon: any;
+    color: string;
+    activeBg: string;
+    inactiveBg: string;
+    desc: string;
+  }> = [
+    {
+      id: 'fire',
+      label: 'Unstoppable',
+      icon: Flame,
+      color: 'text-orange-400 border-orange-500/40',
+      activeBg: 'bg-orange-500/25 border-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.4)] text-orange-300',
+      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-orange-400/80 hover:bg-orange-500/10 hover:border-orange-500/30',
+      desc: '100% Locked In'
+    },
+    {
+      id: 'lightning',
+      label: 'Productive',
+      icon: Zap,
+      color: 'text-amber-400 border-amber-500/40',
+      activeBg: 'bg-amber-500/25 border-amber-400 shadow-[0_0_18px_rgba(245,158,11,0.4)] text-amber-300',
+      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-amber-400/80 hover:bg-amber-500/10 hover:border-amber-500/30',
+      desc: 'Solid Output'
+    },
+    {
+      id: 'happy',
+      label: 'Moderate',
+      icon: Smile,
+      color: 'text-emerald-400 border-emerald-500/40',
+      activeBg: 'bg-emerald-500/25 border-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.4)] text-emerald-300',
+      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-emerald-400/80 hover:bg-emerald-500/10 hover:border-emerald-500/30',
+      desc: 'Good Progress'
+    },
+    {
+      id: 'tired',
+      label: 'Distracted',
+      icon: Coffee,
+      color: 'text-sky-400 border-sky-500/40',
+      activeBg: 'bg-sky-500/25 border-sky-400 shadow-[0_0_18px_rgba(56,189,248,0.4)] text-sky-300',
+      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-sky-400/80 hover:bg-sky-500/10 hover:border-sky-500/30',
+      desc: 'Lost Focus'
+    },
+    {
+      id: 'stressed',
+      label: 'Low Energy',
+      icon: BatteryLow,
+      color: 'text-rose-400 border-rose-500/40',
+      activeBg: 'bg-rose-500/25 border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.4)] text-rose-300',
+      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-rose-400/80 hover:bg-rose-500/10 hover:border-rose-500/30',
+      desc: 'Need Recovery'
+    }
   ];
 
-  const distractionPills: Array<{ id: DistractionCategory; label: string; icon: string }> = [
-    { id: 'none', label: 'None - Zero Distractions! 🏆', icon: '✨' },
-    { id: 'social_media', label: 'Social Media / Reels 📱', icon: '📵' },
-    { id: 'youtube', label: 'YouTube Rabbit Hole 📺', icon: '⏳' },
-    { id: 'overthinking', label: 'Overthinking / Anxiety 🧠', icon: '💭' },
-    { id: 'fatigue', label: 'Sleepiness / Low Energy 🥱', icon: '⚡' },
-    { id: 'other', label: 'Other Interruption ⚠️', icon: '📝' }
+  const distractionPills: Array<{
+    id: DistractionCategory;
+    label: string;
+    icon: string;
+    activeStyle: string;
+    inactiveStyle: string;
+  }> = [
+    {
+      id: 'none',
+      label: 'None - 100% Focused 🏆',
+      icon: '✨',
+      activeStyle: 'bg-emerald-500/25 border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] font-bold',
+      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-emerald-400/80 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+    },
+    {
+      id: 'social_media',
+      label: 'Social Media / Reels 📱',
+      icon: '📵',
+      activeStyle: 'bg-rose-500/25 border-rose-400 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.3)] font-bold',
+      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-300'
+    },
+    {
+      id: 'youtube',
+      label: 'YouTube Rabbit Hole 📺',
+      icon: '⏳',
+      activeStyle: 'bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] font-bold',
+      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-cyan-500/10 hover:border-cyan-500/30 hover:text-cyan-300'
+    },
+    {
+      id: 'overthinking',
+      label: 'Overthinking / Anxiety 🧠',
+      icon: '💭',
+      activeStyle: 'bg-purple-500/25 border-purple-400 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] font-bold',
+      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-purple-500/10 hover:border-purple-500/30 hover:text-purple-300'
+    },
+    {
+      id: 'fatigue',
+      label: 'Sleepiness / Low Energy 🥱',
+      icon: '⚡',
+      activeStyle: 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] font-bold',
+      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-amber-500/10 hover:border-amber-500/30 hover:text-amber-300'
+    },
+    {
+      id: 'other',
+      label: 'Other Interruption ⚠️',
+      icon: '📝',
+      activeStyle: 'bg-indigo-500/25 border-indigo-400 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] font-bold',
+      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-300'
+    }
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-lg animate-fade-in select-none">
       <div
-        className="relative w-full max-w-lg rounded-3xl bg-[#FAF9F5] dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#28293D] shadow-2xl overflow-hidden animate-scale-up"
+        className="relative w-full max-w-xl rounded-[28px] sm:rounded-3xl bg-[#0F101A] border border-[#2B2E42] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden animate-scale-up text-white"
         onClick={e => e.stopPropagation()}
       >
-        {/* Top Glowing Header */}
-        <div className="relative p-5 sm:p-6 bg-gradient-to-br from-[#1A1B28] via-[#12131F] to-[#0A0B12] text-white border-b border-[#28293D] overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+        {/* Top Glowing Header Banner */}
+        <div className="relative p-5 sm:p-6 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] overflow-hidden">
+          {/* Ambient Glow Elements */}
+          <div className="absolute top-0 right-0 w-72 h-72 bg-purple-600/25 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-purple-500/20 border border-purple-500/30 text-purple-300 flex items-center justify-center shadow-lg">
-                <Moon className="w-5 h-5 stroke-[2.2]" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/20 text-white flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)] shrink-0">
+                <Moon className="w-6 h-6 stroke-[2.2]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                    Day-End Reflection
+                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
+                    DAY-END REFLECTION
                   </span>
-                  <span className="text-[10px] font-mono text-[#A1A1B2]">{todayKey}</span>
+                  <span className="text-[11px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                    {todayKey}
+                  </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-black font-serif uppercase tracking-tight text-white mt-0.5">
+                <h3 className="text-base sm:text-xl font-black font-serif uppercase tracking-tight text-white mt-1 drop-shadow-sm">
                   1-Minute Night Study Journal
                 </h3>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               {onOpenHistory && (
                 <button
                   type="button"
@@ -121,7 +217,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                     onClose();
                     onOpenHistory();
                   }}
-                  className="p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
                   title="View Reflection History"
                 >
                   <History className="w-4 h-4" />
@@ -130,32 +226,39 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {/* Today's Target Stats Badge */}
-          <div className="relative z-10 flex items-center gap-2 mt-4 pt-3 border-t border-white/10 text-xs font-mono text-[#C2C5D6]">
-            <Trophy className="w-3.5 h-3.5 text-amber-400" />
-            <span>Top 3 Non-Negotiables:</span>
-            <span className="font-extrabold text-white bg-white/10 px-2 py-0.5 rounded-md border border-white/15">
+          {/* Today's Target Stats Pill Strip */}
+          <div className="relative z-10 flex items-center justify-between gap-2 mt-4 pt-3 border-t border-white/10 text-xs font-mono">
+            <div className="flex items-center gap-1.5 text-[#D1D5E8]">
+              <Trophy className="w-4 h-4 text-amber-400" />
+              <span>Top 3 Non-Negotiables:</span>
+            </div>
+            <span className="font-extrabold text-amber-300 bg-amber-500/20 px-3 py-1 rounded-xl border border-amber-500/30 shadow-sm">
               {completedTargetsCount} / {Math.max(3, totalTargetsCount)} Completed
             </span>
           </div>
         </div>
 
         {/* Modal Form Content */}
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4.5 max-h-[75vh] overflow-y-auto custom-scrollbar">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto custom-scrollbar bg-[#0F101A]">
           
           {/* 1. Daily Mood / Energy Selector */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#11120F] dark:text-[#E2E4F0] flex items-center justify-between">
-              <span>1. How was your focus & energy today?</span>
-              <span className="text-[10px] font-mono text-[#85877E]">{rating}/5 Rating</span>
-            </label>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black uppercase font-mono tracking-wider text-purple-300 flex items-center gap-1.5">
+                <span className="w-4 h-4 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-300 flex items-center justify-center text-[10px]">1</span>
+                <span>How was your focus & energy today?</span>
+              </label>
+              <span className="text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
+                {rating} / 5 Score
+              </span>
+            </div>
 
             <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
               {moodOptions.map(m => {
@@ -174,14 +277,14 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                       else setRating(1);
                       soundManager.playClick();
                     }}
-                    className={`p-2.5 rounded-2xl border transition-all cursor-pointer text-center flex flex-col items-center gap-1 ${
+                    className={`p-3 rounded-2xl border transition-all cursor-pointer text-center flex flex-col items-center gap-1.5 ${
                       isSelected
-                        ? `${m.color} ring-2 ring-current shadow-md scale-105 font-bold`
-                        : 'bg-white dark:bg-[#1A1B28] border-[#D8D8CF] dark:border-[#28293D] text-[#65675F] dark:text-[#8E90A6] opacity-70 hover:opacity-100'
+                        ? `${m.activeBg} scale-105 font-black`
+                        : `${m.inactiveBg} opacity-90`
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-[10px] font-mono leading-none tracking-tight">{m.label}</span>
+                    <Icon className="w-5 h-5 stroke-[2.5]" />
+                    <span className="text-[10px] font-mono leading-none tracking-tight font-bold">{m.label}</span>
                   </button>
                 );
               })}
@@ -189,27 +292,32 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           </div>
 
           {/* 2. Biggest Academic Win */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-[#11120F] dark:text-[#E2E4F0] flex items-center gap-1.5">
-              <span>2. Aaj ka sabse bada academic win kya tha?</span>
-              <span className="text-amber-500 font-bold">*</span>
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase font-mono tracking-wider text-emerald-300 flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-[10px]">2</span>
+              <span>Aaj ka sabse bada academic win kya tha?</span>
+              <span className="text-amber-400">*</span>
             </label>
-            <input
-              type="text"
-              required
-              value={biggestWin}
-              onChange={e => setBiggestWin(e.target.value)}
-              placeholder="e.g. Completed 60 Geometry PYQs & full speed mock!"
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#28293D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                required
+                value={biggestWin}
+                onChange={e => setBiggestWin(e.target.value)}
+                placeholder="e.g. Completed 60 Geometry PYQs & full speed mock!"
+                className="w-full px-4 py-3 rounded-2xl bg-[#161726] border border-[#2E3147] text-xs font-bold text-white placeholder-[#6E7187] focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 shadow-inner transition-all"
+              />
+              <Trophy className="w-4 h-4 text-emerald-400/60 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
 
           {/* 3. Primary Distraction / Trap */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#11120F] dark:text-[#E2E4F0]">
-              3. Kahan time waste hua ya focus toota?
+          <div className="space-y-2.5">
+            <label className="text-xs font-black uppercase font-mono tracking-wider text-rose-300 flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 flex items-center justify-center text-[10px]">3</span>
+              <span>Kahan time waste hua ya focus toota?</span>
             </label>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {distractionPills.map(d => (
                 <button
                   key={d.id}
@@ -218,13 +326,12 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                     setDistraction(d.id);
                     soundManager.playClick();
                   }}
-                  className={`px-3 py-2 rounded-xl text-[11px] font-medium border text-left transition-all cursor-pointer flex items-center gap-1.5 ${
-                    distraction === d.id
-                      ? 'bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-300 font-bold shadow-xs'
-                      : 'bg-white dark:bg-[#181926] border-[#D8D8CF] dark:border-[#28293D] text-[#65675F] dark:text-[#9A9CAE] hover:bg-black/5 dark:hover:bg-white/5'
+                  className={`px-3.5 py-2.5 rounded-xl text-xs border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                    distraction === d.id ? d.activeStyle : d.inactiveStyle
                   }`}
                 >
-                  <span className="truncate">{d.label}</span>
+                  <span className="truncate font-semibold">{d.label}</span>
+                  {distraction === d.id && <CheckCircle2 className="w-4 h-4 shrink-0 text-current" />}
                 </button>
               ))}
             </div>
@@ -234,44 +341,49 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                 type="text"
                 value={distractionNote}
                 onChange={e => setDistractionNote(e.target.value)}
-                placeholder="Optional note: Why did this happen & how to prevent it?"
-                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#28293D] text-[11px] text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-rose-500"
+                placeholder="Optional note: Why did this happen & how to prevent it tomorrow?"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#161726] border border-rose-500/40 text-xs text-white placeholder-[#6E7187] focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 mt-1 transition-all"
               />
             )}
           </div>
 
           {/* 4. Tomorrow Morning's #1 Priority */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-[#11120F] dark:text-[#E2E4F0] flex items-center gap-1.5">
-              <span>4. Kal subah ka sabse pehla #1 non-negotiable target?</span>
-              <span className="text-amber-500 font-bold">*</span>
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase font-mono tracking-wider text-amber-300 flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-[10px]">4</span>
+              <span>Kal subah ka sabse pehla #1 non-negotiable target?</span>
+              <span className="text-amber-400">*</span>
             </label>
-            <input
-              type="text"
-              required
-              value={tomorrowPriority}
-              onChange={e => setTomorrowPriority(e.target.value)}
-              placeholder="e.g. 7 AM: Revision of English Error Spotting 100 Rules"
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#28293D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                required
+                value={tomorrowPriority}
+                onChange={e => setTomorrowPriority(e.target.value)}
+                placeholder="e.g. 7 AM: Revision of English Error Spotting 100 Rules"
+                className="w-full px-4 py-3 rounded-2xl bg-[#161726] border border-[#2E3147] text-xs font-bold text-white placeholder-[#6E7187] focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 shadow-inner transition-all"
+              />
+              <Sunrise className="w-4 h-4 text-amber-400/60 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-3 border-t border-[#D8D8CF] dark:border-[#28293D] flex items-center justify-between gap-3">
+          {/* Action Footer */}
+          <div className="pt-4 border-t border-[#242738] flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-2xl bg-[#EEEEE8] dark:bg-[#1E1F2E] text-[#65675F] dark:text-[#A1A1B2] text-xs font-bold hover:bg-[#E2E2D8] transition-colors cursor-pointer"
+              className="px-5 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-[#A1A1B2] hover:text-white text-xs font-bold border border-white/10 transition-colors cursor-pointer"
             >
               Close
             </button>
 
             <button
               type="submit"
-              className="group relative px-6 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+              className="group relative px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:shadow-[0_0_35px_rgba(168,85,247,0.6)] transition-all active:scale-95 cursor-pointer flex items-center gap-2 overflow-hidden border border-white/20"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               <span>Log Night Reflection (+30 XP)</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </form>
