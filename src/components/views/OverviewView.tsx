@@ -304,24 +304,27 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               key={plat.id}
               onClick={() => {
                 soundManager.playClick();
-                onNavigate('platforms');
+                window.open(plat.url, '_blank', 'noopener,noreferrer');
               }}
-              className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer flex items-center gap-2.5 group active:scale-98"
+              className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer flex items-center justify-between group active:scale-98"
             >
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-xs border border-white/20 shrink-0"
-                style={{ backgroundColor: plat.color || '#5A4FCF' }}
-              >
-                {plat.icon || '⚡'}
+              <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-xs border border-white/20 shrink-0 group-hover:scale-105 transition-transform"
+                  style={{ backgroundColor: plat.color || '#5A4FCF' }}
+                >
+                  {plat.icon || '⚡'}
+                </div>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
+                    {plat.name}
+                  </span>
+                  <span className="text-[10px] text-[#85877E] uppercase font-mono font-bold block truncate">
+                    {plat.category === 'course' ? 'Course Batch' : 'Mock Series'}
+                  </span>
+                </div>
               </div>
-              <div className="min-w-0">
-                <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
-                  {plat.name}
-                </span>
-                <span className="text-[10px] text-[#85877E] uppercase font-mono font-bold block truncate">
-                  {plat.category === 'course' ? 'Course Batch' : 'Mock Series'}
-                </span>
-              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-[#85877E] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] shrink-0" />
             </div>
           ))}
         </div>

@@ -11,28 +11,23 @@ import {
   Globe,
   Copy,
   Check,
-  MoreVertical,
   Trash2,
   Edit2,
-  Clock,
   KeyRound,
-  ShieldCheck,
-  Split
+  ShieldCheck
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { AddPlatformModal } from '../modals/AddPlatformModal';
-import { PlatformWorkstationModal } from '../modals/PlatformWorkstationModal';
 import { soundManager } from '../../utils/soundEffects';
 
 export const PlatformsView: React.FC = () => {
-  const { platforms, togglePinPlatform, deletePlatform, allTopics } = useSyllabus();
+  const { platforms, togglePinPlatform, deletePlatform } = useSyllabus();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | PlatformCategory | 'pinned'>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPlatform, setEditingPlatform] = useState<ExternalPlatform | null>(null);
-  const [activeWorkstationPlatform, setActiveWorkstationPlatform] = useState<ExternalPlatform | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Filtered Platforms
@@ -56,7 +51,8 @@ export const PlatformsView: React.FC = () => {
   const testsCount = platforms.filter(p => p.category === 'test_series').length;
   const pinnedCount = platforms.filter(p => p.pinned).length;
 
-  const handleCopyHint = (platformId: string, hint: string) => {
+  const handleCopyHint = (e: React.MouseEvent, platformId: string, hint: string) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(hint);
     setCopiedId(platformId);
     soundManager.playClick();
@@ -69,21 +65,23 @@ export const PlatformsView: React.FC = () => {
     soundManager.playClick();
   };
 
-  const handleEdit = (p: ExternalPlatform) => {
+  const handleEdit = (e: React.MouseEvent, p: ExternalPlatform) => {
+    e.stopPropagation();
     setEditingPlatform(p);
     setIsAddModalOpen(true);
     soundManager.playClick();
   };
 
-  const handleDelete = (p: ExternalPlatform) => {
+  const handleDelete = (e: React.MouseEvent, p: ExternalPlatform) => {
+    e.stopPropagation();
     if (window.confirm(`Are you sure you want to remove "${p.name}" from your Study Station?`)) {
       deletePlatform(p.id);
     }
   };
 
-  const handleLaunchStudio = (p: ExternalPlatform) => {
-    setActiveWorkstationPlatform(p);
-    soundManager.playClick();
+  const handleTogglePin = (e: React.MouseEvent, platformId: string) => {
+    e.stopPropagation();
+    togglePinPlatform(platformId);
   };
 
   const handleDirectLaunch = (url: string) => {
@@ -103,7 +101,7 @@ export const PlatformsView: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold uppercase tracking-wider bg-[#596B35]/10 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/30 flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
-                Multi-Platform Study Station
+                Multi-Platform Study Hub
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-[#85877E] bg-black/5 dark:bg-white/5">
                 {platforms.length} Platforms Linked
@@ -115,7 +113,7 @@ export const PlatformsView: React.FC = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A1A1AA] max-w-2xl leading-relaxed">
-              Physics Wallah, Careerwill, Testbook, ya Oliveboard par study karein aur mock tests dekar live notes aur stopwatch synchronize karein.
+              Physics Wallah, Careerwill, Testbook, ya Oliveboard ke kisi bhi card par click karke direct apni batch ya test series open karein.
             </p>
           </div>
 
@@ -167,8 +165,8 @@ export const PlatformsView: React.FC = () => {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block">100%</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Offline PWA Sync</span>
+              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block">1-Click</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Direct Redirect</span>
             </div>
           </div>
         </div>
@@ -258,7 +256,8 @@ export const PlatformsView: React.FC = () => {
             return (
               <div
                 key={platform.id}
-                className="group relative rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7]/50 shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between space-y-4"
+                onClick={() => handleDirectLaunch(platform.url)}
+                className="group relative rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-sm hover:shadow-lg transition-all p-5 flex flex-col justify-between space-y-4 cursor-pointer active:scale-[0.99]"
               >
                 
                 {/* Card Top: Icon, Title, Actions */}
@@ -268,7 +267,7 @@ export const PlatformsView: React.FC = () => {
                     {/* Brand Icon & Category Badge */}
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-white/20 shrink-0"
+                        className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-white/20 shrink-0 group-hover:scale-105 transition-transform"
                         style={{ backgroundColor: platform.color || '#5A4FCF' }}
                       >
                         {platform.icon || '⚡'}
@@ -289,11 +288,11 @@ export const PlatformsView: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Pin & Options */}
-                    <div className="flex items-center gap-1">
+                    {/* Pin & Options (stopPropagation to not trigger card redirect) */}
+                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"
-                        onClick={() => togglePinPlatform(platform.id)}
+                        onClick={(e) => handleTogglePin(e, platform.id)}
                         className={`p-1.5 rounded-xl transition-colors cursor-pointer ${
                           platform.pinned
                             ? 'text-amber-500 bg-amber-500/10'
@@ -306,7 +305,7 @@ export const PlatformsView: React.FC = () => {
 
                       <button
                         type="button"
-                        onClick={() => handleEdit(platform)}
+                        onClick={(e) => handleEdit(e, platform)}
                         className="p-1.5 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-xl hover:bg-[#EEEEE8] dark:hover:bg-[#23232A] cursor-pointer"
                         title="Edit Platform"
                       >
@@ -315,7 +314,7 @@ export const PlatformsView: React.FC = () => {
 
                       <button
                         type="button"
-                        onClick={() => handleDelete(platform)}
+                        onClick={(e) => handleDelete(e, platform)}
                         className="p-1.5 text-[#85877E] hover:text-rose-600 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
                         title="Remove Platform"
                       >
@@ -333,47 +332,39 @@ export const PlatformsView: React.FC = () => {
 
                   {/* Login ID Helper (if provided) */}
                   {hasLoginHint && (
-                    <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730]">
+                    <div
+                      onClick={(e) => handleCopyHint(e, platform.id, platform.loginHint!)}
+                      className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer group/hint"
+                    >
                       <div className="flex items-center gap-1.5 min-w-0 pr-2">
                         <KeyRound className="w-3.5 h-3.5 text-[#85877E] shrink-0" />
                         <span className="text-[11px] font-mono text-[#11120F] dark:text-[#C0CAF5] truncate font-medium">
                           {platform.loginHint}
                         </span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyHint(platform.id, platform.loginHint!)}
-                        className="p-1 text-[#85877E] hover:text-[#596B35] dark:hover:text-[#7AA2F7] cursor-pointer shrink-0"
-                        title="Copy Login ID"
-                      >
-                        {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
+                      <span className="flex items-center gap-1 text-[10px] font-bold font-mono text-[#596B35] dark:text-[#7AA2F7] shrink-0">
+                        {isCopied ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
+                            <span className="text-emerald-500">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Copy ID</span>
+                          </>
+                        )}
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* Card Bottom: Action Launchers */}
-                <div className="pt-3 border-t border-[#D8D8CF] dark:border-[#272730] flex items-center gap-2">
-                  
-                  {/* Primary Workstation Studio Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleLaunchStudio(platform)}
-                    className="flex-1 py-2.5 px-3 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
-                  >
-                    <Split className="w-3.5 h-3.5" />
-                    <span>Study Studio</span>
-                  </button>
-
-                  {/* Direct New Tab Launch Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleDirectLaunch(platform.url)}
-                    className="p-2.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#DCE8B7] dark:hover:bg-[#2E2E38] text-[#11120F] dark:text-white border border-[#D8D8CF] dark:border-[#272730] transition-all cursor-pointer active:scale-95"
-                    title="Direct Open in New Tab"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
+                {/* Card Bottom: Direct Launch Action */}
+                <div className="pt-3 border-t border-[#D8D8CF] dark:border-[#272730]">
+                  <div className="w-full py-2.5 px-4 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black group-hover:bg-[#596B35] dark:group-hover:bg-[#7AA2F7] text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                    <span>Launch {platform.category === 'course' ? 'Course Portal' : 'Test Series'}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </div>
             );
@@ -387,15 +378,6 @@ export const PlatformsView: React.FC = () => {
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
           editPlatformData={editingPlatform}
-        />
-      )}
-
-      {/* Active Workstation Studio Modal */}
-      {activeWorkstationPlatform && (
-        <PlatformWorkstationModal
-          platform={activeWorkstationPlatform}
-          isOpen={Boolean(activeWorkstationPlatform)}
-          onClose={() => setActiveWorkstationPlatform(null)}
         />
       )}
     </div>
