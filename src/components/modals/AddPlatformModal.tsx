@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   X,
   Plus,
@@ -8,7 +8,9 @@ import {
   GraduationCap,
   FileCheck2,
   BookOpen,
-  KeyRound
+  KeyRound,
+  RotateCcw,
+  Tag
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -95,7 +97,19 @@ const PRESET_TEMPLATES = [
   }
 ];
 
-const EMOJI_OPTIONS = ['⚡', '🎓', '📝', '🎯', '🏛️', '📖', '📊', '▶️', '💻', '🔬', '📐', '🧠', '🌐', '📚', '🚀', '🔥'];
+// Popular Indian Coaching & Study Platform Quick Suggestions
+const POPULAR_SUGGESTIONS = [
+  { name: 'Exampur', url: 'https://exampur.com/', category: 'course' as PlatformCategory, icon: '🔥', color: '#E11D48' },
+  { name: 'Rojgar With Ankit (RWA)', url: 'https://rojgarwithankit.co.in/', category: 'course' as PlatformCategory, icon: '🏆', color: '#0284C7' },
+  { name: 'Adda247', url: 'https://www.adda247.com/', category: 'course' as PlatformCategory, icon: '🎯', color: '#F59E0B' },
+  { name: 'Practicemock', url: 'https://www.practicemock.com/', category: 'test_series' as PlatformCategory, icon: '📝', color: '#16A34A' },
+  { name: 'Sankalp Bharat', url: 'https://sankalpbharat.com/', category: 'course' as PlatformCategory, icon: '🚀', color: '#5A4FCF' },
+  { name: 'StudyIQ Education', url: 'https://www.studyiq.com/', category: 'course' as PlatformCategory, icon: '📚', color: '#08BD80' },
+  { name: 'Notion / Study Notes', url: 'https://www.notion.so/', category: 'reference' as PlatformCategory, icon: '🧠', color: '#11120F' },
+  { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: '✈️', color: '#0284C7' },
+];
+
+const EMOJI_OPTIONS = ['⚡', '🎓', '📝', '🎯', '🏛️', '📖', '📊', '▶️', '🏆', '🔥', '💻', '🔬', '📐', '🧠', '🌐', '📚', '🚀', '✈️'];
 const COLOR_OPTIONS = [
   '#5A4FCF', // Purple
   '#E11D48', // Rose
@@ -106,7 +120,8 @@ const COLOR_OPTIONS = [
   '#EC4899', // Pink
   '#596B35', // Academic Olive
   '#08BD80', // Emerald
-  '#FF0000'  // Red
+  '#FF0000', // Red
+  '#11120F'  // Dark
 ];
 
 export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
@@ -115,6 +130,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   editPlatformData
 }) => {
   const { addPlatform, editPlatform, currentExam } = useSyllabus();
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(editPlatformData?.name || '');
   const [url, setUrl] = useState(editPlatformData?.url || '');
@@ -128,6 +144,14 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const [pinned, setPinned] = useState(editPlatformData?.pinned || false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        nameInputRef.current?.focus();
+      }, 150);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleSelectPreset = (preset: typeof PRESET_TEMPLATES[0]) => {
@@ -138,19 +162,66 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setColor(preset.color);
     setIcon(preset.icon);
     if (preset.loginHint) setLoginHint(preset.loginHint);
+    setError(null);
     soundManager.playClick();
+    nameInputRef.current?.focus();
+  };
+
+  const handleSelectSuggestion = (sugg: typeof POPULAR_SUGGESTIONS[0]) => {
+    setName(sugg.name);
+    setUrl(sugg.url);
+    setCategory(sugg.category);
+    setIcon(sugg.icon);
+    setColor(sugg.color);
+    setError(null);
+    soundManager.playClick();
+    nameInputRef.current?.focus();
+  };
+
+  const handleCategoryChange = (newCat: PlatformCategory) => {
+    setCategory(newCat);
+    soundManager.playClick();
+    
+    // Set appropriate default icon if current is default
+    if (newCat === 'custom') {
+      setIcon('🌐');
+      if (!name) setName('');
+    } else if (newCat === 'course') {
+      setIcon('🎓');
+    } else if (newCat === 'test_series') {
+      setIcon('📝');
+    } else if (newCat === 'reference') {
+      setIcon('📖');
+    }
+    
+    nameInputRef.current?.focus();
+  };
+
+  const handleResetForm = () => {
+    setName('');
+    setUrl('');
+    setDescription('');
+    setLoginHint('');
+    setNotes('');
+    setCategory('custom');
+    setIcon('🌐');
+    setColor('#5A4FCF');
+    setError(null);
+    soundManager.playClick();
+    nameInputRef.current?.focus();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setError('Please enter a platform or batch name.');
+      setError('Please enter a platform or portal name.');
+      nameInputRef.current?.focus();
       return;
     }
 
     let cleanUrl = url.trim();
     if (!cleanUrl) {
-      setError('Please enter the website or batch URL.');
+      setError('Please enter the website or direct batch URL.');
       return;
     }
 
@@ -189,6 +260,52 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     onClose();
   };
 
+  // Dynamic Labels & Placeholders based on category
+  const getNameLabel = () => {
+    switch (category) {
+      case 'custom':
+        return 'Custom Portal / Website Name *';
+      case 'course':
+        return 'Course / Batch Name *';
+      case 'test_series':
+        return 'Mock Test Series Name *';
+      case 'reference':
+        return 'Reference Tool Name *';
+      default:
+        return 'Platform / Website Name *';
+    }
+  };
+
+  const getNamePlaceholder = () => {
+    switch (category) {
+      case 'custom':
+        return 'e.g. Exampur, Rojgar with Ankit, Adda247, Coaching App...';
+      case 'course':
+        return 'e.g. Physics Wallah - Shaurya Batch, Careerwill Maths Special...';
+      case 'test_series':
+        return 'e.g. Testbook CGL Mock Pass, Oliveboard Sectional Tests...';
+      case 'reference':
+        return 'e.g. Formula Vault, Notion Study Workspace, Drive PDF...';
+      default:
+        return 'Enter platform or coaching website name...';
+    }
+  };
+
+  const getUrlPlaceholder = () => {
+    switch (category) {
+      case 'custom':
+        return 'https://your-coaching-portal.com or login link...';
+      case 'course':
+        return 'https://pw.live/study/batches or course URL...';
+      case 'test_series':
+        return 'https://testbook.com/test-series...';
+      case 'reference':
+        return 'https://notion.so or drive.google.com...';
+      default:
+        return 'https://example.com...';
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none animate-fade-in">
       <div className="relative w-full max-w-2xl bg-white dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
@@ -197,7 +314,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         <div className="p-5 sm:p-6 border-b border-[#D8D8CF] dark:border-[#272730] flex items-center justify-between bg-[#F7F6F0]/60 dark:bg-[#18181D]/60 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-white/20"
+              className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-white/20 transition-transform"
               style={{ backgroundColor: color }}
             >
               {icon}
@@ -207,7 +324,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 {editPlatformData ? 'Edit Study Platform' : 'Add Course / Test Platform'}
               </h2>
               <p className="text-xs text-[#85877E] dark:text-[#787C99]">
-                Integrate Physics Wallah, Careerwill, Testbook, or any custom study website
+                Physics Wallah, Careerwill, Testbook, ya apna custom portal add karein
               </p>
             </div>
           </div>
@@ -231,35 +348,74 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold uppercase tracking-wider font-mono text-[#85877E] flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
-                  Popular Quick Presets (1-Click Fill)
+                  Popular 1-Click Templates
                 </span>
+                <button
+                  type="button"
+                  onClick={handleResetForm}
+                  className="text-[10px] font-mono font-bold text-[#85877E] hover:text-[#596B35] dark:hover:text-[#7AA2F7] flex items-center gap-1 cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Clear / Custom Mode</span>
+                </button>
               </div>
+
+              {/* Presets Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PRESET_TEMPLATES.map((preset) => (
                   <button
                     key={preset.name}
                     type="button"
                     onClick={() => handleSelectPreset(preset)}
-                    className="p-2.5 rounded-2xl border border-[#D8D8CF] dark:border-[#272730] bg-[#F7F6F0] dark:bg-[#18181D] hover:border-[#596B35] dark:hover:border-[#7AA2F7] text-left transition-all active:scale-95 flex items-center gap-2 cursor-pointer group"
+                    className={`p-2.5 rounded-2xl border text-left transition-all active:scale-95 flex items-center gap-2 cursor-pointer group ${
+                      name === preset.name
+                        ? 'bg-[#11120F] text-white dark:bg-white dark:text-black border-transparent shadow-md'
+                        : 'border-[#D8D8CF] dark:border-[#272730] bg-[#F7F6F0] dark:bg-[#18181D] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                    }`}
                   >
                     <span className="text-lg shrink-0">{preset.icon}</span>
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
+                      <span className={`text-xs font-bold truncate block ${
+                        name === preset.name ? 'text-inherit' : 'text-[#11120F] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]'
+                      }`}>
                         {preset.name.split(' ')[0]}
                       </span>
-                      <span className="text-[10px] text-[#85877E] uppercase font-mono font-bold block">
+                      <span className={`text-[10px] uppercase font-mono font-bold block ${
+                        name === preset.name ? 'text-white/70 dark:text-black/70' : 'text-[#85877E]'
+                      }`}>
                         {preset.category === 'course' ? 'Course' : 'Mock Test'}
                       </span>
                     </div>
                   </button>
                 ))}
               </div>
+
+              {/* Quick Tags / Custom Suggestions */}
+              <div className="pt-1">
+                <span className="text-[10px] font-mono text-[#85877E] flex items-center gap-1 mb-1.5">
+                  <Tag className="w-3 h-3 text-[#596B35]" />
+                  Other Popular Coaching & Portals:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {POPULAR_SUGGESTIONS.map(sugg => (
+                    <button
+                      key={sugg.name}
+                      type="button"
+                      onClick={() => handleSelectSuggestion(sugg)}
+                      className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-[#EEEEE8] dark:bg-[#18181D] hover:bg-[#DCE8B7] dark:hover:bg-[#23232A] text-[#11120F] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#272730] transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                    >
+                      <span>{sugg.icon}</span>
+                      <span>{sugg.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300">
-              {error}
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 animate-shake">
+              ⚠️ {error}
             </div>
           )}
 
@@ -267,9 +423,14 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
             
             {/* Category Selector */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
-                Platform Category
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
+                  Platform Category *
+                </label>
+                <span className="text-[10px] text-[#85877E] font-mono">
+                  {category === 'custom' ? 'Custom Portal Mode' : `${category} Mode`}
+                </span>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'course' as PlatformCategory, label: 'Course / Batches', icon: GraduationCap },
@@ -283,10 +444,10 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                     <button
                       key={cat.id}
                       type="button"
-                      onClick={() => setCategory(cat.id)}
+                      onClick={() => handleCategoryChange(cat.id)}
                       className={`p-2.5 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-md'
+                          ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-md scale-[1.02]'
                           : 'bg-[#F7F6F0] dark:bg-[#18181D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
                       }`}
                     >
@@ -298,25 +459,31 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               </div>
             </div>
 
-            {/* Name & URL */}
+            {/* Name & URL (Dynamic labels & placeholders) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
-                  Platform / Batch Name *
+                <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
+                  <span>{getNameLabel()}</span>
+                  <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
                 </label>
                 <input
+                  ref={nameInputRef}
                   type="text"
                   required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Physics Wallah - Lakshya Batch"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error) setError(null);
+                  }}
+                  placeholder={getNamePlaceholder()}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
-                  Website / Direct Batch Link *
+                <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
+                  <span>Website / Batch Link *</span>
+                  <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
                 </label>
                 <div className="relative">
                   <Globe className="w-4 h-4 absolute left-3 top-3 text-[#85877E]" />
@@ -324,9 +491,12 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                     type="text"
                     required
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://pw.live/study/batches..."
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                    onChange={(e) => {
+                      setUrl(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    placeholder={getUrlPlaceholder()}
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs"
                   />
                 </div>
               </div>
@@ -373,13 +543,13 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
             {/* Description / Notes */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
-                Batch / Test Description
+                Batch / Portal Notes (Optional)
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g. Tier 1 + Tier 2 Complete Course by Gagan Pratap Sir"
+                placeholder="e.g. Math Special Batch by Gagan Pratap Sir, Tier 1 Mock analysis..."
                 className="w-full px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35]"
               />
             </div>
