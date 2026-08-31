@@ -24,10 +24,19 @@ import {
   TaskPriority,
   TaskCategory,
   ExternalPlatform,
-  PlatformCategory
+  PlatformCategory,
+  Top3Target,
+  DailyReflection
 } from '../types/syllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
+import {
+  loadStoredTop3Targets,
+  saveStoredTop3Targets,
+  loadStoredReflections,
+  saveStoredReflection,
+  deleteStoredReflection
+} from '../utils/dailyProductivityStorage';
 import { soundManager } from '../utils/soundEffects';
 import { useAuth } from './AuthContext';
 import confetti from 'canvas-confetti';
@@ -248,6 +257,17 @@ interface SyllabusContextType {
   togglePinPlatform: (platformId: string) => void;
   recordPlatformAccess: (platformId: string) => void;
 
+  // Top 3 Non-Negotiable Targets
+  top3Targets: Top3Target[];
+  updateTop3Target: (targetId: string, text: string, meta?: { topicId?: string; subjectName?: string; subjectColor?: string }) => void;
+  toggleTop3Target: (targetId: string) => void;
+  clearTop3Target: (targetId: string) => void;
+
+  // Daily Evening Reflections
+  reflectionsHistory: DailyReflection[];
+  saveDailyReflection: (reflection: Omit<DailyReflection, 'id' | 'timestamp'>) => void;
+  deleteDailyReflection: (id: string) => void;
+
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
   updateTopicNotes: (topicId: string, notes: string) => void;
   addTopicMistake: (topicId: string, descOrPayload: string | Partial<MistakeRecord>, type?: MistakeType, solution?: string) => void;
@@ -412,6 +432,14 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     try { localStorage.setItem('syllabus3d_platforms', JSON.stringify(platforms)); } catch(e) { console.warn(e); }
   }, [platforms]);
+
+  // ──── TOP 3 NON-NEGOTIABLE TARGETS & DAILY REFLECTION STATE ────
+  const [top3Targets, setTop3Targets] = useState<Top3Target[]>(() => loadStoredTop3Targets());
+  const [reflectionsHistory, setReflectionsHistory] = useState<DailyReflection[]>(() => loadStoredReflections());
+
+  useEffect(() => {
+    saveStoredTop3Targets(top3Targets);
+  }, [top3Targets]);
 
 
   const currentExam = useMemo(() => {
@@ -1557,6 +1585,69 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, null, 2);
   };
 
+  const updateTop3Target = (targetId: string, text: string, meta?: { topicId?: string; subjectName?: string; subjectColor?: string }) => {
+    setTop3Targets(prev => prev.map(t => (t.id === targetId ? { ...t, text, ...meta } : t)));
+  };
+
+  const toggleTop3Target = (targetId: string) => {
+    setTop3Targets(prev => {
+      const next = prev.map(t => {
+        if (t.id === targetId) {
+          const completed = !t.completed;
+          if (completed) soundManager.playCompleteChime();
+          else soundManager.playClick();
+          return {
+            ...t,
+            completed,
+            completedAt: completed ? new Date().toISOString() : undefined
+          };
+        }
+        return t;
+      });
+
+      const filled = next.filter(t => t.text.trim());
+      const allDone = filled.length > 0 && filled.every(t => t.completed);
+      if (allDone) {
+        confetti({
+          particleCount: 70,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FACC15', '#596B35', '#7AA2F7', '#EF4444']
+        });
+        setProfile(p => ({ ...p, xp: p.xp + 50 }));
+      }
+      return next;
+    });
+  };
+
+  const clearTop3Target = (targetId: string) => {
+    setTop3Targets(prev => prev.map(t => (t.id === targetId ? { id: t.id, text: '', completed: false } : t)));
+    soundManager.playClick();
+  };
+
+  const saveDailyReflection = (payload: Omit<DailyReflection, 'id' | 'timestamp'>) => {
+    const newReflection: DailyReflection = {
+      ...payload,
+      id: `refl_${Date.now()}`,
+      timestamp: new Date().toISOString()
+    };
+    const updated = saveStoredReflection(newReflection);
+    setReflectionsHistory(updated);
+    setProfile(p => ({ ...p, xp: p.xp + 30 }));
+    soundManager.playCompleteChime();
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 },
+      colors: ['#8B5CF6', '#7AA2F7', '#10B981', '#FACC15']
+    });
+  };
+
+  const deleteDailyReflection = (id: string) => {
+    const updated = deleteStoredReflection(id);
+    setReflectionsHistory(updated);
+  };
+
   const importData = (jsonData: string): boolean => {
     try {
       const parsed = JSON.parse(jsonData);
@@ -1601,6 +1692,13 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     deletePlatform,
     togglePinPlatform,
     recordPlatformAccess,
+    top3Targets,
+    updateTop3Target,
+    toggleTop3Target,
+    clearTop3Target,
+    reflectionsHistory,
+    saveDailyReflection,
+    deleteDailyReflection,
     updateTopicStatus,
     updateTopicNotes,
     addTopicMistake,
@@ -1648,7 +1746,9 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     revisions,
     dueRevisions,
     plannerTasks,
-    platforms
+    platforms,
+    top3Targets,
+    reflectionsHistory
   ]);
 
   return (

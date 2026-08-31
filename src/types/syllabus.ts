@@ -225,3 +225,42 @@ export interface ExternalPlatform {
   lastAccessedAt?: string;
 }
 
+// ══════════════════════════════════════════════════════════════
+// TOP 3 NON-NEGOTIABLES & DAILY REFLECTION TYPES
+// ══════════════════════════════════════════════════════════════
+
+export interface Top3Target {
+  id: string;
+  text: string;
+  completed: boolean;
+  completedAt?: string;
+  topicId?: string;
+  subjectName?: string;
+  subjectColor?: string;
+}
+
+export type DailyMood = 'fire' | 'lightning' | 'happy' | 'tired' | 'stressed';
+
+export type DistractionCategory =
+  | 'none'
+  | 'social_media'
+  | 'overthinking'
+  | 'youtube'
+  | 'fatigue'
+  | 'other';
+
+export interface DailyReflection {
+  id: string;
+  date: string; // YYYY-MM-DD
+  timestamp: string;
+  rating: number; // 1-5
+  mood: DailyMood;
+  biggestWin: string;
+  distractionReason: DistractionCategory;
+  distractionNote?: string;
+  tomorrowPriority: string;
+  targetsCompletedCount: number;
+  totalStudyMinutes?: number;
+}
+
+

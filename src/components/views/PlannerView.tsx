@@ -38,6 +38,7 @@ import {
 import { PlannerColumnStatus, PlannerTask, Topic, TaskPriority, TaskCategory } from '../../types/syllabus';
 import { getTodayDateString } from '../../utils/dateUtils';
 import { soundManager } from '../../utils/soundEffects';
+import { Top3TargetsWidget } from '../dashboard/Top3TargetsWidget';
 import confetti from 'canvas-confetti';
 
 interface PlannerViewProps {
@@ -437,6 +438,9 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         )}
 
       </div>
+
+      {/* ═══════════════ TOP 3 NON-NEGOTIABLES & NIGHT STUDY REFLECTION ═══════════════ */}
+      <Top3TargetsWidget />
 
       {/* ═══════════════ 2. VIEW CONTROLS & SUBJECT FILTER BAR ═══════════════ */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">

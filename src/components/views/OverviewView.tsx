@@ -15,6 +15,7 @@ import {
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
 import { ExamCountdown3D } from '../3d/ExamCountdown3D';
+import { Top3TargetsWidget } from '../dashboard/Top3TargetsWidget';
 import { soundManager } from '../../utils/soundEffects';
 
 interface OverviewViewProps {
@@ -87,7 +88,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       {/* 2. Clean 3D Target Countdown Flip Clock */}
       <ExamCountdown3D />
 
-      {/* 3. ASYMMETRICAL BENTO GRID */}
+      {/* 3. TOP 3 NON-NEGOTIABLES & NIGHT REFLECTION WIDGET */}
+      <Top3TargetsWidget />
+
+      {/* 4. ASYMMETRICAL BENTO GRID */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
         
         {/* CARD 1: 3D Syllabus Mastery Engine (Col 7) */}
