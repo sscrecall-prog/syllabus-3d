@@ -14,7 +14,8 @@ import {
   Trash2,
   Edit2,
   KeyRound,
-  ShieldCheck
+  ShieldCheck,
+  ArrowUpRight
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -87,6 +88,15 @@ export const PlatformsView: React.FC = () => {
   const handleDirectLaunch = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
     soundManager.playClick();
+  };
+
+  const formatCleanDomain = (url: string) => {
+    try {
+      const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+      return parsed.hostname.replace(/^www\./, '');
+    } catch (e) {
+      return url.replace(/^https?:\/\//, '').split('/')[0];
+    }
   };
 
   return (
@@ -166,7 +176,7 @@ export const PlatformsView: React.FC = () => {
             </div>
             <div>
               <span className="text-base font-mono font-black text-[#11120F] dark:text-white block">1-Click</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Direct Redirect</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Direct Launch</span>
             </div>
           </div>
         </div>
@@ -225,7 +235,7 @@ export const PlatformsView: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Platform Cards Grid */}
+      {/* 3. Platform Cards Grid (Ultra Attractive, Sleek, Direct Clickable) */}
       {filteredPlatforms.length === 0 ? (
         <div className="p-12 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-center space-y-4 shadow-sm">
           <div className="w-16 h-16 rounded-3xl bg-[#F7F6F0] dark:bg-[#23232A] flex items-center justify-center text-3xl mx-auto border border-[#D8D8CF] dark:border-[#333]">
@@ -248,32 +258,47 @@ export const PlatformsView: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {filteredPlatforms.map((platform) => {
             const hasLoginHint = Boolean(platform.loginHint);
             const isCopied = copiedId === platform.id;
+            const cleanDomain = formatCleanDomain(platform.url);
 
             return (
               <div
                 key={platform.id}
                 onClick={() => handleDirectLaunch(platform.url)}
-                className="group relative rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-sm hover:shadow-lg transition-all p-5 flex flex-col justify-between space-y-4 cursor-pointer active:scale-[0.99]"
+                className="group relative rounded-3xl bg-white/95 dark:bg-[#18181D]/95 backdrop-blur-md border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-sm hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.35)] hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col justify-between space-y-4 cursor-pointer active:scale-[0.98] overflow-hidden"
               >
-                
-                {/* Card Top: Icon, Title, Actions */}
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
+                {/* Top Subtle Color Accent Glow */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-1 transition-all duration-300 opacity-60 group-hover:opacity-100"
+                  style={{ backgroundColor: platform.color || '#5A4FCF' }}
+                />
+
+                {/* Card Top: Icon, Category Pill, Title & Controls */}
+                <div className="space-y-3.5">
+                  <div className="flex items-start justify-between gap-3">
                     
-                    {/* Brand Icon & Category Badge */}
-                    <div className="flex items-center gap-3">
+                    {/* Left: Brand Icon + Title */}
+                    <div className="flex items-center gap-3.5 min-w-0">
                       <div
-                        className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-white/20 shrink-0 group-hover:scale-105 transition-transform"
+                        className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md border border-white/20 shrink-0 group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300"
                         style={{ backgroundColor: platform.color || '#5A4FCF' }}
                       >
                         {platform.icon || '⚡'}
                       </div>
-                      <div>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border border-[#D8D8CF] dark:border-[#272730]">
+                      
+                      <div className="min-w-0 space-y-0.5">
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
+                          platform.category === 'course'
+                            ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20'
+                            : platform.category === 'test_series'
+                            ? 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20'
+                            : platform.category === 'reference'
+                            ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20'
+                        }`}>
                           {platform.category === 'course'
                             ? 'Course Batch'
                             : platform.category === 'test_series'
@@ -282,21 +307,22 @@ export const PlatformsView: React.FC = () => {
                             ? 'Reference Tool'
                             : 'Portal'}
                         </span>
-                        <h3 className="text-sm font-black text-[#11120F] dark:text-white font-serif mt-1 group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors line-clamp-1">
+                        
+                        <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-white font-serif group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
                           {platform.name}
                         </h3>
                       </div>
                     </div>
 
-                    {/* Pin & Options (stopPropagation to not trigger card redirect) */}
-                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    {/* Right: Actions & Animated Launch Arrow */}
+                    <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"
                         onClick={(e) => handleTogglePin(e, platform.id)}
-                        className={`p-1.5 rounded-xl transition-colors cursor-pointer ${
+                        className={`p-1.5 rounded-xl transition-all cursor-pointer ${
                           platform.pinned
                             ? 'text-amber-500 bg-amber-500/10'
-                            : 'text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
+                            : 'text-[#85877E] hover:text-[#11120F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                         }`}
                         title={platform.pinned ? 'Unpin Platform' : 'Pin to Top'}
                       >
@@ -306,7 +332,7 @@ export const PlatformsView: React.FC = () => {
                       <button
                         type="button"
                         onClick={(e) => handleEdit(e, platform)}
-                        className="p-1.5 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-xl hover:bg-[#EEEEE8] dark:hover:bg-[#23232A] cursor-pointer"
+                        className="p-1.5 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-xl hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
                         title="Edit Platform"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -315,56 +341,62 @@ export const PlatformsView: React.FC = () => {
                       <button
                         type="button"
                         onClick={(e) => handleDelete(e, platform)}
-                        className="p-1.5 text-[#85877E] hover:text-rose-600 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                        className="p-1.5 text-[#85877E] hover:text-rose-600 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer transition-colors"
                         title="Remove Platform"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
+
+                      {/* Animated Arrow Icon */}
+                      <div className="w-8 h-8 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] group-hover:bg-[#11120F] dark:group-hover:bg-white text-[#85877E] group-hover:text-white dark:group-hover:text-black flex items-center justify-center transition-all duration-300 shadow-xs ml-0.5">
+                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </div>
                     </div>
                   </div>
 
                   {/* Description / Notes */}
-                  {platform.description && (
+                  {platform.description ? (
                     <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] line-clamp-2 leading-relaxed">
                       {platform.description}
                     </p>
-                  )}
-
-                  {/* Login ID Helper (if provided) */}
-                  {hasLoginHint && (
-                    <div
-                      onClick={(e) => handleCopyHint(e, platform.id, platform.loginHint!)}
-                      className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer group/hint"
-                    >
-                      <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                        <KeyRound className="w-3.5 h-3.5 text-[#85877E] shrink-0" />
-                        <span className="text-[11px] font-mono text-[#11120F] dark:text-[#C0CAF5] truncate font-medium">
-                          {platform.loginHint}
-                        </span>
-                      </div>
-                      <span className="flex items-center gap-1 text-[10px] font-bold font-mono text-[#596B35] dark:text-[#7AA2F7] shrink-0">
-                        {isCopied ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
-                            <span className="text-emerald-500">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">Copy ID</span>
-                          </>
-                        )}
-                      </span>
-                    </div>
+                  ) : (
+                    <p className="text-xs text-[#85877E] italic font-mono">
+                      1-Click direct launch to {cleanDomain}
+                    </p>
                   )}
                 </div>
 
-                {/* Card Bottom: Direct Launch Action */}
-                <div className="pt-3 border-t border-[#D8D8CF] dark:border-[#272730]">
-                  <div className="w-full py-2.5 px-4 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black group-hover:bg-[#596B35] dark:group-hover:bg-[#7AA2F7] text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
-                    <span>Launch {platform.category === 'course' ? 'Course Portal' : 'Test Series'}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                {/* Card Bottom: Domain Chip & Quick Copy ID (No Big Bottom Button) */}
+                <div className="pt-3 border-t border-[#D8D8CF]/70 dark:border-[#272730] flex items-center justify-between gap-2">
+                  
+                  {/* Clean Domain Chip */}
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF]/80 dark:border-[#272730] text-[11px] font-mono text-[#85877E] group-hover:text-[#11120F] dark:group-hover:text-[#C0CAF5] transition-colors truncate">
+                    <Globe className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
+                    <span className="truncate">{cleanDomain}</span>
                   </div>
+
+                  {/* Login ID Copy Chip (if available) */}
+                  {hasLoginHint ? (
+                    <button
+                      type="button"
+                      onClick={(e) => handleCopyHint(e, platform.id, platform.loginHint!)}
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] hover:bg-[#DCE8B7] dark:hover:bg-[#23232A] border border-[#D8D8CF]/80 dark:border-[#272730] text-[11px] font-mono font-bold text-[#11120F] dark:text-[#C0CAF5] transition-all cursor-pointer active:scale-95 shrink-0"
+                      title="Copy Login ID"
+                    >
+                      <KeyRound className="w-3 h-3 text-[#85877E]" />
+                      <span className="max-w-[100px] truncate">{platform.loginHint}</span>
+                      {isCopied ? (
+                        <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
+                      ) : (
+                        <Copy className="w-3 h-3 text-[#85877E]" />
+                      )}
+                    </button>
+                  ) : (
+                    <span className="text-[11px] font-mono font-bold text-[#596B35] dark:text-[#7AA2F7] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+                      <span>Open</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </span>
+                  )}
                 </div>
               </div>
             );
