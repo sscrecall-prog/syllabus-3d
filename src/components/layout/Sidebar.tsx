@@ -53,18 +53,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badgeColor: ''
     },
     {
-      id: 'planner' as AppView,
-      label: 'Study Planner',
-      icon: CalendarCheck,
-      badge: plannerTasks.filter(t => t.status === 'today').length || null,
-      badgeColor: 'bg-[#596B35] text-white'
-    },
-    {
       id: 'platforms' as AppView,
       label: 'Study Station & Hub',
       icon: Globe,
       badge: platforms.length || null,
       badgeColor: 'bg-[#5A4FCF] text-white'
+    },
+    {
+      id: 'syllabus' as AppView,
+      label: 'Syllabus Explorer',
+      icon: BookOpen,
+      badge: null,
+      badgeColor: ''
     },
     {
       id: 'mindmap' as AppView,
@@ -74,11 +74,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badgeColor: ''
     },
     {
-      id: 'syllabus' as AppView,
-      label: 'Syllabus Explorer',
-      icon: BookOpen,
-      badge: null,
-      badgeColor: ''
+      id: 'planner' as AppView,
+      label: 'Study Planner',
+      icon: CalendarCheck,
+      badge: plannerTasks.filter(t => t.status === 'today').length || null,
+      badgeColor: 'bg-[#596B35] text-white'
     },
     {
       id: 'revision' as AppView,
