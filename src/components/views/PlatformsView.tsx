@@ -148,83 +148,95 @@ export const PlatformsView: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in select-none pb-12">
       
-      {/* 1. HERO BANNER & STATS */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-[#FAF9F5] to-[#F2F1EB] dark:from-[#181822] dark:via-[#13141B] dark:to-[#0C0D12] border border-[#D8D8CF] dark:border-[#272732] shadow-subtle-depth relative overflow-hidden">
+      {/* 1. HERO BENTO BANNER WITH 3D CYBER NODES BACKGROUND */}
+      <div className="p-6 sm:p-8 rounded-[32px] bg-[#0C0D14] border border-[#272738] shadow-2xl relative overflow-hidden text-white">
         
-        {/* Subtle Ambient Background Lighting */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#596B35]/10 dark:bg-[#7AA2F7]/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Background AI Image with Cinematic Opacity & Position */}
+        <div 
+          className="absolute inset-0 bg-cover bg-right md:bg-center pointer-events-none opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
+          style={{ backgroundImage: `url('/study_hub_banner.png')` }}
+        />
+
+        {/* Multi-layered Glass Gradients for 100% Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0C0D14] via-[#0C0D14]/80 md:via-[#0C0D14]/65 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D14]/90 via-transparent to-transparent pointer-events-none" />
+        
+        {/* Ambient Glow Orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#7AA2F7]/25 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#5A4FCF]/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-          <div className="space-y-2">
+          <div className="space-y-2.5 max-w-2xl">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/30 flex items-center gap-1.5 shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
-                Multi-Platform Study Hub
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest bg-white/10 text-[#7AA2F7] border border-white/15 backdrop-blur-md flex items-center gap-1.5 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#7AA2F7] animate-pulse" />
+                Connected Study Hub
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-[#65675F] dark:text-[#A1A1AA] bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-[#A1A1B2] bg-white/5 border border-white/10 backdrop-blur-md">
                 {platforms.length} Platforms Linked
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-[#11120F] dark:text-white font-serif tracking-tight">
-              Course Batches & Mock Test Portals
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white font-serif tracking-tight drop-shadow-sm">
+              Course Batches & Mock Portals
             </h1>
 
-            <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A1A1AA] max-w-2xl leading-relaxed">
-              Physics Wallah, Careerwill, Testbook, ya apne custom coaching batches ko yahan link karein aur 1-click me direct access payein.
+            <p className="text-xs sm:text-sm text-[#C2C5D6] leading-relaxed">
+              Physics Wallah, Careerwill, Testbook, AI Tools, ya apne coaching batches ko 1-click me direct launch karein.
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={handleOpenAdd}
-              className="px-5 py-3 rounded-2xl bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] font-bold text-xs sm:text-sm shadow-md hover:bg-[#596B35] dark:hover:bg-[#6090F5] transition-all duration-200 cursor-pointer active:scale-95 flex items-center gap-2"
+              className="group relative px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#7AA2F7] to-[#8B5CF6] hover:from-[#6090F5] hover:to-[#7C3AED] text-black font-extrabold text-xs sm:text-sm shadow-[0_0_25px_rgba(122,162,247,0.35)] hover:shadow-[0_0_35px_rgba(122,162,247,0.55)] transition-all duration-300 cursor-pointer active:scale-95 flex items-center gap-2.5 overflow-hidden"
             >
-              <Plus className="w-4 h-4 stroke-[3]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              <Plus className="w-4 h-4 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
               <span>Add Platform / Batch</span>
             </button>
           </div>
         </div>
 
-        {/* Bento Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-[#D8D8CF]/70 dark:border-[#272732] relative z-10">
-          <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-[#1E1F2A]/80 border border-[#D8D8CF]/60 dark:border-[#2A2B38] flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-              <GraduationCap className="w-5 h-5" />
+        {/* Glass Bento Stats Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-7 pt-6 border-t border-white/10 relative z-10">
+          <div className="p-3.5 rounded-2xl bg-[#131422]/80 backdrop-blur-xl border border-white/10 hover:border-[#7AA2F7]/40 transition-all flex items-center gap-3.5 shadow-lg group">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center group-hover:scale-110 transition-transform border border-purple-500/30">
+              <GraduationCap className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block leading-none">{coursesCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] mt-1 block">Course Portals</span>
+              <span className="text-lg font-mono font-black text-white block leading-none">{coursesCount}</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Course Portals</span>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-[#1E1F2A]/80 border border-[#D8D8CF]/60 dark:border-[#2A2B38] flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-              <FileCheck2 className="w-5 h-5" />
+          <div className="p-3.5 rounded-2xl bg-[#131422]/80 backdrop-blur-xl border border-white/10 hover:border-sky-500/40 transition-all flex items-center gap-3.5 shadow-lg group">
+            <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center group-hover:scale-110 transition-transform border border-sky-500/30">
+              <FileCheck2 className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block leading-none">{testsCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] mt-1 block">Mock Test Series</span>
+              <span className="text-lg font-mono font-black text-white block leading-none">{testsCount}</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Mock Test Series</span>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-[#1E1F2A]/80 border border-[#D8D8CF]/60 dark:border-[#2A2B38] flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Bookmark className="w-5 h-5" />
+          <div className="p-3.5 rounded-2xl bg-[#131422]/80 backdrop-blur-xl border border-white/10 hover:border-amber-500/40 transition-all flex items-center gap-3.5 shadow-lg group">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center group-hover:scale-110 transition-transform border border-amber-500/30">
+              <Bookmark className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block leading-none">{pinnedCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] mt-1 block">Pinned Links</span>
+              <span className="text-lg font-mono font-black text-white block leading-none">{pinnedCount}</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Pinned Links</span>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-[#1E1F2A]/80 border border-[#D8D8CF]/60 dark:border-[#2A2B38] flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <PenTool className="w-5 h-5" />
+          <div className="p-3.5 rounded-2xl bg-[#131422]/80 backdrop-blur-xl border border-white/10 hover:border-emerald-500/40 transition-all flex items-center gap-3.5 shadow-lg group">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center group-hover:scale-110 transition-transform border border-emerald-500/30">
+              <PenTool className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block leading-none">{customCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] mt-1 block">Custom Portals</span>
+              <span className="text-lg font-mono font-black text-white block leading-none">{customCount}</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Custom Portals</span>
             </div>
           </div>
         </div>
