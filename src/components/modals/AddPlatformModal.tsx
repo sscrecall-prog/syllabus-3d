@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   X,
   Plus,
@@ -11,7 +11,9 @@ import {
   KeyRound,
   RotateCcw,
   Tag,
-  PenTool
+  PenTool,
+  Check,
+  Clock
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -22,6 +24,8 @@ interface AddPlatformModalProps {
   onClose: () => void;
   editPlatformData?: ExternalPlatform | null;
 }
+
+const STORAGE_KEY_SAVED_CATEGORIES = 'syllabus3d_saved_custom_categories';
 
 const PRESET_TEMPLATES = [
   {
@@ -144,7 +148,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   onClose,
   editPlatformData
 }) => {
-  const { addPlatform, editPlatform, currentExam } = useSyllabus();
+  const { platforms, addPlatform, editPlatform, currentExam } = useSyllabus();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const customCatInputRef = useRef<HTMLInputElement>(null);
 
@@ -160,6 +164,37 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const [associatedSubjectId, setAssociatedSubjectId] = useState(editPlatformData?.associatedSubjectId || '');
   const [pinned, setPinned] = useState(editPlatformData?.pinned || false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load and combine all saved & existing custom categories
+  const savedCustomCategories = useMemo(() => {
+    const set = new Set<string>();
+    
+    // 1. From localStorage history
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_SAVED_CATEGORIES);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((cat: string) => {
+            if (cat && typeof cat === 'string' && cat.trim()) {
+              set.add(cat.trim());
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Error reading saved categories:', e);
+    }
+
+    // 2. From all active platforms
+    platforms.forEach(p => {
+      if (p.customCategoryName && p.customCategoryName.trim()) {
+        set.add(p.customCategoryName.trim());
+      }
+    });
+
+    return Array.from(set);
+  }, [platforms]);
 
   useEffect(() => {
     if (isOpen) {
@@ -221,6 +256,14 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     }
   };
 
+  const handleSelectSavedCustomCategory = (catName: string) => {
+    setCategory('custom');
+    setCustomCategoryName(catName);
+    setIcon('🌐');
+    soundManager.playClick();
+    nameInputRef.current?.focus();
+  };
+
   const handleResetForm = () => {
     setName('');
     setUrl('');
@@ -257,6 +300,20 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     const payloadCustomCat = category === 'custom'
       ? (customCategoryName.trim() || 'Custom Portal')
       : (customCategoryName.trim() || undefined);
+
+    // Save custom category to localStorage history for future 1-click use
+    if (payloadCustomCat && payloadCustomCat !== 'Custom Portal') {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_SAVED_CATEGORIES);
+        const list: string[] = saved ? JSON.parse(saved) : [];
+        if (!list.includes(payloadCustomCat)) {
+          list.push(payloadCustomCat);
+          localStorage.setItem(STORAGE_KEY_SAVED_CATEGORIES, JSON.stringify(list));
+        }
+      } catch (e) {
+        console.warn('Error saving category to localStorage:', e);
+      }
+    }
 
     if (editPlatformData) {
       editPlatform(editPlatformData.id, {
@@ -421,7 +478,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 ))}
               </div>
 
-              {/* Quick Tags / Custom Suggestions */}
+              {/* Quick Tags / Popular Portals */}
               <div className="pt-1">
                 <span className="text-[10px] font-mono text-[#85877E] flex items-center gap-1 mb-1.5">
                   <Tag className="w-3 h-3 text-[#596B35]" />
@@ -459,10 +516,13 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                   Platform Category *
                 </label>
                 <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">
-                  {category === 'custom' ? 'Custom Category Mode' : `${category} Mode`}
+                  {category === 'custom' 
+                    ? (customCategoryName ? `Custom: ${customCategoryName}` : 'Custom Category Mode') 
+                    : `${category} Mode`}
                 </span>
               </div>
 
+              {/* Standard 4 Category Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'course' as PlatformCategory, label: 'Course / Batches', icon: GraduationCap },
@@ -490,12 +550,43 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 })}
               </div>
 
+              {/* 🌟 SAVED CUSTOM CATEGORIES FROM PREVIOUS LOGS (Always Available) */}
+              {savedCustomCategories.length > 0 && (
+                <div className="p-3 rounded-2xl bg-amber-500/5 dark:bg-[#1E1E26] border border-amber-500/20 dark:border-[#333] space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-700 dark:text-amber-300">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Your Previously Created Categories (1-Click Select):</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1.5">
+                    {savedCustomCategories.map(savedCat => {
+                      const isCurrentCat = category === 'custom' && customCategoryName.trim().toLowerCase() === savedCat.toLowerCase();
+                      return (
+                        <button
+                          key={savedCat}
+                          type="button"
+                          onClick={() => handleSelectSavedCustomCategory(savedCat)}
+                          className={`px-3 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-xs border ${
+                            isCurrentCat
+                              ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black border-transparent scale-105 ring-2 ring-[#596B35]/40'
+                              : 'bg-white dark:bg-[#12141A] text-[#11120F] dark:text-[#C0CAF5] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
+                          }`}
+                        >
+                          {isCurrentCat && <Check className="w-3 h-3 stroke-[3]" />}
+                          <span>✨ {savedCat}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Custom Category Input & Suggestions (Visible when Custom is Selected) */}
               {category === 'custom' && (
-                <div className="p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] space-y-2.5 animate-scale-up">
+                <div className="p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] space-y-3 animate-scale-up">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
-                      <span>Enter Your Custom Category Name *</span>
+                      <span>Type Custom Category Name *</span>
                       <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono">e.g. Current Affairs, PYQ Vault...</span>
                     </label>
                     <input
@@ -508,7 +599,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                     />
                   </div>
 
-                  {/* Quick Custom Category Pills */}
+                  {/* Quick Custom Category Suggestions */}
                   <div className="space-y-1">
                     <span className="text-[10px] font-mono text-[#85877E] block">1-Click Category Suggestions:</span>
                     <div className="flex flex-wrap gap-1.5">
@@ -521,7 +612,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                             soundManager.playClick();
                           }}
                           className={`px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer border ${
-                            customCategoryName === catSug
+                            customCategoryName.trim().toLowerCase() === catSug.toLowerCase()
                               ? 'bg-[#596B35] text-white border-transparent'
                               : 'bg-white dark:bg-[#12141A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
                           }`}
