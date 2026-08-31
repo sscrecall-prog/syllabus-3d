@@ -12,7 +12,9 @@ import {
   Plus,
   Settings,
   ExternalLink,
-  Timer} from 'lucide-react';
+  Timer,
+  Globe
+} from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 export type AppView =
@@ -20,6 +22,7 @@ export type AppView =
   | 'planner'
   | 'mindmap'
   | 'syllabus'
+  | 'platforms'
   | 'subjects'
   | 'revision'
   | 'weak'
@@ -40,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAddTopic,
   onOpenFocus
 }) => {
-  const { profile, dueRevisions, weakTopics, plannerTasks } = useSyllabus();
+  const { profile, dueRevisions, weakTopics, plannerTasks, platforms } = useSyllabus();
   const navItems = [
     {
       id: 'overview' as AppView,
@@ -55,6 +58,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: CalendarCheck,
       badge: plannerTasks.filter(t => t.status === 'today').length || null,
       badgeColor: 'bg-[#596B35] text-white'
+    },
+    {
+      id: 'platforms' as AppView,
+      label: 'Study Station & Hub',
+      icon: Globe,
+      badge: platforms.length || null,
+      badgeColor: 'bg-[#5A4FCF] text-white'
     },
     {
       id: 'mindmap' as AppView,

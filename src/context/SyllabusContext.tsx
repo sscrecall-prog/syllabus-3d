@@ -22,7 +22,9 @@ import {
   PlannerTask,
   PlannerColumnStatus,
   TaskPriority,
-  TaskCategory
+  TaskCategory,
+  ExternalPlatform,
+  PlatformCategory
 } from '../types/syllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
@@ -119,6 +121,100 @@ const INITIAL_PLANNER_TASKS: PlannerTask[] = [
   }
 ];
 
+const INITIAL_PLATFORMS: ExternalPlatform[] = [
+  {
+    id: 'plat_pw',
+    name: 'Physics Wallah (PW)',
+    url: 'https://www.pw.live/study/batches',
+    category: 'course',
+    description: 'Live & recorded batches, DPPs, and comprehensive lecture notes',
+    color: '#5A4FCF',
+    icon: '⚡',
+    loginHint: 'PW Mobile / Email',
+    notes: 'Access Lakshya, Shaurya, or Parakram batch video lectures & DPP PDFs',
+    pinned: true,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  },
+  {
+    id: 'plat_careerwill',
+    name: 'Careerwill',
+    url: 'https://careerwill.com/',
+    category: 'course',
+    description: 'SSC, Banking & State exams video batches by top educators',
+    color: '#E11D48',
+    icon: '🎓',
+    loginHint: 'Careerwill Registered Phone',
+    notes: 'Maths Special, Reasoning, English & GS live classes',
+    pinned: true,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  },
+  {
+    id: 'plat_testbook',
+    name: 'Testbook Pass & Mock Series',
+    url: 'https://testbook.com/test-series',
+    category: 'test_series',
+    description: 'All India Live Mocks, Previous Year Papers & Percentile Analysis',
+    color: '#0284C7',
+    icon: '📝',
+    loginHint: 'Testbook Account Email',
+    notes: 'Attempt full-length Tier 1 & Tier 2 mocks, log errors directly in Mistake Journal',
+    pinned: true,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  },
+  {
+    id: 'plat_oliveboard',
+    name: 'Oliveboard Mocks & Tests',
+    url: 'https://www.oliveboard.in/',
+    category: 'test_series',
+    description: 'High-difficulty mock tests, sectional tests & topic quizzes',
+    color: '#16A34A',
+    icon: '🎯',
+    loginHint: 'Oliveboard User Email',
+    notes: 'Hard-level mock tests to test speed and accuracy under pressure',
+    pinned: true,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  },
+  {
+    id: 'plat_unacademy',
+    name: 'Unacademy Plus',
+    url: 'https://unacademy.com/',
+    category: 'course',
+    description: 'Live interactive classes, doubt solving, and structured syllabus courses',
+    color: '#08BD80',
+    icon: '🏛️',
+    loginHint: 'Unacademy Plus Account',
+    notes: 'Topic-wise live sessions and recorded educator courses',
+    pinned: false,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  },
+  {
+    id: 'plat_khan_academy',
+    name: 'Khan Academy (Foundations)',
+    url: 'https://www.khanacademy.org/',
+    category: 'course',
+    description: 'Master math, algebra, geometry & science concepts with mastery quizzes',
+    color: '#14BF96',
+    icon: '📖',
+    loginHint: 'Khan Academy Account',
+    notes: 'Free interactive practice for fundamental arithmetic & geometry',
+    pinned: false,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  },
+  {
+    id: 'plat_rbe',
+    name: 'RBE (Revolution by Education)',
+    url: 'https://rbeeducation.com/',
+    category: 'test_series',
+    description: 'Exam survey analysis, rank predictor, and sectional mock tests',
+    color: '#F59E0B',
+    icon: '📊',
+    loginHint: 'RBE Portal Login',
+    notes: 'Check cut-off trends, normalization shifts, and free exam mocks',
+    pinned: false,
+    createdAt: '2026-08-01T00:00:00.000Z'
+  }
+];
+
 interface SyllabusContextType {
   exams: Exam[];
   currentExam: Exam | undefined;
@@ -143,6 +239,14 @@ interface SyllabusContextType {
   movePlannerTask: (taskId: string, newStatus: PlannerColumnStatus) => void;
   deletePlannerTask: (taskId: string) => void;
   clearCompletedPlannerTasks: () => void;
+
+  // Study Station / External Platforms
+  platforms: ExternalPlatform[];
+  addPlatform: (platform: Omit<ExternalPlatform, 'id' | 'createdAt'>) => void;
+  editPlatform: (platformId: string, updates: Partial<ExternalPlatform>) => void;
+  deletePlatform: (platformId: string) => void;
+  togglePinPlatform: (platformId: string) => void;
+  recordPlatformAccess: (platformId: string) => void;
 
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
   updateTopicNotes: (topicId: string, notes: string) => void;
@@ -291,6 +395,24 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     try { localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks)); } catch(e) { console.warn(e); }
   }, [plannerTasks]);
+
+  const [platforms, setPlatforms] = useState<ExternalPlatform[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('syllabus3d_platforms');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+    }
+    return INITIAL_PLATFORMS;
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('syllabus3d_platforms', JSON.stringify(platforms)); } catch(e) { console.warn(e); }
+  }, [platforms]);
+
 
   const currentExam = useMemo(() => {
     if (exams.length === 0) return undefined;
@@ -500,6 +622,38 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setPlannerTasks(prev => prev.filter(t => t.status !== 'completed'));
     soundManager.playClick();
   };
+
+  // Study Station / External Platforms CRUD
+  const addPlatform = (platformData: Omit<ExternalPlatform, 'id' | 'createdAt'>) => {
+    const newPlatform: ExternalPlatform = {
+      ...platformData,
+      id: `plat_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      createdAt: new Date().toISOString()
+    };
+    setPlatforms(prev => [newPlatform, ...prev]);
+    soundManager.playCompleteChime();
+    confetti({ particleCount: 25, spread: 50, origin: { y: 0.8 } });
+  };
+
+  const editPlatform = (platformId: string, updates: Partial<ExternalPlatform>) => {
+    setPlatforms(prev => prev.map(p => p.id === platformId ? { ...p, ...updates } : p));
+    soundManager.playClick();
+  };
+
+  const deletePlatform = (platformId: string) => {
+    setPlatforms(prev => prev.filter(p => p.id !== platformId));
+    soundManager.playClick();
+  };
+
+  const togglePinPlatform = (platformId: string) => {
+    setPlatforms(prev => prev.map(p => p.id === platformId ? { ...p, pinned: !p.pinned } : p));
+    soundManager.playClick();
+  };
+
+  const recordPlatformAccess = (platformId: string) => {
+    setPlatforms(prev => prev.map(p => p.id === platformId ? { ...p, lastAccessedAt: new Date().toISOString() } : p));
+  };
+
 
   const updateTopicStatus = (topicId: string, status: TopicStatus, accuracy?: number) => {
     const today = getTodayDateString();
@@ -1316,11 +1470,13 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.removeItem('syllabus3d_activity');
     localStorage.removeItem('syllabus3d_revisions');
     localStorage.removeItem('syllabus3d_planner');
+    localStorage.removeItem('syllabus3d_platforms');
     setExams(INITIAL_EXAMS);
     setProfile(INITIAL_PROFILE);
     setAchievements(INITIAL_ACHIEVEMENTS);
     setActivityHistory(INITIAL_ACTIVITY_HISTORY);
     setPlannerTasks(INITIAL_PLANNER_TASKS);
+    setPlatforms(INITIAL_PLATFORMS);
 
     const initRevs: RevisionRecord[] = [];
     const ssc = INITIAL_EXAMS[0];
@@ -1353,6 +1509,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setRevisions([]);
     setActivityHistory([]);
     setPlannerTasks([]);
+    setPlatforms([]);
     setProfile({
       ...profile,
       selectedExamId: 'custom_exam_blank',
@@ -1364,20 +1521,25 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       longestStreak: 0
     });
 
-    localStorage.setItem('syllabus3d_exams', JSON.stringify([blankExam]));
-    localStorage.setItem('syllabus3d_revisions', JSON.stringify([]));
-    localStorage.setItem('syllabus3d_activity', JSON.stringify([]));
-    localStorage.setItem('syllabus3d_planner', JSON.stringify([]));
-    localStorage.setItem('syllabus3d_profile', JSON.stringify({
-      ...profile,
-      selectedExamId: 'custom_exam_blank',
-      targetExamDate: '2026-10-15',
-      xp: 0,
-      level: 1,
-      levelTitle: 'Novice Scholar',
-      currentStreak: 0,
-      longestStreak: 0
-    }));
+    try {
+      localStorage.setItem('syllabus3d_exams', JSON.stringify([blankExam]));
+      localStorage.setItem('syllabus3d_revisions', JSON.stringify([]));
+      localStorage.setItem('syllabus3d_activity', JSON.stringify([]));
+      localStorage.setItem('syllabus3d_planner', JSON.stringify([]));
+      localStorage.setItem('syllabus3d_platforms', JSON.stringify([]));
+      localStorage.setItem('syllabus3d_profile', JSON.stringify({
+        ...profile,
+        selectedExamId: 'custom_exam_blank',
+        targetExamDate: '2026-10-15',
+        xp: 0,
+        level: 1,
+        levelTitle: 'Novice Scholar',
+        currentStreak: 0,
+        longestStreak: 0
+      }));
+    } catch(e) {
+      console.warn(e);
+    }
 
     soundManager.playClick();
   };
@@ -1390,7 +1552,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       achievements,
       activityHistory,
       revisions,
-      plannerTasks
+      plannerTasks,
+      platforms
     }, null, 2);
   };
 
@@ -1403,6 +1566,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (parsed.activityHistory) setActivityHistory(parsed.activityHistory);
       if (parsed.revisions) setRevisions(parsed.revisions);
       if (parsed.plannerTasks) setPlannerTasks(parsed.plannerTasks);
+      if (parsed.platforms) setPlatforms(parsed.platforms);
       return true;
     } catch (err) {
       return false;
@@ -1431,6 +1595,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     movePlannerTask,
     deletePlannerTask,
     clearCompletedPlannerTasks,
+    platforms,
+    addPlatform,
+    editPlatform,
+    deletePlatform,
+    togglePinPlatform,
+    recordPlatformAccess,
     updateTopicStatus,
     updateTopicNotes,
     addTopicMistake,
@@ -1477,7 +1647,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     weakTopics,
     revisions,
     dueRevisions,
-    plannerTasks
+    plannerTasks,
+    platforms
   ]);
 
   return (

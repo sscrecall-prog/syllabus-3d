@@ -10,7 +10,8 @@ import {
   AlertTriangle,
   BarChart3,
   Settings,
-  Plus
+  Plus,
+  Globe
 } from 'lucide-react';
 import { AppView } from './Sidebar';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -31,13 +32,14 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   onSelectView,
   onOpenAddTopic
 }) => {
-  const { profile, dueRevisions, weakTopics } = useSyllabus();
+  const { profile, dueRevisions, weakTopics, platforms } = useSyllabus();
 
   if (!isOpen) return null;
 
   const navItems = [
     { id: 'overview' as AppView, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'planner' as AppView, label: 'Study Planner', icon: CalendarCheck },
+    { id: 'platforms' as AppView, label: 'Study Station & Hub', icon: Globe, badge: platforms.length },
     { id: 'mindmap' as AppView, label: 'Concept Mind Map', icon: BrainCircuit },
     { id: 'syllabus' as AppView, label: 'Syllabus Explorer', icon: BookOpen },
     { id: 'revision' as AppView, label: 'Spaced Revision', icon: RotateCw, badge: dueRevisions.length },

@@ -205,3 +205,22 @@ export interface PlannerTask {
   priority?: TaskPriority;
   category?: TaskCategory;
 }
+
+export type PlatformCategory = 'course' | 'test_series' | 'reference' | 'custom';
+
+export interface ExternalPlatform {
+  id: string;
+  name: string;
+  url: string;
+  category: PlatformCategory;
+  description?: string;
+  icon?: string;
+  color?: string;
+  loginHint?: string;
+  notes?: string;
+  associatedSubjectId?: string;
+  pinned?: boolean;
+  createdAt: string;
+  lastAccessedAt?: string;
+}
+

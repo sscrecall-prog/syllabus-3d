@@ -7,7 +7,10 @@ import {
   Clock,
   ArrowRight,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Globe,
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
@@ -32,7 +35,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     subjectStats,
     profile,
     currentExam,
-    plannerTasks
+    plannerTasks,
+    platforms
   } = useSyllabus();
 
   const todayPlannerTasks = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress');
@@ -265,6 +269,61 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* 3. STUDY STATION & PLATFORMS QUICK DOCK */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#5A4FCF]/10 dark:bg-[#7AA2F7]/20 text-[#5A4FCF] dark:text-[#7AA2F7] flex items-center justify-center">
+              <Globe className="w-4 h-4 stroke-[2]" />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
+                Study Station & Connected Platforms
+              </h3>
+              <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
+                Physics Wallah, Careerwill, Testbook, Oliveboard batches
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onNavigate('platforms')}
+            className="text-xs font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <span>Open Study Hub</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          {platforms.slice(0, 4).map(plat => (
+            <div
+              key={plat.id}
+              onClick={() => {
+                soundManager.playClick();
+                onNavigate('platforms');
+              }}
+              className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer flex items-center gap-2.5 group active:scale-98"
+            >
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-xs border border-white/20 shrink-0"
+                style={{ backgroundColor: plat.color || '#5A4FCF' }}
+              >
+                {plat.icon || '⚡'}
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
+                  {plat.name}
+                </span>
+                <span className="text-[10px] text-[#85877E] uppercase font-mono font-bold block truncate">
+                  {plat.category === 'course' ? 'Course Batch' : 'Mock Series'}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

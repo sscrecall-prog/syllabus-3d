@@ -26,6 +26,7 @@ const WeakTopicsView = lazy(() => import('./components/views/WeakTopicsView').th
 const AnalyticsView = lazy(() => import('./components/views/AnalyticsView').then(m => ({ default: m.AnalyticsView })));
 const HeatmapView = lazy(() => import('./components/views/HeatmapView').then(m => ({ default: m.HeatmapView })));
 const SettingsView = lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
+const PlatformsView = lazy(() => import('./components/views/PlatformsView').then(m => ({ default: m.PlatformsView })));
 
 // ⚡ Lazy Loaded Heavy Modals & Drawers
 const TopicDetailDrawer = lazy(() => import('./components/modals/TopicDetailDrawer').then(m => ({ default: m.TopicDetailDrawer })));
@@ -369,6 +370,8 @@ export const App: React.FC = () => {
             {currentView === 'analytics' && <AnalyticsView />}
 
             {currentView === 'heatmap' && <HeatmapView />}
+
+            {currentView === 'platforms' && <PlatformsView />}
 
             {currentView === 'settings' && <SettingsView />}
           </Suspense>
