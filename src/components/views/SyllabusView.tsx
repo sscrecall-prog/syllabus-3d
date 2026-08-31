@@ -816,15 +816,25 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   return (
     <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
       
-      {/* 1. TOP BATCH HERO BANNER (Mobile-Friendly Clean Card Layout) */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-3.5">
+      {/* 1. TOP BATCH HERO BANNER WITH NIGHT STUDY DESK BACKGROUND */}
+      <div className="p-4 sm:p-6 rounded-[28px] sm:rounded-3xl bg-[#0D0F17] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-3.5">
+        
+        {/* Study Desk Background Image with Warm Lamp Glow */}
+        <div 
+          className="absolute inset-0 bg-cover bg-right pointer-events-none opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
+          style={{ backgroundImage: `url('/syllabus_explorer_banner.png')` }}
+        />
+
+        {/* Multi-layered Glass Gradients for 100% Text Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0D0F17] via-[#0D0F17]/85 md:via-[#0D0F17]/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0F17]/80 via-transparent to-transparent pointer-events-none" />
         
         {/* Banner Content (Badge + Title + Expiry Date) */}
-        <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+        <div className="relative z-10 flex items-center gap-3.5 sm:gap-4 min-w-0">
           
           {/* Left Visual Badge Banner */}
-          <div className="w-20 sm:w-28 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19] via-[#161F36] to-[#0A0D14] border border-[#292E42] flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden font-serif">
-            <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.4)] uppercase leading-none">
+          <div className="w-20 sm:w-28 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19]/90 via-[#161F36]/90 to-[#0A0D14]/90 border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-lg relative overflow-hidden font-serif">
+            <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
               SYLLABUS
             </span>
             <span className="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-1">
@@ -835,13 +845,13 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           {/* Banner Meta Info */}
           <div className="space-y-1 min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#C2C5D6] flex-wrap">
+                <span className="flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10 backdrop-blur-md">
+                  <Calendar className="w-3 h-3 text-[#FACC15]" />
                   <span>Exam Date: {formattedExamDate}</span>
                 </span>
                 {daysRemaining > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+                  <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
                     {daysRemaining}d left
                   </span>
                 )}
@@ -850,7 +860,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               {onBackToDashboard && (
                 <button
                   onClick={onBackToDashboard}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
+                  className="flex items-center gap-1 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
                   title="Return to Dashboard"
                 >
                   <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
@@ -859,16 +869,16 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               )}
             </div>
 
-            <h1 className="text-sm sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight font-serif truncate">
+            <h1 className="text-base sm:text-xl font-black text-white tracking-tight font-serif truncate drop-shadow-sm">
               {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
             </h1>
 
-            <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-[#85877E] dark:text-[#787C99] flex-wrap">
+            <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-[#A1A1B2] flex-wrap">
               <span>{currentExam.subjects.length} Subjects</span>
               <span>•</span>
               <span>{totalTopicsCount} Topics</span>
               <span>•</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">{overallPercentage}% Mastered</span>
+              <span className="text-emerald-400 font-bold">{overallPercentage}% Mastered</span>
             </div>
           </div>
         </div>
@@ -876,7 +886,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         {/* Quick Add Custom Topic Action */}
         <button
           onClick={onOpenAddTopic}
-          className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold shadow-xs transition-all active:scale-[0.99] cursor-pointer"
+          className="relative z-10 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#789047] hover:from-[#667b3d] hover:to-[#88a350] dark:from-[#7AA2F7] dark:to-[#8B5CF6] text-white dark:text-black text-xs font-extrabold shadow-md transition-all active:scale-[0.99] cursor-pointer border border-white/15"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>+ Add Custom Topic</span>
