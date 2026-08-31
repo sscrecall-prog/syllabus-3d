@@ -212,23 +212,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           rel="noopener noreferrer"
           className="group w-full flex items-center justify-between p-2 px-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#D8D8CF] dark:border-[#272732] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all shadow-2xs active:scale-98"
         >
-          <div className="flex items-center gap-2">
-            <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-4.5 h-4.5 object-contain" />
-            <div>
-              <span className="text-[11px] font-bold text-[#191A17] dark:text-[#F5F5F7] block leading-tight group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
+          <div className="flex items-center gap-2 min-w-0">
+            <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-5 h-5 shrink-0 object-contain rounded-md" />
+            <div className="min-w-0">
+              <span className="text-[11px] font-bold text-[#191A17] dark:text-[#F5F5F7] block leading-tight group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] truncate">
                 Mock Tracker
               </span>
-              <span className="text-[9px] text-[#65675F] dark:text-[#85877E] block leading-none">Score & Percentiles</span>
+              <span className="text-[9px] text-[#65675F] dark:text-[#85877E] block leading-none truncate">Score & Percentiles</span>
             </div>
           </div>
-          <ExternalLink className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
+          <ExternalLink className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
         </a>
 
         {/* Compact User Level Card */}
         <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#D8D8CF] dark:border-[#272732] space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6.5 h-6.5 rounded-lg bg-gradient-to-br from-[#596B35] to-[#45532A] dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[10px] shrink-0 shadow-2xs">
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#596B35] to-[#45532A] dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[10px] shrink-0 shadow-2xs">
                 {profile.name ? profile.name.charAt(0).toUpperCase() : 'A'}
               </div>
               <div className="truncate">
