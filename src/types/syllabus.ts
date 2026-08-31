@@ -206,13 +206,14 @@ export interface PlannerTask {
   category?: TaskCategory;
 }
 
-export type PlatformCategory = 'course' | 'test_series' | 'reference' | 'custom';
+export type PlatformCategory = 'course' | 'test_series' | 'reference' | 'custom' | string;
 
 export interface ExternalPlatform {
   id: string;
   name: string;
   url: string;
   category: PlatformCategory;
+  customCategoryName?: string;
   description?: string;
   icon?: string;
   color?: string;

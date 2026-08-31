@@ -15,7 +15,8 @@ import {
   Edit2,
   KeyRound,
   ShieldCheck,
-  ArrowUpRight
+  ArrowUpRight,
+  PenTool
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -26,10 +27,21 @@ export const PlatformsView: React.FC = () => {
   const { platforms, togglePinPlatform, deletePlatform } = useSyllabus();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | PlatformCategory | 'pinned'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPlatform, setEditingPlatform] = useState<ExternalPlatform | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Dynamic custom categories from existing platforms
+  const customCategoriesList = useMemo(() => {
+    const list = new Set<string>();
+    platforms.forEach(p => {
+      if (p.customCategoryName && p.customCategoryName.trim()) {
+        list.add(p.customCategoryName.trim());
+      }
+    });
+    return Array.from(list);
+  }, [platforms]);
 
   // Filtered Platforms
   const filteredPlatforms = useMemo(() => {
@@ -37,12 +49,21 @@ export const PlatformsView: React.FC = () => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (p.customCategoryName && p.customCategoryName.toLowerCase().includes(searchQuery.toLowerCase())) ||
         p.url.toLowerCase().includes(searchQuery.toLowerCase());
 
       if (!matchesSearch) return false;
 
       if (selectedCategory === 'all') return true;
       if (selectedCategory === 'pinned') return p.pinned;
+      if (selectedCategory === 'course') return p.category === 'course';
+      if (selectedCategory === 'test_series') return p.category === 'test_series';
+      if (selectedCategory === 'reference') return p.category === 'reference';
+      if (selectedCategory === 'custom') return p.category === 'custom';
+      
+      // Match by custom category name
+      if (p.customCategoryName === selectedCategory) return true;
+
       return p.category === selectedCategory;
     });
   }, [platforms, searchQuery, selectedCategory]);
@@ -50,6 +71,7 @@ export const PlatformsView: React.FC = () => {
   // Statistics
   const coursesCount = platforms.filter(p => p.category === 'course').length;
   const testsCount = platforms.filter(p => p.category === 'test_series').length;
+  const customCount = platforms.filter(p => p.category === 'custom' || Boolean(p.customCategoryName)).length;
   const pinnedCount = platforms.filter(p => p.pinned).length;
 
   const handleCopyHint = (e: React.MouseEvent, platformId: string, hint: string) => {
@@ -123,7 +145,7 @@ export const PlatformsView: React.FC = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-[#65675F] dark:text-[#A1A1AA] max-w-2xl leading-relaxed">
-              Physics Wallah, Careerwill, Testbook, ya Oliveboard ke kisi bhi card par click karke direct apni batch ya test series open karein.
+              Physics Wallah, Careerwill, Testbook, ya apne custom coaching batches ko yahan link karein aur 1-click me direct access payein.
             </p>
           </div>
 
@@ -166,17 +188,17 @@ export const PlatformsView: React.FC = () => {
             </div>
             <div>
               <span className="text-base font-mono font-black text-[#11120F] dark:text-white block">{pinnedCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Pinned Quick Links</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Pinned Links</span>
             </div>
           </div>
 
           <div className="p-3 rounded-2xl bg-white/70 dark:bg-[#18181D]/70 border border-[#D8D8CF]/60 dark:border-[#272730] flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5" />
+              <PenTool className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block">1-Click</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Direct Launch</span>
+              <span className="text-base font-mono font-black text-[#11120F] dark:text-white block">{customCount}</span>
+              <span className="text-[10px] font-bold uppercase font-mono text-[#85877E]">Custom Portals</span>
             </div>
           </div>
         </div>
@@ -185,21 +207,22 @@ export const PlatformsView: React.FC = () => {
       {/* 2. Filter Tabs & Search Row */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         
-        {/* Category Tabs */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#EEEEE8] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] overflow-x-auto custom-scrollbar shrink-0">
+        {/* Category Tabs (Supports Dynamic Custom Categories) */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#EEEEE8] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] overflow-x-auto custom-scrollbar shrink-0 max-w-full">
           {[
-            { id: 'all', label: 'All', icon: Globe },
-            { id: 'course', label: 'Courses 📚', icon: GraduationCap },
-            { id: 'test_series', label: 'Mock Tests 📝', icon: FileCheck2 },
-            { id: 'reference', label: 'Tools & Reference 🔍', icon: BookOpen },
-            { id: 'pinned', label: 'Pinned ⭐', icon: Bookmark },
+            { id: 'all', label: 'All' },
+            { id: 'course', label: 'Courses 📚' },
+            { id: 'test_series', label: 'Mock Tests 📝' },
+            { id: 'reference', label: 'Tools & Reference 🔍' },
+            ...customCategoriesList.map(cat => ({ id: cat, label: `✨ ${cat}` })),
+            { id: 'pinned', label: 'Pinned ⭐' },
           ].map(tab => {
             const isSelected = selectedCategory === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => {
-                  setSelectedCategory(tab.id as any);
+                  setSelectedCategory(tab.id);
                   soundManager.playClick();
                 }}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
@@ -221,7 +244,7 @@ export const PlatformsView: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search platform, batch name, or URL..."
+            placeholder="Search platform, custom category, batch name..."
             className="w-full pl-9 pr-4 py-2 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-sm"
           />
           {searchQuery && (
@@ -235,7 +258,7 @@ export const PlatformsView: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Platform Cards Grid (Ultra Attractive, Sleek, Direct Clickable) */}
+      {/* 3. Platform Cards Grid */}
       {filteredPlatforms.length === 0 ? (
         <div className="p-12 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-center space-y-4 shadow-sm">
           <div className="w-16 h-16 rounded-3xl bg-[#F7F6F0] dark:bg-[#23232A] flex items-center justify-center text-3xl mx-auto border border-[#D8D8CF] dark:border-[#333]">
@@ -246,7 +269,7 @@ export const PlatformsView: React.FC = () => {
               No study platforms found
             </h3>
             <p className="text-xs text-[#85877E] max-w-sm mx-auto">
-              Aap apne Physics Wallah batches, Testbook pass, Careerwill ya kisi bhi portal ko yahan add kar sakte hain.
+              Aap Physics Wallah, Careerwill, Testbook, ya apni kisi bhi custom category me portal add kar sakte hain.
             </p>
           </div>
           <button
@@ -263,6 +286,16 @@ export const PlatformsView: React.FC = () => {
             const hasLoginHint = Boolean(platform.loginHint);
             const isCopied = copiedId === platform.id;
             const cleanDomain = formatCleanDomain(platform.url);
+
+            const categoryBadgeLabel = platform.customCategoryName || (
+              platform.category === 'course'
+                ? 'Course Batch'
+                : platform.category === 'test_series'
+                ? 'Mock Series'
+                : platform.category === 'reference'
+                ? 'Reference Tool'
+                : 'Custom Portal'
+            );
 
             return (
               <div
@@ -299,13 +332,7 @@ export const PlatformsView: React.FC = () => {
                             ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
                             : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20'
                         }`}>
-                          {platform.category === 'course'
-                            ? 'Course Batch'
-                            : platform.category === 'test_series'
-                            ? 'Mock Series'
-                            : platform.category === 'reference'
-                            ? 'Reference Tool'
-                            : 'Portal'}
+                          {categoryBadgeLabel}
                         </span>
                         
                         <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-white font-serif group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
@@ -366,7 +393,7 @@ export const PlatformsView: React.FC = () => {
                   )}
                 </div>
 
-                {/* Card Bottom: Domain Chip & Quick Copy ID (No Big Bottom Button) */}
+                {/* Card Bottom: Domain Chip & Quick Copy ID */}
                 <div className="pt-3 border-t border-[#D8D8CF]/70 dark:border-[#272730] flex items-center justify-between gap-2">
                   
                   {/* Clean Domain Chip */}

@@ -10,7 +10,8 @@ import {
   BookOpen,
   KeyRound,
   RotateCcw,
-  Tag
+  Tag,
+  PenTool
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -109,6 +110,20 @@ const POPULAR_SUGGESTIONS = [
   { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: '✈️', color: '#0284C7' },
 ];
 
+// Quick Custom Category Suggestions
+const CUSTOM_CATEGORY_SUGGESTIONS = [
+  'Current Affairs',
+  'Maths Special',
+  'Reasoning Batch',
+  'PYQ Practice',
+  'PDF Vault',
+  'Sectional Quizzes',
+  'State Govt Exam',
+  'Revision Marathon',
+  'YouTube Playlist',
+  'Telegram Study'
+];
+
 const EMOJI_OPTIONS = ['⚡', '🎓', '📝', '🎯', '🏛️', '📖', '📊', '▶️', '🏆', '🔥', '💻', '🔬', '📐', '🧠', '🌐', '📚', '🚀', '✈️'];
 const COLOR_OPTIONS = [
   '#5A4FCF', // Purple
@@ -131,10 +146,12 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 }) => {
   const { addPlatform, editPlatform, currentExam } = useSyllabus();
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const customCatInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(editPlatformData?.name || '');
   const [url, setUrl] = useState(editPlatformData?.url || '');
   const [category, setCategory] = useState<PlatformCategory>(editPlatformData?.category || 'course');
+  const [customCategoryName, setCustomCategoryName] = useState(editPlatformData?.customCategoryName || '');
   const [description, setDescription] = useState(editPlatformData?.description || '');
   const [icon, setIcon] = useState(editPlatformData?.icon || '⚡');
   const [color, setColor] = useState(editPlatformData?.color || '#5A4FCF');
@@ -158,6 +175,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setName(preset.name);
     setUrl(preset.url);
     setCategory(preset.category);
+    setCustomCategoryName('');
     setDescription(preset.description);
     setColor(preset.color);
     setIcon(preset.icon);
@@ -171,6 +189,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setName(sugg.name);
     setUrl(sugg.url);
     setCategory(sugg.category);
+    setCustomCategoryName('');
     setIcon(sugg.icon);
     setColor(sugg.color);
     setError(null);
@@ -182,19 +201,24 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setCategory(newCat);
     soundManager.playClick();
     
-    // Set appropriate default icon if current is default
     if (newCat === 'custom') {
       setIcon('🌐');
-      if (!name) setName('');
+      setTimeout(() => {
+        customCatInputRef.current?.focus();
+      }, 100);
     } else if (newCat === 'course') {
       setIcon('🎓');
+      setCustomCategoryName('');
+      nameInputRef.current?.focus();
     } else if (newCat === 'test_series') {
       setIcon('📝');
+      setCustomCategoryName('');
+      nameInputRef.current?.focus();
     } else if (newCat === 'reference') {
       setIcon('📖');
+      setCustomCategoryName('');
+      nameInputRef.current?.focus();
     }
-    
-    nameInputRef.current?.focus();
   };
 
   const handleResetForm = () => {
@@ -204,6 +228,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setLoginHint('');
     setNotes('');
     setCategory('custom');
+    setCustomCategoryName('');
     setIcon('🌐');
     setColor('#5A4FCF');
     setError(null);
@@ -229,11 +254,16 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
       cleanUrl = 'https://' + cleanUrl;
     }
 
+    const payloadCustomCat = category === 'custom'
+      ? (customCategoryName.trim() || 'Custom Portal')
+      : (customCategoryName.trim() || undefined);
+
     if (editPlatformData) {
       editPlatform(editPlatformData.id, {
         name: name.trim(),
         url: cleanUrl,
         category,
+        customCategoryName: payloadCustomCat,
         description: description.trim() || undefined,
         icon,
         color,
@@ -247,6 +277,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         name: name.trim(),
         url: cleanUrl,
         category,
+        customCategoryName: payloadCustomCat,
         description: description.trim() || undefined,
         icon,
         color,
@@ -264,7 +295,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const getNameLabel = () => {
     switch (category) {
       case 'custom':
-        return 'Custom Portal / Website Name *';
+        return customCategoryName.trim() ? `${customCategoryName} Name *` : 'Custom Portal / Website Name *';
       case 'course':
         return 'Course / Batch Name *';
       case 'test_series':
@@ -279,7 +310,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const getNamePlaceholder = () => {
     switch (category) {
       case 'custom':
-        return 'e.g. Exampur, Rojgar with Ankit, Adda247, Coaching App...';
+        return 'e.g. Exampur, Rojgar with Ankit, Adda247, Telegram Channel...';
       case 'course':
         return 'e.g. Physics Wallah - Shaurya Batch, Careerwill Maths Special...';
       case 'test_series':
@@ -294,7 +325,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const getUrlPlaceholder = () => {
     switch (category) {
       case 'custom':
-        return 'https://your-coaching-portal.com or login link...';
+        return 'https://your-coaching-portal.com or direct batch link...';
       case 'course':
         return 'https://pw.live/study/batches or course URL...';
       case 'test_series':
@@ -324,7 +355,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 {editPlatformData ? 'Edit Study Platform' : 'Add Course / Test Platform'}
               </h2>
               <p className="text-xs text-[#85877E] dark:text-[#787C99]">
-                Physics Wallah, Careerwill, Testbook, ya apna custom portal add karein
+                Physics Wallah, Careerwill, Testbook, ya apna custom portal & category add karein
               </p>
             </div>
           </div>
@@ -422,21 +453,22 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
           <form id="add-platform-form" onSubmit={handleSubmit} className="space-y-4">
             
             {/* Category Selector */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
                   Platform Category *
                 </label>
-                <span className="text-[10px] text-[#85877E] font-mono">
-                  {category === 'custom' ? 'Custom Portal Mode' : `${category} Mode`}
+                <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">
+                  {category === 'custom' ? 'Custom Category Mode' : `${category} Mode`}
                 </span>
               </div>
+
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'course' as PlatformCategory, label: 'Course / Batches', icon: GraduationCap },
                   { id: 'test_series' as PlatformCategory, label: 'Mock Test Series', icon: FileCheck2 },
                   { id: 'reference' as PlatformCategory, label: 'Reference / Tools', icon: BookOpen },
-                  { id: 'custom' as PlatformCategory, label: 'Custom Portal', icon: Globe },
+                  { id: 'custom' as PlatformCategory, label: 'Custom Category', icon: PenTool },
                 ].map(cat => {
                   const Icon = cat.icon;
                   const isSelected = category === cat.id;
@@ -457,6 +489,50 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                   );
                 })}
               </div>
+
+              {/* Custom Category Input & Suggestions (Visible when Custom is Selected) */}
+              {category === 'custom' && (
+                <div className="p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] space-y-2.5 animate-scale-up">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
+                      <span>Enter Your Custom Category Name *</span>
+                      <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono">e.g. Current Affairs, PYQ Vault...</span>
+                    </label>
+                    <input
+                      ref={customCatInputRef}
+                      type="text"
+                      value={customCategoryName}
+                      onChange={(e) => setCustomCategoryName(e.target.value)}
+                      placeholder="e.g. Current Affairs, Maths Special, PYQ Practice, Telegram..."
+                      className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                    />
+                  </div>
+
+                  {/* Quick Custom Category Pills */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-[#85877E] block">1-Click Category Suggestions:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {CUSTOM_CATEGORY_SUGGESTIONS.map(catSug => (
+                        <button
+                          key={catSug}
+                          type="button"
+                          onClick={() => {
+                            setCustomCategoryName(catSug);
+                            soundManager.playClick();
+                          }}
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer border ${
+                            customCategoryName === catSug
+                              ? 'bg-[#596B35] text-white border-transparent'
+                              : 'bg-white dark:bg-[#12141A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
+                          }`}
+                        >
+                          +{catSug}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Name & URL (Dynamic labels & placeholders) */}
