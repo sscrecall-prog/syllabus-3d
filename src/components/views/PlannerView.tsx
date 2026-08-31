@@ -299,20 +299,34 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
   return (
     <div className="space-y-4 sm:space-y-6 pb-20 max-w-6xl mx-auto font-sans select-none animate-fade-in">
       
-      {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD ═══════════════ */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
+      {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD WITH 3D GLASS CALENDAR BACKGROUND ═══════════════ */}
+      <div className="p-5 sm:p-7 rounded-[32px] bg-[#0A0D14] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-4">
         
+        {/* 3D Glass Calendar & Stopwatch Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-right md:bg-right pointer-events-none opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
+          style={{ backgroundImage: `url('/planner_banner.png')` }}
+        />
+
+        {/* Multi-layered Glass Gradients for 100% Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0D14] via-[#0A0D14]/85 md:via-[#0A0D14]/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0D14]/85 via-transparent to-transparent pointer-events-none" />
+        
+        {/* Subtle Ambient Glow Orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#596B35]/20 rounded-full blur-3xl pointer-events-none" />
+
         {/* Top Header Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center font-bold shadow-sm shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FACC15] to-[#CA8A04] text-black flex items-center justify-center font-bold shadow-md shrink-0 border border-white/20">
               <CalendarCheck className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-tight">
+              <h2 className="text-base sm:text-xl font-black text-white font-serif uppercase tracking-tight drop-shadow-sm">
                 Daily Study Planner
               </h2>
-              <p className="text-xs text-[#65675F] dark:text-[#A9B1D6]">
+              <p className="text-xs text-[#C5C8D8]">
                 Target tracking, daily sprints, and study queue
               </p>
             </div>
@@ -325,71 +339,72 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               setTargetDate(getTodayDateString());
               setShowAddModal(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 self-start sm:self-auto"
+            className="group relative px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#FACC15] to-[#EAB308] hover:from-[#fde047] hover:to-[#ca8a04] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(250,204,21,0.35)] hover:shadow-[0_0_30px_rgba(250,204,21,0.55)] transition-all active:scale-95 cursor-pointer shrink-0 self-start sm:self-auto flex items-center gap-2 overflow-hidden border border-white/20"
           >
-            <Plus className="w-4 h-4 stroke-[3]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            <Plus className="w-4 h-4 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
             <span>Add Study Target</span>
           </button>
         </div>
 
         {/* Concise Metric Bento Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 relative z-10">
           
           {/* Today's Velocity */}
-          <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-emerald-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">Velocity</span>
-              <h4 className="text-lg font-black font-mono text-[#11120F] dark:text-[#C0CAF5] leading-none">
+              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Velocity</span>
+              <h4 className="text-xl font-black font-mono text-white leading-none">
                 {todayProgressPercent}%
               </h4>
-              <span className="text-[10px] text-[#65675F] dark:text-[#A9B1D6]">
+              <span className="text-[10px] text-[#A1A1B2]">
                 {completedTodayCount}/{totalTodayCount} Done
               </span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30 group-hover:scale-110 transition-transform">
+              <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
             </div>
           </div>
 
           {/* Daily Streak */}
-          <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-orange-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">Streak</span>
-              <h4 className="text-lg font-black font-mono text-orange-500 leading-none">
-                {profile.currentStreak} <span className="text-xs font-sans text-[#85877E]">days</span>
+              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Streak</span>
+              <h4 className="text-xl font-black font-mono text-orange-400 leading-none">
+                {profile.currentStreak} <span className="text-xs font-sans text-[#9A9CAE]">days</span>
               </h4>
-              <span className="text-[10px] text-orange-500/80 font-medium">Best: {profile.longestStreak}d</span>
+              <span className="text-[10px] text-orange-400/80 font-medium">Best: {profile.longestStreak}d</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30 group-hover:scale-110 transition-transform">
               <Flame className="w-5 h-5 animate-pulse" />
             </div>
           </div>
 
           {/* Study Time */}
-          <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">Planned</span>
-              <h4 className="text-lg font-black font-mono text-[#11120F] dark:text-[#C0CAF5] leading-none">
-                {(totalPlannedMinutes / 60).toFixed(1)} <span className="text-xs font-sans text-[#85877E]">hrs</span>
+              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Planned</span>
+              <h4 className="text-xl font-black font-mono text-white leading-none">
+                {(totalPlannedMinutes / 60).toFixed(1)} <span className="text-xs font-sans text-[#9A9CAE]">hrs</span>
               </h4>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">{(completedMinutes / 60).toFixed(1)}h finished</span>
+              <span className="text-[10px] text-emerald-400 font-medium">{(completedMinutes / 60).toFixed(1)}h finished</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center border border-blue-500/30 group-hover:scale-110 transition-transform">
+              <Clock className="w-5 h-5 stroke-[2.2]" />
             </div>
           </div>
 
           {/* Focus XP */}
-          <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">XP Level</span>
-              <h4 className="text-lg font-black font-mono text-purple-500 leading-none">
+              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">XP Level</span>
+              <h4 className="text-xl font-black font-mono text-purple-400 leading-none">
                 Lvl {profile.level}
               </h4>
-              <span className="text-[10px] text-purple-500 font-medium">{profile.xp} XP</span>
+              <span className="text-[10px] text-purple-400 font-medium">{profile.xp} XP</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center">
-              <Star className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
+              <Star className="w-5 h-5 stroke-[2.2]" />
             </div>
           </div>
 
@@ -397,22 +412,22 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
         {/* Smart Suggestions Chips (if any) */}
         {smartSuggestions.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-1">
-            <span className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-2 border-t border-white/10">
+            <span className="text-[10px] font-bold text-[#C5C8D8] uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Suggested:</span>
             </span>
             {smartSuggestions.map((sug, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] shrink-0"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 shrink-0"
               >
-                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] truncate max-w-[140px]">
+                <span className="text-xs font-bold text-white truncate max-w-[140px]">
                   {sug.topicName}
                 </span>
                 <button
                   onClick={() => handleAddSuggestion(sug.topicName, sug.subjectName, sug.subjectColor, sug.topicId)}
-                  className="px-2 py-0.5 rounded-lg bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-[10px] font-bold cursor-pointer transition-all active:scale-95"
+                  className="px-2 py-0.5 rounded-lg bg-[#FACC15] hover:bg-[#EAB308] text-black text-[10px] font-extrabold cursor-pointer transition-all active:scale-95"
                 >
                   + Add
                 </button>
