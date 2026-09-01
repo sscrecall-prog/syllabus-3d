@@ -97,12 +97,14 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   const isPaused = session.status === 'paused';
 
   const handleTogglePlay = () => {
-    soundManager.playClick();
     if (isRunning) {
+      soundManager.playClick();
       pauseTimer();
     } else if (isPaused) {
+      soundManager.playPomodoroBell();
       resumeTimer();
     } else {
+      soundManager.playPomodoroBell();
       // Check Android permission if applicable
       if (
         window.AndroidFloatingTimer &&

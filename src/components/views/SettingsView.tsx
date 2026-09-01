@@ -21,13 +21,19 @@ import {
   Sun,
   Database,
   Edit2,
-  Save
+  Save,
+  Volume2,
+  VolumeX,
+  Bell,
+  Sparkles,
+  Sliders,
+  Award
 } from 'lucide-react';
-import { soundManager } from '../../utils/soundEffects';
+import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
 import { PWAInstallModal } from '../modals/PWAInstallModal';
 
-type SettingsTab = 'exam' | 'appearance' | 'timer' | 'data';
+type SettingsTab = 'exam' | 'appearance' | 'sound' | 'timer' | 'data';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -66,6 +72,15 @@ export const SettingsView: React.FC = () => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [testLaunched, setTestLaunched] = useState(false);
+
+  // Sound & Motivation Audio state
+  const [audioConfig, setAudioConfig] = useState<AudioSettings>(() => soundManager.getSettings());
+
+  const handleUpdateAudio = (partial: Partial<AudioSettings>) => {
+    soundManager.updateSettings(partial);
+    const updated = soundManager.getSettings();
+    setAudioConfig(updated);
+  };
 
   useEffect(() => {
     if (currentExam) {
@@ -267,6 +282,7 @@ export const SettingsView: React.FC = () => {
         {[
           { id: 'exam' as SettingsTab, label: 'Exam Target', icon: Target },
           { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
+          { id: 'sound' as SettingsTab, label: 'Sound & Audio', icon: Volume2 },
           { id: 'timer' as SettingsTab, label: 'Focus & Timer', icon: Clock },
           { id: 'data' as SettingsTab, label: 'Backup & App', icon: Database }
         ].map(tab => {
@@ -520,6 +536,198 @@ export const SettingsView: React.FC = () => {
                 </span>
               </div>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: SOUND & MOTIVATION AUDIO */}
+      {activeTab === 'sound' && (
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-5 animate-fade-in">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#24283B] pb-3.5">
+            <div>
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide flex items-center gap-2">
+                <Volume2 className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <span>Audio & Motivation Effects</span>
+              </h3>
+              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+                Configure audio cues, Tibetan focus bell, and library silent mode.
+              </p>
+            </div>
+
+            {/* Master Mute / Silent Mode Button */}
+            <button
+              onClick={() => {
+                handleUpdateAudio({ masterEnabled: !audioConfig.masterEnabled });
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-95 shadow-xs ${
+                audioConfig.masterEnabled
+                  ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D]'
+                  : 'bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black'
+              }`}
+            >
+              {audioConfig.masterEnabled ? (
+                <>
+                  <Volume2 className="w-3.5 h-3.5" />
+                  <span>Audio Enabled</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5" />
+                  <span>🤫 Library Silent Mode</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Master Volume Slider */}
+          <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#10111A] border border-[#D8D8CF] dark:border-[#24283B] space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#11120F] dark:text-white">
+                <Sliders className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <span>Master Volume</span>
+              </div>
+              <span className="text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                {Math.round(audioConfig.masterVolume * 100)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              disabled={!audioConfig.masterEnabled}
+              value={audioConfig.masterVolume}
+              onChange={e => handleUpdateAudio({ masterVolume: parseFloat(e.target.value) })}
+              className="w-full accent-[#596B35] dark:accent-[#7AA2F7] cursor-pointer disabled:opacity-40"
+            />
+          </div>
+
+          {/* Individual Audio Channels */}
+          <div className="space-y-3 pt-1">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#85877E] font-mono">
+              Individual Audio Channels
+            </h4>
+
+            {/* Channel 1: UI Clicks */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-[#596B35] dark:text-[#7AA2F7] shrink-0">
+                  <Sliders className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                    UI Click & Navigation Taps
+                  </span>
+                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                    Tactile audio feedback when switching tabs and buttons
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => soundManager.playClick()}
+                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                >
+                  ▶ Test
+                </button>
+                <ToggleSwitch
+                  checked={audioConfig.clickSound && audioConfig.masterEnabled}
+                  onChange={val => handleUpdateAudio({ clickSound: val })}
+                />
+              </div>
+            </div>
+
+            {/* Channel 2: Pomodoro Bell */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-amber-500 shrink-0">
+                  <Bell className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                    Pomodoro Session Alert Bell
+                  </span>
+                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                    Gentle Tibetan singing bell when focus session starts & completes
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => soundManager.playPomodoroBell()}
+                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                >
+                  ▶ Test
+                </button>
+                <ToggleSwitch
+                  checked={audioConfig.pomodoroBell && audioConfig.masterEnabled}
+                  onChange={val => handleUpdateAudio({ pomodoroBell: val })}
+                />
+              </div>
+            </div>
+
+            {/* Channel 3: Target Completion Chime */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-emerald-500 shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                    Target Mastery Celebration Chime
+                  </span>
+                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                    Euphoric harmonic chime when completing a topic or daily target
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => soundManager.playCompleteChime()}
+                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                >
+                  ▶ Test
+                </button>
+                <ToggleSwitch
+                  checked={audioConfig.chimeSound && audioConfig.masterEnabled}
+                  onChange={val => handleUpdateAudio({ chimeSound: val })}
+                />
+              </div>
+            </div>
+
+            {/* Channel 4: Level Up / Streak Milestone */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-purple-500 shrink-0">
+                  <Award className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                    Level Up & Streak Milestone Fanfare
+                  </span>
+                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                    Special victory fanfare on leveling up or reaching streak milestones
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => soundManager.playLevelUp()}
+                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                >
+                  ▶ Test
+                </button>
+                <ToggleSwitch
+                  checked={audioConfig.levelUpSound && audioConfig.masterEnabled}
+                  onChange={val => handleUpdateAudio({ levelUpSound: val })}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
