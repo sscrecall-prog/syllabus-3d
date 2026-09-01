@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Edit3,
   Eye,
+  EyeOff,
   Save,
   Copy,
   Check,
@@ -93,6 +94,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
   // Full Screen Reading Mode
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Pure Notes Zen Focus Mode (Hides all top bars/sections/buttons)
+  const [isZenMode, setIsZenMode] = useState(false);
+
   const [readerFontSize, setReaderFontSize] = useState<ReaderFontSize>('base');
   const [readerWidth, setReaderWidth] = useState<ReaderWidth>('normal');
 
@@ -156,7 +160,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     };
   }, [content, onSave]);
 
-  // Keyboard shortcut Ctrl+S (Save), ESC (Exit Fullscreen)
+  // Keyboard shortcuts:
+  // - Ctrl+S: Save
+  // - ESC: Exit Zen mode or Exit Fullscreen
+  // - Z: Toggle Zen Focus Mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -168,14 +175,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
         setTimeout(() => setSaveSuccess(false), 2000);
       }
-      if (e.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false);
+      if (e.key === 'Escape') {
+        if (isZenMode) {
+          setIsZenMode(false);
+          soundManager.playClick();
+        } else if (isFullscreen) {
+          setIsFullscreen(false);
+          soundManager.playClick();
+        }
+      }
+      if ((e.key === 'z' || e.key === 'Z') && isFullscreen && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        setIsZenMode(prev => !prev);
         soundManager.playClick();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [content, onSave, isFullscreen]);
+  }, [content, onSave, isFullscreen, isZenMode]);
 
   // Handle Font Change
   const handleSelectFont = (font: ReaderFontFamily) => {
@@ -1182,189 +1199,236 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         className="fixed inset-0 z-[150] bg-[#FAF8F5] dark:bg-[#0B0B0E] text-[#11120F] dark:text-[#F5F5F7] flex flex-col select-none animate-fade-in"
         onMouseUp={handleMouseUpSelection}
       >
-        {/* Fullscreen Zen Header Bar */}
-        <div className="px-4 sm:px-6 py-2.5 border-b border-[#D8D8CF] dark:border-[#272730] bg-white/85 dark:bg-[#12131C]/90 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 shadow-xs">
-          {/* Breadcrumb & Title */}
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
-              <BookOpen className="w-4 h-4" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] truncate font-mono">
-                <span>{subjectName || 'Subject'}</span>
-                <span>•</span>
-                <span className="truncate">{chapterName || 'Chapter'}</span>
-              </div>
-              <h2 className={`text-sm sm:text-base font-black truncate ${getFontFamilyClass()}`}>
-                {topicName}
-              </h2>
-            </div>
-          </div>
-
-          {/* Reader View & Customization Controls */}
-          <div className="flex items-center gap-2 flex-wrap">
-            
-            {/* 🔤 Font Family Selector */}
-            <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => handleSelectFont('serif')}
-                className={`px-2.5 py-1 rounded-lg transition-all font-serif ${
-                  readerFontFamily === 'serif'
-                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                    : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
-                }`}
-                title="Book Serif Typography (Lora)"
-              >
-                📖 Book Serif
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectFont('sans')}
-                className={`px-2.5 py-1 rounded-lg transition-all font-sans ${
-                  readerFontFamily === 'sans'
-                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                    : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
-                }`}
-                title="Modern Sans Typography (Plus Jakarta / Inter)"
-              >
-                🏛️ Sans
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectFont('lexend')}
-                className={`hidden sm:inline-block px-2.5 py-1 rounded-lg transition-all font-lexend ${
-                  readerFontFamily === 'lexend'
-                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                    : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
-                }`}
-                title="Fast Reading Geometric Typography (Lexend)"
-              >
-                ⚡ Fast Read
-              </button>
-            </div>
-
-            {/* 🎨 Theme Switcher (Paper, Sepia, Dark, OLED) */}
-            <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => handleSelectTheme('paper')}
-                className={`px-2 py-1 rounded-lg transition-all ${
-                  readerTheme === 'paper'
-                    ? 'bg-white text-black shadow-xs border border-black/10'
-                    : 'text-[#85877E] hover:text-black'
-                }`}
-                title="Paper White"
-              >
-                📄 Paper
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectTheme('sepia')}
-                className={`px-2 py-1 rounded-lg transition-all ${
-                  readerTheme === 'sepia'
-                    ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs border border-[#D9C4A1]'
-                    : 'text-[#85877E] hover:text-[#4A3B22]'
-                }`}
-                title="Kindle Book Warm Sepia"
-              >
-                📜 Sepia
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectTheme('oled')}
-                className={`px-2 py-1 rounded-lg transition-all ${
-                  readerTheme === 'oled'
-                    ? 'bg-black text-white shadow-xs border border-white/20'
-                    : 'text-[#85877E] hover:text-white'
-                }`}
-                title="Pitch Dark OLED"
-              >
-                🖤 OLED
-              </button>
-            </div>
-
-            {/* Font Size Adjuster */}
-            <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
-              <span className="text-[10px] text-[#85877E]">Size:</span>
-              {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => setReaderFontSize(size)}
-                  className={`px-1.5 py-0.5 rounded uppercase ${
-                    readerFontSize === size
-                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
-                      : 'text-[#85877E] hover:text-[#11120F]'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-
-            {/* Container Width Adjuster */}
-            <div className="hidden md:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
-              <span className="text-[10px] text-[#85877E]">Width:</span>
-              {(['normal', 'wide', 'full'] as ReaderWidth[]).map(w => (
-                <button
-                  key={w}
-                  type="button"
-                  onClick={() => setReaderWidth(w)}
-                  className={`px-1.5 py-0.5 rounded capitalize ${
-                    readerWidth === w
-                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
-                      : 'text-[#85877E] hover:text-[#11120F]'
-                  }`}
-                >
-                  {w}
-                </button>
-              ))}
-            </div>
-
-            {/* Highlighter Toggle */}
+        {/* Fullscreen Zen Floating Trigger (Visible when Top Bar is Hidden in Zen Mode) */}
+        {isZenMode && (
+          <div className="fixed top-4 right-5 z-[170] flex items-center gap-2 animate-fade-in">
             <button
               type="button"
-              onClick={() => setIsHighlighterActive(prev => !prev)}
-              title="Toggle interactive text selection highlighter"
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                isHighlighterActive
-                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
-                  : 'bg-[#F7F6F0] dark:bg-[#1C1D26] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
-              }`}
+              onClick={() => {
+                soundManager.playClick();
+                setIsZenMode(false);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/90 dark:bg-[#1C1D26]/90 hover:bg-white dark:hover:bg-[#282A38] text-slate-900 dark:text-white border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl text-xs font-black transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
+              title="Show All Header Sections & Toolbar Buttons (Press Z or ESC)"
             >
-              <Highlighter className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Highlighter {isHighlighterActive ? 'ON' : 'OFF'}</span>
+              <Eye className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+              <span>Show All Controls</span>
             </button>
 
-            {/* PDF Export */}
-            <button
-              type="button"
-              onClick={handleExportPdf}
-              className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1C1D26] border border-[#D8D8CF] dark:border-[#272730] text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#596B35]/15 cursor-pointer"
-              title="Download / Print PDF"
-            >
-              <FileDown className="w-4 h-4" />
-            </button>
-
-            {/* Close / Exit Fullscreen */}
             <button
               type="button"
               onClick={() => {
                 soundManager.playClick();
                 setIsFullscreen(false);
+                setIsZenMode(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-xs font-black transition-all cursor-pointer"
+              className="p-2 rounded-2xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 shadow-2xl transition-all cursor-pointer backdrop-blur-md"
               title="Exit Fullscreen (ESC)"
             >
-              <Minimize2 className="w-3.5 h-3.5" />
-              <span>Exit Fullscreen</span>
+              <Minimize2 className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        )}
+
+        {/* Fullscreen Zen Header Bar (Hides smoothly when isZenMode is true) */}
+        {!isZenMode && (
+          <div className="px-4 sm:px-6 py-2.5 border-b border-[#D8D8CF] dark:border-[#272730] bg-white/85 dark:bg-[#12131C]/90 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 shadow-xs animate-fade-in">
+            {/* Breadcrumb & Title */}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                <BookOpen className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] truncate font-mono">
+                  <span>{subjectName || 'Subject'}</span>
+                  <span>•</span>
+                  <span className="truncate">{chapterName || 'Chapter'}</span>
+                </div>
+                <h2 className={`text-sm sm:text-base font-black truncate ${getFontFamilyClass()}`}>
+                  {topicName}
+                </h2>
+              </div>
+            </div>
+
+            {/* Reader View & Customization Controls */}
+            <div className="flex items-center gap-2 flex-wrap">
+              
+              {/* 👁️ PURE NOTES ONLY / ZEN BUTTON (Hides all top bars & buttons) */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playCompleteChime();
+                  setIsZenMode(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
+                title="Hide All Header Buttons & Top Bars (Pure Notes Only - Press Z)"
+              >
+                <EyeOff className="w-3.5 h-3.5" />
+                <span>Pure Notes Only</span>
+              </button>
+
+              {/* 🔤 Font Family Selector */}
+              <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => handleSelectFont('serif')}
+                  className={`px-2.5 py-1 rounded-lg transition-all font-serif ${
+                    readerFontFamily === 'serif'
+                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                      : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
+                  }`}
+                  title="Book Serif Typography (Lora)"
+                >
+                  📖 Book Serif
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectFont('sans')}
+                  className={`px-2.5 py-1 rounded-lg transition-all font-sans ${
+                    readerFontFamily === 'sans'
+                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                      : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
+                  }`}
+                  title="Modern Sans Typography (Plus Jakarta / Inter)"
+                >
+                  🏛️ Sans
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectFont('lexend')}
+                  className={`hidden sm:inline-block px-2.5 py-1 rounded-lg transition-all font-lexend ${
+                    readerFontFamily === 'lexend'
+                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                      : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
+                  }`}
+                  title="Fast Reading Geometric Typography (Lexend)"
+                >
+                  ⚡ Fast Read
+                </button>
+              </div>
+
+              {/* 🎨 Theme Switcher (Paper, Sepia, Dark, OLED) */}
+              <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => handleSelectTheme('paper')}
+                  className={`px-2 py-1 rounded-lg transition-all ${
+                    readerTheme === 'paper'
+                      ? 'bg-white text-black shadow-xs border border-black/10'
+                      : 'text-[#85877E] hover:text-black'
+                  }`}
+                  title="Paper White"
+                >
+                  📄 Paper
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectTheme('sepia')}
+                  className={`px-2 py-1 rounded-lg transition-all ${
+                    readerTheme === 'sepia'
+                      ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs border border-[#D9C4A1]'
+                      : 'text-[#85877E] hover:text-[#4A3B22]'
+                  }`}
+                  title="Kindle Book Warm Sepia"
+                >
+                  📜 Sepia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectTheme('oled')}
+                  className={`px-2 py-1 rounded-lg transition-all ${
+                    readerTheme === 'oled'
+                      ? 'bg-black text-white shadow-xs border border-white/20'
+                      : 'text-[#85877E] hover:text-white'
+                  }`}
+                  title="Pitch Dark OLED"
+                >
+                  🖤 OLED
+                </button>
+              </div>
+
+              {/* Font Size Adjuster */}
+              <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+                <span className="text-[10px] text-[#85877E]">Size:</span>
+                {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setReaderFontSize(size)}
+                    className={`px-1.5 py-0.5 rounded uppercase ${
+                      readerFontSize === size
+                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
+                        : 'text-[#85877E] hover:text-[#11120F]'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+
+              {/* Container Width Adjuster */}
+              <div className="hidden md:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+                <span className="text-[10px] text-[#85877E]">Width:</span>
+                {(['normal', 'wide', 'full'] as ReaderWidth[]).map(w => (
+                  <button
+                    key={w}
+                    type="button"
+                    onClick={() => setReaderWidth(w)}
+                    className={`px-1.5 py-0.5 rounded capitalize ${
+                      readerWidth === w
+                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
+                        : 'text-[#85877E] hover:text-[#11120F]'
+                    }`}
+                  >
+                    {w}
+                  </button>
+                ))}
+              </div>
+
+              {/* Highlighter Toggle */}
+              <button
+                type="button"
+                onClick={() => setIsHighlighterActive(prev => !prev)}
+                title="Toggle interactive text selection highlighter"
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                  isHighlighterActive
+                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
+                    : 'bg-[#F7F6F0] dark:bg-[#1C1D26] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
+                }`}
+              >
+                <Highlighter className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Highlighter {isHighlighterActive ? 'ON' : 'OFF'}</span>
+              </button>
+
+              {/* PDF Export */}
+              <button
+                type="button"
+                onClick={handleExportPdf}
+                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1C1D26] border border-[#D8D8CF] dark:border-[#272730] text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#596B35]/15 cursor-pointer"
+                title="Download / Print PDF"
+              >
+                <FileDown className="w-4 h-4" />
+              </button>
+
+              {/* Close / Exit Fullscreen */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsFullscreen(false);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-xs font-black transition-all cursor-pointer"
+                title="Exit Fullscreen (ESC)"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span>Exit Fullscreen</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Fullscreen Content Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
+        <div className={`flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar ${isZenMode ? 'pt-8' : ''}`}>
           <div className={`mx-auto ${getReaderWidthClass()}`}>
             {viewMode === 'study' && (
               <div className={`p-6 sm:p-12 rounded-3xl ${getThemeContainerClass()} min-h-[70vh]`}>
@@ -1811,7 +1875,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/30 flex items-center gap-1 cursor-pointer"
               title="Insert Clickable Video Timestamp (e.g. ⏱️ [12:34])"
             >
-              <Clock className="w-3 h-3" />
+              <Clock className="w-3.5 h-3.5" />
               <span>+ Timestamp</span>
             </button>
 
