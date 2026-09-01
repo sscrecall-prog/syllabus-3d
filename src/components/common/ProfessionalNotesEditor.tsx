@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Edit3,
   Eye,
@@ -18,6 +19,7 @@ import {
   MicOff,
   Image as ImageIcon,
   Maximize2,
+  Minimize2,
   Download,
   Trash2,
   X,
@@ -30,7 +32,12 @@ import {
   ListTodo,
   HelpCircle,
   SplitSquareVertical,
-  CheckCircle2
+  CheckCircle2,
+  Highlighter,
+  Type,
+  ZoomIn,
+  ZoomOut,
+  Maximize
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -54,6 +61,9 @@ interface ProfessionalNotesEditorProps {
   onDeleteImage?: (imageId: string) => void;
 }
 
+type ReaderFontSize = 'sm' | 'base' | 'lg' | 'xl';
+type ReaderWidth = 'normal' | 'wide' | 'full';
+
 export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = ({
   initialContent,
   topicName,
@@ -75,6 +85,20 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     return initialContent && initialContent.trim().length > 0 ? 'study' : 'edit';
   });
 
+  // Full Screen Reading Mode
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [readerFontSize, setReaderFontSize] = useState<ReaderFontSize>('base');
+  const [readerWidth, setReaderWidth] = useState<ReaderWidth>('normal');
+
+  // Text Selection Highlighter State
+  const [selectionTooltip, setSelectionTooltip] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    text: string;
+  }>({ visible: false, x: 0, y: 0, text: '' });
+  const [isHighlighterActive, setIsHighlighterActive] = useState(true);
+
   const [copied, setCopied] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
   const [aiFormattedNotice, setAiFormattedNotice] = useState(false);
@@ -91,6 +115,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const fileInputImageRef = useRef<HTMLInputElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstMount = useRef(true);
+  const notesContainerRef = useRef<HTMLDivElement>(null);
 
   // Debounced Auto-Save
   useEffect(() => {
@@ -117,7 +142,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     };
   }, [content, onSave]);
 
-  // Keyboard shortcut Ctrl+S / Cmd+S for instant manual save
+  // Keyboard shortcut Ctrl+S (Save), ESC (Exit Fullscreen), F11 / Alt+F (Toggle Fullscreen)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -129,12 +154,72 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
         setTimeout(() => setSaveSuccess(false), 2000);
       }
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+        soundManager.playClick();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [content, onSave]);
+  }, [content, onSave, isFullscreen]);
 
-  // Compress image before embedding to keep storage lightweight
+  // Handle Text Selection for Floating Highlighter
+  const handleMouseUpSelection = () => {
+    if (!isHighlighterActive) return;
+    
+    // Give browser small microtask to finalize range
+    setTimeout(() => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) {
+        setSelectionTooltip(prev => (prev.visible ? { ...prev, visible: false } : prev));
+        return;
+      }
+      const text = sel.toString().trim();
+      if (!text || text.length < 2) {
+        setSelectionTooltip(prev => (prev.visible ? { ...prev, visible: false } : prev));
+        return;
+      }
+
+      try {
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        if (rect && rect.width > 0) {
+          setSelectionTooltip({
+            visible: true,
+            x: Math.max(12, rect.left + rect.width / 2),
+            y: Math.max(10, rect.top - 8),
+            text
+          });
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 10);
+  };
+
+  const applyHighlight = (colorPrefix: '' | 'g:' | 'p:' | 'b:' | 'r:') => {
+    const text = selectionTooltip.text;
+    if (!text) return;
+
+    soundManager.playCompleteChime();
+    const tag = `==${colorPrefix}${text}==`;
+
+    if (content.includes(text)) {
+      const updated = content.replace(text, tag);
+      setContent(updated);
+      onSave(updated);
+    } else {
+      // Fallback: append or insert in markdown
+      const updated = content + `\n${tag}`;
+      setContent(updated);
+      onSave(updated);
+    }
+
+    setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' });
+    window.getSelection()?.removeAllRanges();
+  };
+
+  // Compress image before embedding
   const compressAndReadImage = (file: File | Blob): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -425,7 +510,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     soundManager.playClick();
   };
 
-  // Rich Inline Markdown Parser (handles **bold**, *italic*, `code`, ==highlight==, ~~del~~, $math$, and timestamps)
+  // Rich Inline Markdown Parser with Multi-color Highlighters
   const parseInlineMarkdown = (text: string, keyPrefix: string = 'inline'): React.ReactNode[] => {
     if (!text) return [];
 
@@ -463,14 +548,32 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </code>
         );
       }
-      // Highlight
+      // Multi-Color Highlights (==text==, ==g:text==, ==p:text==, ==b:text==, ==r:text==)
       if (part.startsWith('==') && part.endsWith('==') && part.length >= 4) {
+        const rawInner = part.slice(2, -2);
+        let colorClass = 'bg-yellow-300/80 dark:bg-yellow-400/35 text-slate-950 dark:text-yellow-100 border-b-2 border-yellow-500/50';
+        let highlightText = rawInner;
+
+        if (rawInner.startsWith('g:')) {
+          colorClass = 'bg-emerald-300/80 dark:bg-emerald-500/35 text-slate-950 dark:text-emerald-100 border-b-2 border-emerald-500/50';
+          highlightText = rawInner.slice(2);
+        } else if (rawInner.startsWith('p:')) {
+          colorClass = 'bg-purple-300/80 dark:bg-purple-500/35 text-slate-950 dark:text-purple-100 border-b-2 border-purple-500/50';
+          highlightText = rawInner.slice(2);
+        } else if (rawInner.startsWith('b:')) {
+          colorClass = 'bg-sky-300/80 dark:bg-sky-500/35 text-slate-950 dark:text-sky-100 border-b-2 border-sky-500/50';
+          highlightText = rawInner.slice(2);
+        } else if (rawInner.startsWith('r:')) {
+          colorClass = 'bg-rose-300/80 dark:bg-rose-500/35 text-slate-950 dark:text-rose-100 border-b-2 border-rose-500/50';
+          highlightText = rawInner.slice(2);
+        }
+
         return (
           <mark
             key={k}
-            className="bg-yellow-200/90 dark:bg-yellow-500/30 text-slate-900 dark:text-yellow-200 px-1.5 py-0.5 mx-0.5 rounded-md font-semibold"
+            className={`${colorClass} px-1.5 py-0.5 mx-0.5 rounded font-bold shadow-xs transition-colors`}
           >
-            {part.slice(2, -2)}
+            {highlightText}
           </mark>
         );
       }
@@ -527,7 +630,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   };
 
   // Custom Markdown, Tables & Callout Parser
-  const renderFormattedNotes = () => {
+  const renderFormattedNotes = (fontSizeClass: string = 'text-xs sm:text-sm') => {
     if ((!content || content.trim().length === 0) && (!images || images.length === 0)) {
       return (
         <div className="py-12 px-4 text-center space-y-4 select-none">
@@ -753,9 +856,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <h1
             key={i}
-            className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-6 mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 font-serif"
+            className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-6 mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 font-serif"
           >
-            <span className="w-1.5 h-5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] inline-block shrink-0" />
+            <span className="w-1.5 h-6 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] inline-block shrink-0" />
             <span>{parseInlineMarkdown(line.replace('# ', ''), `h1-${i}`)}</span>
           </h1>
         );
@@ -763,9 +866,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <h2
             key={i}
-            className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white mt-5 mb-2 flex items-center gap-2 font-serif"
+            className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white mt-5 mb-2 flex items-center gap-2 font-serif"
           >
-            <span className="w-1.5 h-4 rounded-full bg-purple-500 inline-block shrink-0" />
+            <span className="w-1.5 h-5 rounded-full bg-purple-500 inline-block shrink-0" />
             <span>{parseInlineMarkdown(line.replace('## ', ''), `h2-${i}`)}</span>
           </h2>
         );
@@ -773,7 +876,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <h3
             key={i}
-            className="text-xs sm:text-sm font-black text-[#596B35] dark:text-[#7AA2F7] mt-4 mb-1.5 uppercase tracking-wider font-mono flex items-center gap-1.5"
+            className="text-xs sm:text-base font-black text-[#596B35] dark:text-[#7AA2F7] mt-4 mb-1.5 uppercase tracking-wider font-mono flex items-center gap-1.5"
           >
             <span>▶</span>
             <span>{parseInlineMarkdown(line.replace('### ', ''), `h3-${i}`)}</span>
@@ -790,22 +893,22 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           <div
             key={i}
             onClick={() => toggleCheckboxInText(currentTaskIdx)}
-            className={`flex items-center gap-3 p-2 sm:p-2.5 my-1 rounded-xl cursor-pointer transition-all active:scale-[0.99] ${
+            className={`flex items-center gap-3 p-2.5 sm:p-3 my-1.5 rounded-xl cursor-pointer transition-all active:scale-[0.99] ${
               isDone
                 ? 'bg-emerald-500/10 text-slate-400 line-through'
                 : 'bg-white dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-[#D8D8CF]/60 dark:border-[#272730]'
             }`}
           >
             <div
-              className={`w-4.5 h-4.5 rounded-lg flex items-center justify-center border transition-all shrink-0 ${
+              className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all shrink-0 ${
                 isDone
                   ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
                   : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
               }`}
             >
-              {isDone && <Check className="w-3 h-3 stroke-[3]" />}
+              {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </div>
-            <span className="text-xs font-semibold leading-relaxed">
+            <span className={`${fontSizeClass} font-semibold leading-relaxed`}>
               {parseInlineMarkdown(taskText, `task-${i}`)}
             </span>
           </div>
@@ -816,8 +919,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         const rawBullet = line.trim().substring(2);
         elements.push(
           <div key={i} className="flex items-start gap-2.5 my-1.5 pl-1 leading-relaxed">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-2 shrink-0" />
-            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-2.5 shrink-0" />
+            <div className={`${fontSizeClass} text-slate-700 dark:text-slate-300 font-medium`}>
               {parseInlineMarkdown(rawBullet, `bullet-${i}`)}
             </div>
           </div>
@@ -834,7 +937,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <span className="px-1.5 py-0.2 rounded-md bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] text-[10px] font-mono font-bold mt-0.5 shrink-0">
               {num}.
             </span>
-            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">
+            <div className={`${fontSizeClass} text-slate-700 dark:text-slate-300 font-medium`}>
               {parseInlineMarkdown(numText, `num-${i}`)}
             </div>
           </div>
@@ -856,14 +959,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <div
             key={i}
-            className="my-3 max-w-xl rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] bg-[#141418] shadow-md group"
+            className="my-3 max-w-2xl rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] bg-[#141418] shadow-md group"
           >
             <div className="relative">
               <img
                 src={imgSrc}
                 alt={altText}
                 onClick={() => setZoomImage({ src: imgSrc, title: altText })}
-                className="w-full max-h-80 object-contain cursor-zoom-in hover:opacity-95 transition-opacity"
+                className="w-full max-h-96 object-contain cursor-zoom-in hover:opacity-95 transition-opacity"
                 loading="lazy"
               />
               <button
@@ -894,7 +997,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       // 11. Regular Paragraph with inline formatting
       else {
         elements.push(
-          <p key={i} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans my-1">
+          <p key={i} className={`${fontSizeClass} text-slate-700 dark:text-slate-300 leading-relaxed font-sans my-1`}>
             {parseInlineMarkdown(line, `p-${i}`)}
           </p>
         );
@@ -909,8 +1012,305 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const wordCount = content.trim().length > 0 ? content.trim().split(/\s+/).length : 0;
   const charCount = content.length;
 
+  const getFontSizeClass = () => {
+    switch (readerFontSize) {
+      case 'sm':
+        return 'text-xs sm:text-xs leading-relaxed';
+      case 'base':
+        return 'text-xs sm:text-sm leading-relaxed';
+      case 'lg':
+        return 'text-sm sm:text-base leading-relaxed';
+      case 'xl':
+        return 'text-base sm:text-lg leading-loose';
+      default:
+        return 'text-xs sm:text-sm leading-relaxed';
+    }
+  };
+
+  const getReaderWidthClass = () => {
+    switch (readerWidth) {
+      case 'normal':
+        return 'max-w-3xl';
+      case 'wide':
+        return 'max-w-5xl';
+      case 'full':
+        return 'max-w-7xl';
+      default:
+        return 'max-w-3xl';
+    }
+  };
+
+  // ----------------------------------------------------------------------------------
+  // RENDER FLOATING TEXT HIGHLIGHTER TOOLTIP
+  // ----------------------------------------------------------------------------------
+  const renderFloatingHighlighter = () => {
+    if (!selectionTooltip.visible || !isHighlighterActive) return null;
+
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          left: `${selectionTooltip.x}px`,
+          top: `${selectionTooltip.y}px`,
+          transform: 'translate(-50%, -100%)',
+          zIndex: 9999
+        }}
+        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#11120F] dark:bg-[#1C1D26] text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
+        onMouseDown={e => e.preventDefault()}
+      >
+        <span className="text-[10px] font-bold text-[#A1A1B2] px-1 font-mono flex items-center gap-1">
+          <Highlighter className="w-3 h-3 text-amber-400" />
+          <span>Highlight:</span>
+        </span>
+
+        {/* 🟡 Yellow Highlight */}
+        <button
+          type="button"
+          onClick={() => applyHighlight('')}
+          className="w-5 h-5 rounded-full bg-yellow-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          title="Yellow Highlight (==text==)"
+        />
+
+        {/* 🟢 Green Highlight */}
+        <button
+          type="button"
+          onClick={() => applyHighlight('g:')}
+          className="w-5 h-5 rounded-full bg-emerald-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          title="Green Highlight (==g:text==)"
+        />
+
+        {/* 🟣 Purple Highlight */}
+        <button
+          type="button"
+          onClick={() => applyHighlight('p:')}
+          className="w-5 h-5 rounded-full bg-purple-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          title="Purple Highlight (==p:text==)"
+        />
+
+        {/* 🔵 Blue Highlight */}
+        <button
+          type="button"
+          onClick={() => applyHighlight('b:')}
+          className="w-5 h-5 rounded-full bg-sky-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          title="Blue Highlight (==b:text==)"
+        />
+
+        {/* 🔴 Rose Highlight */}
+        <button
+          type="button"
+          onClick={() => applyHighlight('r:')}
+          className="w-5 h-5 rounded-full bg-rose-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          title="Rose Highlight (==r:text==)"
+        />
+
+        <button
+          type="button"
+          onClick={() => setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' })}
+          className="p-0.5 text-slate-400 hover:text-white rounded hover:bg-white/10 ml-0.5"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    );
+  };
+
+  // ----------------------------------------------------------------------------------
+  // FULL SCREEN IMMERSIVE READING EXPERIENCE MODAL
+  // ----------------------------------------------------------------------------------
+  const renderFullScreenReaderModal = () => {
+    if (!isFullscreen) return null;
+
+    return createPortal(
+      <div
+        className="fixed inset-0 z-[150] bg-[#FAF8F5] dark:bg-[#0B0B0E] text-[#11120F] dark:text-[#F5F5F7] flex flex-col select-none animate-fade-in font-sans"
+        onMouseUp={handleMouseUpSelection}
+      >
+        {/* Fullscreen Zen Header Bar */}
+        <div className="px-4 sm:px-6 py-3 border-b border-[#D8D8CF] dark:border-[#272730] bg-white/80 dark:bg-[#12131C]/90 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 shadow-xs">
+          {/* Breadcrumb & Title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] truncate font-mono">
+                <span>{subjectName || 'Subject'}</span>
+                <span>•</span>
+                <span className="truncate">{chapterName || 'Chapter'}</span>
+              </div>
+              <h2 className="text-sm sm:text-base font-black truncate font-serif">
+                {topicName}
+              </h2>
+            </div>
+          </div>
+
+          {/* Reader View & Customization Controls */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* View Mode Switcher */}
+            <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730]">
+              <button
+                type="button"
+                onClick={() => setViewMode('study')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === 'study'
+                    ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black shadow-xs'
+                    : 'text-[#65675F] dark:text-[#85877E]'
+                }`}
+              >
+                Study View
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('edit')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === 'edit'
+                    ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black shadow-xs'
+                    : 'text-[#65675F] dark:text-[#85877E]'
+                }`}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('split')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === 'split'
+                    ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black shadow-xs'
+                    : 'text-[#65675F] dark:text-[#85877E]'
+                }`}
+              >
+                Split
+              </button>
+            </div>
+
+            {/* Font Size Adjuster */}
+            <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+              <span className="text-[10px] text-[#85877E]">Size:</span>
+              {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setReaderFontSize(size)}
+                  className={`px-1.5 py-0.5 rounded uppercase ${
+                    readerFontSize === size
+                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
+                      : 'text-[#85877E] hover:text-[#11120F]'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            {/* Container Width Adjuster */}
+            <div className="hidden md:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+              <span className="text-[10px] text-[#85877E]">Width:</span>
+              {(['normal', 'wide', 'full'] as ReaderWidth[]).map(w => (
+                <button
+                  key={w}
+                  type="button"
+                  onClick={() => setReaderWidth(w)}
+                  className={`px-1.5 py-0.5 rounded capitalize ${
+                    readerWidth === w
+                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
+                      : 'text-[#85877E] hover:text-[#11120F]'
+                  }`}
+                >
+                  {w}
+                </button>
+              ))}
+            </div>
+
+            {/* Highlighter Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsHighlighterActive(prev => !prev)}
+              title="Toggle interactive text selection highlighter"
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                isHighlighterActive
+                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
+                  : 'bg-[#F7F6F0] dark:bg-[#1C1D26] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
+              }`}
+            >
+              <Highlighter className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Highlighter {isHighlighterActive ? 'ON' : 'OFF'}</span>
+            </button>
+
+            {/* PDF Export */}
+            <button
+              type="button"
+              onClick={handleExportPdf}
+              className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1C1D26] border border-[#D8D8CF] dark:border-[#272730] text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#596B35]/15 cursor-pointer"
+              title="Download / Print PDF"
+            >
+              <FileDown className="w-4 h-4" />
+            </button>
+
+            {/* Close / Exit Fullscreen */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setIsFullscreen(false);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-xs font-black transition-all cursor-pointer"
+              title="Exit Fullscreen (ESC)"
+            >
+              <Minimize2 className="w-3.5 h-3.5" />
+              <span>Exit Fullscreen</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Fullscreen Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
+          <div className={`mx-auto ${getReaderWidthClass()}`}>
+            {viewMode === 'study' && (
+              <div className="p-6 sm:p-10 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] shadow-xl min-h-[70vh]">
+                {renderFormattedNotes(getFontSizeClass())}
+              </div>
+            )}
+
+            {viewMode === 'edit' && (
+              <div className="space-y-3">
+                <textarea
+                  value={content}
+                  onChange={e => setContent(e.target.value)}
+                  onPaste={handlePaste}
+                  rows={24}
+                  className="w-full p-6 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] font-mono text-sm text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-xl"
+                />
+              </div>
+            )}
+
+            {viewMode === 'split' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <textarea
+                  value={content}
+                  onChange={e => setContent(e.target.value)}
+                  onPaste={handlePaste}
+                  rows={26}
+                  className="w-full p-5 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-xl"
+                />
+                <div className="p-6 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] shadow-xl overflow-y-auto max-h-[80vh] custom-scrollbar">
+                  {renderFormattedNotes(getFontSizeClass())}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {renderFloatingHighlighter()}
+      </div>,
+      document.body
+    );
+  };
+
+  // ----------------------------------------------------------------------------------
+  // MAIN COMPONENT JSX (Normal Drawer View)
+  // ----------------------------------------------------------------------------------
   return (
-    <div className="space-y-3" onPaste={handlePaste}>
+    <div className="space-y-3" onPaste={handlePaste} ref={notesContainerRef} onMouseUp={handleMouseUpSelection}>
       {/* 1. TOP MAIN CONTROL & VIEW SWITCHER BAR */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm">
         
@@ -969,6 +1369,38 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         {/* Action Buttons */}
         <div className="flex items-center gap-1.5 flex-wrap">
           
+          {/* 🔲 FULL SCREEN FOCUS READER BUTTON */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playCompleteChime();
+              setIsFullscreen(true);
+            }}
+            title="Open Fullscreen Immersive Reading Mode"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Maximize className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Full Screen Mode</span>
+          </button>
+
+          {/* 🖍️ Highlighter Toggle Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsHighlighterActive(prev => !prev);
+              soundManager.playClick();
+            }}
+            title="Toggle interactive text selection highlighter (Select any text to highlight)"
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+              isHighlighterActive
+                ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
+                : 'bg-white dark:bg-[#12131A] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
+            }`}
+          >
+            <Highlighter className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Highlight {isHighlighterActive ? 'ON' : 'OFF'}</span>
+          </button>
+
           {/* 1-Click Copy AI Prompt Button */}
           <button
             type="button"
@@ -1121,14 +1553,34 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             >
               I
             </button>
+            
+            {/* Highlighter Quick Insert Pill */}
             <button
               type="button"
-              onClick={() => insertText('==', '==', 'Highlighted Text')}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-yellow-400/20 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-400/30 border border-yellow-400/30"
-              title="Highlight (==text==)"
+              onClick={() => insertText('==', '==', 'Yellow Highlight')}
+              className="px-2 py-1 rounded-lg text-xs font-bold bg-yellow-400/25 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-400/35 border border-yellow-400/35 flex items-center gap-1"
+              title="Yellow Highlight (==text==)"
             >
-              ==HL==
+              <Highlighter className="w-3 h-3 text-yellow-500" />
+              <span>HL</span>
             </button>
+            <button
+              type="button"
+              onClick={() => insertText('==g:', '==', 'Green Highlight')}
+              className="px-1.5 py-1 rounded-lg text-xs font-bold bg-emerald-400/25 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-400/35 border border-emerald-400/35"
+              title="Green Highlight (==g:text==)"
+            >
+              🟢
+            </button>
+            <button
+              type="button"
+              onClick={() => insertText('==p:', '==', 'Purple Highlight')}
+              className="px-1.5 py-1 rounded-lg text-xs font-bold bg-purple-400/25 text-purple-800 dark:text-purple-300 hover:bg-purple-400/35 border border-purple-400/35"
+              title="Purple Highlight (==p:text==)"
+            >
+              🟣
+            </button>
+
             <button
               type="button"
               onClick={() => insertText('# ', '', 'Main Heading')}
@@ -1281,7 +1733,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             </div>
 
             <div className="flex items-center gap-2 text-[10px] text-purple-600 dark:text-purple-400 font-semibold font-mono">
-              <span>🤖 Gemini / ChatGPT paste supported</span>
+              <span>🖍️ Select text to highlight</span>
               <span>•</span>
               <span>📸 Ctrl+V Screenshot</span>
             </div>
@@ -1481,11 +1933,17 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         </div>
       )}
 
+      {/* Floating Selection Highlighter Tooltip in Study View */}
+      {renderFloatingHighlighter()}
+
+      {/* Fullscreen Zen Reader Experience */}
+      {renderFullScreenReaderModal()}
+
       {/* High-Res Image Zoom Lightbox Modal */}
       {zoomImage && (
         <div
           onClick={() => setZoomImage(null)}
-          className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+          className="fixed inset-0 z-[160] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
         >
           <div
             onClick={e => e.stopPropagation()}
