@@ -15,6 +15,11 @@ import {
   Check
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
+import {
+  PdfHighlight,
+  HighlightColor,
+  HIGHLIGHT_COLORS
+} from '../../utils/pdfHighlightStorage';
 
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
@@ -22,9 +27,11 @@ if (typeof window !== 'undefined') {
 }
 
 export type PdfFitMode = 'fit-width' | 'fit-page' | 'custom';
+export type HighlightToolType = 'area' | 'freehand' | 'eraser';
 
 interface PdfCanvasViewerProps {
   pdfUrl: string | null;
+  docId?: string;
   onLoadSuccess?: (totalPages: number) => void;
   className?: string;
   showInlineControls?: boolean;
@@ -33,10 +40,18 @@ interface PdfCanvasViewerProps {
   onScaleChange?: (newScale: number) => void;
   fitMode?: PdfFitMode;
   onFitModeChange?: (mode: PdfFitMode) => void;
+  // Highlighter props
+  isHighlightMode?: boolean;
+  highlightColor?: HighlightColor;
+  highlightTool?: HighlightToolType;
+  highlights?: PdfHighlight[];
+  onAddHighlight?: (highlight: PdfHighlight) => void;
+  onDeleteHighlight?: (highlightId: string) => void;
 }
 
 export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
   pdfUrl,
+  docId,
   onLoadSuccess,
   className = '',
   showInlineControls = false,
@@ -44,7 +59,13 @@ export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
   scale: propScale,
   onScaleChange,
   fitMode = 'fit-width',
-  onFitModeChange
+  onFitModeChange,
+  isHighlightMode = false,
+  highlightColor = 'yellow',
+  highlightTool = 'area',
+  highlights = [],
+  onAddHighlight,
+  onDeleteHighlight
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -312,6 +333,12 @@ export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
                   containerWidth={containerWidth}
                   containerHeight={containerHeight}
                   defaultAspect={defaultAspect}
+                  isHighlightMode={isHighlightMode}
+                  highlightColor={highlightColor}
+                  highlightTool={highlightTool}
+                  pageHighlights={highlights.filter(h => h.pageNum === pageNum)}
+                  onAddHighlight={onAddHighlight}
+                  onDeleteHighlight={onDeleteHighlight}
                 />
                 {fitMode === 'fit-width' && idx < numPages - 1 && (
                   <div className="w-full h-1 bg-[#1A1B26] border-y border-[#292E42]/50 shrink-0" />
@@ -334,6 +361,12 @@ interface PdfPageItemProps {
   containerWidth: number;
   containerHeight: number;
   defaultAspect: number;
+  isHighlightMode?: boolean;
+  highlightColor?: HighlightColor;
+  highlightTool?: HighlightToolType;
+  pageHighlights: PdfHighlight[];
+  onAddHighlight?: (highlight: PdfHighlight) => void;
+  onDeleteHighlight?: (highlightId: string) => void;
 }
 
 const PdfPageItem: React.FC<PdfPageItemProps> = ({
@@ -344,15 +377,30 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
   rotation,
   containerWidth,
   containerHeight,
-  defaultAspect
+  defaultAspect,
+  isHighlightMode = false,
+  highlightColor = 'yellow',
+  highlightTool = 'area',
+  pageHighlights = [],
+  onAddHighlight,
+  onDeleteHighlight
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const renderTaskRef = useRef<any>(null);
   // Page 1 is ALWAYS immediately visible so opening is instant!
   const [isVisible, setIsVisible] = useState<boolean>(pageNum === 1);
   const [isRendering, setIsRendering] = useState<boolean>(true);
   const [pageAspect, setPageAspect] = useState<number>(defaultAspect);
+  const [renderedWidth, setRenderedWidth] = useState<number>(0);
+  const [renderedHeight, setRenderedHeight] = useState<number>(0);
+
+  // Active Drawing State
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
+  const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
+  const [freehandPoints, setFreehandPoints] = useState<Array<{ x: number; y: number }>>([]);
 
   // Lazy load using IntersectionObserver for pages > 1
   useEffect(() => {
@@ -427,10 +475,15 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
         if (!canvas || isCancelled) return;
 
         const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const displayW = Math.floor(viewport.width);
+        const displayH = Math.floor(viewport.height);
+
         canvas.width = Math.floor(viewport.width * dpr);
         canvas.height = Math.floor(viewport.height * dpr);
-        canvas.style.width = `${Math.floor(viewport.width)}px`;
-        canvas.style.height = `${Math.floor(viewport.height)}px`;
+        canvas.style.width = `${displayW}px`;
+        canvas.style.height = `${displayH}px`;
+        setRenderedWidth(displayW);
+        setRenderedHeight(displayH);
 
         const ctx = canvas.getContext('2d', { alpha: false });
         if (!ctx || isCancelled) return;
@@ -470,10 +523,89 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
     };
   }, [isVisible, pdfDoc, pageNum, scale, fitMode, rotation, containerWidth, containerHeight]);
 
+  // Coordinate helper relative to page
+  const getRelativeCoords = (clientX: number, clientY: number) => {
+    if (!svgRef.current) return { x: 0, y: 0 };
+    const rect = svgRef.current.getBoundingClientRect();
+    const x = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+    const y = Math.min(Math.max((clientY - rect.top) / rect.height, 0), 1);
+    return { x, y };
+  };
+
+  // Mouse / Touch Event Handlers for Highlighting
+  const handlePointerDown = (clientX: number, clientY: number) => {
+    if (!isHighlightMode) return;
+    const pt = getRelativeCoords(clientX, clientY);
+
+    if (highlightTool === 'eraser') return;
+
+    setIsDrawing(true);
+    if (highlightTool === 'area') {
+      setStartPoint(pt);
+      setCurrentPoint(pt);
+    } else if (highlightTool === 'freehand') {
+      setFreehandPoints([pt]);
+    }
+  };
+
+  const handlePointerMove = (clientX: number, clientY: number) => {
+    if (!isDrawing || !isHighlightMode) return;
+    const pt = getRelativeCoords(clientX, clientY);
+
+    if (highlightTool === 'area') {
+      setCurrentPoint(pt);
+    } else if (highlightTool === 'freehand') {
+      setFreehandPoints(prev => [...prev, pt]);
+    }
+  };
+
+  const handlePointerUp = () => {
+    if (!isDrawing) return;
+    setIsDrawing(false);
+
+    if (highlightTool === 'area' && startPoint && currentPoint) {
+      const minX = Math.min(startPoint.x, currentPoint.x);
+      const minY = Math.min(startPoint.y, currentPoint.y);
+      const width = Math.abs(currentPoint.x - startPoint.x);
+      const height = Math.abs(currentPoint.y - startPoint.y);
+
+      // Only save if meaningful size (not accidental micro click)
+      if (width > 0.015 && height > 0.008) {
+        const newHighlight: PdfHighlight = {
+          id: `hl_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          pageNum,
+          color: highlightColor,
+          type: 'rect',
+          rect: { x: minX, y: minY, width, height },
+          createdAt: new Date().toISOString()
+        };
+        onAddHighlight?.(newHighlight);
+        soundManager.playClick();
+      }
+    } else if (highlightTool === 'freehand' && freehandPoints.length > 2) {
+      const newHighlight: PdfHighlight = {
+        id: `hl_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        pageNum,
+        color: highlightColor,
+        type: 'freehand',
+        points: freehandPoints,
+        createdAt: new Date().toISOString()
+      };
+      onAddHighlight?.(newHighlight);
+      soundManager.playClick();
+    }
+
+    setStartPoint(null);
+    setCurrentPoint(null);
+    setFreehandPoints([]);
+  };
+
   // Estimate placeholder height
   const placeholderHeight = fitMode === 'fit-page'
     ? Math.min(containerHeight - 40, (containerWidth - 32) * pageAspect) * scale
     : containerWidth * pageAspect * scale;
+
+  const activeColorMeta = HIGHLIGHT_COLORS[highlightColor] || HIGHLIGHT_COLORS.yellow;
 
   return (
     <div
@@ -488,14 +620,131 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
       }}
     >
       {isRendering && (
-        <div className="absolute inset-0 bg-[#1A1B26]/30 backdrop-blur-xs flex items-center justify-center text-white z-10">
+        <div className="absolute inset-0 bg-[#1A1B26]/30 backdrop-blur-xs flex items-center justify-center text-white z-10 pointer-events-none">
           <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#1A1B26]/90 border border-[#292E42] text-[#7AA2F7] shadow-xl">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-[#7AA2F7]" />
             <span>Page {pageNum}</span>
           </div>
         </div>
       )}
-      <canvas ref={canvasRef} className="block mx-auto max-w-full" />
+
+      {/* Page Canvas Container with Synchronized Highlight Layer */}
+      <div
+        className="relative mx-auto max-w-full"
+        style={{
+          width: renderedWidth > 0 ? `${renderedWidth}px` : 'auto',
+          height: renderedHeight > 0 ? `${renderedHeight}px` : 'auto'
+        }}
+      >
+        <canvas ref={canvasRef} className="block max-w-full" />
+
+        {/* Interactive SVG Highlight & Annotation Layer */}
+        {renderedWidth > 0 && renderedHeight > 0 && (
+          <svg
+            ref={svgRef}
+            className={`absolute inset-0 w-full h-full ${
+              isHighlightMode
+                ? highlightTool === 'eraser'
+                  ? 'cursor-pointer pointer-events-auto'
+                  : 'cursor-crosshair pointer-events-auto'
+                : 'pointer-events-auto'
+            }`}
+            onMouseDown={e => handlePointerDown(e.clientX, e.clientY)}
+            onMouseMove={e => handlePointerMove(e.clientX, e.clientY)}
+            onMouseUp={handlePointerUp}
+            onMouseLeave={handlePointerUp}
+            onTouchStart={e => {
+              if (e.touches.length === 1 && isHighlightMode) {
+                handlePointerDown(e.touches[0].clientX, e.touches[0].clientY);
+              }
+            }}
+            onTouchMove={e => {
+              if (e.touches.length === 1 && isDrawing && isHighlightMode) {
+                handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+              }
+            }}
+            onTouchEnd={handlePointerUp}
+          >
+            {/* 1. Saved Highlights on this Page */}
+            {pageHighlights.map(h => {
+              const colorInfo = HIGHLIGHT_COLORS[h.color] || HIGHLIGHT_COLORS.yellow;
+              return (
+                <g
+                  key={h.id}
+                  onClick={(e) => {
+                    if (highlightTool === 'eraser' || isHighlightMode) {
+                      e.stopPropagation();
+                      onDeleteHighlight?.(h.id);
+                      soundManager.playClick();
+                    }
+                  }}
+                  className={`group transition-opacity ${
+                    isHighlightMode ? 'cursor-pointer hover:opacity-70' : 'pointer-events-none'
+                  }`}
+                >
+                  {h.type === 'rect' && h.rect && (
+                    <rect
+                      x={`${h.rect.x * 100}%`}
+                      y={`${h.rect.y * 100}%`}
+                      width={`${h.rect.width * 100}%`}
+                      height={`${h.rect.height * 100}%`}
+                      fill={colorInfo.hex}
+                      fillOpacity={0.38}
+                      stroke={colorInfo.border}
+                      strokeWidth={1}
+                      rx={3}
+                      style={{ mixBlendMode: 'multiply' }}
+                    />
+                  )}
+                  {h.type === 'freehand' && h.points && (
+                    <polyline
+                      points={h.points.map(p => `${p.x * renderedWidth},${p.y * renderedHeight}`).join(' ')}
+                      fill="none"
+                      stroke={colorInfo.hex}
+                      strokeWidth={Math.max(14, 18 * scale)}
+                      strokeOpacity={0.42}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{ mixBlendMode: 'multiply' }}
+                    />
+                  )}
+                </g>
+              );
+            })}
+
+            {/* 2. Active Highlight Drawing Preview */}
+            {isDrawing && highlightTool === 'area' && startPoint && currentPoint && (
+              <rect
+                x={`${Math.min(startPoint.x, currentPoint.x) * 100}%`}
+                y={`${Math.min(startPoint.y, currentPoint.y) * 100}%`}
+                width={`${Math.abs(currentPoint.x - startPoint.x) * 100}%`}
+                height={`${Math.abs(currentPoint.y - startPoint.y) * 100}%`}
+                fill={activeColorMeta.hex}
+                fillOpacity={0.45}
+                stroke={activeColorMeta.border}
+                strokeWidth={1.5}
+                strokeDasharray="3 3"
+                rx={3}
+                style={{ mixBlendMode: 'multiply' }}
+              />
+            )}
+
+            {isDrawing && highlightTool === 'freehand' && freehandPoints.length > 1 && (
+              <polyline
+                points={freehandPoints.map(p => `${p.x * renderedWidth},${p.y * renderedHeight}`).join(' ')}
+                fill="none"
+                stroke={activeColorMeta.hex}
+                strokeWidth={Math.max(14, 18 * scale)}
+                strokeOpacity={0.48}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ mixBlendMode: 'multiply' }}
+              />
+            )}
+          </svg>
+        )}
+      </div>
     </div>
   );
 };
+

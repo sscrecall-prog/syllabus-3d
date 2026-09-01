@@ -15,12 +15,28 @@ import {
   AlertCircle,
   Expand,
   Shrink,
-  Check
+  Check,
+  Highlighter,
+  Square,
+  PenTool,
+  Eraser,
+  RotateCcw,
+  Trash2,
+  Sparkles,
+  Palette
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
-import { PdfCanvasViewer, PdfFitMode } from './PdfCanvasViewer';
+import { PdfCanvasViewer, PdfFitMode, HighlightToolType } from './PdfCanvasViewer';
+import {
+  PdfHighlight,
+  HighlightColor,
+  HIGHLIGHT_COLORS,
+  loadPdfHighlights,
+  savePdfHighlights,
+  clearPdfHighlights
+} from '../../utils/pdfHighlightStorage';
 
 interface InAppPdfReaderModalProps {
   isOpen: boolean;
@@ -56,6 +72,13 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   const [fitMode, setFitMode] = useState<PdfFitMode>('fit-width');
   const [showZoomDropdown, setShowZoomDropdown] = useState<boolean>(false);
 
+  // Highlighter State
+  const [isHighlightMode, setIsHighlightMode] = useState<boolean>(false);
+  const [highlightColor, setHighlightColor] = useState<HighlightColor>('yellow');
+  const [highlightTool, setHighlightTool] = useState<HighlightToolType>('area');
+  const [highlights, setHighlights] = useState<PdfHighlight[]>([]);
+  const [showColorPalette, setShowColorPalette] = useState<boolean>(false);
+
   // Sync selected attachment when initialAttachmentId changes
   useEffect(() => {
     if (initialAttachmentId) {
@@ -64,6 +87,14 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
       setSelectedAttachmentId(attachments[0].id);
     }
   }, [initialAttachmentId, attachments]);
+
+  // Load Saved Highlights when attachment changes
+  useEffect(() => {
+    if (selectedAttachmentId) {
+      const loaded = loadPdfHighlights(selectedAttachmentId);
+      setHighlights(loaded);
+    }
+  }, [selectedAttachmentId]);
 
   // Load PDF Blob when selected attachment changes
   useEffect(() => {
@@ -117,7 +148,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
     };
   }, [isOpen, selectedAttachmentId, attachments]);
 
-  // Keyboard shortcut listener (ESC to go back)
+  // Keyboard shortcut listener (ESC to go back, H to toggle highlighter, Ctrl+Z to undo)
   useEffect(() => {
     if (!isOpen) return;
 
@@ -125,12 +156,57 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
       if (e.key === 'Escape') {
         soundManager.playClick();
         onClose();
+      } else if (e.key === 'h' || e.key === 'H') {
+        // Toggle highlight mode if not focusing an input
+        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          soundManager.playClick();
+          setIsHighlightMode(prev => !prev);
+        }
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+        // Undo last highlight
+        handleUndoHighlight();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, highlights, selectedAttachmentId]);
+
+  // Highlighter Handlers
+  const handleAddHighlight = (newHighlight: PdfHighlight) => {
+    setHighlights(prev => {
+      const updated = [...prev, newHighlight];
+      savePdfHighlights(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleDeleteHighlight = (highlightId: string) => {
+    setHighlights(prev => {
+      const updated = prev.filter(h => h.id !== highlightId);
+      savePdfHighlights(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleUndoHighlight = () => {
+    if (highlights.length === 0) return;
+    soundManager.playClick();
+    setHighlights(prev => {
+      const updated = prev.slice(0, -1);
+      savePdfHighlights(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleClearAllHighlights = () => {
+    if (highlights.length === 0) return;
+    if (confirm('Clear all highlights on this document?')) {
+      soundManager.playClick();
+      clearPdfHighlights(selectedAttachmentId);
+      setHighlights([]);
+    }
+  };
 
   // Fullscreen API toggle
   const toggleFullscreen = () => {
@@ -221,9 +297,34 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
           </div>
         )}
 
-        {/* Right Action Tools: Chrome Fit Mode, Zoom, Split Study, Download & Close */}
+        {/* Right Action Tools: Highlighter, Chrome Fit Mode, Zoom, Split Study, Download & Close */}
         <div className="flex items-center gap-1.5 shrink-0">
           
+          {/* HIGHLIGHTER MAIN TOGGLE */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setIsHighlightMode(prev => !prev);
+            }}
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
+              isHighlightMode
+                ? 'bg-amber-400 text-[#12131A] border-amber-300 font-black shadow-[0_0_18px_rgba(251,191,36,0.5)]'
+                : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
+            }`}
+            title="Toggle PDF Highlighter (Shortcut: H)"
+          >
+            <Highlighter className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+            <span className="hidden sm:inline">Highlight</span>
+            {highlights.length > 0 && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+                isHighlightMode ? 'bg-[#12131A] text-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+              }`}>
+                {highlights.length}
+              </span>
+            )}
+          </button>
+
           {/* CHROME-STYLE FIT TO PAGE / FIT TO WIDTH TOGGLE */}
           <button
             type="button"
@@ -370,7 +471,130 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         </div>
       </div>
 
-      {/* 2. PURE FULLSCREEN PDF CANVAS VIEWER */}
+      {/* 2. DEDICATED HIGHLIGHTER PALETTE SUB-TOOLBAR (VISIBLE WHEN HIGHLIGHTER ACTIVE) */}
+      {isHighlightMode && (
+        <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-[#181A28] via-[#1F2335] to-[#181A28] border-b border-amber-500/30 flex items-center justify-between gap-3 shrink-0 z-25 shadow-lg animate-fade-in flex-wrap">
+          
+          {/* Left: Color Palette Picker */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Color:</span>
+            </span>
+
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#141520] border border-[#2E3147]">
+              {(['yellow', 'green', 'pink', 'cyan', 'purple'] as HighlightColor[]).map(c => {
+                const colorMeta = HIGHLIGHT_COLORS[c];
+                const isSelected = highlightColor === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      soundManager.playClick();
+                      setHighlightColor(c);
+                    }}
+                    style={{ backgroundColor: colorMeta.hex }}
+                    className={`w-6 h-6 rounded-lg transition-all cursor-pointer relative flex items-center justify-center ${
+                      isSelected
+                        ? 'scale-115 ring-2 ring-white ring-offset-2 ring-offset-[#141520] shadow-[0_0_12px_rgba(255,255,255,0.4)]'
+                        : 'opacity-70 hover:opacity-100 hover:scale-105'
+                    }`}
+                    title={colorMeta.label}
+                  >
+                    {isSelected && <Check className="w-3.5 h-3.5 text-[#141520] stroke-[3]" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Center: Highlight Tool Selector (Box Area vs Freehand vs Eraser) */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#141520] border border-[#2E3147]">
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setHighlightTool('area');
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                highlightTool === 'area'
+                  ? 'bg-amber-400 text-[#12131A] shadow-sm font-black'
+                  : 'text-[#A9B1D6] hover:text-white hover:bg-white/5'
+              }`}
+              title="Box / Area Highlighter (Click & drag over formulas, paragraphs, questions)"
+            >
+              <Square className="w-3.5 h-3.5" />
+              <span>Box Area</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setHighlightTool('freehand');
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                highlightTool === 'freehand'
+                  ? 'bg-amber-400 text-[#12131A] shadow-sm font-black'
+                  : 'text-[#A9B1D6] hover:text-white hover:bg-white/5'
+              }`}
+              title="Freehand Pen (Draw smooth highlight strokes or circles)"
+            >
+              <PenTool className="w-3.5 h-3.5" />
+              <span>Freehand</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setHighlightTool('eraser');
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                highlightTool === 'eraser'
+                  ? 'bg-rose-500 text-white shadow-sm font-black'
+                  : 'text-[#A9B1D6] hover:text-rose-300 hover:bg-white/5'
+              }`}
+              title="Eraser Mode (Click any highlight to remove it)"
+            >
+              <Eraser className="w-3.5 h-3.5" />
+              <span>Eraser</span>
+            </button>
+          </div>
+
+          {/* Right: Undo, Clear All & Stats */}
+          <div className="flex items-center gap-1.5 text-xs">
+            <button
+              type="button"
+              disabled={highlights.length === 0}
+              onClick={handleUndoHighlight}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#24283B] hover:bg-[#2F354D] disabled:opacity-40 text-[#A9B1D6] hover:text-white border border-[#292E42] cursor-pointer transition-all active:scale-95"
+              title="Undo last highlight (Ctrl+Z)"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Undo</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={highlights.length === 0}
+              onClick={handleClearAllHighlights}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 disabled:opacity-40 text-rose-400 border border-rose-500/20 cursor-pointer transition-all active:scale-95"
+              title="Clear all highlights"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Clear All</span>
+            </button>
+
+            <span className="px-2 py-0.5 rounded-lg bg-amber-500/15 border border-amber-500/25 font-mono text-[11px] font-bold text-amber-300">
+              {highlights.length} Highlights
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 3. PURE FULLSCREEN PDF CANVAS VIEWER */}
       <div className="flex-1 relative min-h-0 bg-[#16161E] flex flex-col overflow-hidden" onClick={() => setShowZoomDropdown(false)}>
         {isLoading ? (
           <div className="m-auto flex flex-col items-center gap-3.5 text-center p-6">
@@ -400,6 +624,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         ) : pdfBlobUrl ? (
           <PdfCanvasViewer
             pdfUrl={pdfBlobUrl}
+            docId={selectedAttachmentId}
             scale={scale}
             onScaleChange={setScale}
             fitMode={fitMode}
@@ -409,6 +634,12 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               setCurrentPage(page);
               setTotalPages(total);
             }}
+            isHighlightMode={isHighlightMode}
+            highlightColor={highlightColor}
+            highlightTool={highlightTool}
+            highlights={highlights}
+            onAddHighlight={handleAddHighlight}
+            onDeleteHighlight={handleDeleteHighlight}
             showInlineControls={false}
             className="flex-1 min-h-0 w-full"
           />

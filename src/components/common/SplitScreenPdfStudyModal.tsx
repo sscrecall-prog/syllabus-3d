@@ -23,12 +23,24 @@ import {
   ChevronsLeftRight,
   RotateCcw,
   Image as ImageIcon,
-  Trash2
+  Trash2,
+  Highlighter,
+  Square,
+  PenTool,
+  Eraser
 } from 'lucide-react';
 import { TopicPdfAttachment, TopicImageAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
-import { PdfCanvasViewer } from './PdfCanvasViewer';
+import { PdfCanvasViewer, HighlightToolType } from './PdfCanvasViewer';
+import {
+  PdfHighlight,
+  HighlightColor,
+  HIGHLIGHT_COLORS,
+  loadPdfHighlights,
+  savePdfHighlights,
+  clearPdfHighlights
+} from '../../utils/pdfHighlightStorage';
 
 interface SplitScreenPdfStudyModalProps {
   isOpen: boolean;
@@ -64,6 +76,55 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   );
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+
+  // Highlighter State
+  const [isHighlightMode, setIsHighlightMode] = useState<boolean>(false);
+  const [highlightColor, setHighlightColor] = useState<HighlightColor>('yellow');
+  const [highlightTool, setHighlightTool] = useState<HighlightToolType>('area');
+  const [highlights, setHighlights] = useState<PdfHighlight[]>([]);
+
+  // Load Saved Highlights when attachment changes
+  useEffect(() => {
+    if (selectedAttachmentId) {
+      const loaded = loadPdfHighlights(selectedAttachmentId);
+      setHighlights(loaded);
+    }
+  }, [selectedAttachmentId]);
+
+  const handleAddHighlight = (newHighlight: PdfHighlight) => {
+    setHighlights(prev => {
+      const updated = [...prev, newHighlight];
+      savePdfHighlights(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleDeleteHighlight = (highlightId: string) => {
+    setHighlights(prev => {
+      const updated = prev.filter(h => h.id !== highlightId);
+      savePdfHighlights(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleUndoHighlight = () => {
+    if (highlights.length === 0) return;
+    soundManager.playClick();
+    setHighlights(prev => {
+      const updated = prev.slice(0, -1);
+      savePdfHighlights(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleClearAllHighlights = () => {
+    if (highlights.length === 0) return;
+    if (confirm('Clear all highlights on this document?')) {
+      soundManager.playClick();
+      clearPdfHighlights(selectedAttachmentId);
+      setHighlights([]);
+    }
+  };
 
   // Notes Editor State
   const [notesContent, setNotesContent] = useState(initialNotes || '');
@@ -406,6 +467,27 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
             <div className="flex items-center gap-1.5 shrink-0">
               {currentAttachment && (
                 <>
+                  {/* Highlighter Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playClick();
+                      setIsHighlightMode(prev => !prev);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                      isHighlightMode
+                        ? 'bg-amber-400 text-[#12131A] border-amber-300 font-black shadow-[0_0_12px_rgba(251,191,36,0.5)]'
+                        : 'bg-[#23232A] hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white border-[#272730]'
+                    }`}
+                    title="Toggle PDF Highlighter (H)"
+                  >
+                    <Highlighter className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Highlight</span>
+                    {highlights.length > 0 && (
+                      <span className="text-[10px] font-mono opacity-80">({highlights.length})</span>
+                    )}
+                  </button>
+
                   <button
                     type="button"
                     onClick={handleInsertCitation}
@@ -428,6 +510,99 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
             </div>
           </div>
 
+          {/* Sub-bar for Highlighter Palette when active in Split Screen */}
+          {isHighlightMode && (
+            <div className="px-3 py-1.5 bg-[#14151F] border-b border-amber-500/30 flex items-center justify-between gap-2 shrink-0 z-10 flex-wrap text-xs">
+              <div className="flex items-center gap-1.5">
+                {(['yellow', 'green', 'pink', 'cyan', 'purple'] as HighlightColor[]).map(c => {
+                  const colorMeta = HIGHLIGHT_COLORS[c];
+                  const isSelected = highlightColor === c;
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        setHighlightColor(c);
+                      }}
+                      style={{ backgroundColor: colorMeta.hex }}
+                      className={`w-5 h-5 rounded-md transition-all cursor-pointer flex items-center justify-center ${
+                        isSelected ? 'scale-110 ring-2 ring-white shadow-sm' : 'opacity-70 hover:opacity-100'
+                      }`}
+                      title={colorMeta.label}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setHighlightTool('area');
+                  }}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                    highlightTool === 'area' ? 'bg-amber-400 text-black font-black' : 'text-[#A1A1AA] hover:text-white'
+                  }`}
+                  title="Box Area Highlight"
+                >
+                  <Square className="w-3 h-3 inline mr-1" />
+                  Box
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setHighlightTool('freehand');
+                  }}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                    highlightTool === 'freehand' ? 'bg-amber-400 text-black font-black' : 'text-[#A1A1AA] hover:text-white'
+                  }`}
+                  title="Freehand Pen"
+                >
+                  <PenTool className="w-3 h-3 inline mr-1" />
+                  Draw
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setHighlightTool('eraser');
+                  }}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                    highlightTool === 'eraser' ? 'bg-rose-500 text-white font-black' : 'text-[#A1A1AA] hover:text-rose-300'
+                  }`}
+                  title="Eraser"
+                >
+                  <Eraser className="w-3 h-3 inline mr-1" />
+                  Eraser
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  disabled={highlights.length === 0}
+                  onClick={handleUndoHighlight}
+                  className="px-2 py-0.5 rounded bg-[#23232A] hover:bg-[#2E2E38] disabled:opacity-40 text-[#A1A1AA] text-[11px]"
+                  title="Undo"
+                >
+                  <RotateCcw className="w-3 h-3 inline" />
+                </button>
+                <button
+                  type="button"
+                  disabled={highlights.length === 0}
+                  onClick={handleClearAllHighlights}
+                  className="px-2 py-0.5 rounded bg-rose-500/10 hover:bg-rose-500/20 disabled:opacity-40 text-rose-400 text-[11px]"
+                  title="Clear All"
+                >
+                  <Trash2 className="w-3 h-3 inline" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* PDF Canvas Viewer Frame */}
           <div className="flex-1 relative min-h-0 bg-[#0F0F12] flex flex-col">
             {isLoadingPdf ? (
@@ -436,7 +611,17 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                 <span className="text-xs text-[#A1A1AA] font-mono">Loading PDF Notes...</span>
               </div>
             ) : pdfBlobUrl ? (
-              <PdfCanvasViewer pdfUrl={pdfBlobUrl} className="flex-1 min-h-0" />
+              <PdfCanvasViewer
+                pdfUrl={pdfBlobUrl}
+                docId={selectedAttachmentId}
+                isHighlightMode={isHighlightMode}
+                highlightColor={highlightColor}
+                highlightTool={highlightTool}
+                highlights={highlights}
+                onAddHighlight={handleAddHighlight}
+                onDeleteHighlight={handleDeleteHighlight}
+                className="flex-1 min-h-0"
+              />
             ) : (
               <div className="m-auto text-center p-6 space-y-2">
                 <FileText className="w-10 h-10 text-[#383842] mx-auto" />
