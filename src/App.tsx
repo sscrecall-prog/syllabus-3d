@@ -78,7 +78,11 @@ export const App: React.FC = () => {
   // Navigate with History Push
   const handleNavigate = useCallback((newView: AppView) => {
     if (newView === currentView) return;
-    setViewHistory(prev => [...prev, currentView]);
+    if (newView === 'overview') {
+      setViewHistory([]);
+    } else {
+      setViewHistory(prev => [...prev, currentView]);
+    }
     window.history.pushState({ view: newView }, '');
     setCurrentView(newView);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -294,7 +298,7 @@ export const App: React.FC = () => {
           }}
           onOpenSettings={() => handleNavigate('settings')}
           onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
-          canGoBack={currentView !== 'overview' || viewHistory.length > 0 || selectedTopic !== null}
+          canGoBack={currentView !== 'overview'}
           onGoBack={handleBack}
         />
 
