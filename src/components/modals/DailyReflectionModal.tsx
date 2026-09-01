@@ -74,6 +74,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
     id: DailyMood;
     label: string;
     shortLabel: string;
+    emoji: string;
     icon: any;
     color: string;
     activeBg: string;
@@ -82,47 +83,52 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
     {
       id: 'fire',
       label: 'Unstoppable',
-      shortLabel: 'Fire 🔥',
+      shortLabel: 'Fire',
+      emoji: '🔥',
       icon: Flame,
       color: 'text-orange-400 border-orange-500/40',
       activeBg: 'bg-orange-500/25 border-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.4)] text-orange-300',
-      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-orange-400/80 hover:bg-orange-500/10 hover:border-orange-500/30'
+      inactiveBg: 'bg-[#161726] border-[#2B2E42] text-orange-400/80 hover:bg-orange-500/10'
     },
     {
       id: 'lightning',
       label: 'Productive',
-      shortLabel: 'Great ⚡',
+      shortLabel: 'Great',
+      emoji: '⚡',
       icon: Zap,
       color: 'text-amber-400 border-amber-500/40',
       activeBg: 'bg-amber-500/25 border-amber-400 shadow-[0_0_18px_rgba(245,158,11,0.4)] text-amber-300',
-      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-amber-400/80 hover:bg-amber-500/10 hover:border-amber-500/30'
+      inactiveBg: 'bg-[#161726] border-[#2B2E42] text-amber-400/80 hover:bg-amber-500/10'
     },
     {
       id: 'happy',
       label: 'Moderate',
-      shortLabel: 'Good 🙂',
+      shortLabel: 'Good',
+      emoji: '🙂',
       icon: Smile,
       color: 'text-emerald-400 border-emerald-500/40',
       activeBg: 'bg-emerald-500/25 border-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.4)] text-emerald-300',
-      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-emerald-400/80 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+      inactiveBg: 'bg-[#161726] border-[#2B2E42] text-emerald-400/80 hover:bg-emerald-500/10'
     },
     {
       id: 'tired',
       label: 'Distracted',
-      shortLabel: 'Lost 🥱',
+      shortLabel: 'Lost',
+      emoji: '🥱',
       icon: Coffee,
       color: 'text-sky-400 border-sky-500/40',
       activeBg: 'bg-sky-500/25 border-sky-400 shadow-[0_0_18px_rgba(56,189,248,0.4)] text-sky-300',
-      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-sky-400/80 hover:bg-sky-500/10 hover:border-sky-500/30'
+      inactiveBg: 'bg-[#161726] border-[#2B2E42] text-sky-400/80 hover:bg-sky-500/10'
     },
     {
       id: 'stressed',
       label: 'Low Energy',
-      shortLabel: 'Low 😴',
+      shortLabel: 'Low',
+      emoji: '😴',
       icon: BatteryLow,
       color: 'text-rose-400 border-rose-500/40',
       activeBg: 'bg-rose-500/25 border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.4)] text-rose-300',
-      inactiveBg: 'bg-[#181A26] border-[#2E3147] text-rose-400/80 hover:bg-rose-500/10 hover:border-rose-500/30'
+      inactiveBg: 'bg-[#161726] border-[#2B2E42] text-rose-400/80 hover:bg-rose-500/10'
     }
   ];
 
@@ -130,80 +136,86 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
     id: DistractionCategory;
     label: string;
     shortLabel: string;
+    emoji: string;
     activeStyle: string;
     inactiveStyle: string;
   }> = [
     {
       id: 'none',
       label: 'None - 100% Focused 🏆',
-      shortLabel: '🏆 100% Focused',
+      shortLabel: '100% Focused',
+      emoji: '🏆',
       activeStyle: 'bg-emerald-500/25 border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] font-bold',
-      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-emerald-400/80 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+      inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-emerald-400/80 hover:bg-emerald-500/10'
     },
     {
       id: 'social_media',
       label: 'Social Media / Reels 📱',
-      shortLabel: '📱 Social Media',
+      shortLabel: 'Social Media',
+      emoji: '📱',
       activeStyle: 'bg-rose-500/25 border-rose-400 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.3)] font-bold',
-      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-300'
+      inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-rose-500/10 hover:text-rose-300'
     },
     {
       id: 'youtube',
       label: 'YouTube Rabbit Hole 📺',
-      shortLabel: '📺 YouTube Trap',
+      shortLabel: 'YouTube Trap',
+      emoji: '📺',
       activeStyle: 'bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] font-bold',
-      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-cyan-500/10 hover:border-cyan-500/30 hover:text-cyan-300'
+      inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-cyan-500/10 hover:text-cyan-300'
     },
     {
       id: 'overthinking',
       label: 'Overthinking / Anxiety 🧠',
-      shortLabel: '🧠 Overthinking',
+      shortLabel: 'Overthinking',
+      emoji: '🧠',
       activeStyle: 'bg-purple-500/25 border-purple-400 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] font-bold',
-      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-purple-500/10 hover:border-purple-500/30 hover:text-purple-300'
+      inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-purple-500/10 hover:text-purple-300'
     },
     {
       id: 'fatigue',
       label: 'Sleepiness / Low Energy 🥱',
-      shortLabel: '🥱 Sleepiness',
+      shortLabel: 'Sleepiness',
+      emoji: '🥱',
       activeStyle: 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] font-bold',
-      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-amber-400/90 hover:bg-amber-500/10 hover:border-amber-500/30 hover:text-amber-300'
+      inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-amber-400/90 hover:bg-amber-500/10 hover:text-amber-300'
     },
     {
       id: 'other',
       label: 'Other Interruption ⚠️',
-      shortLabel: '⚠️ Other Distraction',
+      shortLabel: 'Other Interruption',
+      emoji: '⚠️',
       activeStyle: 'bg-indigo-500/25 border-indigo-400 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] font-bold',
-      inactiveStyle: 'bg-[#181A26] border-[#2E3147] text-[#C2C5D6] hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-300'
+      inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-indigo-500/10 hover:text-indigo-300'
     }
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-lg animate-fade-in select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
       <div
-        className="relative w-full max-w-xl rounded-2xl sm:rounded-3xl bg-[#0F101A] border border-[#2B2E42] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden animate-scale-up text-white flex flex-col max-h-[92vh] sm:max-h-[88vh]"
+        className="relative w-full max-w-lg rounded-2xl sm:rounded-3xl bg-[#0F101A] border border-[#2B2E42] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden animate-scale-up text-white flex flex-col max-h-[94vh] sm:max-h-[88vh]"
         onClick={e => e.stopPropagation()}
       >
-        {/* Top Glowing Header Banner */}
-        <div className="relative p-4 sm:p-6 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] overflow-hidden shrink-0">
+        {/* Top Glowing Header Banner - Compact & Responsive */}
+        <div className="relative p-3.5 sm:p-5 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] overflow-hidden shrink-0">
           {/* Ambient Glow Elements */}
-          <div className="absolute top-0 right-0 w-72 h-72 bg-purple-600/25 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="relative z-10 flex items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/20 text-white flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.4)] shrink-0">
-                <Moon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+          <div className="relative z-10 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/20 text-white flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] shrink-0">
+                <Moon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
                     DAY-END REFLECTION
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+                  <span className="text-[9px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
                     {todayKey}
                   </span>
                 </div>
-                <h3 className="text-sm sm:text-lg font-black font-serif uppercase tracking-tight text-white mt-0.5 truncate drop-shadow-sm">
+                <h3 className="text-xs sm:text-base font-black font-serif uppercase tracking-tight text-white mt-0.5 truncate drop-shadow-sm">
                   1-Minute Night Study Journal
                 </h3>
               </div>
@@ -234,12 +246,12 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           </div>
 
           {/* Today's Target Stats Pill Strip */}
-          <div className="relative z-10 flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-white/10 text-[11px] sm:text-xs font-mono">
+          <div className="relative z-10 flex items-center justify-between gap-2 mt-2.5 pt-2 border-t border-white/10 text-[10px] sm:text-xs font-mono">
             <div className="flex items-center gap-1.5 text-[#D1D5E8]">
-              <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate">Top 3 Non-Negotiables:</span>
+              <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">Top 3 Targets:</span>
             </div>
-            <span className="font-extrabold text-amber-300 bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-500/30 shrink-0">
+            <span className="font-extrabold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 shrink-0 text-[10px]">
               {completedTargetsCount} / {Math.max(3, totalTargetsCount)} Done
             </span>
           </div>
@@ -263,7 +275,6 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
             {/* Responsive Mood Grid with Zero Text Overlapping */}
             <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
               {moodOptions.map(m => {
-                const Icon = m.icon;
                 const isSelected = mood === m.id;
                 return (
                   <button
@@ -278,16 +289,15 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                       else setRating(1);
                       soundManager.playClick();
                     }}
-                    className={`py-2 px-1 sm:p-3 rounded-xl sm:rounded-2xl border transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-1 min-w-0 ${
+                    className={`py-2 px-1 sm:py-2.5 sm:px-2 rounded-xl sm:rounded-2xl border transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-1 min-w-0 ${
                       isSelected
                         ? `${m.activeBg} scale-102 sm:scale-105 font-black`
                         : `${m.inactiveBg} opacity-90`
                     }`}
                   >
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] shrink-0" />
+                    <span className="text-base sm:text-lg leading-none select-none">{m.emoji}</span>
                     <span className="text-[9px] sm:text-[10px] font-mono leading-none tracking-tight font-bold truncate max-w-full block">
-                      <span className="inline sm:hidden">{m.shortLabel}</span>
-                      <span className="hidden sm:inline">{m.label}</span>
+                      {m.shortLabel}
                     </span>
                   </button>
                 );
@@ -321,7 +331,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
               <span className="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 flex items-center justify-center text-[10px]">3</span>
               <span>Where did you lose focus?</span>
             </label>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {distractionPills.map(d => (
                 <button
                   key={d.id}
@@ -330,13 +340,13 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                     setDistraction(d.id);
                     soundManager.playClick();
                   }}
-                  className={`px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl text-[11px] sm:text-xs border text-left transition-all cursor-pointer flex items-center justify-between gap-1.5 min-w-0 ${
+                  className={`px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl text-[11px] sm:text-xs border text-left transition-all cursor-pointer flex items-center justify-between gap-1.5 min-w-0 ${
                     distraction === d.id ? d.activeStyle : d.inactiveStyle
                   }`}
                 >
-                  <span className="truncate font-semibold">
-                    <span className="inline sm:hidden">{d.shortLabel}</span>
-                    <span className="hidden sm:inline">{d.label}</span>
+                  <span className="truncate font-semibold flex items-center gap-1.5">
+                    <span>{d.emoji}</span>
+                    <span>{d.shortLabel}</span>
                   </span>
                   {distraction === d.id && <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-current" />}
                 </button>

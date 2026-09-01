@@ -119,17 +119,22 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
           </div>
 
           {/* Quick Actions (Night Reflection & History Journal) */}
-          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 self-start sm:self-auto shrink-0 flex-wrap">
             <button
               onClick={() => {
                 soundManager.playClick();
                 setIsHistoryModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2A36] text-[#65675F] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2A36] text-[#65675F] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
               title="View past reflection journal"
             >
-              <History className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Journal</span>
+              <History className="w-3.5 h-3.5 text-purple-400" />
+              <span>History</span>
+              {reflectionsHistory.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                  {reflectionsHistory.length}
+                </span>
+              )}
             </button>
 
             <button
@@ -137,10 +142,10 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsReflectionModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-extrabold shadow-sm transition-all active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-extrabold shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <Moon className="w-3.5 h-3.5" />
-              <span>1-Min Night Reflection</span>
+              <Moon className="w-3.5 h-3.5 text-amber-300" />
+              <span>1-Min Reflection</span>
             </button>
           </div>
         </div>
