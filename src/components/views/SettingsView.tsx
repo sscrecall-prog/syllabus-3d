@@ -433,61 +433,90 @@ export const SettingsView: React.FC = () => {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            {/* Dark Mode Card */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            {/* Tokyo Night Dark */}
             <button
               type="button"
               onClick={() => {
                 soundManager.playClick();
                 setTheme('dark');
               }}
-              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'dark'
                   ? 'bg-[#1F2335] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/30 shadow-sm'
                   : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
               }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-[#16161E] border border-[#292E42] flex items-center justify-center text-[#7AA2F7] shrink-0">
-                <Moon className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
-                    Tokyo Night Dark
-                  </span>
-                  {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
+              <div className="flex items-center justify-between w-full">
+                <div className="w-10 h-10 rounded-xl bg-[#16161E] border border-[#292E42] flex items-center justify-center text-[#7AA2F7] shrink-0">
+                  <Moon className="w-5 h-5" />
                 </div>
+                {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
+              </div>
+              <div>
+                <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                  Tokyo Night Dark
+                </span>
                 <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
-                  Deep dark glassmorphism for night study sessions
+                  Deep dark glassmorphism for focused study
                 </span>
               </div>
             </button>
 
-            {/* Light Mode Card */}
+            {/* Pure OLED Pitch Black (Eye-Comfort) */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setTheme('oled');
+              }}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                theme === 'oled'
+                  ? 'bg-[#0A0B10] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/40 shadow-sm'
+                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="w-10 h-10 rounded-xl bg-black border border-[#292E42] flex items-center justify-center text-cyan-400 shrink-0">
+                  <span className="text-xs font-mono font-bold">OLED</span>
+                </div>
+                {theme === 'oled' && <Check className="w-4 h-4 text-cyan-400" />}
+              </div>
+              <div>
+                <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                  🕶️ Pure OLED Black
+                </span>
+                <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                  100% pitch black for zero eye fatigue & battery saving
+                </span>
+              </div>
+            </button>
+
+            {/* Classic Paper Light */}
             <button
               type="button"
               onClick={() => {
                 soundManager.playClick();
                 setTheme('light');
               }}
-              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'light'
                   ? 'bg-[#FAF8F5] border-[#596B35] ring-2 ring-[#596B35]/30 shadow-sm'
                   : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
               }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-white border border-[#D8D8CF] flex items-center justify-center text-[#596B35] shrink-0">
-                <Sun className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
-                    Classic Paper Light
-                  </span>
-                  {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
+              <div className="flex items-center justify-between w-full">
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#D8D8CF] flex items-center justify-center text-[#596B35] shrink-0">
+                  <Sun className="w-5 h-5" />
                 </div>
+                {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
+              </div>
+              <div>
+                <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                  Classic Paper Light
+                </span>
                 <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
-                  Warm academic paper tones for bright daylight reading
+                  Warm academic paper tones for daylight reading
                 </span>
               </div>
             </button>

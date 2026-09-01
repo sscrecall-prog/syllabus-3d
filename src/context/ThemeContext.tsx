@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'oled';
 
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   isDark: boolean;
+  isOled: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -16,7 +17,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem('syllabus3d_theme');
-        if (saved === 'light' || saved === 'dark') return saved;
+        if (saved === 'light' || saved === 'dark' || saved === 'oled') return saved;
         return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       } catch {
         return 'dark';
@@ -27,10 +28,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
+    if (theme === 'oled') {
+      root.classList.add('dark', 'oled');
+    } else if (theme === 'dark') {
       root.classList.add('dark');
+      root.classList.remove('oled');
     } else {
-      root.classList.remove('dark');
+      root.classList.remove('dark', 'oled');
     }
     try {
       localStorage.setItem('syllabus3d_theme', theme);
@@ -38,7 +42,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
+    setThemeState(prev => {
+      if (prev === 'light') return 'dark';
+      if (prev === 'dark') return 'oled';
+      return 'light';
+    });
   };
 
   const setTheme = (newTheme: Theme) => {
@@ -46,7 +54,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, isDark: theme === 'dark' }}>
+    <ThemeContext.Provider value={{
+      theme,
+      toggleTheme,
+      setTheme,
+      isDark: theme === 'dark' || theme === 'oled',
+      isOled: theme === 'oled'
+    }}>
       {children}
     </ThemeContext.Provider>
   );

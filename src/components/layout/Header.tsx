@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentViewTitle = 'SYLLABUS 3D'
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
-  const { toggleTheme: handleThemeToggle, isDark } = useTheme();
+  const { toggleTheme: handleThemeToggle, isDark, isOled } = useTheme();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
 
@@ -146,13 +146,19 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
 
-          {/* Theme Toggle (Light / Dark) */}
+          {/* Theme Toggle (Light / Dark / OLED) */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#191A17] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth"
-            title={isDark ? "Switch to Light Theme" : "Switch to Dark Theme"}
+            className="p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#191A17] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90"
+            title={isOled ? "Current: OLED Pure Black (Click for Light)" : isDark ? "Current: Tokyo Night (Click for OLED)" : "Current: Light (Click for Dark)"}
           >
-            {isDark ? <Sun className="w-4 h-4 text-[#C49A3A]" /> : <Moon className="w-4 h-4 text-[#596B35]" />}
+            {isOled ? (
+              <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>
+            ) : isDark ? (
+              <Sun className="w-4 h-4 text-[#C49A3A]" />
+            ) : (
+              <Moon className="w-4 h-4 text-[#596B35]" />
+            )}
           </button>
 
           {/* User Profile Avatar */}
