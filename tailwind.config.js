@@ -44,9 +44,10 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Google Sans Text"', '"Google Sans"', '"Outfit"', '"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Google Sans"', '"Outfit"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-        display: ['"Google Sans"', '"Outfit"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '"Inter"', '"Outfit"', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Lora"', 'Georgia', 'Cambria', 'serif'],
+        lexend: ['"Lexend"', '"Plus Jakarta Sans"', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', '"Outfit"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Menlo', 'monospace']
       },
       boxShadow: {
