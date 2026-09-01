@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { X, RotateCw, Trophy, ArrowRight, Check, RefreshCcw, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -62,9 +63,15 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
     ? Math.round(((currentIndex) / activeQueue.length) * 100)
     : 100;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0] dark:border-[#272730] shadow-2xl overflow-hidden p-6 sm:p-8">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in"
+      onClick={handleReset}
+    >
+      <div
+        className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0] dark:border-[#272730] shadow-2xl overflow-hidden p-6 sm:p-8 my-auto"
+        onClick={e => e.stopPropagation()}
+      >
         
         {/* Header with Progress Bar */}
         <div className="flex items-center justify-between mb-4">
@@ -221,6 +228,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

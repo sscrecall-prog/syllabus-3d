@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
@@ -306,10 +307,14 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm animate-fade-in select-none">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] overflow-hidden bg-black/70 backdrop-blur-sm animate-fade-in select-none"
+      onClick={onClose}
+    >
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
         <div
+          onClick={e => e.stopPropagation()}
           style={{
             transform: dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
             transition: dragOffsetY === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
@@ -1165,6 +1170,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           }}
         />
       )}
-    </div>
+    </div>,
+    document.body
   );
 };

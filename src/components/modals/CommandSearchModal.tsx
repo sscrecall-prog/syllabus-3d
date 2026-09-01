@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { Search, X, ArrowRight, Sparkles, BookOpen, Check } from 'lucide-react';
 import { StatusBadge } from '../common/StatusBadge';
@@ -99,11 +100,15 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#28293D] shadow-2xl overflow-hidden animate-scale-up flex flex-col max-h-[80vh]">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-start justify-center pt-14 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-fade-in select-none"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#28293D] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        onClick={e => e.stopPropagation()}
+      >
         
         {/* Search Header Bar */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#D8D8CF] dark:border-[#28293D] bg-white dark:bg-[#161726]">
@@ -183,6 +188,7 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
           <span className="hidden sm:inline">↑↓ Navigate • ↵ Select • ESC Close</span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

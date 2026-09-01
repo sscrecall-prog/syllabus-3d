@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { X, Trash2, Save, BookOpen, Check } from 'lucide-react';
 import { Subject } from '../../types/syllabus';
@@ -49,9 +50,15 @@ export const EditSubjectModal: React.FC<EditSubjectModalProps> = ({ subject, isO
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md">
-      <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden my-auto"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
           <div className="flex items-center gap-2.5">
             <div
@@ -165,6 +172,7 @@ export const EditSubjectModal: React.FC<EditSubjectModalProps> = ({ subject, isO
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

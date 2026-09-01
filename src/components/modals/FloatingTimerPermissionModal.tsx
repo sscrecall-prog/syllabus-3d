@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useTimer } from '../../context/TimerContext';
 import { Shield, Sparkles, X, CheckCircle2 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
@@ -37,9 +38,15 @@ export const FloatingTimerPermissionModal: React.FC = () => {
     closePermissionModal();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-sm rounded-3xl bg-[#0F172A] border border-white/15 p-6 shadow-2xl flex flex-col items-center text-center animate-scale-in">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none"
+      onClick={handleNotNow}
+    >
+      <div
+        className="relative w-full max-w-sm rounded-3xl bg-[#0F172A] border border-white/15 p-6 shadow-2xl flex flex-col items-center text-center my-auto"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="w-14 h-14 rounded-2xl bg-teal-500/20 border border-teal-400/30 text-teal-300 flex items-center justify-center mb-4 shadow-lg">
           <Shield className="w-7 h-7 stroke-[2.2]" />
         </div>
@@ -73,6 +80,7 @@ export const FloatingTimerPermissionModal: React.FC = () => {
           You can adjust this anytime in Settings &rarr; Floating Timer.
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

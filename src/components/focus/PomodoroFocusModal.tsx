@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useTimer } from '../../context/TimerContext';
 import {
@@ -193,9 +194,15 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progressPercent * circumference);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black/85 backdrop-blur-md select-none animate-fade-in font-sans">
-      <div className="relative w-full h-full sm:h-auto sm:max-w-lg sm:rounded-3xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] shadow-2xl p-4 sm:p-6 flex flex-col justify-between pt-safe pb-safe overflow-hidden">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md select-none animate-fade-in font-sans"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg rounded-3xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] shadow-2xl p-4 sm:p-6 flex flex-col justify-between overflow-hidden max-h-[90vh] my-auto"
+        onClick={e => e.stopPropagation()}
+      >
         
         {/* 1. TOP HEADER TOOLBAR */}
         <div className="flex items-center justify-between pb-3 border-b border-[#D8D8CF] dark:border-[#24283B] shrink-0">
@@ -606,6 +613,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
         )}
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

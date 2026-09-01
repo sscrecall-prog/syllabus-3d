@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
   X,
@@ -174,9 +175,15 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto animate-fade-in">
-      <div className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0] dark:border-[#272730] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fade-in select-none"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#EBD3A0] dark:border-[#272730] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
         
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-[#EBD3A0]/60 dark:border-[#2E2E2E] flex items-center justify-between bg-white/70 dark:bg-[#202020]/70 shrink-0">
@@ -476,6 +483,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
