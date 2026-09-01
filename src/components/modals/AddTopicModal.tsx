@@ -102,8 +102,8 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
         subtopics = parts[1].split(',').map(s => s.trim()).filter(Boolean);
       }
 
-      // Remove leading numbering like "1. ", "2) ", "- "
-      name = name.replace(/^(\d+[.)\-]\s*|[-*•]\s*)/, '').trim();
+      // Only strip bullet points if present, preserve numbers (e.g. 1. Introduction, 100 Rules, 3D Geometry)
+      name = name.replace(/^[•*]\s*/, '').trim();
 
       return {
         name,

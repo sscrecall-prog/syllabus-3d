@@ -1143,7 +1143,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const addMultipleSubtopics = (topicId: string, subtopicsToAdd: string[]) => {
     const cleaned = subtopicsToAdd
-      .map(s => s.trim().replace(/^[\d+.)\-•\s]+/, '').trim())
+      .map(s => s.trim().replace(/^[•*]\s*/, '').trim())
       .filter(s => s.length > 0);
     if (cleaned.length === 0) return;
 
@@ -1170,7 +1170,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const addSubtopic = (topicId: string, subtopicName: string) => {
     if (!subtopicName.trim()) return;
     if (subtopicName.includes(',') || subtopicName.includes('\n')) {
-      const parts = subtopicName.split(/[\n,]/).map(s => s.trim().replace(/^[\d+.)\-•\s]+/, '').trim()).filter(Boolean);
+      const parts = subtopicName.split(/[\n,]/).map(s => s.trim().replace(/^[•*]\s*/, '').trim()).filter(Boolean);
       if (parts.length > 0) {
         addMultipleSubtopics(topicId, parts);
         return;
@@ -1186,7 +1186,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (t.id !== topicId) return t;
             return {
               ...t,
-              subtopics: [...t.subtopics, subtopicName.trim().replace(/^[\d+.)\-•\s]+/, '').trim()]
+              subtopics: [...t.subtopics, subtopicName.trim().replace(/^[•*]\s*/, '').trim()]
             };
           })
         }))

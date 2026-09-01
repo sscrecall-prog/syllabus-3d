@@ -241,7 +241,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const parsedBulkSubtopics = useMemo(() => {
     return bulkSubtopicsInput
       .split(/[\n,]/)
-      .map(line => line.trim().replace(/^[\d+.)\-•\s]+/, '').trim())
+      .map(line => line.trim().replace(/^[•*]\s*/, '').trim())
       .filter(line => line.length > 0);
   }, [bulkSubtopicsInput]);
 
@@ -267,7 +267,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     if (newSubtopicInput.includes(',') || newSubtopicInput.includes('\n')) {
       const parts = newSubtopicInput
         .split(/[\n,]/)
-        .map(s => s.trim().replace(/^[\d+.)\-•\s]+/, '').trim())
+        .map(s => s.trim().replace(/^[•*]\s*/, '').trim())
         .filter(Boolean);
       if (parts.length > 0) {
         if (addMultipleSubtopics) {
