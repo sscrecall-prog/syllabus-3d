@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTimer } from '../../context/TimerContext';
@@ -27,7 +27,10 @@ import {
   Bell,
   Sparkles,
   Sliders,
-  Award
+  Award,
+  Camera,
+  User,
+  Image as ImageIcon
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -80,6 +83,66 @@ export const SettingsView: React.FC = () => {
     soundManager.updateSettings(partial);
     const updated = soundManager.getSettings();
     setAudioConfig(updated);
+  };
+
+  // Avatar Upload State & Handlers
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarNotice, setAvatarNotice] = useState(false);
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        // High quality client-side resize to 256x256 WebP/JPEG
+        const canvas = document.createElement('canvas');
+        const maxDim = 256;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+          updateProfile({ avatarUrl: compressedDataUrl });
+          updateUserSession({ avatarUrl: compressedDataUrl });
+          soundManager.playCompleteChime();
+          setAvatarNotice(true);
+          setTimeout(() => setAvatarNotice(false), 3000);
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleRemoveAvatar = () => {
+    soundManager.playClick();
+    updateProfile({ avatarUrl: undefined });
+    updateUserSession({ avatarUrl: undefined });
+    setAvatarNotice(true);
+    setTimeout(() => setAvatarNotice(false), 3000);
   };
 
   useEffect(() => {
@@ -191,10 +254,51 @@ export const SettingsView: React.FC = () => {
           ═══════════════════════════════════════════════════ */}
       <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth flex flex-col sm:flex-row items-center justify-between gap-4">
         
+        {/* Hidden File Input for Avatar Photo */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/jpg"
+          className="hidden"
+          onChange={handleAvatarFileChange}
+        />
+
         {/* Left: Avatar + Name + Level Pill */}
         <div className="flex items-center gap-3.5 min-w-0 w-full sm:w-auto">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center text-lg font-black shrink-0 shadow-md">
-            {(user?.name || profile.name || 'A').charAt(0).toUpperCase()}
+          {/* Avatar Squircle with Camera Badge */}
+          <div className="relative group shrink-0">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center text-xl font-black shadow-md cursor-pointer overflow-hidden relative border-2 border-white dark:border-[#24283B] active:scale-95 transition-transform"
+              title="Click to Upload Profile Photo"
+            >
+              {(profile.avatarUrl || user?.avatarUrl) ? (
+                <img
+                  src={profile.avatarUrl || user?.avatarUrl}
+                  alt={user?.name || profile.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{(user?.name || profile.name || 'A').charAt(0).toUpperCase()}</span>
+              )}
+
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[9px] font-bold transition-opacity backdrop-blur-2xs">
+                <Camera className="w-4 h-4" />
+                <span>Upload</span>
+              </div>
+            </button>
+
+            {/* Corner Camera Button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] border-2 border-white dark:border-[#16161E] flex items-center justify-center shadow-xs cursor-pointer active:scale-90 hover:scale-110 transition-transform"
+              title="Change Profile Photo"
+            >
+              <Camera className="w-3 h-3" />
+            </button>
           </div>
 
           <div className="space-y-1 min-w-0 flex-1">
@@ -215,7 +319,7 @@ export const SettingsView: React.FC = () => {
                 </button>
               </form>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight truncate font-serif">
                   {user?.name || profile.name || 'Aspirant'}
                 </h2>
@@ -226,6 +330,15 @@ export const SettingsView: React.FC = () => {
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
+                {(profile.avatarUrl || user?.avatarUrl) && (
+                  <button
+                    onClick={handleRemoveAvatar}
+                    className="px-2 py-0.5 rounded-lg text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 border border-rose-500/20 cursor-pointer transition-colors"
+                    title="Remove Photo and use initial letter"
+                  >
+                    Remove Photo
+                  </button>
+                )}
               </div>
             )}
 
@@ -243,6 +356,13 @@ export const SettingsView: React.FC = () => {
                 {overallStats.completedCount}/{overallStats.totalTopics} Topics ({overallStats.completionPercentage}%)
               </span>
             </div>
+
+            {avatarNotice && (
+              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <span>Profile picture updated!</span>
+              </p>
+            )}
           </div>
         </div>
 

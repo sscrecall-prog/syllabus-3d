@@ -15,6 +15,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
+import { useAuth } from '../../context/AuthContext';
 import { soundManager } from '../../utils/soundEffects';
 
 export type AppView =
@@ -44,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenFocus
 }) => {
   const { profile, dueRevisions, weakTopics, plannerTasks, platforms } = useSyllabus();
+  const { user } = useAuth();
 
   const navItems = [
     {
@@ -228,12 +230,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#D8D8CF] dark:border-[#272732] space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#596B35] to-[#45532A] dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[10px] shrink-0 shadow-2xs">
-                {profile.name ? profile.name.charAt(0).toUpperCase() : 'A'}
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#596B35] to-[#45532A] dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[11px] shrink-0 shadow-2xs overflow-hidden">
+                {(profile.avatarUrl || user?.avatarUrl) ? (
+                  <img
+                    src={profile.avatarUrl || user?.avatarUrl}
+                    alt={user?.name || profile.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  (user?.name || profile.name ? (user?.name || profile.name).charAt(0).toUpperCase() : 'A')
+                )}
               </div>
               <div className="truncate">
                 <h4 className="text-[11px] font-bold text-[#191A17] dark:text-[#F5F5F7] truncate leading-tight">
-                  {profile.name}
+                  {user?.name || profile.name}
                 </h4>
                 <p className="text-[9px] text-[#65675F] dark:text-[#85877E] leading-none">
                   {profile.levelTitle}

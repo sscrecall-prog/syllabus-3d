@@ -32,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentViewTitle = 'SYLLABUS 3D'
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
+  const { user } = useAuth();
   const { toggleTheme: handleThemeToggle, isDark, isOled } = useTheme();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
@@ -167,9 +168,18 @@ export const Header: React.FC<HeaderProps> = ({
           {/* User Profile Avatar */}
           <button
             onClick={onOpenSettings}
-            className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#DCE8B7] dark:text-[#8B5CF6] font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[#DCE8B7] dark:text-[#7AA2F7] font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all"
+            title="App Settings & Profile"
           >
-            {profile.name ? profile.name.charAt(0).toUpperCase() : 'A'}
+            {(profile.avatarUrl || user?.avatarUrl) ? (
+              <img
+                src={profile.avatarUrl || user?.avatarUrl}
+                alt={user?.name || profile.name || 'User'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              (user?.name || profile.name || 'A').charAt(0).toUpperCase()
+            )}
           </button>
         </div>
       </div>

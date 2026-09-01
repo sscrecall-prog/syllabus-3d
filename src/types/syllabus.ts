@@ -149,6 +149,7 @@ export interface DailyActivity {
 
 export interface UserProgressProfile {
   name: string;
+  avatarUrl?: string;
   targetExamDate: string;
   currentStreak: number;
   longestStreak: number;
