@@ -61,6 +61,14 @@ export interface TopicImageAttachment {
   fileSize?: number;
 }
 
+export interface TopicNoteItem {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Topic {
   id: string;
   name: string;
@@ -76,6 +84,7 @@ export interface Topic {
   isWeak: boolean;
   weightage: number;
   notes: string;
+  noteItems?: TopicNoteItem[];
   mistakes: MistakeRecord[];
   pdfAttachments?: TopicPdfAttachment[];
   pdfUrl?: string;

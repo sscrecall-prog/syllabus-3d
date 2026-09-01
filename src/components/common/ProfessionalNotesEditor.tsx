@@ -42,21 +42,28 @@ import {
   Palette,
   Sun,
   Moon,
-  BookMarked
+  BookMarked,
+  Plus,
+  Files,
+  FileText,
+  MoreVertical,
+  Layers,
+  CopyPlus
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
-import { TopicImageAttachment, TopicLecture } from '../../types/syllabus';
+import { TopicImageAttachment, TopicLecture, TopicNoteItem } from '../../types/syllabus';
 import { parseTimestampToSeconds } from '../../utils/youtubeUtils';
 import { formatAiNotes, generateAiNotesPrompt } from '../../utils/aiNotesFormatter';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
+  initialNoteItems?: TopicNoteItem[];
   topicName: string;
   subjectName?: string;
   chapterName?: string;
   examName?: string;
-  onSave: (content: string) => void;
+  onSave: (content: string, noteItems?: TopicNoteItem[]) => void;
   onOpenSplitPdf?: () => void;
   hasPdfAttachments?: boolean;
   lectures?: TopicLecture[];
@@ -73,6 +80,7 @@ type ReaderTheme = 'default' | 'sepia' | 'paper' | 'oled';
 
 export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = ({
   initialContent,
+  initialNoteItems,
   topicName,
   subjectName,
   chapterName,
@@ -86,10 +94,48 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   onAddImage,
   onDeleteImage
 }) => {
-  const [content, setContent] = useState(initialContent || '');
+  // Multiple Notes Pages State
+  const [noteItems, setNoteItems] = useState<TopicNoteItem[]>(() => {
+    if (initialNoteItems && initialNoteItems.length > 0) {
+      return initialNoteItems;
+    }
+    return [
+      {
+        id: 'note_1',
+        title: 'Main Notes',
+        content: initialContent || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+  });
+
+  const [activeNoteId, setActiveNoteId] = useState<string>(() => {
+    if (initialNoteItems && initialNoteItems.length > 0) {
+      return initialNoteItems[0].id;
+    }
+    return 'note_1';
+  });
+
+  // Rename Note Title State
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [tempTitle, setTempTitle] = useState('');
+  const [showAddTemplatesMenu, setShowAddTemplatesMenu] = useState(false);
+
+  // Active Note computation
+  const activeNote = noteItems.find(n => n.id === activeNoteId) || noteItems[0] || {
+    id: 'note_1',
+    title: 'Main Notes',
+    content: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const content = activeNote.content;
+
   // View mode: 'study' (rendered view), 'edit' (markdown editor), 'split' (side-by-side)
   const [viewMode, setViewMode] = useState<'study' | 'edit' | 'split'>(() => {
-    return initialContent && initialContent.trim().length > 0 ? 'study' : 'edit';
+    return content && content.trim().length > 0 ? 'study' : 'edit';
   });
 
   // Full Screen Reading Mode
@@ -135,30 +181,49 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const isFirstMount = useRef(true);
   const notesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Debounced Auto-Save
+  // Sync with initialNoteItems / initialContent if topic changed
   useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
+    if (initialNoteItems && initialNoteItems.length > 0) {
+      setNoteItems(initialNoteItems);
+      if (!initialNoteItems.some(n => n.id === activeNoteId)) {
+        setActiveNoteId(initialNoteItems[0].id);
+      }
+    } else if (initialContent !== undefined) {
+      setNoteItems([
+        {
+          id: 'note_1',
+          title: 'Main Notes',
+          content: initialContent || '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]);
+      setActiveNoteId('note_1');
     }
+  }, [initialNoteItems, initialContent]);
 
+  // Debounced Auto-Save
+  const updateContentAndSave = (newText: string, customItems?: TopicNoteItem[]) => {
+    const updatedItems = (customItems || noteItems).map(item => {
+      if (item.id === activeNoteId) {
+        return { ...item, content: newText, updatedAt: new Date().toISOString() };
+      }
+      return item;
+    });
+
+    setNoteItems(updatedItems);
     setSaveStatus('saving');
+
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      onSave(content);
+      onSave(newText, updatedItems);
       setSaveStatus('saved');
       setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     }, 600);
-
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, [content, onSave]);
+  };
 
   // Keyboard shortcuts:
   // - Ctrl+S: Save
@@ -168,7 +233,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        onSave(content);
+        onSave(content, noteItems);
         soundManager.playCompleteChime();
         setSaveStatus('saved');
         setSaveSuccess(true);
@@ -192,7 +257,80 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [content, onSave, isFullscreen, isZenMode]);
+  }, [content, noteItems, onSave, isFullscreen, isZenMode]);
+
+  // ----------------------------------------------------------------------------------
+  // MULTI-NOTE ACTIONS (Add, Rename, Duplicate, Delete)
+  // ----------------------------------------------------------------------------------
+  const handleAddNewNote = (presetTitle?: string, presetContent?: string) => {
+    soundManager.playCompleteChime();
+    const nextNum = noteItems.length + 1;
+    const newId = 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    const newNote: TopicNoteItem = {
+      id: newId,
+      title: presetTitle || `Note Page ${nextNum}`,
+      content: presetContent || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const updated = [...noteItems, newNote];
+    setNoteItems(updated);
+    setActiveNoteId(newId);
+    setShowAddTemplatesMenu(false);
+    setViewMode('edit');
+    onSave(presetContent || '', updated);
+  };
+
+  const handleDuplicateNote = (noteId: string) => {
+    const target = noteItems.find(n => n.id === noteId);
+    if (!target) return;
+    soundManager.playClick();
+    const newId = 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    const copyNote: TopicNoteItem = {
+      id: newId,
+      title: `${target.title} (Copy)`,
+      content: target.content,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const updated = [...noteItems, copyNote];
+    setNoteItems(updated);
+    setActiveNoteId(newId);
+    onSave(copyNote.content, updated);
+  };
+
+  const handleDeleteNote = (noteId: string) => {
+    if (noteItems.length <= 1) {
+      alert('At least one note page must remain.');
+      return;
+    }
+    const target = noteItems.find(n => n.id === noteId);
+    if (window.confirm(`Are you sure you want to delete note "${target?.title}"?`)) {
+      soundManager.playClick();
+      const updated = noteItems.filter(n => n.id !== noteId);
+      setNoteItems(updated);
+      const nextActive = updated[0];
+      setActiveNoteId(nextActive.id);
+      onSave(nextActive.content, updated);
+    }
+  };
+
+  const handleStartRename = (note: TopicNoteItem) => {
+    setEditingTitleId(note.id);
+    setTempTitle(note.title);
+  };
+
+  const handleSaveRename = (noteId: string) => {
+    if (!tempTitle.trim()) {
+      setEditingTitleId(null);
+      return;
+    }
+    const updated = noteItems.map(n => (n.id === noteId ? { ...n, title: tempTitle.trim(), updatedAt: new Date().toISOString() } : n));
+    setNoteItems(updated);
+    setEditingTitleId(null);
+    onSave(content, updated);
+    soundManager.playClick();
+  };
 
   // Handle Font Change
   const handleSelectFont = (font: ReaderFontFamily) => {
@@ -250,12 +388,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
     if (content.includes(text)) {
       const updated = content.replace(text, tag);
-      setContent(updated);
-      onSave(updated);
+      updateContentAndSave(updated);
     } else {
       const updated = content + `\n${tag}`;
-      setContent(updated);
-      onSave(updated);
+      updateContentAndSave(updated);
     }
 
     setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' });
@@ -396,7 +532,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             }
           }
           if (transcript) {
-            setContent(prev => (prev ? prev + ' ' + transcript.trim() : transcript.trim()));
+            const updated = content ? content + ' ' + transcript.trim() : transcript.trim();
+            updateContentAndSave(updated);
           }
         };
 
@@ -418,31 +555,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }
   };
 
-  // Sync if topic changes & auto-migrate any legacy base64 image strings to image attachments
-  useEffect(() => {
-    if (initialContent && initialContent.includes('data:image/')) {
-      const regex = /!\[(.*?)\]\((data:image\/[^\)]+)\)/g;
-      let match;
-      while ((match = regex.exec(initialContent)) !== null) {
-        const title = match[1] || 'Screenshot';
-        const dataUrl = match[2];
-        if (onAddImage && (!images || !images.some(img => img.dataUrl === dataUrl))) {
-          onAddImage({ title, dataUrl });
-        }
-      }
-      const cleaned = initialContent.replace(regex, '').trim();
-      setContent(cleaned);
-      onSave(cleaned);
-    } else {
-      setContent(initialContent || '');
-    }
-    if (!initialContent || initialContent.trim().length === 0) {
-      setViewMode('edit');
-    }
-  }, [initialContent]);
-
   const handleSave = () => {
-    onSave(content);
+    onSave(content, noteItems);
     soundManager.playClick();
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2000);
@@ -461,13 +575,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     if (!content.trim()) return;
     soundManager.playCompleteChime();
     const formatted = formatAiNotes(content, {
-      topicName,
+      topicName: `${topicName} — ${activeNote.title}`,
       subjectName,
       chapterName,
       examName
     });
-    setContent(formatted);
-    onSave(formatted);
+    updateContentAndSave(formatted);
     setAiFormattedNotice(true);
     setTimeout(() => setAiFormattedNotice(false), 3000);
   };
@@ -475,7 +588,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // 1-Click Copy AI Prompt for Gemini / ChatGPT
   const handleCopyAiPrompt = () => {
     const prompt = generateAiNotesPrompt({
-      topicName,
+      topicName: `${topicName} (${activeNote.title})`,
       subjectName,
       chapterName,
       examName
@@ -489,7 +602,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const handleExportPdf = () => {
     soundManager.playCompleteChime();
     generateAndOpenNotesPdf({
-      topicName,
+      topicName: `${topicName} • ${activeNote.title}`,
       subjectName,
       chapterName,
       examName: examName || 'SSC CGL 2026',
@@ -507,7 +620,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     const selected = content.substring(start, end) || defaultPlaceholder;
     const replacement = before + selected + after;
     const newContent = content.substring(0, start) + replacement + content.substring(end);
-    setContent(newContent);
+    updateContentAndSave(newContent);
     setTimeout(() => {
       el.focus();
       el.setSelectionRange(start + before.length, start + before.length + selected.length);
@@ -517,17 +630,17 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // Insert Templates
   const insertFormulaTemplate = () => {
     const tpl = `\n# Key Formulas & Definitions\n> [!FORMULA]\n> Standard Formula: Speed = Distance / Time\n> Average Speed (Equal Distance) = 2xy / (x + y)\n\n> [!TIP]\n> Shortcut Method: Ratio method converts speed ratio a:b to time ratio b:a.\n\n> [!WARNING]\n> Common Trap: Don't take simple arithmetic average when distances are constant!\n\n### High-Yield Action Checklist\n- [ ] Memorize basic conversion (1 km/h = 5/18 m/s)\n- [ ] Practice 5 previous year exam questions\n`;
-    setContent(prev => (prev ? prev + '\n' + tpl : tpl));
+    updateContentAndSave(content ? content + '\n' + tpl : tpl);
   };
 
   const insertComparisonTableTemplate = () => {
     const tpl = `\n### Comparison Table & Key Parameters\n| Concept / Case | Formula / Rule | Shortcut / Key Note |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed (Same Dir) | $S_{rel} = s_1 - s_2$ | Subtract speeds |\n| Case 4: Relative Speed (Opp Dir) | $S_{rel} = s_1 + s_2$ | Add speeds |\n`;
-    setContent(prev => (prev ? prev + '\n' + tpl : tpl));
+    updateContentAndSave(content ? content + '\n' + tpl : tpl);
   };
 
   const insertGrammarRuleTemplate = () => {
     const tpl = `\n# Core Grammar & Rule Guide\n> [!RULE]\n> Golden Rule: Singular subjects take singular verbs; plural subjects take plural verbs.\n\n> [!WARNING]\n> High-Frequency Exception: Expressions like 'along with', 'as well as', 'in addition to' do not change the subject number.\n\n### Practice Traps\n- [ ] Check subject before the prepositional phrase\n- [ ] Verify tense consistency across clauses\n`;
-    setContent(prev => (prev ? prev + '\n' + tpl : tpl));
+    updateContentAndSave(content ? content + '\n' + tpl : tpl);
   };
 
   // Toggle checklist item in rendered view
@@ -548,8 +661,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       return l;
     });
     const updated = newLines.join('\n');
-    setContent(updated);
-    onSave(updated);
+    updateContentAndSave(updated);
     soundManager.playClick();
   };
 
@@ -557,14 +669,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const getFontFamilyClass = () => {
     switch (readerFontFamily) {
       case 'serif':
-        return 'font-serif tracking-normal'; // Lora / Book
+        return 'font-serif tracking-normal';
       case 'lexend':
-        return 'font-lexend tracking-normal'; // Lexend
+        return 'font-lexend tracking-normal';
       case 'mono':
-        return 'font-mono tracking-tight'; // JetBrains Mono
+        return 'font-mono tracking-tight';
       case 'sans':
       default:
-        return 'font-sans tracking-tight'; // Plus Jakarta Sans / Inter
+        return 'font-sans tracking-tight';
     }
   };
 
@@ -742,10 +854,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </div>
           <div>
             <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white font-serif">
-              No notes added for "{topicName}" yet
+              "{activeNote.title}" is empty
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-              Gemini ya ChatGPT se study notes copy karke yahan paste karein — hamara AI Formatter automatically unhe professional structured notes me convert kar dega!
+              Gemini ya ChatGPT se study notes copy karke yahan paste karein, ya neeche diye gaye templates se shuru karein!
             </p>
           </div>
           <div className="flex items-center justify-center gap-2.5 flex-wrap pt-2">
@@ -897,7 +1009,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         const calloutType = match ? match[1].toUpperCase() : 'NOTE';
         const calloutLines: string[] = [];
 
-        // Collect all consecutive callout lines
         while (i < lines.length && lines[i].trim().startsWith('>')) {
           const l = lines[i].trim().replace(/^>\s*/, '');
           if (!l.startsWith('[!')) {
@@ -1115,6 +1226,204 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const charCount = content.length;
 
   // ----------------------------------------------------------------------------------
+  // MULTIPLE NOTES TABS RENDERER
+  // ----------------------------------------------------------------------------------
+  const renderNoteTabs = (inFullscreen: boolean = false) => {
+    return (
+      <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pb-1">
+        {/* Scrollable Tabs */}
+        <div className="flex items-center gap-1.5 min-w-0">
+          {noteItems.map((note, index) => {
+            const isActive = note.id === activeNoteId;
+            const isEditing = editingTitleId === note.id;
+
+            return (
+              <div
+                key={note.id}
+                onClick={() => {
+                  if (!isEditing && note.id !== activeNoteId) {
+                    soundManager.playClick();
+                    setActiveNoteId(note.id);
+                  }
+                }}
+                className={`group flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none shrink-0 ${
+                  isActive
+                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black border-transparent shadow-sm'
+                    : 'bg-white dark:bg-[#181822] text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white border-[#D8D8CF] dark:border-[#272730]'
+                }`}
+              >
+                <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`} />
+
+                {isEditing ? (
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      handleSaveRename(note.id);
+                    }}
+                    onClick={e => e.stopPropagation()}
+                    className="flex items-center gap-1"
+                  >
+                    <input
+                      type="text"
+                      value={tempTitle}
+                      onChange={e => setTempTitle(e.target.value)}
+                      onBlur={() => handleSaveRename(note.id)}
+                      autoFocus
+                      className="px-1.5 py-0.5 rounded bg-black/20 text-white dark:text-black border border-white/40 text-xs font-bold outline-none max-w-[120px]"
+                    />
+                    <button type="submit" className="p-0.5 hover:scale-110">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </button>
+                  </form>
+                ) : (
+                  <span
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      handleStartRename(note);
+                    }}
+                    className="truncate max-w-[140px] font-sans"
+                    title={`Double click to rename: ${note.title}`}
+                  >
+                    {note.title}
+                  </span>
+                )}
+
+                {/* Tab Actions (Rename, Duplicate, Delete) */}
+                {!isEditing && (
+                  <div className="flex items-center gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartRename(note);
+                      }}
+                      className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/20 ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`}
+                      title="Rename this note"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDuplicateNote(note.id);
+                      }}
+                      className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/20 ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`}
+                      title="Duplicate note"
+                    >
+                      <CopyPlus className="w-3 h-3" />
+                    </button>
+
+                    {noteItems.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteNote(note.id);
+                        }}
+                        className={`p-0.5 rounded hover:bg-rose-500 hover:text-white ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`}
+                        title="Delete note page"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Add Note Button with Dropdown Templates */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowAddTemplatesMenu(prev => !prev)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#455328] dark:from-[#7AA2F7] dark:to-[#4D7AF7] text-white dark:text-black text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm hover:opacity-95"
+            title="Create a new Note Page for this topic"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span>+ Add Note</span>
+          </button>
+
+          {/* Quick Note Templates Dropdown */}
+          {showAddTemplatesMenu && (
+            <div
+              className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="px-2.5 py-1.5 text-[10px] uppercase font-mono text-[#85877E] border-b border-[#D8D8CF]/60 dark:border-[#272730]">
+                Choose Note Template:
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAddNewNote()}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+                <span>📄 Blank Notes Page</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  handleAddNewNote(
+                    'Formula & Shortcuts',
+                    `# Key Formulas & Speed Shortcuts\n> [!FORMULA]\n> Standard Equation: Speed = Distance / Time\n> Average Speed = 2xy / (x + y)\n\n> [!TIP]\n> Ratio Trick: Speed ratio a:b equals Time ratio b:a.\n\n### Revision Checklist\n- [ ] Memorize 5 key unit conversions\n- [ ] Practice 5 previous year exam questions`
+                  )
+                }
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+              >
+                <Sigma className="w-3.5 h-3.5 text-purple-500" />
+                <span>🧮 Formula Sheet</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  handleAddNewNote(
+                    'Comparison Table',
+                    `# Concept Comparison Table\n| Case / Parameter | Formula | Shortcut Rule |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed | $S_{rel} = s_1 + s_2$ | Opposite directions: add speeds |`
+                  )
+                }
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+              >
+                <TableIcon className="w-3.5 h-3.5 text-cyan-500" />
+                <span>📊 Comparison Table</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  handleAddNewNote(
+                    'Rules & Traps Guide',
+                    `# Golden Rules & Exam Traps\n> [!RULE]\n> Golden Rule: Fundamental concept definition and rules.\n\n> [!WARNING]\n> High-Frequency Trap: Watch out for negative markings in tricky exceptions!\n\n### High-Yield Questions\n- [ ] Check subject-verb agreement\n- [ ] Verify standard conversions`
+                  )
+                }
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                <span>⚠️ Rules & Traps Guide</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  handleAddNewNote(
+                    'PYQ & Solved Tricks',
+                    `# Solved Previous Year Exam Questions (PYQ)\n> [!EXAMPLE]\n> Question: A train crosses a 300m bridge in 20 seconds. Speed = ?\n> Solution: Total distance = train + bridge.\n\n### Self Practice Checklist\n- [ ] Solve 2023 Tier 1 Questions\n- [ ] Solve 2024 Tier 2 Questions`
+                  )
+                }
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>🎯 PYQ Solved Tricks</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ----------------------------------------------------------------------------------
   // RENDER FLOATING TEXT HIGHLIGHTER TOOLTIP
   // ----------------------------------------------------------------------------------
   const renderFloatingHighlighter = () => {
@@ -1232,198 +1541,192 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
         {/* Fullscreen Zen Header Bar (Hides smoothly when isZenMode is true) */}
         {!isZenMode && (
-          <div className="px-4 sm:px-6 py-2.5 border-b border-[#D8D8CF] dark:border-[#272730] bg-white/85 dark:bg-[#12131C]/90 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 shadow-xs animate-fade-in">
-            {/* Breadcrumb & Title */}
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] truncate font-mono">
-                  <span>{subjectName || 'Subject'}</span>
-                  <span>•</span>
-                  <span className="truncate">{chapterName || 'Chapter'}</span>
+          <div className="px-4 sm:px-6 py-2.5 border-b border-[#D8D8CF] dark:border-[#272730] bg-white/85 dark:bg-[#12131C]/90 backdrop-blur-md flex flex-col gap-2 shrink-0 shadow-xs animate-fade-in">
+            <div className="flex items-center justify-between gap-3">
+              {/* Breadcrumb & Title */}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                  <BookOpen className="w-4 h-4" />
                 </div>
-                <h2 className={`text-sm sm:text-base font-black truncate ${getFontFamilyClass()}`}>
-                  {topicName}
-                </h2>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] truncate font-mono">
+                    <span>{subjectName || 'Subject'}</span>
+                    <span>•</span>
+                    <span className="truncate">{chapterName || 'Chapter'}</span>
+                  </div>
+                  <h2 className={`text-sm sm:text-base font-black truncate ${getFontFamilyClass()}`}>
+                    {topicName} • <span className="text-[#596B35] dark:text-[#7AA2F7]">{activeNote.title}</span>
+                  </h2>
+                </div>
+              </div>
+
+              {/* Reader View & Customization Controls */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* 👁️ PURE NOTES ONLY / ZEN BUTTON */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playCompleteChime();
+                    setIsZenMode(true);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title="Hide All Header Buttons & Top Bars (Pure Notes Only - Press Z)"
+                >
+                  <EyeOff className="w-3.5 h-3.5" />
+                  <span>Pure Notes Only</span>
+                </button>
+
+                {/* 🔤 Font Family Selector */}
+                <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectFont('serif')}
+                    className={`px-2.5 py-1 rounded-lg transition-all font-serif ${
+                      readerFontFamily === 'serif'
+                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                        : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
+                    }`}
+                    title="Book Serif Typography (Lora)"
+                  >
+                    📖 Book Serif
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectFont('sans')}
+                    className={`px-2.5 py-1 rounded-lg transition-all font-sans ${
+                      readerFontFamily === 'sans'
+                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                        : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
+                    }`}
+                    title="Modern Sans Typography (Plus Jakarta / Inter)"
+                  >
+                    🏛️ Sans
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectFont('lexend')}
+                    className={`hidden sm:inline-block px-2.5 py-1 rounded-lg transition-all font-lexend ${
+                      readerFontFamily === 'lexend'
+                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                        : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
+                    }`}
+                    title="Fast Reading Geometric Typography (Lexend)"
+                  >
+                    ⚡ Fast Read
+                  </button>
+                </div>
+
+                {/* 🎨 Theme Switcher */}
+                <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTheme('paper')}
+                    className={`px-2 py-1 rounded-lg transition-all ${
+                      readerTheme === 'paper' ? 'bg-white text-black shadow-xs border border-black/10' : 'text-[#85877E] hover:text-black'
+                    }`}
+                    title="Paper White"
+                  >
+                    📄 Paper
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTheme('sepia')}
+                    className={`px-2 py-1 rounded-lg transition-all ${
+                      readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs border border-[#D9C4A1]' : 'text-[#85877E] hover:text-[#4A3B22]'
+                    }`}
+                    title="Kindle Book Warm Sepia"
+                  >
+                    📜 Sepia
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTheme('oled')}
+                    className={`px-2 py-1 rounded-lg transition-all ${
+                      readerTheme === 'oled' ? 'bg-black text-white shadow-xs border border-white/20' : 'text-[#85877E] hover:text-white'
+                    }`}
+                    title="Pitch Dark OLED"
+                  >
+                    🖤 OLED
+                  </button>
+                </div>
+
+                {/* Font Size Adjuster */}
+                <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+                  <span className="text-[10px] text-[#85877E]">Size:</span>
+                  {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setReaderFontSize(size)}
+                      className={`px-1.5 py-0.5 rounded uppercase ${
+                        readerFontSize === size ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black' : 'text-[#85877E] hover:text-[#11120F]'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Container Width Adjuster */}
+                <div className="hidden md:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+                  <span className="text-[10px] text-[#85877E]">Width:</span>
+                  {(['normal', 'wide', 'full'] as ReaderWidth[]).map(w => (
+                    <button
+                      key={w}
+                      type="button"
+                      onClick={() => setReaderWidth(w)}
+                      className={`px-1.5 py-0.5 rounded capitalize ${
+                        readerWidth === w ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black' : 'text-[#85877E] hover:text-[#11120F]'
+                      }`}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Highlighter Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setIsHighlighterActive(prev => !prev)}
+                  title="Toggle interactive text selection highlighter"
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                    isHighlighterActive
+                      ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
+                      : 'bg-[#F7F6F0] dark:bg-[#1C1D26] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
+                  }`}
+                >
+                  <Highlighter className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Highlighter {isHighlighterActive ? 'ON' : 'OFF'}</span>
+                </button>
+
+                {/* PDF Export */}
+                <button
+                  type="button"
+                  onClick={handleExportPdf}
+                  className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1C1D26] border border-[#D8D8CF] dark:border-[#272730] text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#596B35]/15 cursor-pointer"
+                  title="Download / Print PDF"
+                >
+                  <FileDown className="w-4 h-4" />
+                </button>
+
+                {/* Close / Exit Fullscreen */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setIsFullscreen(false);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-xs font-black transition-all cursor-pointer"
+                  title="Exit Fullscreen (ESC)"
+                >
+                  <Minimize2 className="w-3.5 h-3.5" />
+                  <span>Exit Fullscreen</span>
+                </button>
               </div>
             </div>
 
-            {/* Reader View & Customization Controls */}
-            <div className="flex items-center gap-2 flex-wrap">
-              
-              {/* 👁️ PURE NOTES ONLY / ZEN BUTTON (Hides all top bars & buttons) */}
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playCompleteChime();
-                  setIsZenMode(true);
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-                title="Hide All Header Buttons & Top Bars (Pure Notes Only - Press Z)"
-              >
-                <EyeOff className="w-3.5 h-3.5" />
-                <span>Pure Notes Only</span>
-              </button>
-
-              {/* 🔤 Font Family Selector */}
-              <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => handleSelectFont('serif')}
-                  className={`px-2.5 py-1 rounded-lg transition-all font-serif ${
-                    readerFontFamily === 'serif'
-                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                      : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
-                  }`}
-                  title="Book Serif Typography (Lora)"
-                >
-                  📖 Book Serif
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelectFont('sans')}
-                  className={`px-2.5 py-1 rounded-lg transition-all font-sans ${
-                    readerFontFamily === 'sans'
-                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                      : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
-                  }`}
-                  title="Modern Sans Typography (Plus Jakarta / Inter)"
-                >
-                  🏛️ Sans
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelectFont('lexend')}
-                  className={`hidden sm:inline-block px-2.5 py-1 rounded-lg transition-all font-lexend ${
-                    readerFontFamily === 'lexend'
-                      ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                      : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F]'
-                  }`}
-                  title="Fast Reading Geometric Typography (Lexend)"
-                >
-                  ⚡ Fast Read
-                </button>
-              </div>
-
-              {/* 🎨 Theme Switcher (Paper, Sepia, Dark, OLED) */}
-              <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => handleSelectTheme('paper')}
-                  className={`px-2 py-1 rounded-lg transition-all ${
-                    readerTheme === 'paper'
-                      ? 'bg-white text-black shadow-xs border border-black/10'
-                      : 'text-[#85877E] hover:text-black'
-                  }`}
-                  title="Paper White"
-                >
-                  📄 Paper
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelectTheme('sepia')}
-                  className={`px-2 py-1 rounded-lg transition-all ${
-                    readerTheme === 'sepia'
-                      ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs border border-[#D9C4A1]'
-                      : 'text-[#85877E] hover:text-[#4A3B22]'
-                  }`}
-                  title="Kindle Book Warm Sepia"
-                >
-                  📜 Sepia
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelectTheme('oled')}
-                  className={`px-2 py-1 rounded-lg transition-all ${
-                    readerTheme === 'oled'
-                      ? 'bg-black text-white shadow-xs border border-white/20'
-                      : 'text-[#85877E] hover:text-white'
-                  }`}
-                  title="Pitch Dark OLED"
-                >
-                  🖤 OLED
-                </button>
-              </div>
-
-              {/* Font Size Adjuster */}
-              <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
-                <span className="text-[10px] text-[#85877E]">Size:</span>
-                {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setReaderFontSize(size)}
-                    className={`px-1.5 py-0.5 rounded uppercase ${
-                      readerFontSize === size
-                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
-                        : 'text-[#85877E] hover:text-[#11120F]'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-
-              {/* Container Width Adjuster */}
-              <div className="hidden md:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
-                <span className="text-[10px] text-[#85877E]">Width:</span>
-                {(['normal', 'wide', 'full'] as ReaderWidth[]).map(w => (
-                  <button
-                    key={w}
-                    type="button"
-                    onClick={() => setReaderWidth(w)}
-                    className={`px-1.5 py-0.5 rounded capitalize ${
-                      readerWidth === w
-                        ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black'
-                        : 'text-[#85877E] hover:text-[#11120F]'
-                    }`}
-                  >
-                    {w}
-                  </button>
-                ))}
-              </div>
-
-              {/* Highlighter Toggle */}
-              <button
-                type="button"
-                onClick={() => setIsHighlighterActive(prev => !prev)}
-                title="Toggle interactive text selection highlighter"
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                  isHighlighterActive
-                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
-                    : 'bg-[#F7F6F0] dark:bg-[#1C1D26] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
-                }`}
-              >
-                <Highlighter className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Highlighter {isHighlighterActive ? 'ON' : 'OFF'}</span>
-              </button>
-
-              {/* PDF Export */}
-              <button
-                type="button"
-                onClick={handleExportPdf}
-                className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1C1D26] border border-[#D8D8CF] dark:border-[#272730] text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#596B35]/15 cursor-pointer"
-                title="Download / Print PDF"
-              >
-                <FileDown className="w-4 h-4" />
-              </button>
-
-              {/* Close / Exit Fullscreen */}
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  setIsFullscreen(false);
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-xs font-black transition-all cursor-pointer"
-                title="Exit Fullscreen (ESC)"
-              >
-                <Minimize2 className="w-3.5 h-3.5" />
-                <span>Exit Fullscreen</span>
-              </button>
-            </div>
+            {/* Note Pages Tab Strip in Fullscreen Mode */}
+            <div className="pt-1">{renderNoteTabs(true)}</div>
           </div>
         )}
 
@@ -1440,7 +1743,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <div className="space-y-3">
                 <textarea
                   value={content}
-                  onChange={e => setContent(e.target.value)}
+                  onChange={e => updateContentAndSave(e.target.value)}
                   onPaste={handlePaste}
                   rows={24}
                   className="w-full p-6 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] font-mono text-sm text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-xl"
@@ -1452,7 +1755,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <textarea
                   value={content}
-                  onChange={e => setContent(e.target.value)}
+                  onChange={e => updateContentAndSave(e.target.value)}
                   onPaste={handlePaste}
                   rows={26}
                   className="w-full p-5 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-xl"
@@ -1476,9 +1779,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // ----------------------------------------------------------------------------------
   return (
     <div className="space-y-3" onPaste={handlePaste} ref={notesContainerRef} onMouseUp={handleMouseUpSelection}>
+      
+      {/* 📑 MULTIPLE NOTE PAGES TABS STRIP */}
+      <div className="p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm">
+        {renderNoteTabs(false)}
+      </div>
+
       {/* 1. TOP MAIN CONTROL & VIEW SWITCHER BAR */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm">
-        
         {/* Segmented View Mode Switcher */}
         <div className="flex items-center gap-1 bg-white dark:bg-[#12131A] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730]">
           <button
@@ -1533,7 +1841,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          
           {/* 🔲 FULL SCREEN FOCUS READER BUTTON */}
           <button
             type="button"
@@ -1712,7 +2019,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-emerald-500/15 border border-amber-500/30 text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center justify-between animate-fade-in">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-500 animate-bounce" />
-            <span>✨ Gemini / ChatGPT notes successfully converted to professional academic format with Callouts, Formulas & Tables!</span>
+            <span>✨ "{activeNote.title}" successfully converted to professional academic format with Callouts, Formulas & Tables!</span>
           </div>
           <button
             type="button"
@@ -1727,7 +2034,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       {/* 2. EDITING TOOLBAR (Visible in Edit and Split modes) */}
       {viewMode !== 'study' && (
         <div className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm space-y-2">
-          
           {/* Quick Syntax Insertion Buttons */}
           <div className="flex flex-wrap items-center gap-1">
             <button
@@ -2011,7 +2317,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           <textarea
             ref={textareaRef}
             value={content}
-            onChange={e => setContent(e.target.value)}
+            onChange={e => updateContentAndSave(e.target.value)}
             onPaste={handlePaste}
             placeholder={`Paste your notes from Gemini or ChatGPT here, or write your own!\n\n💡 Pro-Tip: After pasting from Gemini/ChatGPT, click "✨ Format AI Notes" in the toolbar above to instantly generate structured callouts, formulas, traps & tables!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
             rows={14}
@@ -2020,7 +2326,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
             <span>{wordCount} words · {charCount} chars</span>
-            <span>Supports Markdown, Tables, LaTeX Math & AI formatting</span>
+            <span>Supports Markdown, Tables, LaTeX Math & Multiple Notes</span>
           </div>
         </div>
       )}
@@ -2036,7 +2342,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <textarea
               ref={textareaRef}
               value={content}
-              onChange={e => setContent(e.target.value)}
+              onChange={e => updateContentAndSave(e.target.value)}
               onPaste={handlePaste}
               placeholder="Type or paste markdown..."
               rows={16}
@@ -2046,7 +2352,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
           <div className="flex flex-col space-y-1.5">
             <div className="text-[11px] font-bold text-[#85877E] uppercase font-mono px-1">
-              <span>Live Visual Notes Preview</span>
+              <span>Live Visual Notes Preview ({activeNote.title})</span>
             </div>
             <div className={`flex-1 p-4 sm:p-5 rounded-2xl ${getThemeContainerClass()} overflow-y-auto max-h-[480px] custom-scrollbar`}>
               {renderFormattedNotes()}

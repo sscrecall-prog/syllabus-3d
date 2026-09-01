@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment } from '../../types/syllabus';
+import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment, TopicNoteItem } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
   X,
@@ -217,9 +217,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     setTimerSeconds(0);
   };
 
-  const handleSaveNotes = (newNotes: string) => {
+  const handleSaveNotes = (newNotes: string, noteItems?: TopicNoteItem[]) => {
     setNotes(newNotes);
-    updateTopicNotes(liveTopic.id, newNotes);
+    updateTopicNotes(liveTopic.id, newNotes, noteItems);
   };
 
   const handleSaveTopicDetails = (e: React.FormEvent) => {
@@ -1032,6 +1032,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               <div className="space-y-5">
                 <ProfessionalNotesEditor
                   initialContent={notes}
+                  initialNoteItems={liveTopic.noteItems}
                   onSave={handleSaveNotes}
                   topicName={liveTopic.name}
                   subjectName={subjectName}

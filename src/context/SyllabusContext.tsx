@@ -9,6 +9,7 @@ import {
   TopicLecture,
   TopicAudioMemo,
   TopicImageAttachment,
+  TopicNoteItem,
   LectureTimestamp,
   MistakeType,
   MistakeRecord,
@@ -269,7 +270,7 @@ interface SyllabusContextType {
   deleteDailyReflection: (id: string) => void;
 
   updateTopicStatus: (topicId: string, status: TopicStatus, accuracy?: number) => void;
-  updateTopicNotes: (topicId: string, notes: string) => void;
+  updateTopicNotes: (topicId: string, notes: string, noteItems?: TopicNoteItem[]) => void;
   addTopicMistake: (topicId: string, descOrPayload: string | Partial<MistakeRecord>, type?: MistakeType, solution?: string) => void;
   resolveTopicMistake: (topicId: string, mistakeId: string) => void;
   deleteTopicMistake?: (topicId: string, mistakeId: string) => void;
@@ -764,14 +765,18 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const updateTopicNotes = (topicId: string, notes: string) => {
+  const updateTopicNotes = (topicId: string, notes: string, noteItems?: TopicNoteItem[]) => {
     setExams(prevExams => prevExams.map(exam => ({
       ...exam,
       subjects: exam.subjects.map(subj => ({
         ...subj,
         chapters: subj.chapters.map(chap => ({
           ...chap,
-          topics: chap.topics.map(top => (top.id === topicId ? { ...top, notes } : top))
+          topics: chap.topics.map(top => (top.id === topicId ? {
+            ...top,
+            notes,
+            noteItems: noteItems !== undefined ? noteItems : top.noteItems
+          } : top))
         }))
       }))
     })));
