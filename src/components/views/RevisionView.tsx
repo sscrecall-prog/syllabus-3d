@@ -71,11 +71,11 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
     <div className="space-y-4 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto select-none">
       
       {/* 1. HEADER & START REVISION BUTTON */}
-      <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4">
+      <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#596B35]/15 dark:bg-[#8B5CF6]/20 text-[#596B35] dark:text-[#8B5CF6] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center">
                 <RotateCw className="w-4 h-4" />
               </div>
               <h2 className="text-base sm:text-2xl font-bold text-[#191A17] dark:text-[#F5F5F7]">
@@ -96,7 +96,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             disabled={dueRevisions.length === 0}
             className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer shrink-0 ${
               dueRevisions.length > 0
-                ? 'bg-[#11120F] dark:bg-[#8B5CF6] text-white hover:bg-[#596B35] dark:hover:bg-[#7C3AED] shadow-[#8B5CF6]/25'
+                ? 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] hover:bg-[#596B35] dark:hover:bg-[#6090F5] shadow-[#7AA2F7]/25'
                 : 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#85877E] dark:text-[#71717A] cursor-not-allowed opacity-60'
             }`}
           >

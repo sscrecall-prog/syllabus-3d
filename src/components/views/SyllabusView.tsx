@@ -952,41 +952,55 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <div
                   key={subject.id}
                   onClick={() => handleSelectSubject(subject.id)}
-                  className="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 cursor-pointer shadow-xs group flex items-center justify-between gap-3 active:scale-[0.99]"
+                  className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer shadow-xs group space-y-2 active:scale-[0.99]"
                 >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    
-                    {/* Left Dark Stylized Thumbnail Badge (Responsive Text with Zero Overflow) */}
-                    <div className={`w-14 sm:w-16 h-10 sm:h-11 rounded-xl flex items-center justify-center font-black font-serif text-[10px] sm:text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 px-1 overflow-hidden ${badgeStyle.containerClass}`}>
-                      <span className="truncate max-w-full">{badgeStyle.badgeText}</span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      
+                      {/* Left Dark Stylized Thumbnail Badge (Responsive Text with Zero Overflow) */}
+                      <div className={`w-14 sm:w-16 h-10 sm:h-11 rounded-xl flex items-center justify-center font-black font-serif text-[10px] sm:text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 px-1 overflow-hidden ${badgeStyle.containerClass}`}>
+                        <span className="truncate max-w-full">{badgeStyle.badgeText}</span>
+                      </div>
+
+                      {/* Subject Title & File/Topic Meta */}
+                      <div className="min-w-0 space-y-0.5">
+                        <h3 className="text-xs sm:text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
+                          {subject.name}
+                        </h3>
+                        
+                        <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono flex-wrap">
+                          <span>📄 {subject.chapters.length} chapters • {subjectTotalTopics} topics</span>
+                          {subjectCompletedTopics > 0 && (
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {subjectCompletedTopics} mastered</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Subject Title & File/Topic Meta */}
-                    <div className="min-w-0 space-y-0.5">
-                      <h3 className="text-xs sm:text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
-                        {subject.name}
-                      </h3>
-                      
-                      <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono flex-wrap">
-                        <span>📄 {subject.chapters.length} chapters • {subjectTotalTopics} files</span>
-                        {subjectCompletedTopics > 0 && (
-                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {subjectCompletedTopics} mastered</span>
-                        )}
+                    {/* Progress Badge */}
+                    <div className="shrink-0">
+                      <div className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-mono font-bold ${
+                        percent === 100
+                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                          : percent > 0
+                          ? 'bg-[#16161E] dark:bg-[#16161E] text-amber-400 border border-[#292E42]'
+                          : 'bg-[#F7F6F0] dark:bg-[#16161E] text-slate-600 dark:text-slate-400 border border-[#D8D8CF] dark:border-[#292E42]'
+                      }`}>
+                        {percent}%
                       </div>
                     </div>
                   </div>
 
-                  {/* Progress Badge */}
-                  <div className="shrink-0">
-                    <div className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-mono font-bold ${
-                      percent === 100
-                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                        : percent > 0
-                        ? 'bg-[#16161E] dark:bg-[#16161E] text-amber-400 border border-[#292E42]'
-                        : 'bg-[#F7F6F0] dark:bg-[#16161E] text-slate-600 dark:text-slate-400 border border-[#D8D8CF] dark:border-[#292E42]'
-                    }`}>
-                      {percent}%
-                    </div>
+                  {/* Dynamic Subject Progress Bar */}
+                  <div className="w-full h-1.5 rounded-full bg-[#EEEEE8] dark:bg-[#16161E] overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${percent}%`,
+                        backgroundColor: subject.color || badgeStyle.accentColor || '#596B35',
+                        boxShadow: `0 0 8px ${subject.color || badgeStyle.accentColor || '#596B35'}50`
+                      }}
+                    />
                   </div>
                 </div>
               );
