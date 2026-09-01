@@ -1228,12 +1228,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // ----------------------------------------------------------------------------------
   // MULTIPLE NOTES TABS RENDERER
   // ----------------------------------------------------------------------------------
+  // MULTIPLE NOTES TABS RENDERER (Clean, Modern IDE / Notion Style)
+  // ----------------------------------------------------------------------------------
   const renderNoteTabs = (inFullscreen: boolean = false) => {
     return (
-      <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pb-1">
-        {/* Scrollable Tabs */}
-        <div className="flex items-center gap-1.5 min-w-0">
-          {noteItems.map((note, index) => {
+      <div className="flex items-center justify-between gap-3 w-full">
+        {/* Scrollable Tabs Track */}
+        <div className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 min-w-0">
+          {noteItems.map((note) => {
             const isActive = note.id === activeNoteId;
             const isEditing = editingTitleId === note.id;
 
@@ -1246,13 +1248,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     setActiveNoteId(note.id);
                   }
                 }}
-                className={`group flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none shrink-0 ${
+                className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none shrink-0 ${
                   isActive
-                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black border-transparent shadow-sm'
-                    : 'bg-white dark:bg-[#181822] text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white border-[#D8D8CF] dark:border-[#272730]'
+                    ? 'bg-white dark:bg-[#1E1F2B] text-slate-900 dark:text-white border-slate-300/80 dark:border-purple-500/40 shadow-sm ring-1 ring-black/5 dark:ring-purple-500/20'
+                    : 'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
                 }`}
               >
-                <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`} />
+                <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-slate-400'}`} />
 
                 {isEditing ? (
                   <form
@@ -1269,10 +1271,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                       onChange={e => setTempTitle(e.target.value)}
                       onBlur={() => handleSaveRename(note.id)}
                       autoFocus
-                      className="px-1.5 py-0.5 rounded bg-black/20 text-white dark:text-black border border-white/40 text-xs font-bold outline-none max-w-[120px]"
+                      className="px-1.5 py-0.5 rounded bg-black/10 dark:bg-black/40 text-slate-900 dark:text-white border border-[#596B35] dark:border-[#7AA2F7] text-xs font-bold outline-none max-w-[130px]"
                     />
-                    <button type="submit" className="p-0.5 hover:scale-110">
-                      <Check className="w-3 h-3 stroke-[3]" />
+                    <button type="submit" className="p-0.5 text-emerald-600 dark:text-emerald-400 hover:scale-110">
+                      <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </button>
                   </form>
                 ) : (
@@ -1281,24 +1283,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                       e.stopPropagation();
                       handleStartRename(note);
                     }}
-                    className="truncate max-w-[140px] font-sans"
-                    title={`Double click to rename: ${note.title}`}
+                    className="truncate max-w-[150px] font-sans"
+                    title={`Double-click to rename: ${note.title}`}
                   >
                     {note.title}
                   </span>
                 )}
 
-                {/* Tab Actions (Rename, Duplicate, Delete) */}
+                {/* Tab Quick Actions (Rename, Duplicate, Delete) */}
                 {!isEditing && (
-                  <div className="flex items-center gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-0.5">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleStartRename(note);
                       }}
-                      className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/20 ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`}
-                      title="Rename this note"
+                      className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+                      title="Rename Note"
                     >
                       <Edit3 className="w-3 h-3" />
                     </button>
@@ -1309,8 +1311,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                         e.stopPropagation();
                         handleDuplicateNote(note.id);
                       }}
-                      className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/20 ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`}
-                      title="Duplicate note"
+                      className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+                      title="Duplicate Note"
                     >
                       <CopyPlus className="w-3 h-3" />
                     </button>
@@ -1322,8 +1324,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                           e.stopPropagation();
                           handleDeleteNote(note.id);
                         }}
-                        className={`p-0.5 rounded hover:bg-rose-500 hover:text-white ${isActive ? 'text-white dark:text-black' : 'text-[#85877E]'}`}
-                        title="Delete note page"
+                        className="p-1 rounded-md hover:bg-rose-500/20 text-slate-400 hover:text-rose-500 transition-colors"
+                        title="Delete Note"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -1335,12 +1337,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           })}
         </div>
 
-        {/* Add Note Button with Dropdown Templates */}
+        {/* Right Pinned Add Note Button with Dropdown Templates */}
         <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => setShowAddTemplatesMenu(prev => !prev)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#455328] dark:from-[#7AA2F7] dark:to-[#4D7AF7] text-white dark:text-black text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm hover:opacity-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black hover:bg-[#4a5a2c] dark:hover:bg-[#6090F5] text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
             title="Create a new Note Page for this topic"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
@@ -1350,32 +1352,38 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           {/* Quick Note Templates Dropdown */}
           {showAddTemplatesMenu && (
             <div
-              className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
+              className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
               onClick={e => e.stopPropagation()}
             >
-              <div className="px-2.5 py-1.5 text-[10px] uppercase font-mono text-[#85877E] border-b border-[#D8D8CF]/60 dark:border-[#272730]">
+              <div className="px-2.5 py-1.5 text-[10px] uppercase font-mono text-slate-400 border-b border-[#D8D8CF]/60 dark:border-[#272730]">
                 Choose Note Template:
               </div>
               <button
                 type="button"
                 onClick={() => handleAddNewNote()}
-                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
               >
-                <FileText className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
-                <span>📄 Blank Notes Page</span>
+                <FileText className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <div>
+                  <div className="font-bold">📄 Blank Notes Page</div>
+                  <div className="text-[10px] text-slate-400 font-normal">Start with clean canvas</div>
+                </div>
               </button>
               <button
                 type="button"
                 onClick={() =>
                   handleAddNewNote(
-                    'Formula & Shortcuts',
+                    'Formula Sheet',
                     `# Key Formulas & Speed Shortcuts\n> [!FORMULA]\n> Standard Equation: Speed = Distance / Time\n> Average Speed = 2xy / (x + y)\n\n> [!TIP]\n> Ratio Trick: Speed ratio a:b equals Time ratio b:a.\n\n### Revision Checklist\n- [ ] Memorize 5 key unit conversions\n- [ ] Practice 5 previous year exam questions`
                   )
                 }
-                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
               >
-                <Sigma className="w-3.5 h-3.5 text-purple-500" />
-                <span>🧮 Formula Sheet</span>
+                <Sigma className="w-4 h-4 text-purple-500" />
+                <div>
+                  <div className="font-bold">🧮 Formula & Shortcuts</div>
+                  <div className="text-[10px] text-slate-400 font-normal">Formulas, equations & tricks</div>
+                </div>
               </button>
               <button
                 type="button"
@@ -1385,10 +1393,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     `# Concept Comparison Table\n| Case / Parameter | Formula | Shortcut Rule |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed | $S_{rel} = s_1 + s_2$ | Opposite directions: add speeds |`
                   )
                 }
-                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
               >
-                <TableIcon className="w-3.5 h-3.5 text-cyan-500" />
-                <span>📊 Comparison Table</span>
+                <TableIcon className="w-4 h-4 text-cyan-500" />
+                <div>
+                  <div className="font-bold">📊 Comparison Table</div>
+                  <div className="text-[10px] text-slate-400 font-normal">Side-by-side concept matrix</div>
+                </div>
               </button>
               <button
                 type="button"
@@ -1398,10 +1409,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     `# Golden Rules & Exam Traps\n> [!RULE]\n> Golden Rule: Fundamental concept definition and rules.\n\n> [!WARNING]\n> High-Frequency Trap: Watch out for negative markings in tricky exceptions!\n\n### High-Yield Questions\n- [ ] Check subject-verb agreement\n- [ ] Verify standard conversions`
                   )
                 }
-                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
               >
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
-                <span>⚠️ Rules & Traps Guide</span>
+                <AlertTriangle className="w-4 h-4 text-rose-500" />
+                <div>
+                  <div className="font-bold">⚠️ Rules & Traps Guide</div>
+                  <div className="text-[10px] text-slate-400 font-normal">Mistakes & examiner traps</div>
+                </div>
               </button>
               <button
                 type="button"
@@ -1411,10 +1425,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     `# Solved Previous Year Exam Questions (PYQ)\n> [!EXAMPLE]\n> Question: A train crosses a 300m bridge in 20 seconds. Speed = ?\n> Solution: Total distance = train + bridge.\n\n### Self Practice Checklist\n- [ ] Solve 2023 Tier 1 Questions\n- [ ] Solve 2024 Tier 2 Questions`
                   )
                 }
-                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-[#11120F] dark:text-white cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>🎯 PYQ Solved Tricks</span>
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <div>
+                  <div className="font-bold">🎯 PYQ & Solved Tricks</div>
+                  <div className="text-[10px] text-slate-400 font-normal">Previous year questions</div>
+                </div>
               </button>
             </div>
           )}
@@ -1780,237 +1797,249 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   return (
     <div className="space-y-3" onPaste={handlePaste} ref={notesContainerRef} onMouseUp={handleMouseUpSelection}>
       
-      {/* 📑 MULTIPLE NOTE PAGES TABS STRIP */}
-      <div className="p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm">
-        {renderNoteTabs(false)}
-      </div>
-
-      {/* 1. TOP MAIN CONTROL & VIEW SWITCHER BAR */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm">
-        {/* Segmented View Mode Switcher */}
-        <div className="flex items-center gap-1 bg-white dark:bg-[#12131A] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730]">
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              setViewMode('study');
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewMode === 'study'
-                ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
-                : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Study View</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              setViewMode('edit');
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewMode === 'edit'
-                ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
-                : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
-            }`}
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>Edit Notes</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              setViewMode('split');
-            }}
-            title="Side-by-side Editor & Live Visual Preview"
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewMode === 'split'
-                ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
-                : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
-            }`}
-          >
-            <SplitSquareVertical className="w-3.5 h-3.5" />
-            <span>Split Live View</span>
-          </button>
+      {/* 🌟 UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
+      <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#D8D8CF]/60 dark:divide-[#272730]">
+        
+        {/* Tier 1: Modern Multi-Note Tabs Track */}
+        <div className="p-2 px-3 bg-[#FAF8F5]/80 dark:bg-[#12131C]/60 flex items-center justify-between gap-3">
+          {renderNoteTabs(false)}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {/* 🔲 FULL SCREEN FOCUS READER BUTTON */}
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playCompleteChime();
-              setIsFullscreen(true);
-            }}
-            title="Open Fullscreen Immersive Reading Mode"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Maximize className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Full Screen</span>
-          </button>
+        {/* Tier 2: Sleek, Categorized Master Toolbar */}
+        <div className="p-2 px-3 flex flex-wrap items-center justify-between gap-2.5">
+          
+          {/* Left Cluster: View Modes & Full Screen */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1 bg-[#F4F2EB] dark:bg-[#0D0E15] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730]">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setViewMode('study');
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === 'study'
+                    ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Study View</span>
+              </button>
 
-          {/* 🔤 Font Family Switcher (Drawer View) */}
-          <div className="flex items-center gap-1 bg-white dark:bg-[#12131A] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setViewMode('edit');
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === 'edit'
+                    ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit Notes</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setViewMode('split');
+                }}
+                title="Side-by-side Live View"
+                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === 'split'
+                    ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <SplitSquareVertical className="w-3.5 h-3.5" />
+                <span>Split Live</span>
+              </button>
+            </div>
+
+            {/* Full Screen Focus Button */}
             <button
               type="button"
-              onClick={() => handleSelectFont('serif')}
-              className={`px-1.5 py-0.5 rounded font-serif ${
-                readerFontFamily === 'serif'
-                  ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                  : 'text-[#85877E] hover:text-[#11120F]'
-              }`}
-              title="Book Serif (Lora)"
+              onClick={() => {
+                soundManager.playCompleteChime();
+                setIsFullscreen(true);
+              }}
+              title="Open Fullscreen Immersive Reading Mode"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-xs"
             >
-              📖 Serif
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSelectFont('sans')}
-              className={`px-1.5 py-0.5 rounded font-sans ${
-                readerFontFamily === 'sans'
-                  ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                  : 'text-[#85877E] hover:text-[#11120F]'
-              }`}
-              title="Modern Sans (Jakarta / Inter)"
-            >
-              🏛️ Sans
+              <Maximize className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Full Screen</span>
             </button>
           </div>
 
-          {/* 🖍️ Highlighter Toggle Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setIsHighlighterActive(prev => !prev);
-              soundManager.playClick();
-            }}
-            title="Toggle interactive text selection highlighter (Select any text to highlight)"
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              isHighlighterActive
-                ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
-                : 'bg-white dark:bg-[#12131A] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
-            }`}
-          >
-            <Highlighter className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Highlight {isHighlighterActive ? 'ON' : 'OFF'}</span>
-          </button>
-
-          {/* 1-Click Copy AI Prompt Button */}
-          <button
-            type="button"
-            onClick={handleCopyAiPrompt}
-            title="Copy high-yield prompt for Google Gemini / ChatGPT to generate perfect structured notes"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-xs"
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{promptCopied ? '✓ Prompt Copied!' : 'Copy AI Prompt'}</span>
-            <span className="sm:hidden">{promptCopied ? '✓' : 'Prompt'}</span>
-          </button>
-
-          {/* 1-Click AI Smart Beautifier Button */}
-          <button
-            type="button"
-            onClick={handleFormatAiNotes}
-            disabled={!content.trim()}
-            title="Auto-format copied text from Gemini/ChatGPT into clean formulas, exam traps, rules & checklists"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm disabled:opacity-50"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Format AI Notes</span>
-          </button>
-
-          {onOpenSplitPdf && hasPdfAttachments && (
+          {/* Middle Cluster: Smart AI & Reading Tools */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Format AI Notes */}
             <button
-              onClick={onOpenSplitPdf}
-              title="Study Attached PDF and Take Notes Side-by-Side in Split-Screen"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] dark:text-[#C4B5FD] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+              type="button"
+              onClick={handleFormatAiNotes}
+              disabled={!content.trim()}
+              title="Auto-format copied text from Gemini/ChatGPT"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm disabled:opacity-50"
             >
-              <Columns className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Split PDF</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Format AI Notes</span>
             </button>
-          )}
 
-          {onOpenSplitLecture && (
+            {/* Copy AI Prompt */}
             <button
-              onClick={() => onOpenSplitLecture(lectures?.[0]?.id, 0)}
-              title="Watch Video Lecture & Take Synchronized Notes"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+              type="button"
+              onClick={handleCopyAiPrompt}
+              title="Copy structured notes prompt for Gemini / ChatGPT"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 cursor-pointer"
             >
-              <Clock className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Lecture Sync</span>
+              <Bot className="w-3.5 h-3.5" />
+              <span>{promptCopied ? '✓ Prompt Copied' : 'AI Prompt'}</span>
             </button>
-          )}
 
-          {/* Voice Typing */}
-          <button
-            type="button"
-            onClick={toggleVoiceTyping}
-            title={isListening ? 'Click to Stop Voice Typing' : 'Speak to Type Notes (Voice Typing)'}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm ${
-              isListening
-                ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/30'
-                : 'bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-600 dark:text-purple-400'
-            }`}
-          >
-            {isListening ? <MicOff className="w-3.5 h-3.5 animate-bounce" /> : <Mic className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isListening ? 'Listening...' : 'Voice'}</span>
-          </button>
+            {/* Highlighter Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsHighlighterActive(prev => !prev);
+                soundManager.playClick();
+              }}
+              title="Toggle interactive text selection highlighter"
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                isHighlighterActive
+                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300 shadow-xs'
+                  : 'bg-[#F4F2EB] dark:bg-[#0D0E15] border-[#D8D8CF] dark:border-[#272730] text-slate-500'
+              }`}
+            >
+              <Highlighter className="w-3.5 h-3.5" />
+              <span>Highlight {isHighlighterActive ? 'ON' : 'OFF'}</span>
+            </button>
 
-          {/* Export PDF */}
-          <button
-            onClick={handleExportPdf}
-            title="Export and Open Academic Notes as PDF"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#596B35]/15 hover:bg-[#596B35]/25 border border-[#596B35]/30 text-[#596B35] dark:text-[#8B5CF6] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
-          >
-            <FileDown className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">PDF</span>
-          </button>
+            {/* Font Family Switcher */}
+            <div className="hidden sm:flex items-center gap-1 bg-[#F4F2EB] dark:bg-[#0D0E15] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => handleSelectFont('serif')}
+                className={`px-1.5 py-0.5 rounded font-serif ${
+                  readerFontFamily === 'serif'
+                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Book Serif (Lora)"
+              >
+                Serif
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectFont('sans')}
+                className={`px-1.5 py-0.5 rounded font-sans ${
+                  readerFontFamily === 'sans'
+                    ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Modern Sans"
+              >
+                Sans
+              </button>
+            </div>
+          </div>
 
-          {/* Copy Raw Content */}
-          <button
-            onClick={handleCopy}
-            title="Copy notes to clipboard"
-            className="p-1.5 px-2 py-1.5 rounded-xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 flex items-center gap-1 cursor-pointer"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-          </button>
+          {/* Right Cluster: Utilities & Status */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Split PDF (if exists) */}
+            {onOpenSplitPdf && hasPdfAttachments && (
+              <button
+                onClick={onOpenSplitPdf}
+                title="Split screen with attached PDF"
+                className="p-1.5 px-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/25 text-xs font-bold flex items-center gap-1 cursor-pointer"
+              >
+                <Columns className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">PDF Sync</span>
+              </button>
+            )}
 
-          {/* Auto-Save Badge */}
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] text-[10px] font-mono font-bold">
-            {saveStatus === 'saving' ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <span className="text-amber-600 dark:text-amber-400">Saving...</span>
-              </>
-            ) : saveStatus === 'saved' ? (
-              <>
-                <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
-                <span className="text-emerald-600 dark:text-emerald-400">Saved</span>
-              </>
-            ) : (
-              <>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#85877E]" />
-                <span className="text-[#85877E]">Ready</span>
-              </>
+            {/* Lecture Sync (if exists) */}
+            {onOpenSplitLecture && (
+              <button
+                onClick={() => onOpenSplitLecture(lectures?.[0]?.id, 0)}
+                title="Watch lecture video"
+                className="p-1.5 px-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 text-xs font-bold flex items-center gap-1 cursor-pointer"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Lecture</span>
+              </button>
+            )}
+
+            {/* Voice Typing */}
+            <button
+              type="button"
+              onClick={toggleVoiceTyping}
+              title={isListening ? 'Stop Voice Typing' : 'Voice Typing'}
+              className={`p-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                isListening
+                  ? 'bg-rose-600 text-white animate-pulse'
+                  : 'bg-[#F4F2EB] dark:bg-[#0D0E15] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1E1F2B] border border-[#D8D8CF] dark:border-[#272730]'
+              }`}
+            >
+              {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{isListening ? 'Listening' : 'Voice'}</span>
+            </button>
+
+            {/* Export PDF */}
+            <button
+              onClick={handleExportPdf}
+              title="Download PDF"
+              className="p-1.5 px-2 rounded-xl bg-[#F4F2EB] dark:bg-[#0D0E15] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1E1F2B] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold cursor-pointer"
+            >
+              <FileDown className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Copy */}
+            <button
+              onClick={handleCopy}
+              title="Copy notes"
+              className="p-1.5 px-2 rounded-xl bg-[#F4F2EB] dark:bg-[#0D0E15] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1E1F2B] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold cursor-pointer"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            </button>
+
+            {/* Auto-Save Status */}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-xl bg-[#F4F2EB] dark:bg-[#0D0E15] border border-[#D8D8CF] dark:border-[#272730] text-[10px] font-mono font-bold">
+              {saveStatus === 'saving' ? (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-amber-600 dark:text-amber-400">Saving</span>
+                </>
+              ) : saveStatus === 'saved' ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
+                  <span className="text-emerald-600 dark:text-emerald-400">Saved</span>
+                </>
+              ) : (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                  <span className="text-slate-400">Ready</span>
+                </>
+              )}
+            </div>
+
+            {/* Done button in edit mode */}
+            {viewMode !== 'study' && (
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                title="Done (Ctrl + S)"
+              >
+                {saveSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
+                <span>{saveSuccess ? 'Saved' : 'Done'}</span>
+              </button>
             )}
           </div>
 
-          {viewMode !== 'study' && (
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95"
-              title="Save Changes & View Render (Ctrl + S)"
-            >
-              {saveSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{saveSuccess ? 'Saved!' : 'Done'}</span>
-            </button>
-          )}
         </div>
       </div>
 
