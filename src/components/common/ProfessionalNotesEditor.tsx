@@ -22,12 +22,21 @@ import {
   Trash2,
   X,
   Clock,
-  Play
+  Play,
+  Sparkles,
+  Bot,
+  Table as TableIcon,
+  Code,
+  ListTodo,
+  HelpCircle,
+  SplitSquareVertical,
+  CheckCircle2
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
 import { TopicImageAttachment, TopicLecture } from '../../types/syllabus';
 import { parseTimestampToSeconds } from '../../utils/youtubeUtils';
+import { formatAiNotes, generateAiNotesPrompt } from '../../utils/aiNotesFormatter';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -61,8 +70,15 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   onDeleteImage
 }) => {
   const [content, setContent] = useState(initialContent || '');
-  const [isEditing, setIsEditing] = useState(!initialContent || initialContent.trim().length === 0);
+  // View mode: 'study' (rendered view), 'edit' (markdown editor), 'split' (side-by-side)
+  const [viewMode, setViewMode] = useState<'study' | 'edit' | 'split'>(() => {
+    return initialContent && initialContent.trim().length > 0 ? 'study' : 'edit';
+  });
+
   const [copied, setCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
+  const [aiFormattedNotice, setAiFormattedNotice] = useState(false);
+  const [codeCopiedIdx, setCodeCopiedIdx] = useState<number | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
   const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
@@ -171,7 +187,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             const base64Data = await compressAndReadImage(file);
             const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
             const title = file.name && file.name !== 'image.png' ? file.name : `Screenshot ${timeStr}`;
-            
+
             if (onAddImage) {
               onAddImage({ title, dataUrl: base64Data, fileSize: file.size });
             }
@@ -237,7 +253,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         const recognition = new SpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = false;
-        recognition.lang = 'en-IN'; // Highly accurate for Indian English / Hinglish speech
+        recognition.lang = 'en-IN'; // Indian English / Hinglish speech
 
         recognition.onstart = () => {
           setIsListening(true);
@@ -292,7 +308,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     } else {
       setContent(initialContent || '');
     }
-    setIsEditing(!initialContent || initialContent.trim().length === 0);
+    if (!initialContent || initialContent.trim().length === 0) {
+      setViewMode('edit');
+    }
   }, [initialContent]);
 
   const handleSave = () => {
@@ -300,7 +318,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     soundManager.playClick();
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2000);
-    setIsEditing(false);
+    setViewMode('study');
   };
 
   const handleCopy = () => {
@@ -308,6 +326,36 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     setCopied(true);
     soundManager.playClick();
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // 1-Click AI Beautifier & Formatter for Gemini / ChatGPT raw text
+  const handleFormatAiNotes = () => {
+    if (!content.trim()) return;
+    soundManager.playCompleteChime();
+    const formatted = formatAiNotes(content, {
+      topicName,
+      subjectName,
+      chapterName,
+      examName
+    });
+    setContent(formatted);
+    onSave(formatted);
+    setAiFormattedNotice(true);
+    setTimeout(() => setAiFormattedNotice(false), 3000);
+  };
+
+  // 1-Click Copy AI Prompt for Gemini / ChatGPT
+  const handleCopyAiPrompt = () => {
+    const prompt = generateAiNotesPrompt({
+      topicName,
+      subjectName,
+      chapterName,
+      examName
+    });
+    navigator.clipboard.writeText(prompt);
+    soundManager.playCompleteChime();
+    setPromptCopied(true);
+    setTimeout(() => setPromptCopied(false), 3000);
   };
 
   const handleExportPdf = () => {
@@ -344,6 +392,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     setContent(prev => (prev ? prev + '\n' + tpl : tpl));
   };
 
+  const insertComparisonTableTemplate = () => {
+    const tpl = `\n### Comparison Table & Key Parameters\n| Concept / Case | Formula / Rule | Shortcut / Key Note |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed (Same Dir) | $S_{rel} = s_1 - s_2$ | Subtract speeds |\n| Case 4: Relative Speed (Opp Dir) | $S_{rel} = s_1 + s_2$ | Add speeds |\n`;
+    setContent(prev => (prev ? prev + '\n' + tpl : tpl));
+  };
+
   const insertGrammarRuleTemplate = () => {
     const tpl = `\n# Core Grammar & Rule Guide\n> [!RULE]\n> Golden Rule: Singular subjects take singular verbs; plural subjects take plural verbs.\n\n> [!WARNING]\n> High-Frequency Exception: Expressions like 'along with', 'as well as', 'in addition to' do not change the subject number.\n\n### Practice Traps\n- [ ] Check subject before the prepositional phrase\n- [ ] Verify tense consistency across clauses\n`;
     setContent(prev => (prev ? prev + '\n' + tpl : tpl));
@@ -372,29 +425,139 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     soundManager.playClick();
   };
 
-  // Custom Markdown & Callout Parser
+  // Rich Inline Markdown Parser (handles **bold**, *italic*, `code`, ==highlight==, ~~del~~, $math$, and timestamps)
+  const parseInlineMarkdown = (text: string, keyPrefix: string = 'inline'): React.ReactNode[] => {
+    if (!text) return [];
+
+    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|⏱️\s*\[\d{1,2}:\d{2}(?::\d{2})?\]|\[\d{1,2}:\d{2}(?::\d{2})?\])/g;
+    const parts = text.split(tokenRegex);
+
+    return parts.map((part, index) => {
+      const k = `${keyPrefix}-${index}`;
+      if (!part) return null;
+
+      // Bold
+      if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+        return (
+          <strong key={k} className="font-black text-[#11120F] dark:text-white">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      // Italic
+      if (part.startsWith('*') && part.endsWith('*') && part.length >= 2) {
+        return (
+          <em key={k} className="italic text-[#4A4B45] dark:text-[#CBD5E1]">
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+      // Code / Key Term
+      if (part.startsWith('`') && part.endsWith('`') && part.length >= 2) {
+        return (
+          <code
+            key={k}
+            className="px-1.5 py-0.5 mx-0.5 rounded-md bg-amber-500/15 dark:bg-amber-400/15 text-amber-800 dark:text-amber-300 font-mono text-[11px] sm:text-xs border border-amber-500/25"
+          >
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+      // Highlight
+      if (part.startsWith('==') && part.endsWith('==') && part.length >= 4) {
+        return (
+          <mark
+            key={k}
+            className="bg-yellow-200/90 dark:bg-yellow-500/30 text-slate-900 dark:text-yellow-200 px-1.5 py-0.5 mx-0.5 rounded-md font-semibold"
+          >
+            {part.slice(2, -2)}
+          </mark>
+        );
+      }
+      // Strikethrough
+      if (part.startsWith('~~') && part.endsWith('~~') && part.length >= 4) {
+        return (
+          <del key={k} className="line-through text-slate-400 opacity-75">
+            {part.slice(2, -2)}
+          </del>
+        );
+      }
+      // Math / Formula badge
+      if (
+        (part.startsWith('$$') && part.endsWith('$$') && part.length >= 4) ||
+        (part.startsWith('$') && part.endsWith('$') && part.length >= 2)
+      ) {
+        const mathContent = part.startsWith('$$') ? part.slice(2, -2) : part.slice(1, -1);
+        return (
+          <span
+            key={k}
+            className="inline-flex items-center gap-1 px-2 py-0.5 mx-0.5 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-700 dark:text-purple-300 font-mono font-bold text-[11px] sm:text-xs"
+          >
+            <span className="text-purple-500 text-[10px]">∑</span>
+            <span>{mathContent}</span>
+          </span>
+        );
+      }
+      // Video Timestamp jump
+      const tsMatch = part.match(/(?:⏱️\s*)?(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?/);
+      if (tsMatch && tsMatch[1] && (part.includes(':') || part.includes('⏱️'))) {
+        const timeStr = tsMatch[1];
+        const seconds = parseTimestampToSeconds(timeStr);
+        return (
+          <button
+            key={k}
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              if (onOpenSplitLecture) {
+                onOpenSplitLecture(lectures?.[0]?.id, seconds);
+              }
+            }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 mx-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-white border border-red-500/30 text-[11px] font-mono font-bold cursor-pointer transition-all active:scale-95 shadow-xs"
+            title={`Click to jump lecture video to ${timeStr} ⏱️`}
+          >
+            <Play className="w-2.5 h-2.5 fill-current" />
+            <span>{timeStr}</span>
+          </button>
+        );
+      }
+
+      return part;
+    });
+  };
+
+  // Custom Markdown, Tables & Callout Parser
   const renderFormattedNotes = () => {
     if ((!content || content.trim().length === 0) && (!images || images.length === 0)) {
       return (
-        <div className="py-12 px-4 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center mx-auto">
-            <BookOpen className="w-7 h-7" />
+        <div className="py-12 px-4 text-center space-y-4 select-none">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto shadow-sm">
+            <Sparkles className="w-7 h-7" />
           </div>
           <div>
-            <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-              No notes added for this topic yet
+            <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white font-serif">
+              No notes added for "{topicName}" yet
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
-              Type or paste your formulas, rules, shortcuts, or simply paste a screenshot (Ctrl + V) to start building your notes.
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
+              Gemini ya ChatGPT se study notes copy karke yahan paste karein — hamara AI Formatter automatically unhe professional structured notes me convert kar dega!
             </p>
           </div>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>Create / Paste Notes</span>
-          </button>
+          <div className="flex items-center justify-center gap-2.5 flex-wrap pt-2">
+            <button
+              onClick={handleCopyAiPrompt}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+            >
+              <Bot className="w-4 h-4" />
+              <span>{promptCopied ? '✓ Prompt Copied!' : '🤖 Copy AI Prompt for Gemini / ChatGPT'}</span>
+            </button>
+            <button
+              onClick={() => setViewMode('edit')}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] hover:bg-[#4a5a2d] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              <Edit3 className="w-4 h-4" />
+              <span>Write or Paste Notes</span>
+            </button>
+          </div>
         </div>
       );
     }
@@ -403,11 +566,127 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     const elements: React.ReactNode[] = [];
     let i = 0;
     let taskCounter = 0;
+    let codeBlockCounter = 0;
 
     while (i < lines.length) {
       const line = lines[i];
 
-      // Callout Blocks (> [!TYPE] ...)
+      // 1. Fenced Code Blocks (```lang ... ```)
+      if (line.trim().startsWith('```')) {
+        const langMatch = line.trim().match(/^```([a-zA-Z0-9_-]*)/);
+        const lang = langMatch && langMatch[1] ? langMatch[1].toUpperCase() : 'CODE';
+        const codeLines: string[] = [];
+        i++; // skip opening ```
+
+        while (i < lines.length && !lines[i].trim().startsWith('```')) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        i++; // skip closing ```
+
+        const fullCode = codeLines.join('\n');
+        const currentCodeIdx = codeBlockCounter++;
+        const isCodeCopied = codeCopiedIdx === currentCodeIdx;
+
+        elements.push(
+          <div
+            key={'code-' + i}
+            className="my-3.5 rounded-2xl border border-slate-700/80 bg-[#0F1017] shadow-md overflow-hidden text-slate-200"
+          >
+            <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#181926] border-b border-slate-800 text-[11px] font-mono">
+              <span className="font-bold text-slate-400 flex items-center gap-1.5">
+                <Code className="w-3.5 h-3.5 text-purple-400" />
+                {lang}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(fullCode);
+                  soundManager.playClick();
+                  setCodeCopiedIdx(currentCodeIdx);
+                  setTimeout(() => setCodeCopiedIdx(null), 2000);
+                }}
+                className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white cursor-pointer px-2 py-0.5 rounded bg-white/5 hover:bg-white/10"
+              >
+                {isCodeCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{isCodeCopied ? 'Copied' : 'Copy'}</span>
+              </button>
+            </div>
+            <pre className="p-3.5 overflow-x-auto text-xs font-mono leading-relaxed text-emerald-400/90 selection:bg-purple-500/30">
+              <code>{fullCode}</code>
+            </pre>
+          </div>
+        );
+        continue;
+      }
+
+      // 2. Markdown Tables (| col1 | col2 |)
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        const tableLines: string[] = [];
+
+        while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+          tableLines.push(lines[i].trim());
+          i++;
+        }
+
+        if (tableLines.length >= 2) {
+          const parseRow = (rowStr: string) => {
+            return rowStr
+              .slice(1, -1)
+              .split('|')
+              .map(c => c.trim());
+          };
+
+          const rawHeaders = parseRow(tableLines[0]);
+          // Check if line 1 is separator |---|---|
+          const isSeparator = /^\|(?:\s*:?-+:?\s*\|)+$/.test(tableLines[1]);
+          const dataRows = (isSeparator ? tableLines.slice(2) : tableLines.slice(1)).map(parseRow);
+
+          elements.push(
+            <div
+              key={'table-' + i}
+              className="my-4 overflow-x-auto rounded-2xl border border-[#D8D8CF] dark:border-[#272730] shadow-sm bg-white/60 dark:bg-[#12131A]/80 backdrop-blur-sm"
+            >
+              <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[340px]">
+                <thead>
+                  <tr className="bg-gradient-to-r from-[#F7F6F0] to-[#ECECE4] dark:from-[#181926] dark:to-[#1E2030] border-b border-[#D8D8CF] dark:border-[#272730] text-[11px] font-black uppercase tracking-wider text-[#11120F] dark:text-[#C0CAF5] font-serif">
+                    {rawHeaders.map((h, hIdx) => (
+                      <th
+                        key={hIdx}
+                        className="py-2.5 px-3.5 sm:px-4 font-extrabold border-r border-[#D8D8CF]/50 dark:border-[#272730]/50 last:border-r-0"
+                      >
+                        {parseInlineMarkdown(h, `th-${i}-${hIdx}`)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#D8D8CF]/40 dark:divide-[#272730]/60">
+                  {dataRows.map((row, rIdx) => (
+                    <tr
+                      key={rIdx}
+                      className={`transition-colors hover:bg-[#596B35]/5 dark:hover:bg-[#7AA2F7]/5 ${
+                        rIdx % 2 === 0 ? 'bg-transparent' : 'bg-slate-50/50 dark:bg-[#161722]/50'
+                      }`}
+                    >
+                      {row.map((cell, cIdx) => (
+                        <td
+                          key={cIdx}
+                          className="py-2.5 px-3.5 sm:px-4 text-xs font-medium text-[#11120F] dark:text-slate-200 border-r border-[#D8D8CF]/30 dark:border-[#272730]/30 last:border-r-0 leading-relaxed"
+                        >
+                          {parseInlineMarkdown(cell, `td-${i}-${rIdx}-${cIdx}`)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+          continue;
+        }
+      }
+
+      // 3. Callout Blocks (> [!TYPE] ...)
       if (line.trim().startsWith('> [!')) {
         const match = line.trim().match(/^>\s*\[!([A-Z]+)\]/i);
         const calloutType = match ? match[1].toUpperCase() : 'NOTE';
@@ -422,26 +701,30 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           i++;
         }
 
-        let borderCol = 'border-cyan-500/40 bg-cyan-500/10 text-cyan-400';
+        let borderCol = 'border-cyan-500/40 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400';
         let IconComp = Info;
-        let title = 'Note';
+        let title = 'Key Note';
 
         if (calloutType === 'FORMULA' || calloutType === 'MATH') {
-          borderCol = 'border-purple-500/40 bg-purple-500/10 text-purple-400';
+          borderCol = 'border-purple-500/40 bg-purple-500/10 text-purple-700 dark:text-purple-300';
           IconComp = Sigma;
-          title = 'Formula & Concept';
-        } else if (calloutType === 'TIP' || calloutType === 'SHORTCUT') {
-          borderCol = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400';
+          title = 'Formula & Equations';
+        } else if (calloutType === 'TIP' || calloutType === 'SHORTCUT' || calloutType === 'TRICK') {
+          borderCol = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300';
           IconComp = Zap;
-          title = 'Pro Tip & Shortcut';
-        } else if (calloutType === 'WARNING' || calloutType === 'TRAP') {
-          borderCol = 'border-rose-500/40 bg-rose-500/10 text-rose-400';
+          title = 'Pro Tip & Speed Shortcut';
+        } else if (calloutType === 'WARNING' || calloutType === 'TRAP' || calloutType === 'MISTAKE' || calloutType === 'CAUTION') {
+          borderCol = 'border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-300';
           IconComp = AlertTriangle;
-          title = 'Exam Trap & Warning';
-        } else if (calloutType === 'RULE' || calloutType === 'KEY') {
-          borderCol = 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400';
+          title = 'Exam Trap & High-Frequency Mistake';
+        } else if (calloutType === 'RULE' || calloutType === 'KEY' || calloutType === 'CONCEPT') {
+          borderCol = 'border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300';
           IconComp = BookOpen;
-          title = 'Golden Rule';
+          title = 'Golden Rule & Core Concept';
+        } else if (calloutType === 'EXAMPLE' || calloutType === 'QUESTION') {
+          borderCol = 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300';
+          IconComp = Sparkles;
+          title = 'Solved Exam Example';
         }
 
         elements.push(
@@ -449,13 +732,15 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             key={'callout-' + i}
             className={`my-3.5 p-3.5 sm:p-4 rounded-2xl border backdrop-blur-sm shadow-sm ${borderCol}`}
           >
-            <div className="flex items-center gap-2 mb-1.5">
-              <IconComp className="w-4 h-4 shrink-0" />
-              <span className="text-xs font-extrabold uppercase tracking-wider">{title}</span>
+            <div className="flex items-center gap-2 mb-2">
+              <IconComp className="w-4 h-4 shrink-0 stroke-[2.5]" />
+              <span className="text-xs font-black uppercase tracking-wider font-serif">{title}</span>
             </div>
-            <div className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 space-y-1 pl-6 leading-relaxed">
+            <div className="text-xs sm:text-[13px] font-medium text-slate-800 dark:text-slate-200 space-y-1.5 pl-6 leading-relaxed">
               {calloutLines.map((cl, cIdx) => (
-                <p key={cIdx} className="font-mono text-xs sm:text-[13px]">{cl}</p>
+                <p key={cIdx}>
+                  {parseInlineMarkdown(cl, `callout-${i}-${cIdx}`)}
+                </p>
               ))}
             </div>
           </div>
@@ -463,111 +748,116 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         continue;
       }
 
-      // Headings
+      // 4. Headings
       if (line.startsWith('# ')) {
         elements.push(
-          <h1 key={i} className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-5 mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
-            <span className="w-1.5 h-5 rounded-full bg-brand-500 inline-block" />
-            <span>{line.replace('# ', '')}</span>
+          <h1
+            key={i}
+            className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-6 mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 font-serif"
+          >
+            <span className="w-1.5 h-5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] inline-block shrink-0" />
+            <span>{parseInlineMarkdown(line.replace('# ', ''), `h1-${i}`)}</span>
           </h1>
         );
       } else if (line.startsWith('## ')) {
         elements.push(
-          <h2 key={i} className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-2">
-            <span className="w-1.5 h-4 rounded-full bg-purple-500 inline-block" />
-            <span>{line.replace('## ', '')}</span>
+          <h2
+            key={i}
+            className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white mt-5 mb-2 flex items-center gap-2 font-serif"
+          >
+            <span className="w-1.5 h-4 rounded-full bg-purple-500 inline-block shrink-0" />
+            <span>{parseInlineMarkdown(line.replace('## ', ''), `h2-${i}`)}</span>
           </h2>
         );
       } else if (line.startsWith('### ')) {
         elements.push(
-          <h3 key={i} className="text-xs sm:text-sm font-bold text-brand-500 dark:text-brand-400 mt-3 mb-1 uppercase tracking-wider">
-            {line.replace('### ', '')}
+          <h3
+            key={i}
+            className="text-xs sm:text-sm font-black text-[#596B35] dark:text-[#7AA2F7] mt-4 mb-1.5 uppercase tracking-wider font-mono flex items-center gap-1.5"
+          >
+            <span>▶</span>
+            <span>{parseInlineMarkdown(line.replace('### ', ''), `h3-${i}`)}</span>
           </h3>
         );
       }
-      // Checkbox Tasks
+      // 5. Checkbox Tasks (- [ ] / - [x])
       else if (line.trim().startsWith('- [ ] ') || line.trim().startsWith('- [x] ')) {
         const isDone = line.trim().startsWith('- [x] ');
         const taskText = line.trim().substring(6);
-        const currentTaskIdx = taskCounter;
-        taskCounter++;
+        const currentTaskIdx = taskCounter++;
 
         elements.push(
           <div
             key={i}
             onClick={() => toggleCheckboxInText(currentTaskIdx)}
-            className={`flex items-center gap-3 p-2 sm:p-2.5 my-1 rounded-xl cursor-pointer transition-all ${
+            className={`flex items-center gap-3 p-2 sm:p-2.5 my-1 rounded-xl cursor-pointer transition-all active:scale-[0.99] ${
               isDone
                 ? 'bg-emerald-500/10 text-slate-400 line-through'
-                : 'bg-slate-50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                : 'bg-white dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-[#D8D8CF]/60 dark:border-[#272730]'
             }`}
           >
-            <div className={`w-4.5 h-4.5 rounded-lg flex items-center justify-center border transition-all shrink-0 ${
-              isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-            }`}>
+            <div
+              className={`w-4.5 h-4.5 rounded-lg flex items-center justify-center border transition-all shrink-0 ${
+                isDone
+                  ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
+                  : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
+              }`}
+            >
               {isDone && <Check className="w-3 h-3 stroke-[3]" />}
             </div>
-            <span className="text-xs font-medium">{taskText}</span>
+            <span className="text-xs font-semibold leading-relaxed">
+              {parseInlineMarkdown(taskText, `task-${i}`)}
+            </span>
           </div>
         );
       }
-      // Bullet list with timestamp support
+      // 6. Bullet lists
       else if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
         const rawBullet = line.trim().substring(2);
-        const tsMatch = rawBullet.match(/^(?:⏱️\s*)?(?:\[|@)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(.*)$/);
-
-        if (tsMatch && tsMatch[1]) {
-          const timeStr = tsMatch[1];
-          const seconds = parseTimestampToSeconds(timeStr);
-          const restText = tsMatch[2];
-
-          elements.push(
-            <div key={i} className="flex items-start gap-2.5 my-1.5 pl-1 group/ts">
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  if (onOpenSplitLecture) {
-                    onOpenSplitLecture(lectures?.[0]?.id, seconds);
-                  }
-                }}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-white border border-red-500/30 text-xs font-mono font-bold cursor-pointer transition-all active:scale-95 shadow-xs shrink-0 mt-0.5"
-                title={`Click to open lecture video at ${timeStr} ⏱️`}
-              >
-                <Play className="w-2.5 h-2.5 fill-current" />
-                <span>{timeStr}</span>
-              </button>
-              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-                {restText}
-              </p>
+        elements.push(
+          <div key={i} className="flex items-start gap-2.5 my-1.5 pl-1 leading-relaxed">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-2 shrink-0" />
+            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">
+              {parseInlineMarkdown(rawBullet, `bullet-${i}`)}
             </div>
-          );
-        } else {
-          elements.push(
-            <div key={i} className="flex items-start gap-2.5 my-1 pl-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-2 shrink-0" />
-              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                {rawBullet}
-              </p>
-            </div>
-          );
-        }
+          </div>
+        );
       }
-      // Horizontal Rule
+      // 7. Numbered lists (1. Item)
+      else if (/^\s*\d+\.\s+(.*)$/.test(line.trim())) {
+        const numMatch = line.trim().match(/^\s*(\d+)\.\s+(.*)$/);
+        const num = numMatch ? numMatch[1] : '1';
+        const numText = numMatch ? numMatch[2] : line.trim();
+
+        elements.push(
+          <div key={i} className="flex items-start gap-2.5 my-1.5 pl-1 leading-relaxed">
+            <span className="px-1.5 py-0.2 rounded-md bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] text-[10px] font-mono font-bold mt-0.5 shrink-0">
+              {num}.
+            </span>
+            <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">
+              {parseInlineMarkdown(numText, `num-${i}`)}
+            </div>
+          </div>
+        );
+      }
+      // 8. Horizontal Rule
       else if (line.trim() === '---' || line.trim() === '***') {
         elements.push(<hr key={i} className="my-4 border-slate-200 dark:border-slate-800" />);
       }
-      // Blank Line
+      // 9. Blank Line
       else if (line.trim() === '') {
         elements.push(<div key={i} className="h-2" />);
       }
-      // Inline Markdown Images: ![alt](url) (for URLs or any other images)
+      // 10. Inline Images
       else if (line.trim().match(/^!\[(.*?)\]\((.*?)\)$/)) {
         const imgMatch = line.trim().match(/^!\[(.*?)\]\((.*?)\)$/);
         const altText = imgMatch ? imgMatch[1] : 'Image';
         const imgSrc = imgMatch ? imgMatch[2] : '';
         elements.push(
-          <div key={i} className="my-3 max-w-xl rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] bg-[#141418] shadow-md group">
+          <div
+            key={i}
+            className="my-3 max-w-xl rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] bg-[#141418] shadow-md group"
+          >
             <div className="relative">
               <img
                 src={imgSrc}
@@ -601,11 +891,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </div>
         );
       }
-      // Regular Paragraph with formatting highlights
+      // 11. Regular Paragraph with inline formatting
       else {
         elements.push(
-          <p key={i} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
-            {line}
+          <p key={i} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans my-1">
+            {parseInlineMarkdown(line, `p-${i}`)}
           </p>
         );
       }
@@ -621,15 +911,21 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
   return (
     <div className="space-y-3" onPaste={handlePaste}>
-      {/* Editor & View Control Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 shadow-sm">
-        <div className="flex items-center gap-1">
+      {/* 1. TOP MAIN CONTROL & VIEW SWITCHER BAR */}
+      <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-[#FAF8F5] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm">
+        
+        {/* Segmented View Mode Switcher */}
+        <div className="flex items-center gap-1 bg-white dark:bg-[#12131A] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730]">
           <button
-            onClick={() => setIsEditing(false)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              !isEditing
-                ? 'bg-brand-500 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/50'
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setViewMode('study');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'study'
+                ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
+                : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
             }`}
           >
             <Eye className="w-3.5 h-3.5" />
@@ -637,27 +933,74 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </button>
 
           <button
-            onClick={() => setIsEditing(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              isEditing
-                ? 'bg-brand-500 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/50'
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setViewMode('edit');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'edit'
+                ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
+                : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
             }`}
           >
             <Edit3 className="w-3.5 h-3.5" />
             <span>Edit Notes</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setViewMode('split');
+            }}
+            title="Side-by-side Editor & Live Visual Preview"
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'split'
+                ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
+                : 'text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
+            }`}
+          >
+            <SplitSquareVertical className="w-3.5 h-3.5" />
+            <span>Split Live View</span>
+          </button>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex items-center gap-1.5 flex-wrap">
+          
+          {/* 1-Click Copy AI Prompt Button */}
+          <button
+            type="button"
+            onClick={handleCopyAiPrompt}
+            title="Copy high-yield prompt for Google Gemini / ChatGPT to generate perfect structured notes"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-xs"
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{promptCopied ? '✓ Prompt Copied!' : 'Copy AI Prompt'}</span>
+            <span className="sm:hidden">{promptCopied ? '✓' : 'Prompt'}</span>
+          </button>
+
+          {/* 1-Click AI Smart Beautifier Button */}
+          <button
+            type="button"
+            onClick={handleFormatAiNotes}
+            disabled={!content.trim()}
+            title="Auto-format copied text from Gemini/ChatGPT into clean formulas, exam traps, rules & checklists"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm disabled:opacity-50"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Format AI Notes</span>
+          </button>
+
           {onOpenSplitPdf && hasPdfAttachments && (
             <button
               onClick={onOpenSplitPdf}
               title="Study Attached PDF and Take Notes Side-by-Side in Split-Screen"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] dark:text-[#C4B5FD] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 border border-[#8B5CF6]/30 text-[#8B5CF6] dark:text-[#C4B5FD] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
             >
               <Columns className="w-3.5 h-3.5" />
-              <span>Split PDF</span>
+              <span className="hidden sm:inline">Split PDF</span>
             </button>
           )}
 
@@ -665,54 +1008,49 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <button
               onClick={() => onOpenSplitLecture(lectures?.[0]?.id, 0)}
               title="Watch Video Lecture & Take Synchronized Notes"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
             >
               <Clock className="w-3.5 h-3.5" />
-              <span>Lecture Sync</span>
-              <span className="text-[9px] px-1 py-0.2 rounded bg-red-600 text-white font-mono font-bold">
-                SYNC
-              </span>
+              <span className="hidden sm:inline">Lecture Sync</span>
             </button>
           )}
 
-          {/* Voice Typing / Speech-to-Text Button */}
+          {/* Voice Typing */}
           <button
             type="button"
             onClick={toggleVoiceTyping}
             title={isListening ? 'Click to Stop Voice Typing' : 'Speak to Type Notes (Voice Typing)'}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm ${
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm ${
               isListening
                 ? 'bg-rose-600 text-white animate-pulse shadow-rose-600/30'
                 : 'bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-600 dark:text-purple-400'
             }`}
           >
             {isListening ? <MicOff className="w-3.5 h-3.5 animate-bounce" /> : <Mic className="w-3.5 h-3.5" />}
-            <span>{isListening ? 'Listening...' : 'Voice Typing'}</span>
+            <span className="hidden sm:inline">{isListening ? 'Listening...' : 'Voice'}</span>
           </button>
 
+          {/* Export PDF */}
           <button
             onClick={handleExportPdf}
-            title="Export and Open Academic Notes as PDF in Chrome New Tab"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35]/15 hover:bg-[#596B35]/25 border border-[#596B35]/30 text-[#596B35] dark:text-[#8B5CF6] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+            title="Export and Open Academic Notes as PDF"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#596B35]/15 hover:bg-[#596B35]/25 border border-[#596B35]/30 text-[#596B35] dark:text-[#8B5CF6] text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
           >
             <FileDown className="w-3.5 h-3.5" />
-            <span>Save / Open PDF</span>
-            <span className="text-[9px] px-1 py-0.2 rounded bg-[#596B35] text-white font-mono font-bold">
-              NEW TAB
-            </span>
+            <span className="hidden sm:inline">PDF</span>
           </button>
 
+          {/* Copy Raw Content */}
           <button
             onClick={handleCopy}
             title="Copy notes to clipboard"
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 flex items-center gap-1 cursor-pointer"
+            className="p-1.5 px-2 py-1.5 rounded-xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 flex items-center gap-1 cursor-pointer"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
           </button>
 
-          {/* Real-Time Auto-Save Status Badge */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[11px] font-mono font-bold">
+          {/* Auto-Save Badge */}
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] text-[10px] font-mono font-bold">
             {saveStatus === 'saving' ? (
               <>
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
@@ -720,10 +1058,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               </>
             ) : saveStatus === 'saved' ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
-                <span className="text-emerald-600 dark:text-emerald-400">
-                  Auto-Saved {lastSavedTime ? `• ${lastSavedTime}` : ''}
-                </span>
+                <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
+                <span className="text-emerald-600 dark:text-emerald-400">Saved</span>
               </>
             ) : (
               <>
@@ -733,44 +1069,70 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             )}
           </div>
 
-          {isEditing && (
+          {viewMode !== 'study' && (
             <button
               onClick={handleSave}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95"
-              title="Manual Instant Save (Ctrl + S)"
+              title="Save Changes & View Render (Ctrl + S)"
             >
               {saveSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{saveSuccess ? 'Saved!' : 'Save'}</span>
+              <span>{saveSuccess ? 'Saved!' : 'Done'}</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Editing Toolbar & Templates */}
-      {isEditing && (
-        <div className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm space-y-2">
+      {/* AI Formatted Success Banner */}
+      {aiFormattedNotice && (
+        <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-emerald-500/15 border border-amber-500/30 text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center justify-between animate-fade-in">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-500 animate-bounce" />
+            <span>✨ Gemini / ChatGPT notes successfully converted to professional academic format with Callouts, Formulas & Tables!</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAiFormattedNotice(false)}
+            className="p-1 text-slate-400 hover:text-white"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* 2. EDITING TOOLBAR (Visible in Edit and Split modes) */}
+      {viewMode !== 'study' && (
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm space-y-2">
+          
           {/* Quick Syntax Insertion Buttons */}
           <div className="flex flex-wrap items-center gap-1">
             <button
               type="button"
               onClick={() => insertText('**', '**', 'Bold Text')}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
-              title="Bold"
+              className="px-2 py-1 rounded-lg text-xs font-black bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300"
+              title="Bold (**text**)"
             >
               B
             </button>
             <button
               type="button"
               onClick={() => insertText('*', '*', 'Italic Text')}
-              className="px-2 py-1 rounded-lg text-xs font-serif italic bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
-              title="Italic"
+              className="px-2 py-1 rounded-lg text-xs font-serif italic bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300"
+              title="Italic (*text*)"
             >
               I
             </button>
             <button
               type="button"
+              onClick={() => insertText('==', '==', 'Highlighted Text')}
+              className="px-2 py-1 rounded-lg text-xs font-bold bg-yellow-400/20 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-400/30 border border-yellow-400/30"
+              title="Highlight (==text==)"
+            >
+              ==HL==
+            </button>
+            <button
+              type="button"
               onClick={() => insertText('# ', '', 'Main Heading')}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center gap-0.5"
+              className="px-2 py-1 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300 flex items-center gap-0.5"
               title="Heading 1"
             >
               <Hash className="w-3 h-3" /> 1
@@ -778,60 +1140,101 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <button
               type="button"
               onClick={() => insertText('## ', '', 'Subheading')}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center gap-0.5"
+              className="px-2 py-1 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300 flex items-center gap-0.5"
               title="Heading 2"
             >
               <Hash className="w-3 h-3" /> 2
             </button>
+
+            {/* Formula Block */}
             <button
               type="button"
-              onClick={() => insertText('> [!FORMULA]\n> ', '', 'Formula: Result')}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 flex items-center gap-1"
-              title="Formula Card"
+              onClick={() => insertText('> [!FORMULA]\n> ', '', 'Formula: Speed = Distance / Time')}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 flex items-center gap-1"
+              title="Insert Formula Callout Card"
             >
               <Sigma className="w-3 h-3" />
               <span>Formula</span>
             </button>
+
+            {/* Shortcut Tip */}
             <button
               type="button"
-              onClick={() => insertText('> [!TIP]\n> ', '', 'Pro Tip / Shortcut Method')}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 flex items-center gap-1"
-              title="Tip Card"
+              onClick={() => insertText('> [!TIP]\n> ', '', 'Shortcut Method / Speed Trick')}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 flex items-center gap-1"
+              title="Insert Shortcut Tip Card"
             >
               <Zap className="w-3 h-3" />
               <span>Shortcut</span>
             </button>
+
+            {/* Warning / Exam Trap */}
             <button
               type="button"
               onClick={() => insertText('> [!WARNING]\n> ', '', 'Common Exam Trap to Avoid')}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 flex items-center gap-1"
-              title="Warning Card"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 flex items-center gap-1"
+              title="Insert Exam Trap / Warning Card"
             >
               <AlertTriangle className="w-3 h-3" />
               <span>Trap</span>
             </button>
+
+            {/* Golden Rule */}
             <button
               type="button"
-              onClick={() => insertText('- [ ] ', '', 'Task to remember')}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center gap-1"
-              title="Task Checkbox"
+              onClick={() => insertText('> [!RULE]\n> ', '', 'Golden Rule / Fundamental Law')}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/30 flex items-center gap-1"
+              title="Insert Golden Rule Card"
+            >
+              <BookOpen className="w-3 h-3" />
+              <span>Rule</span>
+            </button>
+
+            {/* Checklist */}
+            <button
+              type="button"
+              onClick={() => insertText('- [ ] ', '', 'High-yield practice question or concept')}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300 flex items-center gap-1"
+              title="Insert Checklist Item"
             >
               <CheckSquare className="w-3 h-3" />
               <span>Checklist</span>
+            </button>
+
+            {/* Table */}
+            <button
+              type="button"
+              onClick={insertComparisonTableTemplate}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 flex items-center gap-1"
+              title="Insert Comparison Table"
+            >
+              <TableIcon className="w-3 h-3" />
+              <span>Table</span>
+            </button>
+
+            {/* Code / Monospace Block */}
+            <button
+              type="button"
+              onClick={() => insertText('```text\n', '\n```', 'Your raw equations or data')}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 hover:bg-slate-500/20 border border-slate-500/30 flex items-center gap-1"
+              title="Insert Code / Monospace Block"
+            >
+              <Code className="w-3 h-3" />
+              <span>Code Block</span>
             </button>
 
             {/* Timestamp Sync Button */}
             <button
               type="button"
               onClick={() => insertText('\n- ⏱️ [00:00] **Key Concept**: ', '', '')}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/30 flex items-center gap-1 cursor-pointer"
-              title="Insert Clickable Timestamp Tag (e.g. ⏱️ [12:34])"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/30 flex items-center gap-1 cursor-pointer"
+              title="Insert Clickable Video Timestamp (e.g. ⏱️ [12:34])"
             >
               <Clock className="w-3 h-3" />
               <span>+ Timestamp</span>
             </button>
 
-            {/* Hidden Image Input */}
+            {/* Image Upload Input */}
             <input
               type="file"
               ref={fileInputImageRef}
@@ -839,41 +1242,49 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               onChange={handleImageUpload}
               className="hidden"
             />
-            {/* Insert / Paste Image Button */}
             <button
               type="button"
               onClick={() => fileInputImageRef.current?.click()}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 border border-blue-500/30 flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 border border-blue-500/30 flex items-center gap-1 cursor-pointer"
               title="Upload Image or Paste Screenshot (Ctrl+V supported)"
             >
               <ImageIcon className="w-3 h-3" />
-              <span>+ Image / Screenshot</span>
+              <span>+ Image</span>
             </button>
           </div>
 
-          {/* Preset Templates */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+          {/* Quick Preset Templates */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#D8D8CF]/60 dark:border-[#272730]">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Quick Templates:</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase font-mono">1-Click Templates:</span>
               <button
                 type="button"
                 onClick={insertFormulaTemplate}
-                className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-medium transition-colors"
+                className="px-2 py-0.5 rounded-md bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-bold transition-colors cursor-pointer"
               >
                 + Formula Sheet
               </button>
               <button
                 type="button"
-                onClick={insertGrammarRuleTemplate}
-                className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-medium transition-colors"
+                onClick={insertComparisonTableTemplate}
+                className="px-2 py-0.5 rounded-md bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-bold transition-colors cursor-pointer"
               >
-                + Rule & Exception Sheet
+                + Comparison Table
+              </button>
+              <button
+                type="button"
+                onClick={insertGrammarRuleTemplate}
+                className="px-2 py-0.5 rounded-md bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-bold transition-colors cursor-pointer"
+              >
+                + Rules & Traps Guide
               </button>
             </div>
 
-            <span className="text-[10px] text-purple-600 dark:text-purple-400 font-medium">
-              💡 Press <strong>Ctrl + V</strong> anywhere to paste screenshot
-            </span>
+            <div className="flex items-center gap-2 text-[10px] text-purple-600 dark:text-purple-400 font-semibold font-mono">
+              <span>🤖 Gemini / ChatGPT paste supported</span>
+              <span>•</span>
+              <span>📸 Ctrl+V Screenshot</span>
+            </div>
           </div>
         </div>
       )}
@@ -882,7 +1293,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       {isProcessingImage && (
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold animate-pulse">
           <ImageIcon className="w-4 h-4 animate-bounce" />
-          <span>Processing and saving screenshot...</span>
+          <span>Processing and optimizing screenshot...</span>
         </div>
       )}
 
@@ -894,13 +1305,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         </div>
       )}
 
-      {/* Attached Screenshots Strip (in Edit Mode) */}
-      {isEditing && images && images.length > 0 && (
+      {/* Attached Screenshots Strip */}
+      {viewMode !== 'study' && images && images.length > 0 && (
         <div className="p-3 rounded-2xl bg-white/70 dark:bg-[#18181D]/80 border border-[#D8D8CF] dark:border-[#272730] space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] flex items-center gap-1.5">
+            <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] flex items-center gap-1.5 font-serif">
               <ImageIcon className="w-3.5 h-3.5 text-[#8B5CF6]" />
-              Attached Screenshots & Images ({images.length})
+              Attached Screenshots & Diagrams ({images.length})
             </span>
             <span className="text-[10px] text-[#85877E]">Click to view • Press Ctrl+V to paste more</span>
           </div>
@@ -948,32 +1359,65 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         </div>
       )}
 
-      {/* Editor Content Body */}
-      {isEditing ? (
+      {/* 3. MAIN CONTENT BODY ACCORDING TO VIEW MODE */}
+      {viewMode === 'edit' && (
+        /* Full Editor Mode */
         <div className="space-y-2" onPaste={handlePaste}>
           <textarea
             ref={textareaRef}
             value={content}
             onChange={e => setContent(e.target.value)}
             onPaste={handlePaste}
-            placeholder={"Type your notes, formulas, rules, and memory tips here...\n\n📸 Tip: Press Ctrl + V anytime to paste a screenshot directly!\n\n> [!FORMULA]\n> Your formula here\n\n> [!WARNING]\n> Common trap here\n\n- [ ] Checklist item"}
-            rows={12}
-            className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-xs sm:text-[13px] text-slate-900 dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-inner"
+            placeholder={`Paste your notes from Gemini or ChatGPT here, or write your own!\n\n💡 Pro-Tip: After pasting from Gemini/ChatGPT, click "✨ Format AI Notes" in the toolbar above to instantly generate structured callouts, formulas, traps & tables!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
+            rows={14}
+            className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] dark:focus:ring-[#7AA2F7] shadow-inner"
           />
 
-          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-            <span>{wordCount} words · {charCount} characters</span>
-            <span>Markdown & LaTeX formula tags supported</span>
+          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
+            <span>{wordCount} words · {charCount} chars</span>
+            <span>Supports Markdown, Tables, LaTeX Math & AI formatting</span>
           </div>
         </div>
-      ) : (
-        /* Rendered Study Mode */
+      )}
+
+      {viewMode === 'split' && (
+        /* Split Live View (Side-by-Side Editor & Live Render) */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3" onPaste={handlePaste}>
+          <div className="flex flex-col space-y-1.5">
+            <div className="text-[11px] font-bold text-[#85877E] uppercase font-mono flex items-center justify-between px-1">
+              <span>Markdown Source Editor</span>
+              <span>{wordCount} words</span>
+            </div>
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={e => setContent(e.target.value)}
+              onPaste={handlePaste}
+              placeholder="Type or paste markdown..."
+              rows={16}
+              className="flex-1 w-full p-3.5 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-inner resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1.5">
+            <div className="text-[11px] font-bold text-[#85877E] uppercase font-mono px-1">
+              <span>Live Visual Notes Preview</span>
+            </div>
+            <div className="flex-1 p-4 rounded-2xl bg-white/70 dark:bg-[#141520]/90 border border-[#D8D8CF] dark:border-[#272730] shadow-sm overflow-y-auto max-h-[480px] custom-scrollbar">
+              {renderFormattedNotes()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewMode === 'study' && (
+        /* Study Mode (Clean, magazine-quality visual notes) */
         <div className="space-y-4">
-          <div className="p-4 sm:p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-sm min-h-[200px]">
+          <div className="p-4 sm:p-6 rounded-3xl bg-white/70 dark:bg-[#141520]/90 border border-[#D8D8CF] dark:border-[#272730] shadow-sm min-h-[220px]">
             {renderFormattedNotes()}
           </div>
 
-          {/* Attached Screenshots Gallery (in Study View) */}
+          {/* Attached Screenshots Gallery */}
           {images && images.length > 0 && (
             <div className="p-4 sm:p-5 rounded-2xl bg-white/70 dark:bg-[#18181D]/90 border border-[#D8D8CF] dark:border-[#272730] shadow-sm space-y-3">
               <div className="flex items-center justify-between">
@@ -1041,14 +1485,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       {zoomImage && (
         <div
           onClick={() => setZoomImage(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+          className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
         >
           <div
             onClick={e => e.stopPropagation()}
             className="relative max-w-5xl max-h-[90vh] flex flex-col items-center cursor-default bg-[#18181D] p-3 rounded-2xl border border-[#272730] shadow-2xl"
           >
             <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-[#272730] text-white">
-              <span className="text-xs font-bold truncate max-w-md">{zoomImage.title}</span>
+              <span className="text-xs font-bold truncate max-w-md font-serif">{zoomImage.title}</span>
               <div className="flex items-center gap-2">
                 <a
                   href={zoomImage.src}
