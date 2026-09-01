@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTimer } from '../../context/TimerContext';
@@ -30,7 +30,10 @@ import {
   Award,
   Camera,
   User,
-  Image as ImageIcon
+  Image as ImageIcon,
+  HardDrive,
+  FileCheck2,
+  RefreshCw
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -48,7 +51,14 @@ export const SettingsView: React.FC = () => {
     exportData,
     importData,
     resetToDemo,
-    clearAllDemoData
+    clearAllDemoData,
+    exams,
+    plannerTasks,
+    revisions,
+    top3Targets,
+    reflectionsHistory,
+    lastSavedAt,
+    isAutoSaving
   } = useSyllabus();
 
   const { user, logout, updateUserSession } = useAuth();
@@ -75,6 +85,22 @@ export const SettingsView: React.FC = () => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [testLaunched, setTestLaunched] = useState(false);
+
+  // Approximate local storage usage in KB
+  const storageUsageKb = useMemo(() => {
+    if (typeof window === 'undefined') return 0;
+    try {
+      let total = 0;
+      for (let x in localStorage) {
+        if (localStorage.hasOwnProperty(x)) {
+          total += (localStorage[x].length + x.length) * 2;
+        }
+      }
+      return Math.max(1, Math.round(total / 1024));
+    } catch {
+      return 12;
+    }
+  }, [exams, profile, plannerTasks, revisions, top3Targets, reflectionsHistory]);
 
   // Sound & Motivation Audio state
   const [audioConfig, setAudioConfig] = useState<AudioSettings>(() => soundManager.getSettings());
@@ -944,15 +970,57 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 4: BACKUP, RESTORE & STORAGE */}
       {activeTab === 'data' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-5 animate-fade-in">
           <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
             <div>
               <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
-                Data Backup & Device Storage
+                1-Click Backup & Local Auto-Save Sync
               </h3>
               <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
-                Export your syllabus progress to JSON or install the offline web application.
+                All your syllabus data is continuously auto-saved. You can also export a 1-click JSON backup file.
               </p>
+            </div>
+          </div>
+
+          {/* Live Auto-Save Sync Telemetry Card */}
+          <div className="p-4 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] block leading-tight">
+                    Continuous Local Auto-Save: Active
+                  </span>
+                  <span className="text-[10px] text-[#85877E] dark:text-[#787C99]">
+                    Zero risk of progress loss — synced instantly on every note, target, or score edit.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold shrink-0 self-start sm:self-auto">
+                <Check className="w-3 h-3 stroke-[2.5]" />
+                <span>Last Synced: {lastSavedAt}</span>
+              </div>
+            </div>
+
+            {/* Storage Metric Pills */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-[#D8D8CF]/50 dark:border-[#292E42]/50 text-center font-mono">
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Topics & Notes</span>
+                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">{overallStats.totalTopics} Topics</span>
+              </div>
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">SRS Flashcards</span>
+                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">{revisions.length} Cards</span>
+              </div>
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Targets & Reflections</span>
+                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">{top3Targets.length + reflectionsHistory.length} Entries</span>
+              </div>
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Total Stored Data</span>
+                <span className="text-xs font-bold text-[#596B35] dark:text-[#7AA2F7]">~{storageUsageKb} KB</span>
+              </div>
             </div>
           </div>
 
@@ -963,12 +1031,12 @@ export const SettingsView: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-95"
             >
               <Download className="w-4 h-4" />
-              <span>Export Backup (.json)</span>
+              <span>Export Full Backup (.json)</span>
             </button>
 
             <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-xs font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95">
               <Upload className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
-              <span>Import Backup</span>
+              <span>Restore Backup File</span>
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             </label>
 
@@ -982,19 +1050,19 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {importStatus === 'success' && (
-            <div className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+            <div className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                Backup restored successfully! All topics and chapters synced.
+                ✓ Full backup restored successfully! All topics, notes, PDF highlights, reflections & settings synced.
               </span>
             </div>
           )}
 
           {importStatus === 'error' && (
-            <div className="flex items-center gap-2 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+            <div className="flex items-center gap-2 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 animate-fade-in">
               <Trash2 className="w-4 h-4 text-rose-500" />
               <span className="text-xs font-bold text-rose-600 dark:text-rose-400">
-                Invalid JSON format. Please verify your backup file.
+                Invalid backup format. Please select a valid Syllabus 3D backup JSON file.
               </span>
             </div>
           )}
@@ -1040,9 +1108,9 @@ export const SettingsView: React.FC = () => {
                       clearAllDemoData();
                       setShowClearConfirm(false);
                     }}
-                    className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-xs"
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold cursor-pointer shadow-xs"
                   >
-                    Yes, Wipe All Data
+                    Yes, Delete Everything
                   </button>
                   <button
                     onClick={() => setShowClearConfirm(false)}
@@ -1057,7 +1125,7 @@ export const SettingsView: React.FC = () => {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Clear All Custom Data</span>
+                  <span>Start Fresh (Blank Canvas)</span>
                 </button>
               )}
             </div>

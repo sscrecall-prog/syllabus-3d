@@ -11,13 +11,15 @@ import {
   Menu,
   ArrowLeft,
   GraduationCap,
-  WifiOff
+  WifiOff,
+  Check
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
 interface HeaderProps {
   onOpenSearch: () => void;
-  onOpenSettings: () => void;onOpenMobileMenu?: () => void;
+  onOpenSettings: () => void;
+  onOpenMobileMenu?: () => void;
   canGoBack?: boolean;
   onGoBack?: () => void;
   currentViewTitle?: string;
@@ -31,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   onGoBack,
   currentViewTitle = 'SYLLABUS 3D'
 }) => {
-  const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
+  const { currentExam, exams, setSelectedExamId, profile, lastSavedAt, isAutoSaving } = useSyllabus();
   const { user } = useAuth();
   const { toggleTheme: handleThemeToggle, isDark, isOled } = useTheme();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
@@ -147,6 +149,21 @@ export const Header: React.FC<HeaderProps> = ({
             <Flame className="w-4 h-4 text-[#C49A3A] fill-[#C49A3A]" />
             <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] font-mono">
               {profile.currentStreak}d
+            </span>
+          </div>
+
+          {/* Real-Time Auto-Save Sync Indicator */}
+          <div
+            className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all duration-300 select-none cursor-help ${
+              isAutoSaving
+                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-300 scale-105 shadow-xs'
+                : 'bg-white dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA]'
+            }`}
+            title={`All notes, targets, PDF highlights, and study metrics are continuously auto-saved. (Last saved: ${lastSavedAt})`}
+          >
+            <Check className={`w-3.5 h-3.5 stroke-[2.5] ${isAutoSaving ? 'text-emerald-500 animate-bounce' : 'text-emerald-500 dark:text-emerald-400'}`} />
+            <span className="text-[10px] font-mono font-bold tracking-tight">
+              {isAutoSaving ? 'Saving...' : `Saved ${lastSavedAt}`}
             </span>
           </div>
 

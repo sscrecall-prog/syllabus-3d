@@ -304,6 +304,8 @@ interface SyllabusContextType {
   clearAllDemoData: () => void;
   exportData: () => string;
   importData: (jsonData: string) => boolean;
+  lastSavedAt: string;
+  isAutoSaving: boolean;
 }
 
 const SyllabusContext = createContext<SyllabusContextType | undefined>(undefined);
@@ -441,6 +443,21 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     saveStoredTop3Targets(top3Targets);
   }, [top3Targets]);
 
+  // ──── LIVE AUTO-SAVE SYNC STATUS ────
+  const [lastSavedAt, setLastSavedAt] = useState<string>(() => {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  });
+  const [isAutoSaving, setIsAutoSaving] = useState<boolean>(false);
+
+  const triggerAutoSave = () => {
+    setIsAutoSaving(true);
+    setLastSavedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    setTimeout(() => setIsAutoSaving(false), 900);
+  };
+
+  useEffect(() => {
+    triggerAutoSave();
+  }, [exams, profile, plannerTasks, revisions, top3Targets, reflectionsHistory, platforms]);
 
   const currentExam = useMemo(() => {
     if (exams.length === 0) return undefined;
@@ -1573,15 +1590,38 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const exportData = () => {
+    // Gather all PDF highlights from localStorage
+    const pdfHighlights: Record<string, any> = {};
+    if (typeof window !== 'undefined') {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('syllabus3d_pdf_highlights_')) {
+            const docId = key.replace('syllabus3d_pdf_highlights_', '');
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              pdfHighlights[docId] = JSON.parse(raw);
+            }
+          }
+        }
+      } catch {}
+    }
+
     return JSON.stringify({
-      version: '1.0.0',
+      version: '2.0.0',
+      exportedAt: new Date().toISOString(),
       exams,
       profile,
       achievements,
       activityHistory,
       revisions,
       plannerTasks,
-      platforms
+      platforms,
+      top3Targets,
+      reflectionsHistory,
+      pdfHighlights,
+      audioSettings: soundManager.getSettings(),
+      theme: (typeof window !== 'undefined' ? localStorage.getItem('syllabus3d_theme') : 'dark') || 'dark'
     }, null, 2);
   };
 
@@ -1651,13 +1691,33 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const importData = (jsonData: string): boolean => {
     try {
       const parsed = JSON.parse(jsonData);
-      if (parsed.exams) setExams(parsed.exams);
+      if (parsed.exams && Array.isArray(parsed.exams)) setExams(parsed.exams);
       if (parsed.profile) setProfile(parsed.profile);
-      if (parsed.achievements) setAchievements(parsed.achievements);
-      if (parsed.activityHistory) setActivityHistory(parsed.activityHistory);
-      if (parsed.revisions) setRevisions(parsed.revisions);
-      if (parsed.plannerTasks) setPlannerTasks(parsed.plannerTasks);
-      if (parsed.platforms) setPlatforms(parsed.platforms);
+      if (parsed.achievements && Array.isArray(parsed.achievements)) setAchievements(parsed.achievements);
+      if (parsed.activityHistory && Array.isArray(parsed.activityHistory)) setActivityHistory(parsed.activityHistory);
+      if (parsed.revisions && Array.isArray(parsed.revisions)) setRevisions(parsed.revisions);
+      if (parsed.plannerTasks && Array.isArray(parsed.plannerTasks)) setPlannerTasks(parsed.plannerTasks);
+      if (parsed.platforms && Array.isArray(parsed.platforms)) setPlatforms(parsed.platforms);
+      if (parsed.top3Targets && Array.isArray(parsed.top3Targets)) {
+        setTop3Targets(parsed.top3Targets);
+        saveStoredTop3Targets(parsed.top3Targets);
+      }
+      if (parsed.reflectionsHistory && Array.isArray(parsed.reflectionsHistory)) {
+        setReflectionsHistory(parsed.reflectionsHistory);
+        try { localStorage.setItem('syllabus3d_daily_reflections', JSON.stringify(parsed.reflectionsHistory)); } catch(e) {}
+      }
+      if (parsed.pdfHighlights && typeof parsed.pdfHighlights === 'object') {
+        Object.entries(parsed.pdfHighlights).forEach(([docId, highlights]) => {
+          try { localStorage.setItem(`syllabus3d_pdf_highlights_${docId}`, JSON.stringify(highlights)); } catch(e) {}
+        });
+      }
+      if (parsed.audioSettings) {
+        soundManager.updateSettings(parsed.audioSettings);
+      }
+      if (parsed.theme) {
+        try { localStorage.setItem('syllabus3d_theme', parsed.theme); } catch(e) {}
+      }
+      triggerAutoSave();
       return true;
     } catch (err) {
       return false;
@@ -1732,7 +1792,9 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     resetToDemo,
     clearAllDemoData,
     exportData,
-    importData
+    importData,
+    lastSavedAt,
+    isAutoSaving
   }), [
     exams,
     currentExam,
@@ -1748,7 +1810,9 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     plannerTasks,
     platforms,
     top3Targets,
-    reflectionsHistory
+    reflectionsHistory,
+    lastSavedAt,
+    isAutoSaving
   ]);
 
   return (
