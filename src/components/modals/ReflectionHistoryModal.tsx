@@ -63,9 +63,9 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md select-none animate-fade-in font-sans">
       <div
-        className="relative w-full sm:max-w-2xl h-full sm:h-auto sm:max-h-[86vh] rounded-none sm:rounded-3xl bg-[#0F101A] border-0 sm:border border-[#2B2E42] shadow-2xl overflow-hidden animate-slide-up-mobile sm:animate-scale-up flex flex-col text-white"
+        className="relative w-full h-full sm:h-auto sm:max-h-[86vh] sm:max-w-2xl sm:rounded-3xl bg-[#0F101A] border-0 sm:border border-[#2B2E42] shadow-2xl overflow-hidden flex flex-col text-white"
         onClick={e => e.stopPropagation()}
       >
         {/* Top Header - Compact & Clean */}
