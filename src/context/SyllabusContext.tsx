@@ -286,6 +286,7 @@ interface SyllabusContextType {
   editTopic: (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[]; accuracy?: number; studyTimeMinutes?: number }) => void;
   deleteTopic: (topicId: string) => void;
   addSubtopic: (topicId: string, subtopicName: string) => void;
+  addMultipleSubtopics: (topicId: string, subtopicsToAdd: string[]) => void;
   deleteSubtopic: (topicId: string, subtopicIndex: number) => void;
   addTopicPdfAttachment?: (topicId: string, attachment: TopicPdfAttachment) => void;
   deleteTopicPdfAttachment?: (topicId: string, attachmentId: string) => void;
@@ -1140,8 +1141,41 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  const addMultipleSubtopics = (topicId: string, subtopicsToAdd: string[]) => {
+    const cleaned = subtopicsToAdd
+      .map(s => s.trim().replace(/^[\d+.)\-•\s]+/, '').trim())
+      .filter(s => s.length > 0);
+    if (cleaned.length === 0) return;
+
+    setExams(prev => prev.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(ch => ({
+          ...ch,
+          topics: ch.topics.map(t => {
+            if (t.id !== topicId) return t;
+            const existing = t.subtopics || [];
+            return {
+              ...t,
+              subtopics: [...existing, ...cleaned]
+            };
+          })
+        }))
+      }))
+    })));
+    soundManager.playCompleteChime();
+  };
+
   const addSubtopic = (topicId: string, subtopicName: string) => {
     if (!subtopicName.trim()) return;
+    if (subtopicName.includes(',') || subtopicName.includes('\n')) {
+      const parts = subtopicName.split(/[\n,]/).map(s => s.trim().replace(/^[\d+.)\-•\s]+/, '').trim()).filter(Boolean);
+      if (parts.length > 0) {
+        addMultipleSubtopics(topicId, parts);
+        return;
+      }
+    }
     setExams(prev => prev.map(exam => ({
       ...exam,
       subjects: exam.subjects.map(subj => ({
@@ -1152,7 +1186,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (t.id !== topicId) return t;
             return {
               ...t,
-              subtopics: [...t.subtopics, subtopicName.trim()]
+              subtopics: [...t.subtopics, subtopicName.trim().replace(/^[\d+.)\-•\s]+/, '').trim()]
             };
           })
         }))
@@ -1776,6 +1810,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     editTopic,
     deleteTopic,
     addSubtopic,
+    addMultipleSubtopics,
     deleteSubtopic,
     addTopicPdfAttachment,
     deleteTopicPdfAttachment,

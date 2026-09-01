@@ -14,7 +14,10 @@ import {
   Trash2,
   Plus,
   Edit3,
-  Check} from 'lucide-react';
+  Check,
+  ListPlus,
+  Sparkles
+} from 'lucide-react';
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
 import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
@@ -46,6 +49,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     editTopic,
     deleteTopic,
     addSubtopic,
+    addMultipleSubtopics,
     deleteSubtopic,
     updateTopicMetrics,
     addTopicPdfAttachment,
@@ -79,6 +83,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const [accuracyInput, setAccuracyInput] = useState<number>(0);
   const [studyMinutesInput, setStudyMinutesInput] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'lectures' | 'mistakes'>('overview');
+
+  // Subtopics Mode state (Single vs Bulk Multi-Subtopic)
+  const [subtopicMode, setSubtopicMode] = useState<'single' | 'bulk'>('single');
+  const [bulkSubtopicsInput, setBulkSubtopicsInput] = useState('');
 
   // Edit Mode state
   const [isEditing, setIsEditing] = useState(false);
@@ -229,9 +237,50 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     setIsEditing(false);
   };
 
+  // Computed parsed bulk subtopics from multi-line text input
+  const parsedBulkSubtopics = useMemo(() => {
+    return bulkSubtopicsInput
+      .split(/[\n,]/)
+      .map(line => line.trim().replace(/^[\d+.)\-•\s]+/, '').trim())
+      .filter(line => line.length > 0);
+  }, [bulkSubtopicsInput]);
+
+  const handleAddBulkSubtopics = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (parsedBulkSubtopics.length === 0) return;
+    
+    if (addMultipleSubtopics) {
+      addMultipleSubtopics(liveTopic.id, parsedBulkSubtopics);
+    } else {
+      parsedBulkSubtopics.forEach(st => addSubtopic(liveTopic.id, st));
+    }
+
+    setBulkSubtopicsInput('');
+    soundManager.playCompleteChime();
+  };
+
   const handleAddSubtopicSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSubtopicInput.trim()) return;
+
+    // If user enters multiple comma/newline separated subtopics in the single box
+    if (newSubtopicInput.includes(',') || newSubtopicInput.includes('\n')) {
+      const parts = newSubtopicInput
+        .split(/[\n,]/)
+        .map(s => s.trim().replace(/^[\d+.)\-•\s]+/, '').trim())
+        .filter(Boolean);
+      if (parts.length > 0) {
+        if (addMultipleSubtopics) {
+          addMultipleSubtopics(liveTopic.id, parts);
+        } else {
+          parts.forEach(p => addSubtopic(liveTopic.id, p));
+        }
+        setNewSubtopicInput('');
+        soundManager.playCompleteChime();
+        return;
+      }
+    }
+
     addSubtopic(liveTopic.id, newSubtopicInput.trim());
     setNewSubtopicInput('');
     soundManager.playClick();
@@ -434,7 +483,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           handleAddSubtopicSubmit(e);
                         }
                       }}
-                      placeholder="Add subtopic / checkpoint..."
+                      placeholder="Add subtopic (or comma-separated values)..."
                       className="flex-1 px-3 py-1.5 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
                     />
                     <button
@@ -759,19 +808,66 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 </div>
 
                 {/* 5. Subtopics Checklist */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
-                  <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] block font-serif">
-                    Subtopics & Concept Checklist
-                  </span>
-                  <div className="space-y-1.5">
+                <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+                        Subtopics & Concept Checklist
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/30">
+                        {liveTopic.subtopics ? liveTopic.subtopics.length : 0}
+                      </span>
+                    </div>
+
+                    {/* Mode Toggle Switch (Single vs Bulk Multi-Subtopic) */}
+                    <div className="flex items-center rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] p-1 border border-[#D8D8CF] dark:border-[#272730]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSubtopicMode('single');
+                          soundManager.playClick();
+                        }}
+                        className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
+                          subtopicMode === 'single'
+                            ? 'bg-white dark:bg-[#18181D] text-[#11120F] dark:text-white shadow-xs'
+                            : 'text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white'
+                        }`}
+                      >
+                        Single
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSubtopicMode('bulk');
+                          soundManager.playClick();
+                        }}
+                        className={`flex items-center gap-1 px-2.5 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer ${
+                          subtopicMode === 'bulk'
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs'
+                            : 'text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
+                        }`}
+                      >
+                        <span>⚡ Bulk (Multiple)</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Existing Subtopics List */}
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar pr-0.5">
                     {liveTopic.subtopics && liveTopic.subtopics.length > 0 ? (
                       liveTopic.subtopics.map((sub, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730]">
-                          <span className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7]">• {sub}</span>
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]/40 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] shrink-0" />
+                            <span className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] truncate">{sub}</span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => deleteSubtopic(liveTopic.id, idx)}
-                            className="text-xs text-[#85877E] hover:text-[#B94A48] p-1 cursor-pointer"
+                            className="text-xs text-[#85877E] hover:text-[#B94A48] hover:bg-rose-500/10 p-1 rounded-lg transition-colors cursor-pointer shrink-0"
                             title="Delete Subtopic"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -783,21 +879,78 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     )}
                   </div>
 
-                  <form onSubmit={handleAddSubtopicSubmit} className="flex gap-2 pt-1">
-                    <input
-                      type="text"
-                      value={newSubtopicInput}
-                      onChange={(e) => setNewSubtopicInput(e.target.value)}
-                      placeholder="Add new subtopic..."
-                      className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35]"
-                    />
-                    <button
-                      type="submit"
-                      className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#A4B879] text-xs font-bold cursor-pointer transition-all active:scale-95"
-                    >
-                      Add
-                    </button>
-                  </form>
+                  {/* Input Form based on Mode */}
+                  {subtopicMode === 'single' ? (
+                    <div className="space-y-1.5 pt-1">
+                      <form onSubmit={handleAddSubtopicSubmit} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newSubtopicInput}
+                          onChange={(e) => setNewSubtopicInput(e.target.value)}
+                          placeholder="Add subtopic (or comma-separated like: Intro, PYQs, Mock)..."
+                          className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] text-[#11120F] dark:text-white"
+                        />
+                        <button
+                          type="submit"
+                          className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#A4B879] text-xs font-bold cursor-pointer transition-all active:scale-95 shrink-0"
+                        >
+                          + Add
+                        </button>
+                      </form>
+                      <p className="text-[10px] text-[#85877E] dark:text-[#787C99]">
+                        💡 Pro-tip: You can type comma-separated items like <span className="font-mono text-[#596B35] dark:text-[#7AA2F7]">"Fractions, Percentages, Word Problems"</span> to add them all at once!
+                      </p>
+                    </div>
+                  ) : (
+                    /* BULK MULTI-SUBTOPIC MODE */
+                    <div className="p-3.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-amber-500/30 space-y-3 pt-3 animate-fade-in">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
+                          <span className="text-amber-500 font-extrabold">⚡</span>
+                          <span>Paste Multiple Subtopics (One per line or Comma-separated):</span>
+                        </span>
+                        {parsedBulkSubtopics.length > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono font-bold text-[10px] border border-emerald-500/30">
+                            ✓ {parsedBulkSubtopics.length} Ready
+                          </span>
+                        )}
+                      </div>
+
+                      <textarea
+                        value={bulkSubtopicsInput}
+                        onChange={(e) => setBulkSubtopicsInput(e.target.value)}
+                        placeholder={`Paste multiple subtopics here:\nBasic Concepts & History\nKey Formulas & Shortcuts\nCase Studies & Examples\nPYQ Practice & Mock Questions\nQuick Revision Checklist`}
+                        rows={4}
+                        className="w-full p-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#171717] dark:text-white focus:ring-2 focus:ring-amber-500 font-mono leading-relaxed placeholder-[#85877E]"
+                      />
+
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSubtopicMode('single');
+                            setBulkSubtopicsInput('');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
+                        >
+                          Switch to Single Mode
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={parsedBulkSubtopics.length === 0}
+                          onClick={() => handleAddBulkSubtopics()}
+                          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                            parsedBulkSubtopics.length > 0
+                              ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white'
+                              : 'bg-[#EEEEE8] dark:bg-[#282833] text-[#85877E] cursor-not-allowed opacity-60'
+                          }`}
+                        >
+                          <span>⚡ Add All {parsedBulkSubtopics.length > 0 ? `(${parsedBulkSubtopics.length})` : ''} Subtopics</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Danger Zone */}
