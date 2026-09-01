@@ -37,11 +37,19 @@ const AddTopicModal = lazy(() => import('./components/modals/AddTopicModal').the
 const FloatingTimerPermissionModal = lazy(() => import('./components/modals/FloatingTimerPermissionModal').then(m => ({ default: m.FloatingTimerPermissionModal })));
 
 const ViewLoadingFallback: React.FC = () => (
-  <div className="w-full min-h-[350px] flex items-center justify-center p-8 animate-fade-in font-sans">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-8 h-8 rounded-full border-2 border-[#596B35] dark:border-[#7AA2F7] border-t-transparent animate-spin" />
-      <span className="text-xs font-mono font-bold text-[#85877E] tracking-wider uppercase">Loading Workspace...</span>
+  <div className="w-full space-y-5 animate-view-fade select-none pb-12">
+    {/* Banner Skeleton */}
+    <div className="w-full h-44 sm:h-56 rounded-3xl skeleton-shimmer border border-[#D8D8CF]/40 dark:border-[#28293D]/40 shadow-xs" />
+
+    {/* Bento Cards 3-Grid Skeleton */}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
+      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
+      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
     </div>
+
+    {/* Content Table/List Skeleton */}
+    <div className="w-full h-64 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
   </div>
 );
 
@@ -303,82 +311,84 @@ export const App: React.FC = () => {
         />
 
         <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">
-          {/* Initial Dashboard View (Instant, Non-Lazy) */}
-          {currentView === 'overview' && (
-            <OverviewView
-              onNavigate={handleNavigate}
-              onNavigateToSubject={handleNavigateToSubject}
-              onOpenTopicDrawer={handleOpenTopicDrawer}
-              onOpenRevisionSession={() => {
-                setIsRevisionSessionOpen(true);
-                window.history.pushState({ modal: 'revision' }, '');
-              }}
-              onOpenAddTopic={() => {
-                setIsAddTopicOpen(true);
-                window.history.pushState({ modal: 'add_topic' }, '');
-              }}
-              onOpenFocus={() => handleLaunchFocus(undefined)}
-            />
-          )}
-
-          {/* Lazy-Loaded Secondary Views with Suspense Fallback */}
-          <Suspense fallback={<ViewLoadingFallback />}>
-            {currentView === 'planner' && (
-              <PlannerView
-                onOpenFocusChamber={handleLaunchFocus}
+          <div key={currentView} className="animate-view-fade">
+            {/* Initial Dashboard View (Instant, Non-Lazy) */}
+            {currentView === 'overview' && (
+              <OverviewView
+                onNavigate={handleNavigate}
+                onNavigateToSubject={handleNavigateToSubject}
                 onOpenTopicDrawer={handleOpenTopicDrawer}
-              />
-            )}
-
-            {currentView === 'mindmap' && (
-              <MindMapView onOpenTopicDrawer={handleOpenTopicDrawer} />
-            )}
-
-            {currentView === 'syllabus' && (
-              <SyllabusView
-                onOpenTopicDrawer={handleOpenTopicDrawer}
+                onOpenRevisionSession={() => {
+                  setIsRevisionSessionOpen(true);
+                  window.history.pushState({ modal: 'revision' }, '');
+                }}
                 onOpenAddTopic={() => {
                   setIsAddTopicOpen(true);
                   window.history.pushState({ modal: 'add_topic' }, '');
                 }}
-                initialSubjectId={targetSubjectId}
-                onSelectSubjectId={setTargetSubjectId}
-                onBackToDashboard={() => handleNavigate('overview')}
-                onRegisterBackHandler={(handler) => {
-                  syllabusBackHandlerRef.current = handler;
-                }}
+                onOpenFocus={() => handleLaunchFocus(undefined)}
               />
             )}
 
-            {currentView === 'subjects' && (
-              <SubjectsView
-                onNavigate={handleNavigate}
-                onOpenTopicDrawer={handleOpenTopicDrawer}
-              />
-            )}
+            {/* Lazy-Loaded Secondary Views with Suspense Fallback */}
+            <Suspense fallback={<ViewLoadingFallback />}>
+              {currentView === 'planner' && (
+                <PlannerView
+                  onOpenFocusChamber={handleLaunchFocus}
+                  onOpenTopicDrawer={handleOpenTopicDrawer}
+                />
+              )}
 
-            {currentView === 'revision' && (
-              <RevisionView onOpenRevisionSession={() => {
-                setIsRevisionSessionOpen(true);
-                window.history.pushState({ modal: 'revision' }, '');
-              }} />
-            )}
+              {currentView === 'mindmap' && (
+                <MindMapView onOpenTopicDrawer={handleOpenTopicDrawer} />
+              )}
 
-            {currentView === 'weak' && (
-              <WeakTopicsView
-                onOpenTopicDrawer={handleOpenTopicDrawer}
-                onOpenFocus={handleLaunchFocus}
-              />
-            )}
+              {currentView === 'syllabus' && (
+                <SyllabusView
+                  onOpenTopicDrawer={handleOpenTopicDrawer}
+                  onOpenAddTopic={() => {
+                    setIsAddTopicOpen(true);
+                    window.history.pushState({ modal: 'add_topic' }, '');
+                  }}
+                  initialSubjectId={targetSubjectId}
+                  onSelectSubjectId={setTargetSubjectId}
+                  onBackToDashboard={() => handleNavigate('overview')}
+                  onRegisterBackHandler={(handler) => {
+                    syllabusBackHandlerRef.current = handler;
+                  }}
+                />
+              )}
 
-            {currentView === 'analytics' && <AnalyticsView />}
+              {currentView === 'subjects' && (
+                <SubjectsView
+                  onNavigate={handleNavigate}
+                  onOpenTopicDrawer={handleOpenTopicDrawer}
+                />
+              )}
 
-            {currentView === 'heatmap' && <HeatmapView />}
+              {currentView === 'revision' && (
+                <RevisionView onOpenRevisionSession={() => {
+                  setIsRevisionSessionOpen(true);
+                  window.history.pushState({ modal: 'revision' }, '');
+                }} />
+              )}
 
-            {currentView === 'platforms' && <PlatformsView />}
+              {currentView === 'weak' && (
+                <WeakTopicsView
+                  onOpenTopicDrawer={handleOpenTopicDrawer}
+                  onOpenFocus={handleLaunchFocus}
+                />
+              )}
 
-            {currentView === 'settings' && <SettingsView />}
-          </Suspense>
+              {currentView === 'analytics' && <AnalyticsView />}
+
+              {currentView === 'heatmap' && <HeatmapView />}
+
+              {currentView === 'platforms' && <PlatformsView />}
+
+              {currentView === 'settings' && <SettingsView />}
+            </Suspense>
+          </div>
         </main>
       </div>
 
