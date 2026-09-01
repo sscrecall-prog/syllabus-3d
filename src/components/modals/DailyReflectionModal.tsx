@@ -191,13 +191,13 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
       <div
-        className="relative w-full max-w-lg rounded-2xl sm:rounded-3xl bg-[#0F101A] border border-[#2B2E42] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden animate-scale-up text-white flex flex-col max-h-[94vh] sm:max-h-[88vh]"
+        className="relative w-full sm:max-w-xl h-full sm:h-auto sm:max-h-[88vh] rounded-none sm:rounded-3xl bg-[#0F101A] border-0 sm:border border-[#2B2E42] shadow-2xl overflow-hidden animate-slide-up-mobile sm:animate-scale-up text-white flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Top Glowing Header Banner - Compact & Responsive */}
-        <div className="relative p-3.5 sm:p-5 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] overflow-hidden shrink-0">
+        <div className="relative p-4 sm:p-5 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] overflow-hidden shrink-0 pt-safe">
           {/* Ambient Glow Elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
           
