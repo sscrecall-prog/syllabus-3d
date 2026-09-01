@@ -2,8 +2,8 @@
 // SYLLABUS 3D — ULTRA-RELIABLE OFFLINE-FIRST SERVICE WORKER (PWA)
 // ═══════════════════════════════════════════════════════════════════
 
-const CACHE_NAME = 'syllabus-3d-v2-stable';
-const DYNAMIC_CACHE = 'syllabus-3d-dynamic-v2';
+const CACHE_NAME = 'syllabus-3d-v2.2-offline-mastery';
+const DYNAMIC_CACHE = 'syllabus-3d-dynamic-v2.2';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -12,10 +12,15 @@ const PRECACHE_ASSETS = [
   '/favicon.png',
   '/logo.png',
   '/dashboard-hero.jpg',
+  '/planner_banner.png',
+  '/study_hub_banner.png',
+  '/syllabus_explorer_banner.png',
+  '/weak_traps_banner.png',
+  '/welcome_poster.png',
   '/mock_tracker_logo.png'
 ];
 
-// 1. INSTALL EVENT: Pre-cache core shell
+// 1. INSTALL EVENT: Pre-cache core shell and study banners
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {

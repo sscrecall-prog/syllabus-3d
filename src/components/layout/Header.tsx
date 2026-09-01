@@ -120,9 +120,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Side Tools */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
           {!isOnline && (
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold animate-pulse">
-              <WifiOff className="w-3 h-3" />
-              <span className="hidden sm:inline">Offline Mode • Local Cache Active</span>
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold animate-pulse cursor-help"
+              title="100% Offline Ready: All syllabus topics, notes, PDF highlights, and flashcards are cached locally."
+            >
+              <WifiOff className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">100% Offline Mode Active</span>
               <span className="sm:hidden">Offline</span>
             </div>
           )}
