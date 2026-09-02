@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -191,7 +191,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
     soundManager.playCompleteChime();
     onSaveNotes(notesContent);
     setIsSaved(true);
-    showToast('Lecture study notes saved successfully! 💾');
+    showToast('Lecture study notes saved successfully! ðŸ’¾');
     setTimeout(() => setIsSaved(false), 2500);
   };
 
@@ -199,7 +199,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
     soundManager.playClick();
     navigator.clipboard.writeText(notesContent);
     setCopied(true);
-    showToast('Notes copied to clipboard! 📋');
+    showToast('Notes copied to clipboard! ðŸ“‹');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -207,13 +207,13 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
     soundManager.playClick();
     setSeekSeconds(seconds);
     const formatted = formatSecondsToTimestamp(seconds);
-    showToast(`Jumped to lecture timestamp ⏱️ [${formatted}]`);
+    showToast(`Jumped to lecture timestamp â±ï¸ [${formatted}]`);
   };
 
   const handleInsertTimestampToNotes = (timeLabel: string, title?: string) => {
     soundManager.playClick();
-    const cleanLabel = timeLabel.replace(/[\[\]⏱️]/g, '').trim();
-    const tag = `\n- ⏱️ [${cleanLabel}] ${title || 'Key Concept'}\n`;
+    const cleanLabel = timeLabel.replace(/[\[\]â±ï¸]/g, '').trim();
+    const tag = `\n- â±ï¸ [${cleanLabel}] ${title || 'Key Concept'}\n`;
     
     if (notesTextareaRef.current) {
       const el = notesTextareaRef.current;
@@ -232,7 +232,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
       onSaveNotes(updated);
     }
 
-    showToast(`Inserted [${cleanLabel}] into notes! ✍️`);
+    showToast(`Inserted [${cleanLabel}] into notes! âœï¸`);
   };
 
   // Adjust hours, minutes, or seconds with quick step
@@ -313,7 +313,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
       combinedTimestamps.push({
         timeLabel: nts.label,
         timeSeconds: nts.seconds,
-        title: nts.lineText.replace(/⏱️|\[.*?\]/g, '').trim() || `Notes Tag at ${nts.label}`,
+        title: nts.lineText.replace(/â±ï¸|\[.*?\]/g, '').trim() || `Notes Tag at ${nts.label}`,
         source: 'notes'
       });
     }
@@ -354,12 +354,12 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-red-400">
               <span>{subjectName || 'Subject'}</span>
-              <span>•</span>
+              <span>â€¢</span>
               <span className="truncate">{chapterName || 'Chapter'}</span>
             </div>
             <h3 className="text-xs sm:text-sm font-extrabold text-white truncate flex items-center gap-2">
               <span className="truncate">{topicName}</span>
-              <span className="hidden md:inline px-2 py-0.5 rounded-full text-[10px] font-mono bg-red-500/20 text-red-300 font-bold border border-red-500/30 flex items-center gap-1">
+              <span className="hidden md:inline px-2 py-0.5 rounded-full text-[11px] font-mono bg-red-500/20 text-red-300 font-bold border border-red-500/30 flex items-center gap-1">
                 <Clock className="w-3 h-3 text-red-400" />
                 <span>Lecture + Notes Sync</span>
               </span>
@@ -385,7 +385,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
               >
                 {lectures.map((lec, idx) => (
                   <option key={lec.id} value={lec.id}>
-                    📹 #{idx + 1}: {lec.title}
+                    ðŸ“¹ #{idx + 1}: {lec.title}
                   </option>
                 ))}
               </select>
@@ -469,7 +469,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
             <Sparkles className="w-4 h-4 text-yellow-400" />
             {toastMessage}
           </span>
-          <span className="text-[10px] text-[#7AA2F7] font-mono">Real-time sync</span>
+          <span className="text-[11px] text-[#7AA2F7] font-mono">Real-time sync</span>
         </div>
       )}
 
@@ -509,7 +509,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                 <Clock className="w-4 h-4 text-red-400" />
                 <span>Synced Timestamps</span>
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[10px] font-mono font-bold">
+              <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[11px] font-mono font-bold">
                 {combinedTimestamps.length}
               </span>
             </div>
@@ -554,7 +554,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#16161E] border border-[#292E42]">
                     <div className="flex flex-col items-center">
-                      <span className="text-[9px] font-mono font-bold text-[#787C99] uppercase">HH</span>
+                      <span className="text-[11px] font-mono font-bold text-[#787C99] uppercase">HH</span>
                       <input
                         type="number"
                         min="0"
@@ -567,7 +567,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                     </div>
                     <span className="text-sm font-bold text-[#787C99]">:</span>
                     <div className="flex flex-col items-center">
-                      <span className="text-[9px] font-mono font-bold text-[#787C99] uppercase">MM</span>
+                      <span className="text-[11px] font-mono font-bold text-[#787C99] uppercase">MM</span>
                       <input
                         type="number"
                         min="0"
@@ -581,7 +581,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                     </div>
                     <span className="text-sm font-bold text-[#787C99]">:</span>
                     <div className="flex flex-col items-center">
-                      <span className="text-[9px] font-mono font-bold text-[#787C99] uppercase">SS</span>
+                      <span className="text-[11px] font-mono font-bold text-[#787C99] uppercase">SS</span>
                       <input
                         type="number"
                         min="0"
@@ -606,7 +606,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                         key={step.label}
                         type="button"
                         onClick={() => handleAdjustTime(step.h, step.m, step.s)}
-                        className="px-2 py-1 rounded-lg bg-[#1F2335] hover:bg-[#292E42] text-[10px] font-mono font-bold text-[#C0CAF5] border border-[#292E42] transition-colors cursor-pointer"
+                        className="px-2 py-1 rounded-lg bg-[#1F2335] hover:bg-[#292E42] text-[11px] font-mono font-bold text-[#C0CAF5] border border-[#292E42] transition-colors cursor-pointer"
                       >
                         {step.label}
                       </button>
@@ -618,7 +618,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                         setInputMinutes('00');
                         setInputSeconds('00');
                       }}
-                      className="px-2 py-1 rounded-lg bg-[#1F2335] hover:bg-[#292E42] text-[10px] font-mono text-[#787C99] hover:text-white border border-[#292E42] transition-colors cursor-pointer"
+                      className="px-2 py-1 rounded-lg bg-[#1F2335] hover:bg-[#292E42] text-[11px] font-mono text-[#787C99] hover:text-white border border-[#292E42] transition-colors cursor-pointer"
                       title="Reset time to 00:00:00"
                     >
                       Reset
@@ -727,7 +727,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                 <Clock className="w-8 h-8 mx-auto text-[#292E42]" />
                 <p className="text-xs">No timestamps tagged yet for this lecture.</p>
                 <p className="text-[11px] text-[#A9B1D6]">
-                  Click <strong>+ Tag Bookmark</strong> or type <code>⏱️ [01:25:30]</code> anywhere in your notes to automatically sync!
+                  Click <strong>+ Tag Bookmark</strong> or type <code>â±ï¸ [01:25:30]</code> anywhere in your notes to automatically sync!
                 </p>
               </div>
             )}
@@ -780,7 +780,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                   onClick={() => handleInsertSnippet('> [!FORMULA]\n> **Formula Name**: `Write equation here`\n> - Concept: \n')}
                   className="px-2.5 py-1 rounded-lg bg-[#7AA2F7]/15 hover:bg-[#7AA2F7]/25 text-[#7AA2F7] border border-[#7AA2F7]/30 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all"
                 >
-                  <span>Σ Formula</span>
+                  <span>Î£ Formula</span>
                 </button>
 
                 <button
@@ -823,7 +823,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                 setNotesContent(e.target.value);
                 onSaveNotes(e.target.value);
               }}
-              placeholder={"Take live lecture notes here...\n\n⏱️ Tip: Write timestamps like [01:25:30] or ⏱️ 14:20 — clicking any timestamp will instantly jump the video to that moment!\n\n- ⏱️ [00:04:15] Theorem introduction\n- ⏱️ [01:12:30] Formula shortcut\n\n> [!FORMULA]\n> Formula equation here"}
+              placeholder={"Take live lecture notes here...\n\nâ±ï¸ Tip: Write timestamps like [01:25:30] or â±ï¸ 14:20 â€” clicking any timestamp will instantly jump the video to that moment!\n\n- â±ï¸ [00:04:15] Theorem introduction\n- â±ï¸ [01:12:30] Formula shortcut\n\n> [!FORMULA]\n> Formula equation here"}
               className="w-full flex-1 p-3.5 rounded-xl bg-[#1F2335] border border-[#292E42] text-xs sm:text-sm font-medium text-[#C0CAF5] placeholder-[#787C99] focus:outline-none focus:border-red-500 resize-none leading-relaxed font-sans"
             />
 
@@ -831,7 +831,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
             <div className="pt-2 flex items-center justify-between text-[11px] text-[#A9B1D6]">
               <span className="flex items-center gap-2">
                 <span>{notesContent.trim() ? notesContent.trim().split(/\s+/).length : 0} words</span>
-                <span>•</span>
+                <span>â€¢</span>
                 <span className="text-[#7AA2F7] font-mono font-bold">
                   {notesTimestamps.length} Synced Timestamps
                 </span>

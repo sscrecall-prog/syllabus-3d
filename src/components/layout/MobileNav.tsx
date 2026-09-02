@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -39,7 +39,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           }`}
         >
           <LayoutDashboard className={`w-5 h-5 ${activeView === 'overview' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
-          <span className="text-[10px] font-bold mt-0.5 tracking-tight">Home</span>
+          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Home</span>
         </button>
 
         {/* Item 2: Planner */}
@@ -55,7 +55,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           }`}
         >
           <CalendarCheck className={`w-5 h-5 ${activeView === 'planner' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
-          <span className="text-[10px] font-bold mt-0.5 tracking-tight">Planner</span>
+          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Planner</span>
         </button>
 
         {/* Center Primary Action FAB (+) */}
@@ -86,7 +86,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           }`}
         >
           <BookOpen className={`w-5 h-5 ${activeView === 'syllabus' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
-          <span className="text-[10px] font-bold mt-0.5 tracking-tight">Syllabus</span>
+          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Syllabus</span>
         </button>
 
         {/* Item 4: Timer */}
@@ -98,9 +98,10 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           className="flex flex-col items-center justify-center min-w-[60px] min-h-[50px] px-2.5 py-1 rounded-2xl text-[#85877E] dark:text-[#8E90A6] hover:text-[#596B35] dark:hover:text-[#7AA2F7] transition-all active:scale-90 cursor-pointer"
         >
           <Timer className="w-5 h-5 stroke-[2]" />
-          <span className="text-[10px] font-bold mt-0.5 tracking-tight">Timer</span>
+          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Timer</span>
         </button>
       </div>
     </nav>
   );
 };
+

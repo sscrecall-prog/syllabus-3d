@@ -242,7 +242,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const parsedBulkSubtopics = useMemo(() => {
     return bulkSubtopicsInput
       .split(/[\n,]/)
-      .map(line => line.trim().replace(/^[•*]\s*/, '').trim())
+      .map(line => line.trim().replace(/^[â€¢*]\s*/, '').trim())
       .filter(line => line.length > 0);
   }, [bulkSubtopicsInput]);
 
@@ -268,7 +268,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     if (newSubtopicInput.includes(',') || newSubtopicInput.includes('\n')) {
       const parts = newSubtopicInput
         .split(/[\n,]/)
-        .map(s => s.trim().replace(/^[•*]\s*/, '').trim())
+        .map(s => s.trim().replace(/^[â€¢*]\s*/, '').trim())
         .filter(Boolean);
       if (parts.length > 0) {
         if (addMultipleSubtopics) {
@@ -344,13 +344,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             className="p-4 sm:p-6 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4"
           >
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#596B35] dark:text-[#8B5CF6]">
+              <div className="flex items-center gap-2 text-[13px] font-bold text-[#596B35] dark:text-[#8B5CF6]">
                 <span>{subjectName || 'Subject'}</span>
-                <span>•</span>
+                <span>â€¢</span>
                 <span className="truncate">{chapterName || 'Chapter'}</span>
               </div>
               <div className="flex items-center gap-2.5 flex-wrap mt-0.5">
-                <h2 className="text-base sm:text-xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] truncate font-serif">
+                <h2 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] truncate font-serif">
                   {liveTopic.name}
                 </h2>
                 <StatusBadge status={liveTopic.status || 'not_started'} size="sm" />
@@ -398,21 +398,21 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   onClick={() => setIsEditing(false)}
                   className="text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
                 >
-                  Close Form ✕
+                  Close Form âœ•
                 </button>
               </div>
 
               <form onSubmit={handleSaveTopicDetails} className="space-y-3.5">
                 {/* Topic Name */}
                 <div>
-                  <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                  <label className="block text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] mb-1">
                     Topic Title
                   </label>
                   <input
                     type="text"
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
+                    className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
                     placeholder="Topic Name"
                     required
                   />
@@ -421,7 +421,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <div className="grid grid-cols-2 gap-3">
                   {/* Difficulty */}
                   <div>
-                    <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                    <label className="block text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] mb-1">
                       Difficulty Level
                     </label>
                     <select
@@ -437,8 +437,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
                   {/* Weightage Marks (Optional) */}
                   <div>
-                    <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
-                      Weightage Marks <span className="text-[10px] text-[#85877E] font-normal">(Optional)</span>
+                    <label className="block text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                      Weightage Marks <span className="text-[11px] text-[#85877E] font-normal">(Optional)</span>
                     </label>
                     <input
                       type="number"
@@ -447,14 +447,14 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       value={editWeightage !== undefined ? editWeightage : ''}
                       onChange={e => setEditWeightage(e.target.value === '' ? undefined : Number(e.target.value))}
                       placeholder="e.g. 4 (optional)"
-                      className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
+                      className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35]"
                     />
                   </div>
                 </div>
 
                 {/* Subtopics Checklist Management */}
                 <div>
-                  <label className="block text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] mb-1">
+                  <label className="block text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] mb-1">
                     Subtopics & Concept Checkpoints ({liveTopic.subtopics ? liveTopic.subtopics.length : 0})
                   </label>
                   
@@ -464,7 +464,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       {liveTopic.subtopics.map((st, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs"
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[13px]"
                         >
                           <span className="truncate text-[#191A17] dark:text-[#F5F5F7] font-medium">{st}</span>
                           <button
@@ -549,10 +549,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 icon: FileText,
                 badge: (() => {
                   const items: string[] = [];
-                  if (imagesCount > 0) items.push(`${imagesCount} 📸`);
+                  if (imagesCount > 0) items.push(`${imagesCount} ðŸ“¸`);
                   if (pdfCount > 0) items.push(`${pdfCount} PDF`);
-                  if (audioCount > 0) items.push(`${audioCount} 🎙️`);
-                  return items.length > 0 ? items.join(' • ') : null;
+                  if (audioCount > 0) items.push(`${audioCount} ðŸŽ™ï¸`);
+                  return items.length > 0 ? items.join(' â€¢ ') : null;
                 })(),
                 badgeColor: 'bg-rose-500'
               },
@@ -572,7 +572,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   onClick={() => {
                     setActiveTab(tab.id as any);
                   }}
-                  className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 border-b-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 border-b-2 text-[13px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'border-[#596B35] text-[#596B35] dark:text-[#8B5CF6]'
                       : 'border-transparent text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
@@ -581,7 +581,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   <Icon className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
                   {tab.badge && (
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono text-white ${tab.badgeColor || 'bg-[#B94A48]'}`}>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono text-white ${tab.badgeColor || 'bg-[#B94A48]'}`}>
                       {tab.badge}
                     </span>
                   )}
@@ -601,7 +601,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <div className="grid grid-cols-2 gap-3">
                   {/* Accuracy Tile */}
                   <div className="p-4 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-1">
-                    <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] flex items-center gap-1">
+                    <span className="text-[11px] font-bold uppercase font-mono text-[#85877E] flex items-center gap-1">
                       <Target className="w-3.5 h-3.5 text-[#596B35] dark:text-[#8B5CF6]" />
                       <span>Mock Accuracy</span>
                     </span>
@@ -609,7 +609,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       <span className="text-2xl sm:text-3xl font-black text-[#11120F] dark:text-white font-mono">
                         {liveTopic.accuracy || 0}%
                       </span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${
                         (liveTopic.accuracy || 0) >= 80
                           ? 'bg-[#4F7A45]/20 text-[#4F7A45]'
                           : (liveTopic.accuracy || 0) >= 60
@@ -623,7 +623,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
                   {/* Study Time Tile */}
                   <div className="p-4 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-1">
-                    <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] flex items-center gap-1">
+                    <span className="text-[11px] font-bold uppercase font-mono text-[#85877E] flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-[#596B35] dark:text-[#8B5CF6]" />
                       <span>Total Studied</span>
                     </span>
@@ -643,7 +643,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Target className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
-                      <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+                      <span className="text-[13px] font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
                         Update Mock Test Accuracy
                       </span>
                     </div>
@@ -707,7 +707,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
-                      <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+                      <span className="text-[13px] font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
                         Log Study & Practice Time
                       </span>
                     </div>
@@ -741,10 +741,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   {/* Live Topic Stopwatch */}
                   <div className="p-3.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-bold uppercase font-mono text-[#85877E] block">
+                      <span className="text-[11px] font-bold uppercase font-mono text-[#85877E] block">
                         Live Stopwatch
                       </span>
-                      <span className="text-lg font-mono font-extrabold text-[#11120F] dark:text-white">
+                      <span className="text-lg font-mono tabular-nums font-black text-[#11120F] dark:text-white">
                         {formatStopwatch(timerSeconds)}
                       </span>
                     </div>
@@ -791,10 +791,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                      { id: 'not_started', label: 'Not Started ⭕', activeClasses: 'bg-slate-700 text-white border-transparent shadow-sm' },
-                      { id: 'in_progress', label: 'In Progress ⚡', activeClasses: 'bg-amber-500 text-white border-transparent shadow-sm shadow-amber-500/20' },
-                      { id: 'completed', label: 'Mastered ✓', activeClasses: 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20' },
-                      { id: 'weak', label: 'Weak ⚠️', activeClasses: 'bg-rose-600 text-white border-transparent shadow-sm shadow-rose-600/20' },
+                      { id: 'not_started', label: 'Not Started â­•', activeClasses: 'bg-slate-700 text-white border-transparent shadow-sm' },
+                      { id: 'in_progress', label: 'In Progress âš¡', activeClasses: 'bg-amber-500 text-white border-transparent shadow-sm shadow-amber-500/20' },
+                      { id: 'completed', label: 'Mastered âœ“', activeClasses: 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20' },
+                      { id: 'weak', label: 'Weak âš ï¸', activeClasses: 'bg-rose-600 text-white border-transparent shadow-sm shadow-rose-600/20' },
                     ].map((st) => (
                       <button
                         key={st.id}
@@ -820,10 +820,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+                      <span className="text-[13px] sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] font-serif">
                         Subtopics & Concept Checklist
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/30">
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/30">
                         {liveTopic.subtopics ? liveTopic.subtopics.length : 0}
                       </span>
                     </div>
@@ -856,7 +856,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                             : 'text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
                         }`}
                       >
-                        <span>⚡ Bulk (Multiple)</span>
+                        <span>âš¡ Bulk (Multiple)</span>
                       </button>
                     </div>
                   </div>
@@ -897,16 +897,16 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           value={newSubtopicInput}
                           onChange={(e) => setNewSubtopicInput(e.target.value)}
                           placeholder="Add subtopic (or comma-separated like: Intro, PYQs, Mock)..."
-                          className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] text-[#11120F] dark:text-white"
+                          className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-[13px] font-medium focus:outline-none focus:border-[#596B35] text-[#11120F] dark:text-white"
                         />
                         <button
                           type="submit"
-                          className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#A4B879] text-xs font-bold cursor-pointer transition-all active:scale-95 shrink-0"
+                          className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#A4B879] text-[13px] font-bold cursor-pointer transition-all active:scale-95 shrink-0"
                         >
                           + Add
                         </button>
                       </form>
-                      <p className="text-[10px] text-[#85877E] dark:text-[#787C99]">
+                      <p className="text-[11px] text-[#85877E] dark:text-[#787C99]">
                         💡 Pro-tip: You can type comma-separated items like <span className="font-mono text-[#596B35] dark:text-[#7AA2F7]">"Fractions, Percentages, Word Problems"</span> to add them all at once!
                       </p>
                     </div>
@@ -919,7 +919,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           <span>Paste Multiple Subtopics (One per line or Comma-separated):</span>
                         </span>
                         {parsedBulkSubtopics.length > 0 && (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono font-bold text-[10px] border border-emerald-500/30">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono font-bold text-[11px] border border-emerald-500/30">
                             ✓ {parsedBulkSubtopics.length} Ready
                           </span>
                         )}
@@ -930,7 +930,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                         onChange={(e) => setBulkSubtopicsInput(e.target.value)}
                         placeholder={`Paste multiple subtopics here:\nBasic Concepts & History\nKey Formulas & Shortcuts\nCase Studies & Examples\nPYQ Practice & Mock Questions\nQuick Revision Checklist`}
                         rows={4}
-                        className="w-full p-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#171717] dark:text-white focus:ring-2 focus:ring-amber-500 font-mono leading-relaxed placeholder-[#85877E]"
+                        className="w-full p-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[13px] font-medium text-[#171717] dark:text-white focus:ring-2 focus:ring-amber-500 font-mono leading-relaxed placeholder-[#85877E]"
                       />
 
                       <div className="flex items-center justify-between gap-2 pt-1">
@@ -940,7 +940,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                             setSubtopicMode('single');
                             setBulkSubtopicsInput('');
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[13px] font-semibold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
                         >
                           Switch to Single Mode
                         </button>
@@ -949,13 +949,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           type="button"
                           disabled={parsedBulkSubtopics.length === 0}
                           onClick={() => handleAddBulkSubtopics()}
-                          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
+                          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
                             parsedBulkSubtopics.length > 0
                               ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white'
                               : 'bg-[#EEEEE8] dark:bg-[#282833] text-[#85877E] cursor-not-allowed opacity-60'
                           }`}
                         >
-                          <span>⚡ Add All {parsedBulkSubtopics.length > 0 ? `(${parsedBulkSubtopics.length})` : ''} Subtopics</span>
+                          <span>âš¡ Add All {parsedBulkSubtopics.length > 0 ? `(${parsedBulkSubtopics.length})` : ''} Subtopics</span>
                         </button>
                       </div>
                     </div>
@@ -969,14 +969,14 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       <button
                         type="button"
                         onClick={handleDelete}
-                        className="px-4 py-2 rounded-xl bg-[#B94A48] hover:bg-[#A33D3B] text-white text-xs font-bold cursor-pointer"
+                        className="px-4 py-2 rounded-xl bg-[#B94A48] hover:bg-[#A33D3B] text-white text-[13px] font-bold cursor-pointer"
                       >
                         Yes, Delete Topic
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowDeleteConfirm(false)}
-                        className="px-3 py-2 rounded-xl bg-[#EEEEE8] dark:bg-[#23232A] text-xs font-semibold cursor-pointer"
+                        className="px-3 py-2 rounded-xl bg-[#EEEEE8] dark:bg-[#23232A] text-[13px] font-semibold cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -985,7 +985,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="text-xs font-bold text-[#B94A48] hover:underline flex items-center gap-1.5 cursor-pointer"
+                      className="text-[13px] font-bold text-[#B94A48] hover:underline flex items-center gap-1.5 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Delete this Topic</span>
@@ -1179,3 +1179,4 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     document.body
   );
 };
+

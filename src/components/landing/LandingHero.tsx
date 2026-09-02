@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Target, RotateCw, BarChart3, Trophy, ArrowRight, ShieldCheck } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -111,7 +111,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onEnterApp }) => {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-white mb-0.5">{feat.title}</h3>
-                  <p className="text-[10px] text-slate-400 leading-snug">{feat.desc}</p>
+                  <p className="text-[11px] text-slate-400 leading-snug">{feat.desc}</p>
                 </div>
               </div>
             );
@@ -136,3 +136,4 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onEnterApp }) => {
     </div>
   );
 };
+

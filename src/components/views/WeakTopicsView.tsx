@@ -131,7 +131,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-xl font-black text-white font-serif uppercase tracking-tight drop-shadow-sm">
+                <h2 className="text-lg sm:text-xl font-black text-white font-serif uppercase tracking-tight drop-shadow-sm">
                   Weak Areas & Examiner Traps Diagnostics
                 </h2>
               </div>
@@ -154,7 +154,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
         {/* 2. ROOT-CAUSE FALLACY INTERACTIVE TILES */}
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-[#C5C8D8] uppercase tracking-wider font-mono">
+            <span className="text-[11px] font-bold text-[#C5C8D8] uppercase tracking-wider font-mono">
               Root-Cause Fallacy Breakdown (Click to Filter)
             </span>
             {selectedFallacy !== 'all' && (
@@ -193,7 +193,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-0.5">
                     <Icon className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-black uppercase font-mono tracking-wider">
+                    <span className="text-[11px] font-black uppercase font-mono tracking-wider">
                       {tile.label}
                     </span>
                   </div>
@@ -228,9 +228,9 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
           <div className="flex items-center gap-1 p-1 rounded-2xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-xs shrink-0 overflow-x-auto">
             {[
               { id: 'all' as SeverityFilter, label: 'All Weak' },
-              { id: 'critical' as SeverityFilter, label: '🔴 Critical (<50%)' },
-              { id: 'moderate' as SeverityFilter, label: '🟡 Moderate (50-70%)' },
-              { id: 'traps_only' as SeverityFilter, label: '⚡ Has Traps' }
+              { id: 'critical' as SeverityFilter, label: 'ðŸ”´ Critical (<50%)' },
+              { id: 'moderate' as SeverityFilter, label: 'ðŸŸ¡ Moderate (50-70%)' },
+              { id: 'traps_only' as SeverityFilter, label: 'âš¡ Has Traps' }
             ].map(sev => (
               <button
                 key={sev.id}
@@ -319,7 +319,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                 {/* Top Row: Subject/Chapter Badge + Accuracy Pill + Mastered Action */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EEEEE8] dark:border-[#24283B] pb-2.5">
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+                    <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
                       {subjectName}
                     </span>
                     <span className="text-[11px] font-bold text-[#65675F] dark:text-[#A9B1D6] truncate">
@@ -394,12 +394,12 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                 {/* Logged Traps Snippet Box (if any) */}
                 {mistakes.length > 0 && (
                   <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] space-y-1.5">
-                    <span className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider block">
+                    <span className="text-[11px] font-bold text-[#85877E] uppercase font-mono tracking-wider block">
                       ⚠️ Active Examiner Trap Notes:
                     </span>
                     {mistakes.slice(0, 2).map((m, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-xs text-[#11120F] dark:text-[#C0CAF5]">
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold shrink-0 mt-0.5 ${
+                        <span className={`px-1.5 py-0.5 rounded text-[11px] font-mono font-bold shrink-0 mt-0.5 ${
                           m.mistakeType === 'conceptual' ? 'bg-rose-500/20 text-rose-500' :
                           m.mistakeType === 'calculation' ? 'bg-amber-500/20 text-amber-500' :
                           m.mistakeType === 'formula' ? 'bg-purple-500/20 text-purple-400' :
@@ -422,3 +422,4 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+﻿import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Edit3,
@@ -781,7 +781,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     if (!content.trim()) return;
     soundManager.playCompleteChime();
     const formatted = formatAiNotes(content, {
-      topicName: `${topicName} — ${activeNote.title}`,
+      topicName: `${topicName} â€” ${activeNote.title}`,
       subjectName,
       chapterName,
       examName
@@ -808,7 +808,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const handleExportPdf = () => {
     soundManager.playCompleteChime();
     generateAndOpenNotesPdf({
-      topicName: `${topicName} • ${activeNote.title}`,
+      topicName: `${topicName} â€¢ ${activeNote.title}`,
       subjectName,
       chapterName,
       examName: examName || 'SSC CGL 2026',
@@ -932,7 +932,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const parseInlineMarkdown = (text: string, keyPrefix: string = 'inline'): React.ReactNode[] => {
     if (!text) return [];
 
-    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|⏱️\s*(?:\[\d{1,2}:\d{2}(?::\d{2})?\]|\d{1,2}:\d{2}(?::\d{2})?))/g;
+    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|â±ï¸\s*(?:\[\d{1,2}:\d{2}(?::\d{2})?\]|\d{1,2}:\d{2}(?::\d{2})?))/g;
     const parts = text.split(tokenRegex);
 
     return parts.map((part, index) => {
@@ -1001,7 +1001,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               });
             }}
             className={`${colorClass} px-1.5 py-0.5 mx-0.5 rounded font-bold shadow-xs transition-all cursor-pointer hover:opacity-85 hover:scale-[1.02]`}
-            title="Click to change color or erase highlight 🖍️"
+            title="Click to change color or erase highlight ðŸ–ï¸"
           >
             {highlightText}
           </mark>
@@ -1026,14 +1026,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             key={k}
             className="inline-flex items-center gap-1 px-2 py-0.5 mx-0.5 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-700 dark:text-purple-300 font-mono font-bold text-[11px] sm:text-xs"
           >
-            <span className="text-purple-500 text-[10px]">∑</span>
+            <span className="text-purple-500 text-[11px]">âˆ‘</span>
             <span>{mathContent}</span>
           </span>
         );
       }
-      // Video Timestamp jump (Requires explicit ⏱️ prefix so normal clock times like "3:15 PM" or "9:30 AM" are not affected)
-      if (part.startsWith('⏱️')) {
-        const tsMatch = part.match(/⏱️\s*\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?/);
+      // Video Timestamp jump (Requires explicit â±ï¸ prefix so normal clock times like "3:15 PM" or "9:30 AM" are not affected)
+      if (part.startsWith('â±ï¸')) {
+        const tsMatch = part.match(/â±ï¸\s*\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?/);
         if (tsMatch && tsMatch[1]) {
           const timeStr = tsMatch[1];
           const seconds = parseTimestampToSeconds(timeStr);
@@ -1048,7 +1048,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 }
               }}
               className="inline-flex items-center gap-1 px-2 py-0.5 mx-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-white border border-red-500/30 text-[11px] font-mono font-bold cursor-pointer transition-all active:scale-95 shadow-xs"
-              title={`Click to jump lecture video to ${timeStr} ⏱️`}
+              title={`Click to jump lecture video to ${timeStr} â±ï¸`}
             >
               <Play className="w-2.5 h-2.5 fill-current" />
               <span>{timeStr}</span>
@@ -1086,7 +1086,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
             >
               <Bot className="w-4 h-4" />
-              <span>{promptCopied ? '✓ Prompt Copied!' : '🤖 Copy AI Prompt for Gemini / ChatGPT'}</span>
+              <span>{promptCopied ? 'âœ“ Prompt Copied!' : 'ðŸ¤– Copy AI Prompt for Gemini / ChatGPT'}</span>
             </button>
             <button
               onClick={() => setViewMode('edit')}
@@ -1144,7 +1144,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   setCodeCopiedIdx(currentCodeIdx);
                   setTimeout(() => setCodeCopiedIdx(null), 2000);
                 }}
-                className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white cursor-pointer px-2 py-0.5 rounded bg-white/5 hover:bg-white/10"
+                className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white cursor-pointer px-2 py-0.5 rounded bg-white/5 hover:bg-white/10"
               >
                 {isCodeCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                 <span>{isCodeCopied ? 'Copied' : 'Copy'}</span>
@@ -1311,7 +1311,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             key={i}
             className={`${fontFam} text-xs sm:text-sm font-black text-[#596B35] dark:text-[#7AA2F7] mt-5 mb-2 uppercase tracking-wide flex items-center gap-1.5 font-mono`}
           >
-            <span>▶</span>
+            <span>â–¶</span>
             <span>{parseInlineMarkdown(line.replace('### ', ''), `h3-${i}`)}</span>
           </h3>
         );
@@ -1419,9 +1419,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <button
                 type="button"
                 onClick={() => setZoomImage({ src: imgSrc, title: altText })}
-                className="text-[10px] font-bold text-[#8B5CF6] hover:underline cursor-pointer"
+                className="text-[11px] font-bold text-[#8B5CF6] hover:underline cursor-pointer"
               >
-                Click to Enlarge 🔍
+                Click to Enlarge ðŸ”
               </button>
             </div>
           </div>
@@ -1573,7 +1573,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
               onClick={e => e.stopPropagation()}
             >
-              <div className="px-2.5 py-1.5 text-[10px] uppercase font-mono text-slate-400 border-b border-[#D8D8CF]/60 dark:border-[#272730]">
+              <div className="px-2.5 py-1.5 text-[11px] uppercase font-mono text-slate-400 border-b border-[#D8D8CF]/60 dark:border-[#272730]">
                 Choose Note Template:
               </div>
               <button
@@ -1583,8 +1583,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               >
                 <FileText className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
                 <div>
-                  <div className="font-bold">📄 Blank Notes Page</div>
-                  <div className="text-[10px] text-slate-400 font-normal">Start with clean canvas</div>
+                  <div className="font-bold">ðŸ“„ Blank Notes Page</div>
+                  <div className="text-[11px] text-slate-400 font-normal">Start with clean canvas</div>
                 </div>
               </button>
               <button
@@ -1599,8 +1599,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               >
                 <Sigma className="w-4 h-4 text-purple-500" />
                 <div>
-                  <div className="font-bold">🧮 Formula & Shortcuts</div>
-                  <div className="text-[10px] text-slate-400 font-normal">Formulas, equations & tricks</div>
+                  <div className="font-bold">ðŸ§® Formula & Shortcuts</div>
+                  <div className="text-[11px] text-slate-400 font-normal">Formulas, equations & tricks</div>
                 </div>
               </button>
               <button
@@ -1615,8 +1615,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               >
                 <TableIcon className="w-4 h-4 text-cyan-500" />
                 <div>
-                  <div className="font-bold">📊 Comparison Table</div>
-                  <div className="text-[10px] text-slate-400 font-normal">Side-by-side concept matrix</div>
+                  <div className="font-bold">ðŸ“Š Comparison Table</div>
+                  <div className="text-[11px] text-slate-400 font-normal">Side-by-side concept matrix</div>
                 </div>
               </button>
               <button
@@ -1631,8 +1631,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               >
                 <AlertTriangle className="w-4 h-4 text-rose-500" />
                 <div>
-                  <div className="font-bold">⚠️ Rules & Traps Guide</div>
-                  <div className="text-[10px] text-slate-400 font-normal">Mistakes & examiner traps</div>
+                  <div className="font-bold">âš ï¸ Rules & Traps Guide</div>
+                  <div className="text-[11px] text-slate-400 font-normal">Mistakes & examiner traps</div>
                 </div>
               </button>
               <button
@@ -1647,8 +1647,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               >
                 <Sparkles className="w-4 h-4 text-amber-500" />
                 <div>
-                  <div className="font-bold">🎯 PYQ & Solved Tricks</div>
-                  <div className="text-[10px] text-slate-400 font-normal">Previous year questions</div>
+                  <div className="font-bold">ðŸŽ¯ PYQ & Solved Tricks</div>
+                  <div className="text-[11px] text-slate-400 font-normal">Previous year questions</div>
                 </div>
               </button>
             </div>
@@ -1676,12 +1676,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         className="flex items-center gap-1.5 p-1.5 px-2.5 rounded-2xl bg-[#11120F] dark:bg-[#1C1D26] text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
         onMouseDown={e => e.preventDefault()}
       >
-        <span className="text-[10px] font-bold text-[#A1A1B2] font-mono flex items-center gap-1">
+        <span className="text-[11px] font-bold text-[#A1A1B2] font-mono flex items-center gap-1">
           <Highlighter className="w-3.5 h-3.5 text-amber-400" />
           <span>Highlight:</span>
         </span>
 
-        {/* 🟡 Yellow Highlight */}
+        {/* ðŸŸ¡ Yellow Highlight */}
         <button
           type="button"
           onClick={() => applyHighlight('')}
@@ -1689,7 +1689,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           title="Yellow (==text==)"
         />
 
-        {/* 🟢 Green Highlight */}
+        {/* ðŸŸ¢ Green Highlight */}
         <button
           type="button"
           onClick={() => applyHighlight('g:')}
@@ -1697,7 +1697,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           title="Green (==g:text==)"
         />
 
-        {/* 🟣 Purple Highlight */}
+        {/* ðŸŸ£ Purple Highlight */}
         <button
           type="button"
           onClick={() => applyHighlight('p:')}
@@ -1705,7 +1705,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           title="Purple (==p:text==)"
         />
 
-        {/* 🔵 Blue Highlight */}
+        {/* ðŸ”µ Blue Highlight */}
         <button
           type="button"
           onClick={() => applyHighlight('b:')}
@@ -1713,7 +1713,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           title="Blue (==b:text==)"
         />
 
-        {/* 🔴 Rose Highlight */}
+        {/* ðŸ”´ Rose Highlight */}
         <button
           type="button"
           onClick={() => applyHighlight('r:')}
@@ -1721,14 +1721,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           title="Rose (==r:text==)"
         />
 
-        {/* 🧽 Erase / Remove Highlight Button */}
+        {/* ðŸ§½ Erase / Remove Highlight Button */}
         <button
           type="button"
           onClick={() => removeHighlight(selectionTooltip.text)}
-          className="px-2 py-0.5 ml-1 rounded-lg bg-rose-500/25 hover:bg-rose-500 text-rose-200 hover:text-white text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border border-rose-500/40"
+          className="px-2 py-0.5 ml-1 rounded-lg bg-rose-500/25 hover:bg-rose-500 text-rose-200 hover:text-white text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer border border-rose-500/40"
           title="Remove Highlight (Erase ==tags==)"
         >
-          <span>🧽 Erase</span>
+          <span>ðŸ§½ Erase</span>
         </button>
 
         <button
@@ -1773,7 +1773,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
         {isHighlighterActive && (
           <>
-            {/* Mode Switcher: 🔲 Box vs ✍️ Freefall */}
+            {/* Mode Switcher: ðŸ”² Box vs âœï¸ Freefall */}
             <div className="flex items-center gap-1 p-0.5 bg-black/5 dark:bg-white/5 rounded-xl border border-[#D8D8CF] dark:border-[#383A48]">
               <button
                 type="button"
@@ -1901,7 +1901,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 <button
                   type="button"
                   onClick={() => setFreefallSize(6)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${freefallSize === 6 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${freefallSize === 6 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
                   title="Fine Pen (6px)"
                 >
                   Fine
@@ -1909,7 +1909,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 <button
                   type="button"
                   onClick={() => setFreefallSize(14)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${freefallSize === 14 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${freefallSize === 14 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
                   title="Marker (14px)"
                 >
                   Med
@@ -1917,7 +1917,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 <button
                   type="button"
                   onClick={() => setFreefallSize(24)}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${freefallSize === 24 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${freefallSize === 24 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
                   title="Thick Highlighter (24px)"
                 >
                   Thick
@@ -2021,18 +2021,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] truncate font-mono">
                     <span>{subjectName || 'Subject'}</span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span className="truncate">{chapterName || 'Chapter'}</span>
                   </div>
                   <h2 className={`text-sm sm:text-base font-black truncate ${getFontFamilyClass()}`}>
-                    {topicName} • <span className="text-[#596B35] dark:text-[#7AA2F7]">{activeNote.title}</span>
+                    {topicName} â€¢ <span className="text-[#596B35] dark:text-[#7AA2F7]">{activeNote.title}</span>
                   </h2>
                 </div>
               </div>
 
               {/* Reader View & Customization Controls */}
               <div className="flex items-center gap-2 flex-wrap">
-                {/* 👁️ PURE NOTES ONLY / ZEN BUTTON */}
+                {/* ðŸ‘ï¸ PURE NOTES ONLY / ZEN BUTTON */}
                 <button
                   type="button"
                   onClick={() => {
@@ -2046,7 +2046,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   <span>Pure Notes Only</span>
                 </button>
 
-                {/* 🔤 Font Family Selector */}
+                {/* ðŸ”¤ Font Family Selector */}
                 <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
                   <button
                     type="button"
@@ -2058,7 +2058,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     }`}
                     title="Book Serif Typography (Lora)"
                   >
-                    📖 Book Serif
+                    ðŸ“– Book Serif
                   </button>
                   <button
                     type="button"
@@ -2070,7 +2070,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     }`}
                     title="Modern Sans Typography (Plus Jakarta / Inter)"
                   >
-                    🏛️ Sans
+                    ðŸ›ï¸ Sans
                   </button>
                   <button
                     type="button"
@@ -2082,11 +2082,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     }`}
                     title="Fast Reading Geometric Typography (Lexend)"
                   >
-                    ⚡ Fast Read
+                    âš¡ Fast Read
                   </button>
                 </div>
 
-                {/* 🎨 Theme Switcher */}
+                {/* ðŸŽ¨ Theme Switcher */}
                 <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
                   <button
                     type="button"
@@ -2096,7 +2096,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     }`}
                     title="Paper White"
                   >
-                    📄 Paper
+                    ðŸ“„ Paper
                   </button>
                   <button
                     type="button"
@@ -2106,7 +2106,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     }`}
                     title="Kindle Book Warm Sepia"
                   >
-                    📜 Sepia
+                    ðŸ“œ Sepia
                   </button>
                   <button
                     type="button"
@@ -2116,13 +2116,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     }`}
                     title="Pitch Dark OLED"
                   >
-                    🖤 OLED
+                    ðŸ–¤ OLED
                   </button>
                 </div>
 
                 {/* Font Size Adjuster */}
                 <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
-                  <span className="text-[10px] text-[#85877E]">Size:</span>
+                  <span className="text-[11px] text-[#85877E]">Size:</span>
                   {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
                     <button
                       key={size}
@@ -2139,7 +2139,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
                 {/* Container Width Adjuster */}
                 <div className="hidden md:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
-                  <span className="text-[10px] text-[#85877E]">Width:</span>
+                  <span className="text-[11px] text-[#85877E]">Width:</span>
                   {(['normal', 'wide', 'full'] as ReaderWidth[]).map(w => (
                     <button
                       key={w}
@@ -2257,7 +2257,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   return (
     <div className="space-y-3" onPaste={handlePaste} onMouseUp={handleMouseUpSelection} onTouchEnd={handleMouseUpSelection}>
       
-      {/* 🌟 UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
+      {/* ðŸŒŸ UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
       <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#D8D8CF]/60 dark:divide-[#272730]">
         
         {/* Tier 1: Modern Multi-Note Tabs Track */}
@@ -2363,7 +2363,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 cursor-pointer"
             >
               <Bot className="w-3.5 h-3.5" />
-              <span>{promptCopied ? '✓ Copied' : 'AI Prompt'}</span>
+              <span>{promptCopied ? 'âœ“ Copied' : 'AI Prompt'}</span>
             </button>
 
             {/* Font Family Switcher */}
@@ -2452,7 +2452,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             </button>
 
             {/* Auto-Save Status */}
-            <div className="flex items-center gap-1 px-2 py-1 rounded-xl bg-[#F4F2EB] dark:bg-[#0D0E15] border border-[#D8D8CF] dark:border-[#272730] text-[10px] font-mono font-bold">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-xl bg-[#F4F2EB] dark:bg-[#0D0E15] border border-[#D8D8CF] dark:border-[#272730] text-[11px] font-mono font-bold">
               {saveStatus === 'saving' ? (
                 <>
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -2492,7 +2492,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-emerald-500/15 border border-amber-500/30 text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center justify-between animate-fade-in">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-500 animate-bounce" />
-            <span>✨ "{activeNote.title}" successfully converted to professional academic format with Callouts, Formulas & Tables!</span>
+            <span>âœ¨ "{activeNote.title}" successfully converted to professional academic format with Callouts, Formulas & Tables!</span>
           </div>
           <button
             type="button"
@@ -2542,7 +2542,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="px-1.5 py-1 rounded-lg text-xs font-bold bg-emerald-400/25 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-400/35 border border-emerald-400/35"
               title="Green Highlight (==g:text==)"
             >
-              🟢
+              ðŸŸ¢
             </button>
             <button
               type="button"
@@ -2550,7 +2550,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="px-1.5 py-1 rounded-lg text-xs font-bold bg-purple-400/25 text-purple-800 dark:text-purple-300 hover:bg-purple-400/35 border border-purple-400/35"
               title="Purple Highlight (==p:text==)"
             >
-              🟣
+              ðŸŸ£
             </button>
 
             <button
@@ -2650,9 +2650,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             {/* Timestamp Sync Button */}
             <button
               type="button"
-              onClick={() => insertText('\n- ⏱️ [00:00] **Key Concept**: ', '', '')}
+              onClick={() => insertText('\n- â±ï¸ [00:00] **Key Concept**: ', '', '')}
               className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/30 flex items-center gap-1 cursor-pointer"
-              title="Insert Clickable Video Timestamp (e.g. ⏱️ [12:34])"
+              title="Insert Clickable Video Timestamp (e.g. â±ï¸ [12:34])"
             >
               <Clock className="w-3.5 h-3.5" />
               <span>+ Timestamp</span>
@@ -2680,7 +2680,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           {/* Quick Preset Templates */}
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#D8D8CF]/60 dark:border-[#272730]">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase font-mono">1-Click Templates:</span>
+              <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">1-Click Templates:</span>
               <button
                 type="button"
                 onClick={insertFormulaTemplate}
@@ -2704,10 +2704,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               </button>
             </div>
 
-            <div className="flex items-center gap-2 text-[10px] text-purple-600 dark:text-purple-400 font-semibold font-mono">
-              <span>🖍️ Select text to highlight</span>
-              <span>•</span>
-              <span>📸 Ctrl+V Screenshot</span>
+            <div className="flex items-center gap-2 text-[11px] text-purple-600 dark:text-purple-400 font-semibold font-mono">
+              <span>ðŸ–ï¸ Select text to highlight</span>
+              <span>â€¢</span>
+              <span>ðŸ“¸ Ctrl+V Screenshot</span>
             </div>
           </div>
         </div>
@@ -2737,7 +2737,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <ImageIcon className="w-3.5 h-3.5 text-[#8B5CF6]" />
               Attached Screenshots & Diagrams ({images.length})
             </span>
-            <span className="text-[10px] text-[#85877E]">Click to view • Press Ctrl+V to paste more</span>
+            <span className="text-[11px] text-[#85877E]">Click to view â€¢ Press Ctrl+V to paste more</span>
           </div>
           <div className="flex items-center gap-2.5 overflow-x-auto py-1 no-scrollbar">
             {images.map((img) => (
@@ -2792,13 +2792,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             value={content}
             onChange={e => updateContentAndSave(e.target.value)}
             onPaste={handlePaste}
-            placeholder={`Paste your notes from Gemini or ChatGPT here, or write your own!\n\n💡 Pro-Tip: After pasting from Gemini/ChatGPT, click "✨ Format AI Notes" in the toolbar above to instantly generate structured callouts, formulas, traps & tables!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
+            placeholder={`Paste your notes from Gemini or ChatGPT here, or write your own!\n\nðŸ’¡ Pro-Tip: After pasting from Gemini/ChatGPT, click "âœ¨ Format AI Notes" in the toolbar above to instantly generate structured callouts, formulas, traps & tables!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
             rows={14}
             className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] dark:focus:ring-[#7AA2F7] shadow-inner select-text"
           />
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
-            <span>{wordCount} words · {charCount} chars</span>
+            <span>{wordCount} words Â· {charCount} chars</span>
             <span>Supports Markdown, Tables, LaTeX Math, Box & Freefall Highlighter</span>
           </div>
         </div>
@@ -2868,7 +2868,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   <ImageIcon className="w-4 h-4 text-[#8B5CF6]" />
                   Attached Screenshots & Diagrams ({images.length})
                 </span>
-                <span className="text-[10px] text-[#85877E]">Click image to view in full resolution</span>
+                <span className="text-[11px] text-[#85877E]">Click image to view in full resolution</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {images.map((img) => (

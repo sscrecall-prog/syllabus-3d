@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useTimer } from '../../context/TimerContext';
@@ -214,8 +214,8 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
               <h3 className="text-xs sm:text-sm font-black text-[#11120F] dark:text-[#C0CAF5] uppercase font-serif tracking-wide">
                 {isSettingsOpen ? 'Timer Configuration' : '3D Focus Chamber'}
               </h3>
-              <p className="text-[10px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
-                {isSettingsOpen ? 'Protocol Settings' : 'Deep Study Session • +25 XP'}
+              <p className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                {isSettingsOpen ? 'Protocol Settings' : 'Deep Study Session â€¢ +25 XP'}
               </p>
             </div>
           </div>
@@ -278,7 +278,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                 </span>
                 <div className="flex items-center gap-1 text-sm font-extrabold text-[#11120F] dark:text-white font-mono">
                   <span>{focusDurationMinutes}</span>
-                  <span className="text-[10px] text-[#85877E] font-normal">min</span>
+                  <span className="text-[11px] text-[#85877E] font-normal">min</span>
                 </div>
               </div>
 
@@ -328,7 +328,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                 </span>
                 <div className="flex items-center gap-1 text-sm font-extrabold text-[#11120F] dark:text-white font-mono">
                   <span>{breakDurationMinutes}</span>
-                  <span className="text-[10px] text-[#85877E] font-normal">min</span>
+                  <span className="text-[11px] text-[#85877E] font-normal">min</span>
                 </div>
               </div>
               <input
@@ -369,8 +369,8 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                     {selectedTopic ? selectedTopic.topic.name : 'Select Topic to Track Focus'}
                   </span>
                   {selectedTopic && (
-                    <span className="text-[10px] text-[#65675F] dark:text-[#A9B1D6] truncate font-mono">
-                      • {selectedTopic.subjectName}
+                    <span className="text-[11px] text-[#65675F] dark:text-[#A9B1D6] truncate font-mono">
+                      â€¢ {selectedTopic.subjectName}
                     </span>
                   )}
                 </div>
@@ -397,7 +397,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                       className="p-2.5 rounded-xl hover:bg-[#F7F6F0] dark:hover:bg-[#24283B] cursor-pointer flex items-center justify-between text-xs transition-colors"
                     >
                       <span className="font-bold text-[#191A17] dark:text-[#C0CAF5] truncate">{t.topic.name}</span>
-                      <span className="text-[10px] text-[#85877E] font-mono">{t.subjectName}</span>
+                      <span className="text-[11px] text-[#85877E] font-mono">{t.subjectName}</span>
                     </div>
                   ))}
                 </div>
@@ -487,7 +487,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                       : formatTime(session.remainingSec)}
                   </span>
                   
-                  <span className={`text-[10px] font-bold uppercase tracking-wider mt-1 px-2.5 py-0.5 rounded-full ${
+                  <span className={`text-[11px] font-bold uppercase tracking-wider mt-1 px-2.5 py-0.5 rounded-full ${
                     isRunning
                       ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 animate-pulse'
                       : isPaused
@@ -540,11 +540,11 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
               <div className="grid grid-cols-5 gap-1">
                 {[
-                  { id: 'rain' as AmbientSoundType, label: '🌧️ Rain' },
-                  { id: 'ocean' as AmbientSoundType, label: '🌊 Ocean' },
-                  { id: 'binaural' as AmbientSoundType, label: '🧠 Alpha' },
-                  { id: 'fireplace' as AmbientSoundType, label: '🔥 Camp' },
-                  { id: 'none' as AmbientSoundType, label: '🔇 Mute' }
+                  { id: 'rain' as AmbientSoundType, label: 'ðŸŒ§ï¸ Rain' },
+                  { id: 'ocean' as AmbientSoundType, label: 'ðŸŒŠ Ocean' },
+                  { id: 'binaural' as AmbientSoundType, label: 'ðŸ§  Alpha' },
+                  { id: 'fireplace' as AmbientSoundType, label: 'ðŸ”¥ Camp' },
+                  { id: 'none' as AmbientSoundType, label: 'ðŸ”‡ Mute' }
                 ].map(snd => (
                   <button
                     key={snd.id}
@@ -552,7 +552,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                       soundManager.playClick();
                       setActiveSound(snd.id);
                     }}
-                    className={`py-1.5 text-[10px] font-bold rounded-xl cursor-pointer transition-all active:scale-95 ${
+                    className={`py-1.5 text-[11px] font-bold rounded-xl cursor-pointer transition-all active:scale-95 ${
                       activeSound === snd.id
                         ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
                         : 'bg-[#F7F6F0] dark:bg-[#16161E] text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white'

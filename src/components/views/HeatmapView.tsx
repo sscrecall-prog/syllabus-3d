@@ -89,9 +89,9 @@ export const HeatmapView: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
           <div className="flex items-center gap-2 text-orange-500 mb-1">
             <Flame className="w-4 h-4 fill-orange-500" />
-            <span className="text-[10px] font-bold uppercase">Current Streak</span>
+            <span className="text-[11px] font-bold uppercase">Current Streak</span>
           </div>
-          <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
             {profile.currentStreak} <span className="text-sm font-normal text-slate-500">days</span>
           </h3>
         </div>
@@ -99,9 +99,9 @@ export const HeatmapView: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
           <div className="flex items-center gap-2 text-brand-500 mb-1">
             <Flame className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase">Longest Streak</span>
+            <span className="text-[11px] font-bold uppercase">Longest Streak</span>
           </div>
-          <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
             {profile.longestStreak} <span className="text-sm font-normal text-slate-500">days</span>
           </h3>
         </div>
@@ -109,9 +109,9 @@ export const HeatmapView: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
           <div className="flex items-center gap-2 text-emerald-500 mb-1">
             <Calendar className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase">Active Days</span>
+            <span className="text-[11px] font-bold uppercase">Active Days</span>
           </div>
-          <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
             {activeDaysCount} <span className="text-sm font-normal text-slate-500">/ 120 days</span>
           </h3>
         </div>
@@ -119,9 +119,9 @@ export const HeatmapView: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
           <div className="flex items-center gap-2 text-purple-500 mb-1">
             <Clock className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase">Total Invested</span>
+            <span className="text-[11px] font-bold uppercase">Total Invested</span>
           </div>
-          <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
             {Math.round(totalStudyMinutes / 60)}h
           </h3>
         </div>
@@ -129,11 +129,11 @@ export const HeatmapView: React.FC = () => {
 
       <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+          <h3 className="text-[15px] sm:text-base font-bold text-slate-900 dark:text-white">
             Preparation Calendar (Last 120 Days)
           </h3>
 
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
             <span>Less</span>
             <div className="w-3 h-3 rounded-md bg-slate-100 dark:bg-slate-800" />
             <div className="w-3 h-3 rounded-md bg-brand-500/30" />
@@ -163,11 +163,11 @@ export const HeatmapView: React.FC = () => {
               <span className="font-bold text-slate-900 dark:text-white">
                 {new Date(hoveredDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
-              <span>·</span>
+              <span>Â·</span>
               <span>{formatMinutes(hoveredDay.studyMinutes)} studied</span>
-              <span>·</span>
+              <span>Â·</span>
               <span>{hoveredDay.topicsCompleted} topics completed</span>
-              <span>·</span>
+              <span>Â·</span>
               <span>{hoveredDay.revisionsCompleted} revisions</span>
             </div>
           ) : (
@@ -178,3 +178,4 @@ export const HeatmapView: React.FC = () => {
     </div>
   );
 };
+

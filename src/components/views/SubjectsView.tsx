@@ -21,10 +21,10 @@ export const SubjectsView: React.FC<SubjectsViewProps> = ({ onNavigate }) => {
     <div className="space-y-6 pb-16">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-[15px] sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             Subjects & Domains
           </h2>
-          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-[11px] sm:text-[13px] font-medium text-slate-500 dark:text-slate-400">
             Interactive 3D mastery cards with subject management.
           </p>
         </div>
@@ -64,7 +64,7 @@ export const SubjectsView: React.FC<SubjectsViewProps> = ({ onNavigate }) => {
                   e.stopPropagation();
                   setEditingSubject(subject);
                 }}
-                className="absolute top-4 right-4 z-20 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-700 dark:text-slate-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm"
+                className="absolute top-4 right-4 z-20 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm"
               >
                 Edit
               </button>
@@ -81,3 +81,4 @@ export const SubjectsView: React.FC<SubjectsViewProps> = ({ onNavigate }) => {
     </div>
   );
 };
+

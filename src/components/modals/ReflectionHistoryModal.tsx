@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -32,34 +32,34 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
   const getMoodBadge = (mood: DailyMood) => {
     switch (mood) {
       case 'fire':
-        return { label: 'Unstoppable', emoji: '🔥', color: 'text-orange-400 bg-orange-500/15 border-orange-500/30' };
+        return { label: 'Unstoppable', emoji: 'ðŸ”¥', color: 'text-orange-400 bg-orange-500/15 border-orange-500/30' };
       case 'lightning':
-        return { label: 'Productive', emoji: '⚡', color: 'text-amber-400 bg-amber-500/15 border-amber-500/30' };
+        return { label: 'Productive', emoji: 'âš¡', color: 'text-amber-400 bg-amber-500/15 border-amber-500/30' };
       case 'happy':
-        return { label: 'Moderate', emoji: '🙂', color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' };
+        return { label: 'Moderate', emoji: 'ðŸ™‚', color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' };
       case 'tired':
-        return { label: 'Distracted', emoji: '🥱', color: 'text-sky-400 bg-sky-500/15 border-sky-500/30' };
+        return { label: 'Distracted', emoji: 'ðŸ¥±', color: 'text-sky-400 bg-sky-500/15 border-sky-500/30' };
       case 'stressed':
-        return { label: 'Low Energy', emoji: '😴', color: 'text-rose-400 bg-rose-500/15 border-rose-500/30' };
+        return { label: 'Low Energy', emoji: 'ðŸ˜´', color: 'text-rose-400 bg-rose-500/15 border-rose-500/30' };
       default:
-        return { label: 'Completed', emoji: '✨', color: 'text-purple-400 bg-purple-500/15 border-purple-500/30' };
+        return { label: 'Completed', emoji: 'âœ¨', color: 'text-purple-400 bg-purple-500/15 border-purple-500/30' };
     }
   };
 
   const getDistractionInfo = (reason: DistractionCategory) => {
     switch (reason) {
       case 'none':
-        return { label: '100% Focused • Zero Traps', emoji: '🏆', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+        return { label: '100% Focused â€¢ Zero Traps', emoji: 'ðŸ†', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
       case 'social_media':
-        return { label: 'Social Media / Reels', emoji: '📱', color: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
+        return { label: 'Social Media / Reels', emoji: 'ðŸ“±', color: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
       case 'youtube':
-        return { label: 'YouTube Rabbit Hole', emoji: '📺', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
+        return { label: 'YouTube Rabbit Hole', emoji: 'ðŸ“º', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
       case 'overthinking':
-        return { label: 'Overthinking / Anxiety', emoji: '🧠', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+        return { label: 'Overthinking / Anxiety', emoji: 'ðŸ§ ', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
       case 'fatigue':
-        return { label: 'Fatigue / Sleepiness', emoji: '🥱', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+        return { label: 'Fatigue / Sleepiness', emoji: 'ðŸ¥±', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
       default:
-        return { label: 'Other Interruption', emoji: '⚠️', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
+        return { label: 'Other Interruption', emoji: 'âš ï¸', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
     }
   };
 
@@ -82,10 +82,10 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
+                <span className="px-1.5 py-0.2 rounded text-[11px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
                   JOURNAL LOG
                 </span>
-                <span className="text-[10px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
+                <span className="text-[11px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
                   {reflectionsHistory.length} Days
                 </span>
               </div>
@@ -151,14 +151,14 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                           {refl.date}
                         </span>
                       </div>
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border flex items-center gap-1 shrink-0 ${moodMeta.color}`}>
+                      <span className={`px-2 py-0.5 rounded-md text-[11px] font-bold border flex items-center gap-1 shrink-0 ${moodMeta.color}`}>
                         <span>{moodMeta.emoji}</span>
                         <span>{moodMeta.label}</span>
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md border border-amber-500/25">
+                      <span className="text-[11px] sm:text-[11px] font-mono font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md border border-amber-500/25">
                         {refl.targetsCompletedCount}/3 Targets
                       </span>
 
@@ -183,7 +183,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     {/* Biggest Win */}
                     <div className="p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-                      <span className="text-[9px] sm:text-[10px] font-black text-emerald-400 uppercase font-mono tracking-wider flex items-center gap-1">
+                      <span className="text-[11px] sm:text-[11px] font-black text-emerald-400 uppercase font-mono tracking-wider flex items-center gap-1">
                         <Trophy className="w-3 h-3" />
                         <span>Daily Win:</span>
                       </span>
@@ -194,7 +194,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
 
                     {/* Tomorrow's Goal */}
                     <div className="p-2.5 sm:p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-1">
-                      <span className="text-[9px] sm:text-[10px] font-black text-purple-400 uppercase font-mono tracking-wider flex items-center gap-1">
+                      <span className="text-[11px] sm:text-[11px] font-black text-purple-400 uppercase font-mono tracking-wider flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         <span>Tomorrow's #1 Goal:</span>
                       </span>
@@ -205,14 +205,14 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                   </div>
 
                   {/* Focus Check / Distraction Pill */}
-                  <div className="flex items-center gap-1.5 flex-wrap text-[10px] sm:text-[11px] font-mono pt-0.5">
+                  <div className="flex items-center gap-1.5 flex-wrap text-[11px] sm:text-[11px] font-mono pt-0.5">
                     <span className="text-[#8E90A6] font-bold shrink-0">Focus Check:</span>
-                    <span className={`px-2 py-0.5 rounded-md border text-[10px] flex items-center gap-1 ${distMeta.color}`}>
+                    <span className={`px-2 py-0.5 rounded-md border text-[11px] flex items-center gap-1 ${distMeta.color}`}>
                       <span>{distMeta.emoji}</span>
                       <span className="font-semibold">{distMeta.label}</span>
                     </span>
                     {refl.distractionNote && (
-                      <span className="text-[#A1A1B2] italic text-[10px] break-words">
+                      <span className="text-[#A1A1B2] italic text-[11px] break-words">
                         "{refl.distractionNote}"
                       </span>
                     )}
@@ -256,3 +256,4 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
     document.body
   );
 };
+

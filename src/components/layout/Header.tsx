@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
               title="Navigate Back (Previous Step)"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-              <span className="text-xs font-extrabold">Back</span>
+              <span className="text-[13px] font-extrabold">Back</span>
             </button>
           )}
 
@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="hidden md:flex relative">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth"
             >
               <GraduationCap className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
               <span>{examName}</span>
@@ -105,14 +105,14 @@ export const Header: React.FC<HeaderProps> = ({
                       setSelectedExamId(ex.id);
                       setIsExamMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
+                    className={`w-full text-left px-3 py-2 rounded-lg text-[13px] font-semibold flex items-center justify-between transition-colors ${
                       ex.id === currentExam?.id
                         ? 'bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#11120F] dark:text-[#F5F5F7] font-bold'
                         : 'hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] text-[#65675F] dark:text-[#A1A1AA]'
                     }`}
                   >
                     <span>{ex.name}</span>
-                    <span className="text-[10px] text-[#85877E]">{ex.targetYear}</span>
+                    <span className="text-[11px] text-[#85877E]">{ex.targetYear}</span>
                   </button>
                 ))}
               </div>
@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-1.5 sm:gap-2.5">
           {!isOnline && (
             <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold animate-pulse cursor-help"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-mono font-bold animate-pulse cursor-help"
               title="100% Offline Ready: All syllabus topics, notes, PDF highlights, and flashcards are cached locally."
             >
               <WifiOff className="w-3.5 h-3.5 shrink-0" />
@@ -141,13 +141,13 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Search className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
             <span className="hidden sm:inline">Search...</span>
-            <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-[#EEEEE8] dark:bg-[#23232A] rounded text-[#85877E]">⌘K</kbd>
+            <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[11px] font-mono bg-[#EEEEE8] dark:bg-[#23232A] rounded text-[#85877E]">⌘K</kbd>
           </button>
 
           {/* Streak Indicator */}
           <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
             <Flame className="w-4 h-4 text-[#C49A3A] fill-[#C49A3A]" />
-            <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] font-mono">
+            <span className="text-xs tabular-nums font-black text-[#191A17] dark:text-[#F5F5F7] font-mono">
               {profile.currentStreak}d
             </span>
           </div>
@@ -162,7 +162,7 @@ export const Header: React.FC<HeaderProps> = ({
             title={`All notes, targets, PDF highlights, and study metrics are continuously auto-saved. (Last saved: ${lastSavedAt})`}
           >
             <Check className={`w-3.5 h-3.5 stroke-[2.5] ${isAutoSaving ? 'text-emerald-500 animate-bounce' : 'text-emerald-500 dark:text-emerald-400'}`} />
-            <span className="text-[10px] font-mono font-bold tracking-tight">
+            <span className="text-[11px] font-mono font-bold tracking-tight">
               {isAutoSaving ? 'Saving...' : `Saved ${lastSavedAt}`}
             </span>
           </div>
@@ -203,3 +203,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

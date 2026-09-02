@@ -168,11 +168,11 @@ export const PlatformsView: React.FC = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div className="space-y-2.5 max-w-2xl">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest bg-white/10 text-[#7AA2F7] border border-white/15 backdrop-blur-md flex items-center gap-1.5 shadow-xs">
+              <span className="px-3 py-1 rounded-full text-[11px] font-mono font-extrabold uppercase tracking-widest bg-white/10 text-[#7AA2F7] border border-white/15 backdrop-blur-md flex items-center gap-1.5 shadow-xs">
                 <Sparkles className="w-3.5 h-3.5 text-[#7AA2F7] animate-pulse" />
                 Connected Study Hub
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-[#A1A1B2] bg-white/5 border border-white/10 backdrop-blur-md">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold text-[#A1A1B2] bg-white/5 border border-white/10 backdrop-blur-md">
                 {platforms.length} Platforms Linked
               </span>
             </div>
@@ -205,8 +205,8 @@ export const PlatformsView: React.FC = () => {
               <GraduationCap className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-lg font-mono font-black text-white block leading-none">{coursesCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Course Portals</span>
+              <span className="text-lg font-mono font-black tabular-nums text-white block leading-none">{coursesCount}</span>
+              <span className="text-[11px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Course Portals</span>
             </div>
           </div>
 
@@ -215,8 +215,8 @@ export const PlatformsView: React.FC = () => {
               <FileCheck2 className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-lg font-mono font-black text-white block leading-none">{testsCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Mock Test Series</span>
+              <span className="text-lg font-mono font-black tabular-nums text-white block leading-none">{testsCount}</span>
+              <span className="text-[11px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Mock Test Series</span>
             </div>
           </div>
 
@@ -225,8 +225,8 @@ export const PlatformsView: React.FC = () => {
               <Bookmark className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-lg font-mono font-black text-white block leading-none">{pinnedCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Pinned Links</span>
+              <span className="text-lg font-mono font-black tabular-nums text-white block leading-none">{pinnedCount}</span>
+              <span className="text-[11px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Pinned Links</span>
             </div>
           </div>
 
@@ -235,8 +235,8 @@ export const PlatformsView: React.FC = () => {
               <PenTool className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-lg font-mono font-black text-white block leading-none">{customCount}</span>
-              <span className="text-[10px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Custom Portals</span>
+              <span className="text-lg font-mono font-black tabular-nums text-white block leading-none">{customCount}</span>
+              <span className="text-[11px] font-bold uppercase font-mono text-[#9A9CAE] tracking-wider mt-1 block">Custom Portals</span>
             </div>
           </div>
         </div>
@@ -249,14 +249,14 @@ export const PlatformsView: React.FC = () => {
         <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#EAE8DF] dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272732] overflow-x-auto custom-scrollbar shadow-inner shrink-0 max-w-full">
           {[
             { id: 'all', label: 'All' },
-            { id: 'course', label: 'Courses 📚' },
-            { id: 'test_series', label: 'Mock Tests 📝' },
-            { id: 'reference', label: 'Tools & Reference 🔍' },
+            { id: 'course', label: 'Courses ðŸ“š' },
+            { id: 'test_series', label: 'Mock Tests ðŸ“' },
+            { id: 'reference', label: 'Tools & Reference ðŸ”' },
             ...customCategoriesList.map(cat => ({ 
               id: cat, 
-              label: `✨ ${cat}` 
+              label: `âœ¨ ${cat}` 
             })),
-            { id: 'pinned', label: 'Pinned ⭐' },
+            { id: 'pinned', label: 'Pinned â­' },
           ].map(tab => {
             const isSelected = selectedCategory === tab.id;
             return (
@@ -293,7 +293,7 @@ export const PlatformsView: React.FC = () => {
               onClick={() => setSearchQuery('')}
               className="absolute right-3 top-2 text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
             >
-              ✕
+              âœ•
             </button>
           )}
         </div>
@@ -303,7 +303,7 @@ export const PlatformsView: React.FC = () => {
       {filteredPlatforms.length === 0 ? (
         <div className="p-14 rounded-3xl bg-white dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272732] text-center space-y-4 shadow-sm">
           <div className="w-16 h-16 rounded-3xl bg-[#F7F6F0] dark:bg-[#20212C] flex items-center justify-center text-3xl mx-auto border border-[#D8D8CF] dark:border-[#333]">
-            🌐
+            ðŸŒ
           </div>
           <div className="space-y-1">
             <h3 className="text-base font-black text-[#11120F] dark:text-white font-serif">
@@ -360,16 +360,16 @@ export const PlatformsView: React.FC = () => {
                         className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-xs border border-white/20 shrink-0"
                         style={{ backgroundColor: platform.color || '#5A4FCF' }}
                       >
-                        {platform.icon || '⚡'}
+                        {platform.icon || 'âš¡'}
                       </div>
 
                       <div className="min-w-0 space-y-1">
                         <div>
-                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/20">
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/20">
                             {categoryBadgeLabel}
                           </span>
                         </div>
-                        <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-white font-serif truncate">
+                        <h3 className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-white font-serif truncate">
                           {platform.name}
                         </h3>
                       </div>
@@ -466,3 +466,4 @@ export const PlatformsView: React.FC = () => {
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { PasswordStrength } from '../../types/auth';
 import { Check, X } from 'lucide-react';
 
@@ -53,7 +53,7 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
         ].map((item, idx) => (
           <span
             key={idx}
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border transition-all ${
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-all ${
               item.met
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
                 : 'bg-slate-100 dark:bg-slate-800/60 text-slate-400 dark:text-slate-500 border-transparent'
@@ -67,3 +67,4 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
     </div>
   );
 };
+

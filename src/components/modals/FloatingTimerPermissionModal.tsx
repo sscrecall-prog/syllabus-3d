@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createPortal } from 'react-dom';
 import { useTimer } from '../../context/TimerContext';
 import { Shield, Sparkles, X, CheckCircle2 } from 'lucide-react';
@@ -76,7 +76,7 @@ export const FloatingTimerPermissionModal: React.FC = () => {
           </button>
         </div>
 
-        <p className="text-[10px] text-slate-500 mt-3">
+        <p className="text-[11px] text-slate-500 mt-3">
           You can adjust this anytime in Settings &rarr; Floating Timer.
         </p>
       </div>

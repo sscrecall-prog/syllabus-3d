@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   FileText,
   Upload,
@@ -177,7 +177,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
           <div>
             <h4 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-2 font-serif">
               <span>Attached Topic PDFs & Materials</span>
-              <span className="px-2 py-0.2 rounded-full text-[10px] font-mono bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold">
+              <span className="px-2 py-0.2 rounded-full text-[11px] font-mono bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold">
                 {attachments.length}
               </span>
             </h4>
@@ -299,11 +299,11 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
                   <h5 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-500 transition-colors">
                     {att.name}
                   </h5>
-                  <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5 flex-wrap">
-                    <span className="px-1.5 py-0.2 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[10px] font-bold text-rose-600 dark:text-rose-400 font-mono">
+                  <div className="flex items-center gap-2 text-[11px] sm:text-[11px] text-slate-400 font-mono mt-0.5 flex-wrap">
+                    <span className="px-1.5 py-0.2 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">
                       {formatFileSize(att.fileSize)}
                     </span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3 text-[#85877E]" />
                       <span>{new Date(att.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
@@ -381,3 +381,4 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { X, RotateCw, Trophy, ArrowRight, Check, RefreshCcw, Sparkles } from 'lucide-react';
@@ -83,7 +83,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
               <h4 className="text-sm sm:text-base font-black text-[#171717] dark:text-[#F5F5F7]">
                 Spaced Revision Flashcards
               </h4>
-              <p className="text-[10px] text-[#6B7280] font-semibold">
+              <p className="text-[11px] text-[#6B7280] font-semibold">
                 {activeQueue.length > 0 ? `Card ${currentIndex + 1} of ${activeQueue.length}` : 'No cards due'}
               </p>
             </div>
@@ -186,7 +186,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
                     )}
                   </div>
 
-                  <div className="text-[10px] font-bold text-[#6B7280] text-center border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] pt-2">
+                  <div className="text-[11px] font-bold text-[#6B7280] text-center border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] pt-2">
                     How well did you recall this topic?
                   </div>
                 </div>
@@ -221,7 +221,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
                   onClick={() => handleGrade('easy')}
                   className="py-2.5 px-2 rounded-2xl bg-[#D4AF37] hover:bg-[#B89327] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/30 transition-all cursor-pointer"
                 >
-                  Easy (14d) ★
+                  Easy (14d) â˜…
                 </button>
               </div>
             </div>
@@ -232,3 +232,4 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
     document.body
   );
 };
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Target,
   CheckCircle2,
@@ -76,7 +76,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
   };
 
   const targetSlotLabels = [
-    { num: '01', title: 'Top Non-Negotiable Target', subtitle: 'Highest priority — must crush first' },
+    { num: '01', title: 'Top Non-Negotiable Target', subtitle: 'Highest priority â€” must crush first' },
     { num: '02', title: 'Core Practice & Problem Sprint', subtitle: 'Deep work & active problem solving' },
     { num: '03', title: 'Revision or Supporting Milestone', subtitle: 'Vocab, formulas, or sectional mock' }
   ];
@@ -107,8 +107,8 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                   Top 3 Non-Negotiable Targets
                 </h3>
                 {completedTargets.length === 3 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
-                    🔥 3/3 CRUSHED!
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
+                    ðŸ”¥ 3/3 CRUSHED!
                   </span>
                 )}
               </div>
@@ -131,7 +131,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
               <History className="w-3.5 h-3.5 text-purple-400" />
               <span>History</span>
               {reflectionsHistory.length > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                <span className="px-1.5 py-0.2 rounded-full text-[11px] font-mono font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
                   {reflectionsHistory.length}
                 </span>
               )}
@@ -172,7 +172,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 {/* Slot Header */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-black bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                       #{meta.num}
                     </span>
                     <span className="text-[11px] font-bold text-[#65675F] dark:text-[#A1A1B2] truncate">
@@ -257,7 +257,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                         </p>
                         {target.subjectName && (
                           <span
-                            className="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-mono font-extrabold text-white"
+                            className="inline-block mt-1 px-2 py-0.5 rounded text-[11px] font-mono font-extrabold text-white"
                             style={{ backgroundColor: target.subjectColor || '#596B35' }}
                           >
                             {target.subjectName}
@@ -310,7 +310,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                                   {t.topic.name}
                                 </span>
                                 <span
-                                  className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded text-white shrink-0 ml-1"
+                                  className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded text-white shrink-0 ml-1"
                                   style={{ backgroundColor: t.subjectColor }}
                                 >
                                   {t.subjectName}
@@ -325,10 +325,10 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 </div>
 
                 {/* Progress Mini Status */}
-                <div className="pt-2 border-t border-[#EEEEE8] dark:border-[#242533] flex items-center justify-between text-[10px] font-mono text-[#85877E]">
+                <div className="pt-2 border-t border-[#EEEEE8] dark:border-[#242533] flex items-center justify-between text-[11px] font-mono text-[#85877E]">
                   <span>Status:</span>
                   <span className={target.completed ? 'text-emerald-500 font-bold' : hasText ? 'text-amber-500 font-medium' : 'text-[#85877E]'}>
-                    {target.completed ? 'Done ✅' : hasText ? 'In Progress ⏳' : 'Not Set'}
+                    {target.completed ? 'Done âœ…' : hasText ? 'In Progress â³' : 'Not Set'}
                   </span>
                 </div>
               </div>
@@ -355,8 +355,8 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
           <p className="text-[11px] text-[#85877E] italic text-center sm:text-right">
             {completedTargets.length === 3
-              ? '🎉 Outstanding work! All 3 non-negotiables crushed.'
-              : '⚡ Finish these 3 tasks before checking off minor items.'}
+              ? 'ðŸŽ‰ Outstanding work! All 3 non-negotiables crushed.'
+              : 'âš¡ Finish these 3 tasks before checking off minor items.'}
           </p>
         </div>
 
@@ -382,3 +382,4 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
     </>
   );
 };
+

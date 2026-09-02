@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -85,7 +85,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'fire',
       label: 'Unstoppable',
       shortLabel: 'Fire',
-      emoji: '🔥',
+      emoji: 'ðŸ”¥',
       icon: Flame,
       color: 'text-orange-400 border-orange-500/40',
       activeBg: 'bg-orange-500/25 border-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.4)] text-orange-300',
@@ -95,7 +95,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'lightning',
       label: 'Productive',
       shortLabel: 'Great',
-      emoji: '⚡',
+      emoji: 'âš¡',
       icon: Zap,
       color: 'text-amber-400 border-amber-500/40',
       activeBg: 'bg-amber-500/25 border-amber-400 shadow-[0_0_18px_rgba(245,158,11,0.4)] text-amber-300',
@@ -105,7 +105,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'happy',
       label: 'Moderate',
       shortLabel: 'Good',
-      emoji: '🙂',
+      emoji: 'ðŸ™‚',
       icon: Smile,
       color: 'text-emerald-400 border-emerald-500/40',
       activeBg: 'bg-emerald-500/25 border-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.4)] text-emerald-300',
@@ -115,7 +115,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'tired',
       label: 'Distracted',
       shortLabel: 'Lost',
-      emoji: '🥱',
+      emoji: 'ðŸ¥±',
       icon: Coffee,
       color: 'text-sky-400 border-sky-500/40',
       activeBg: 'bg-sky-500/25 border-sky-400 shadow-[0_0_18px_rgba(56,189,248,0.4)] text-sky-300',
@@ -125,7 +125,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'stressed',
       label: 'Low Energy',
       shortLabel: 'Low',
-      emoji: '😴',
+      emoji: 'ðŸ˜´',
       icon: BatteryLow,
       color: 'text-rose-400 border-rose-500/40',
       activeBg: 'bg-rose-500/25 border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.4)] text-rose-300',
@@ -143,49 +143,49 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
   }> = [
     {
       id: 'none',
-      label: 'None - 100% Focused 🏆',
+      label: 'None - 100% Focused ðŸ†',
       shortLabel: '100% Focused',
-      emoji: '🏆',
+      emoji: 'ðŸ†',
       activeStyle: 'bg-emerald-500/25 border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-emerald-400/80 hover:bg-emerald-500/10'
     },
     {
       id: 'social_media',
-      label: 'Social Media / Reels 📱',
+      label: 'Social Media / Reels ðŸ“±',
       shortLabel: 'Social Media',
-      emoji: '📱',
+      emoji: 'ðŸ“±',
       activeStyle: 'bg-rose-500/25 border-rose-400 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-rose-500/10 hover:text-rose-300'
     },
     {
       id: 'youtube',
-      label: 'YouTube Rabbit Hole 📺',
+      label: 'YouTube Rabbit Hole ðŸ“º',
       shortLabel: 'YouTube Trap',
-      emoji: '📺',
+      emoji: 'ðŸ“º',
       activeStyle: 'bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-cyan-500/10 hover:text-cyan-300'
     },
     {
       id: 'overthinking',
-      label: 'Overthinking / Anxiety 🧠',
+      label: 'Overthinking / Anxiety ðŸ§ ',
       shortLabel: 'Overthinking',
-      emoji: '🧠',
+      emoji: 'ðŸ§ ',
       activeStyle: 'bg-purple-500/25 border-purple-400 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-purple-500/10 hover:text-purple-300'
     },
     {
       id: 'fatigue',
-      label: 'Sleepiness / Low Energy 🥱',
+      label: 'Sleepiness / Low Energy ðŸ¥±',
       shortLabel: 'Sleepiness',
-      emoji: '🥱',
+      emoji: 'ðŸ¥±',
       activeStyle: 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-amber-400/90 hover:bg-amber-500/10 hover:text-amber-300'
     },
     {
       id: 'other',
-      label: 'Other Interruption ⚠️',
+      label: 'Other Interruption âš ï¸',
       shortLabel: 'Other Interruption',
-      emoji: '⚠️',
+      emoji: 'âš ï¸',
       activeStyle: 'bg-indigo-500/25 border-indigo-400 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-indigo-500/10 hover:text-indigo-300'
     }
@@ -212,10 +212,10 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
+                  <span className="px-1.5 py-0.2 rounded text-[11px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
                     DAY-END REFLECTION
                   </span>
-                  <span className="text-[9px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
+                  <span className="text-[11px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
                     {todayKey}
                   </span>
                 </div>
@@ -250,12 +250,12 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           </div>
 
           {/* Today's Target Stats Pill Strip */}
-          <div className="relative z-10 flex items-center justify-between gap-2 mt-2.5 pt-2 border-t border-white/10 text-[10px] sm:text-xs font-mono">
+          <div className="relative z-10 flex items-center justify-between gap-2 mt-2.5 pt-2 border-t border-white/10 text-[11px] sm:text-xs font-mono">
             <div className="flex items-center gap-1.5 text-[#D1D5E8]">
               <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0" />
               <span className="truncate">Top 3 Targets:</span>
             </div>
-            <span className="font-extrabold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 shrink-0 text-[10px]">
+            <span className="font-extrabold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30 shrink-0 text-[11px]">
               {completedTargetsCount} / {Math.max(3, totalTargetsCount)} Done
             </span>
           </div>
@@ -268,10 +268,10 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[11px] sm:text-xs font-black uppercase font-mono tracking-wider text-purple-300 flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-300 flex items-center justify-center text-[10px]">1</span>
+                <span className="w-4 h-4 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-300 flex items-center justify-center text-[11px]">1</span>
                 <span>Focus & Energy Today?</span>
               </label>
-              <span className="text-[10px] sm:text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
+              <span className="text-[11px] sm:text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
                 {rating} / 5 Score
               </span>
             </div>
@@ -300,7 +300,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
                     }`}
                   >
                     <span className="text-base sm:text-lg leading-none select-none">{m.emoji}</span>
-                    <span className="text-[9px] sm:text-[10px] font-mono leading-none tracking-tight font-bold truncate max-w-full block">
+                    <span className="text-[11px] sm:text-[11px] font-mono leading-none tracking-tight font-bold truncate max-w-full block">
                       {m.shortLabel}
                     </span>
                   </button>
@@ -312,7 +312,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           {/* 2. Biggest Academic Win */}
           <div className="space-y-1.5">
             <label className="text-[11px] sm:text-xs font-black uppercase font-mono tracking-wider text-emerald-300 flex items-center gap-1.5">
-              <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-[10px]">2</span>
+              <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-[11px]">2</span>
               <span>Today's Biggest Win?</span>
               <span className="text-amber-400">*</span>
             </label>
@@ -332,7 +332,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           {/* 3. Primary Distraction / Trap */}
           <div className="space-y-1.5">
             <label className="text-[11px] sm:text-xs font-black uppercase font-mono tracking-wider text-rose-300 flex items-center gap-1.5">
-              <span className="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 flex items-center justify-center text-[10px]">3</span>
+              <span className="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 flex items-center justify-center text-[11px]">3</span>
               <span>Where did you lose focus?</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
@@ -371,7 +371,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
           {/* 4. Tomorrow Morning's #1 Priority */}
           <div className="space-y-1.5">
             <label className="text-[11px] sm:text-xs font-black uppercase font-mono tracking-wider text-amber-300 flex items-center gap-1.5">
-              <span className="w-4 h-4 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-[10px]">4</span>
+              <span className="w-4 h-4 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-[11px]">4</span>
               <span>Tomorrow's #1 Wake-Up Goal?</span>
               <span className="text-amber-400">*</span>
             </label>
@@ -413,3 +413,4 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
     document.body
   );
 };
+

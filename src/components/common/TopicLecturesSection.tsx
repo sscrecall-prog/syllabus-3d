@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Plus,
   ExternalLink,
@@ -144,7 +144,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
               <h3 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
                 Video Lectures & Classes
               </h3>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-[#EEEEE8] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA]">
+              <span className="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-[#EEEEE8] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA]">
                 {lectures.length} {lectures.length === 1 ? 'Lecture' : 'Lectures'}
               </span>
             </div>
@@ -234,8 +234,8 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 inline-block mb-1">
-                    ✓ Valid YouTube Video Detected
+                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 inline-block mb-1">
+                    âœ“ Valid YouTube Video Detected
                   </span>
                   <p className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] truncate">
                     Video ID: <span className="font-mono text-red-500">{liveVideoId}</span>
@@ -262,7 +262,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] mb-1">
-                  Duration / Tag <span className="text-[10px] text-[#85877E]">(Optional)</span>
+                  Duration / Tag <span className="text-[11px] text-[#85877E]">(Optional)</span>
                 </label>
                 <input
                   type="text"
@@ -275,7 +275,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] mb-1">
-                  Teacher / Channel Note <span className="text-[10px] text-[#85877E]">(Optional)</span>
+                  Teacher / Channel Note <span className="text-[11px] text-[#85877E]">(Optional)</span>
                 </label>
                 <input
                   type="text"
@@ -351,7 +351,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
 
                     {/* Duration Badge */}
                     {lecture.duration && (
-                      <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/80 text-white text-[10px] font-mono font-bold">
+                      <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/80 text-white text-[11px] font-mono font-bold">
                         {lecture.duration}
                       </div>
                     )}
@@ -360,7 +360,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                   {/* Text Details */}
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 font-mono">
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 font-mono">
                         Lecture #{index + 1}
                       </span>
                       {lecture.notes && (
@@ -380,7 +380,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                         <span>Added {lecture.addedAt}</span>
                       </span>
                       <span className="hidden xs:inline text-red-500/80 font-medium">
-                        Click to Open in YouTube ↗
+                        Click to Open in YouTube â†—
                       </span>
                     </div>
 
@@ -400,7 +400,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                                 openYouTubeLectureInNewTab(lecture.youtubeUrl, ts.timeSeconds);
                               }
                             }}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#23232A] hover:bg-red-600 text-red-400 hover:text-white border border-[#272730] hover:border-red-500 text-[10px] font-mono font-bold transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#23232A] hover:bg-red-600 text-red-400 hover:text-white border border-[#272730] hover:border-red-500 text-[11px] font-mono font-bold transition-colors cursor-pointer"
                             title={`Jump to ${ts.title} (${ts.timeLabel})`}
                           >
                             <Play className="w-2 h-2 fill-current" />
@@ -408,7 +408,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                           </button>
                         ))}
                         {lecture.timestamps.length > 5 && (
-                          <span className="text-[10px] text-[#85877E] font-mono">
+                          <span className="text-[11px] text-[#85877E] font-mono">
                             +{lecture.timestamps.length - 5} more
                           </span>
                         )}
@@ -585,3 +585,4 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
     </div>
   );
 };
+

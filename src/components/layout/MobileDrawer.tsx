@@ -65,7 +65,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 <h2 className="text-sm font-black text-[#11120F] dark:text-white font-serif uppercase tracking-wider">
                   SYLLABUS 3D
                 </h2>
-                <span className="text-[10px] font-mono text-[#85877E]">Mastery Edition</span>
+                <span className="text-[11px] font-mono text-[#85877E]">Mastery Edition</span>
               </div>
             </div>
             <button
@@ -82,7 +82,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 onClose();
                 onOpenAddTopic();
               }}
-              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-[#1B1D30] to-[#11120F] dark:from-[#7AA2F7] dark:to-[#5B82D7] text-white dark:text-[#0B0B0D] font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer border border-white/10"
+              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-[#1B1D30] to-[#11120F] dark:from-[#7AA2F7] dark:to-[#5B82D7] text-white dark:text-[#0B0B0D] font-bold text-[13px] flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer border border-white/10"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>+ Add Custom Target</span>
@@ -101,7 +101,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                     onSelectView(item.id);
                     onClose();
                   }}
-                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                  className={`w-full min-h-[44px] flex items-center justify-between px-3.5 py-3 rounded-2xl text-[13px] font-bold transition-all active:scale-95 cursor-pointer ${
                     isActive
                       ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] font-black border border-[#596B35]/30 dark:border-[#7AA2F7]/40 shadow-xs'
                       : 'text-[#65675F] dark:text-[#A1A1B2] hover:bg-[#EEEEE8] dark:hover:bg-[#181926]'
@@ -112,7 +112,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                     <span>{item.label}</span>
                   </div>
                   {Boolean(item.badge) && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs">
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs">
                       {item.badge}
                     </span>
                   )}
@@ -123,11 +123,12 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
         </div>
 
         <div className="pt-4 border-t border-[#D8D8CF] dark:border-[#242638]">
-          <p className="text-[10px] text-[#85877E] text-center font-mono">
-            Syllabus 3D • Focus First
+          <p className="text-[11px] text-[#85877E] text-center font-mono">
+            Syllabus 3D â€¢ Focus First
           </p>
         </div>
       </div>
     </div>
   );
 };
+

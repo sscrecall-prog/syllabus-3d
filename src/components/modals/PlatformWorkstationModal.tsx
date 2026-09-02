@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   ExternalLink,
@@ -183,18 +183,18 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
             className="w-8 h-8 rounded-xl flex items-center justify-center text-base border border-white/20 shrink-0"
             style={{ backgroundColor: platform.color || '#5A4FCF' }}
           >
-            {platform.icon || '⚡'}
+            {platform.icon || 'âš¡'}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xs sm:text-sm font-black font-serif truncate max-w-[180px] sm:max-w-xs text-white">
                 {platform.name}
               </h1>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[#23232A] text-[#A1A1AA] border border-[#333]">
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[11px] font-mono font-bold uppercase bg-[#23232A] text-[#A1A1AA] border border-[#333]">
                 {platform.category === 'course' ? 'Course Batch' : 'Mock Test Series'}
               </span>
             </div>
-            <span className="text-[10px] font-mono text-[#85877E] truncate block max-w-[200px] sm:max-w-xs">
+            <span className="text-[11px] font-mono text-[#85877E] truncate block max-w-[200px] sm:max-w-xs">
               {platform.url.replace(/^https?:\/\//, '')}
             </span>
           </div>
@@ -218,7 +218,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
             <button
               type="button"
               onClick={handleSaveStopwatchTime}
-              className="ml-1 px-2 py-0.5 rounded-lg bg-[#596B35] hover:bg-[#4a5a2b] text-[10px] font-bold text-white transition-all cursor-pointer"
+              className="ml-1 px-2 py-0.5 rounded-lg bg-[#596B35] hover:bg-[#4a5a2b] text-[11px] font-bold text-white transition-all cursor-pointer"
             >
               Log Time
             </button>
@@ -300,7 +300,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
             
             {/* Associated Topic Selector */}
             <div className="p-3.5 border-b border-[#272730] bg-[#12141A] space-y-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] block">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#85877E] block">
                 Study Target & Topic Linking
               </span>
               <select
@@ -322,7 +322,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
                     key={mins}
                     type="button"
                     onClick={() => handleLogStudyMinutes(mins)}
-                    className="flex-1 py-1.5 rounded-lg bg-[#23232A] hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] hover:text-white dark:hover:text-black text-[10px] font-mono font-bold text-[#A1A1AA] transition-all cursor-pointer active:scale-95 text-center border border-[#333]"
+                    className="flex-1 py-1.5 rounded-lg bg-[#23232A] hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] hover:text-white dark:hover:text-black text-[11px] font-mono font-bold text-[#A1A1AA] transition-all cursor-pointer active:scale-95 text-center border border-[#333]"
                   >
                     +{mins}m
                   </button>
@@ -337,8 +337,8 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
                   <Sparkles className="w-3.5 h-3.5 text-[#7AA2F7]" />
                   Live Study Notes
                 </span>
-                <span className="text-[10px] font-mono text-[#85877E]">
-                  {notesSaveStatus === 'saving' ? '💾 Auto-saving...' : '✓ Synced'}
+                <span className="text-[11px] font-mono text-[#85877E]">
+                  {notesSaveStatus === 'saving' ? 'ðŸ’¾ Auto-saving...' : 'âœ“ Synced'}
                 </span>
               </div>
               <textarea
@@ -352,7 +352,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
             {/* Platform Quick Hint Footer */}
             {platform.notes && (
               <div className="p-3 bg-[#12141A] border-t border-[#272730] text-[11px] text-[#A1A1AA] font-mono flex items-center gap-2">
-                <span className="text-sm">📌</span>
+                <span className="text-sm">ðŸ“Œ</span>
                 <span className="truncate">{platform.notes}</span>
               </div>
             )}
@@ -388,7 +388,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
               <button
                 type="button"
                 onClick={handleDirectLaunchCompanion}
-                className="flex items-center gap-1 text-[10px] font-mono font-bold text-[#7AA2F7] hover:underline cursor-pointer"
+                className="flex items-center gap-1 text-[11px] font-mono font-bold text-[#7AA2F7] hover:underline cursor-pointer"
               >
                 <span>Launch Popout</span>
                 <ExternalLink className="w-3 h-3" />
@@ -416,7 +416,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
                 className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl shadow-xl mb-4 border border-white/20"
                 style={{ backgroundColor: platform.color || '#5A4FCF' }}
               >
-                {platform.icon || '⚡'}
+                {platform.icon || 'âš¡'}
               </div>
 
               <h3 className="text-lg sm:text-xl font-black text-white font-serif mb-2">
@@ -451,7 +451,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
 
               <div className="mt-8 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#18181D] border border-[#272730] text-[11px] font-mono text-[#85877E]">
                 <Lock className="w-3.5 h-3.5 text-[#596B35]" />
-                <span>Zero Distraction • Real-time Stopwatch • Mistake Auto-Logger</span>
+                <span>Zero Distraction â€¢ Real-time Stopwatch â€¢ Mistake Auto-Logger</span>
               </div>
             </div>
           </div>
@@ -519,11 +519,11 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
                       onChange={(e) => setMistakeType(e.target.value as any)}
                       className="w-full px-3 py-2 rounded-xl bg-[#12141A] border border-[#272730] text-xs font-medium text-white focus:outline-none focus:border-rose-500"
                     >
-                      <option value="conceptual">Conceptual 🧠</option>
-                      <option value="calculation">Calculation 🧮</option>
-                      <option value="formula">Formula 📐</option>
-                      <option value="silly">Silly Error 🤦‍♂️</option>
-                      <option value="time_pressure">Time Pressure ⏱️</option>
+                      <option value="conceptual">Conceptual ðŸ§ </option>
+                      <option value="calculation">Calculation ðŸ§®</option>
+                      <option value="formula">Formula ðŸ“</option>
+                      <option value="silly">Silly Error ðŸ¤¦â€â™‚ï¸</option>
+                      <option value="time_pressure">Time Pressure â±ï¸</option>
                     </select>
                   </div>
 
@@ -576,3 +576,4 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
     </div>
   );
 };
+

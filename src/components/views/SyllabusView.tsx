@@ -389,10 +389,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               
               {/* Left Visual Badge Thumbnail */}
               <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 shadow-md relative overflow-hidden font-serif ${chapterBadge.containerClass}`}>
-                <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none">
+                <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none">
                   {chapterBadge.badgeText}
                 </span>
-                <span className="text-[8px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
+                <span className="text-[11px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
                   CHAPTER
                 </span>
               </div>
@@ -442,7 +442,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 </button>
               )}
 
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono tabular-nums font-black text-[#354126] dark:text-[#7AA2F7]">
                 <span>{chapterPercent}%</span>
               </div>
             </div>
@@ -493,7 +493,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search topics in this chapter..."
-                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
               />
               <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
               {searchTerm && (
@@ -519,14 +519,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               <button
                 key={st.id}
                 onClick={() => setStatusFilter(st.id as any)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 ${
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-[13px] font-bold transition-all cursor-pointer border shrink-0 ${
                   statusFilter === st.id
                     ? `${st.activeColor} border-transparent shadow-sm`
                     : 'bg-white dark:bg-[#1F2335] text-[#65675F] dark:text-[#A9B1D6] border-[#D8D8CF] dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
                 }`}
               >
                 <span>{st.label}</span>
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono ${
                   statusFilter === st.id ? 'bg-white/20' : 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#85877E]'
                 }`}>
                   {st.count}
@@ -561,18 +561,18 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         <span className="text-base sm:text-lg select-none leading-none filter drop-shadow-xs">
                           📖
                         </span>
-                        <span className="text-xs sm:text-sm font-black font-mono leading-none tracking-tight">
+                        <span className="text-sm sm:text-[15px] font-black font-mono leading-none tracking-tight">
                           {design.badgeNum}
                         </span>
                       </div>
 
                       {/* Topic Title & Subtitle Meta */}
                       <div className="min-w-0 space-y-1">
-                        <h4 className={`text-xs sm:text-sm font-bold ${design.titleColor} group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug line-clamp-2`}>
+                        <h4 className={`text-sm sm:text-[15px] font-bold ${design.titleColor} group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug line-clamp-2`}>
                           {topic.name}
                         </h4>
                         
-                        <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] flex-wrap font-mono">
+                        <div className="flex items-center gap-1.5 text-[11px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] flex-wrap font-mono">
                           {topic.subtopics && topic.subtopics.length > 0 ? (
                             <span className="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5">
                               📄 {topic.subtopics.length} subtopics
@@ -641,10 +641,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             <div className="flex items-center gap-3 min-w-0">
               {/* Left Visual Badge Thumbnail */}
               <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 shadow-md relative overflow-hidden font-serif ${subjectBadge.containerClass}`}>
-                <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none truncate max-w-full">
+                <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none truncate max-w-full">
                   {subjectBadge.badgeText}
                 </span>
-                <span className="text-[8px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
+                <span className="text-[11px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
                   SUBJECT
                 </span>
               </div>
@@ -674,7 +674,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <span>Subjects</span>
               </button>
 
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono font-black text-[#354126] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono tabular-nums font-black text-[#354126] dark:text-[#7AA2F7]">
                 <span>{subjectPercent}%</span>
               </div>
 
@@ -723,7 +723,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={`Search chapters in ${activeSubject.name}...`}
-                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
               />
               <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
               {searchTerm && (
@@ -766,11 +766,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                       {/* Chapter Title & Subtitle */}
                       <div className="min-w-0 space-y-0.5">
-                        <h3 className="text-xs sm:text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
+                        <h3 className="text-sm sm:text-[15px] font-extrabold text-[#11120F] dark:text-[#C0CAF5] tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
                           {chapter.name}
                         </h3>
                         
-                        <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono">
+                        <div className="flex items-center gap-2 text-[11px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono">
                           <span>📄 {totalInChapter} files / topics</span>
                           {completedInChapter > 0 && (
                             <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} mastered</span>
@@ -781,7 +781,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Progress Badge */}
                     <div className="shrink-0">
-                      <div className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-mono font-bold ${
+                      <div className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-mono tabular-nums font-bold ${
                         chapterPercent === 100
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                           : chapterPercent > 0
@@ -834,10 +834,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           
           {/* Left Visual Badge Banner */}
           <div className="w-20 sm:w-28 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19]/90 via-[#161F36]/90 to-[#0A0D14]/90 border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-lg relative overflow-hidden font-serif">
-            <span className="text-[10px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
+            <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
               SYLLABUS
             </span>
-            <span className="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-1">
+            <span className="text-[11px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-1">
               EXPLORER
             </span>
           </div>
@@ -851,7 +851,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <span>Exam Date: {formattedExamDate}</span>
                 </span>
                 {daysRemaining > 0 && (
-                  <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
+                  <span className="px-2 py-0.5 rounded-lg text-[11px] font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
                     {daysRemaining}d left
                   </span>
                 )}
@@ -919,7 +919,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search content, subjects, or topics..."
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
             />
             <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
             {searchTerm && (
@@ -958,17 +958,17 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       
                       {/* Left Dark Stylized Thumbnail Badge (Responsive Text with Zero Overflow) */}
-                      <div className={`w-14 sm:w-16 h-10 sm:h-11 rounded-xl flex items-center justify-center font-black font-serif text-[10px] sm:text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 px-1 overflow-hidden ${badgeStyle.containerClass}`}>
+                      <div className={`w-14 sm:w-16 h-10 sm:h-11 rounded-xl flex items-center justify-center font-black font-serif text-[11px] sm:text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 px-1 overflow-hidden ${badgeStyle.containerClass}`}>
                         <span className="truncate max-w-full">{badgeStyle.badgeText}</span>
                       </div>
 
                       {/* Subject Title & File/Topic Meta */}
                       <div className="min-w-0 space-y-0.5">
-                        <h3 className="text-xs sm:text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
+                        <h3 className="text-sm sm:text-[15px] font-extrabold text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
                           {subject.name}
                         </h3>
                         
-                        <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono flex-wrap">
+                        <div className="flex items-center gap-1.5 text-[11px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono flex-wrap">
                           <span>📄 {subject.chapters.length} chapters • {subjectTotalTopics} topics</span>
                           {subjectCompletedTopics > 0 && (
                             <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {subjectCompletedTopics} mastered</span>
@@ -979,7 +979,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Progress Badge */}
                     <div className="shrink-0">
-                      <div className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-mono font-bold ${
+                      <div className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-mono tabular-nums font-bold ${
                         percent === 100
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                           : percent > 0
@@ -1020,3 +1020,4 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     </div>
   );
 };
+

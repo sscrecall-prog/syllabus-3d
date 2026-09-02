@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -286,7 +286,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
   const handleInsertCitation = () => {
     if (!currentAttachment) return;
     soundManager.playClick();
-    const citation = `\n> 📌 **Ref [${currentAttachment.name}]**: \n`;
+    const citation = `\n> ðŸ“Œ **Ref [${currentAttachment.name}]**: \n`;
     setNotesContent(prev => prev + citation);
   };
 
@@ -354,7 +354,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B5CF6]">
               <span>{subjectName || 'Subject'}</span>
-              <span>•</span>
+              <span>â€¢</span>
               <span className="truncate">{chapterName || 'Chapter'}</span>
             </div>
             <h3 className="text-xs sm:text-sm font-extrabold text-white truncate">
@@ -365,7 +365,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
 
         {/* Center: Split-Ratio Quick Presets */}
         <div className="hidden md:flex items-center gap-1 bg-[#23232A] p-1 rounded-xl border border-[#272730]">
-          <span className="text-[10px] font-bold text-[#A1A1AA] px-2 font-mono uppercase">
+          <span className="text-[11px] font-bold text-[#A1A1AA] px-2 font-mono uppercase">
             Ratio:
           </span>
           {[
@@ -455,7 +455,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                 >
                   {attachments.map(att => (
                     <option key={att.id} value={att.id}>
-                      📑 {att.name}
+                      ðŸ“‘ {att.name}
                     </option>
                   ))}
                 </select>
@@ -490,7 +490,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                     <Highlighter className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Highlight</span>
                     {highlights.length > 0 && (
-                      <span className="text-[10px] font-mono opacity-80">({highlights.length})</span>
+                      <span className="text-[11px] font-mono opacity-80">({highlights.length})</span>
                     )}
                   </button>
 
@@ -668,11 +668,11 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
 
           {/* Floating Live Percentage Tooltip during Hover/Drag */}
           <div
-            className={`absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#18181D] border border-[#8B5CF6] shadow-xl text-[10px] font-mono font-bold text-white whitespace-nowrap pointer-events-none transition-opacity ${
+            className={`absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-[#18181D] border border-[#8B5CF6] shadow-xl text-[11px] font-mono font-bold text-white whitespace-nowrap pointer-events-none transition-opacity ${
               isDragging ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100'
             }`}
           >
-            {pdfWidthPercent}% PDF ⟷ {100 - pdfWidthPercent}% Notes
+            {pdfWidthPercent}% PDF âŸ· {100 - pdfWidthPercent}% Notes
           </div>
         </div>
 
@@ -695,7 +695,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                   onClick={() => handleInsertSnippet('> [!FORMULA]\n> **Formula Name**: `Write equation here`\n> - Concept: \n')}
                   className="px-2.5 py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-400 border border-purple-500/30 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all"
                 >
-                  <span>Σ Formula</span>
+                  <span>Î£ Formula</span>
                 </button>
 
                 <button
@@ -754,7 +754,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                   <ImageIcon className="w-3 h-3 text-[#8B5CF6]" />
                   Attached Screenshots ({images.length})
                 </span>
-                <span className="text-[10px] text-[#71717A]">Ctrl+V to paste more</span>
+                <span className="text-[11px] text-[#71717A]">Ctrl+V to paste more</span>
               </div>
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
                 {images.map((img) => (
@@ -804,14 +804,14 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                 onSaveNotes(e.target.value);
               }}
               onPaste={handlePaste}
-              placeholder={"Type your study notes, formulas, shortcuts, and key points while reading the PDF on the left side...\n\n📸 Tip: Press Ctrl + V to paste any screenshot directly!"}
+              placeholder={"Type your study notes, formulas, shortcuts, and key points while reading the PDF on the left side...\n\nðŸ“¸ Tip: Press Ctrl + V to paste any screenshot directly!"}
               className="w-full flex-1 p-3.5 rounded-xl bg-[#18181D] border border-[#272730] text-xs sm:text-sm font-medium text-[#F5F5F7] placeholder-[#71717A] focus:outline-none focus:border-[#8B5CF6] resize-none leading-relaxed font-sans"
             />
 
             {/* Bottom Status Bar */}
             <div className="pt-2 flex items-center justify-between text-[11px] text-[#A1A1AA]">
               <span>
-                {notesContent.trim() ? notesContent.trim().split(/\s+/).length : 0} words • {notesContent.length} chars
+                {notesContent.trim() ? notesContent.trim().split(/\s+/).length : 0} words â€¢ {notesContent.length} chars
               </span>
               <span className="text-emerald-400 font-medium flex items-center gap-1">
                 <Check className="w-3 h-3" />

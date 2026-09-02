@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight } from 'lucide-react';
 
 interface AnimatedLogoIntroProps {
@@ -142,11 +142,12 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
           <h1 className="text-xl sm:text-2xl font-black tracking-[0.2em] uppercase text-[#F4F4ED] font-serif">
             SYLLABUS 3D
           </h1>
-          <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#A4B879] font-mono">
-            Track • Complete • Master
+          <p className="text-[11px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#A4B879] font-mono">
+            Track â€¢ Complete â€¢ Master
           </p>
         </div>
       </div>
     </div>
   );
 };
+

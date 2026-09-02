@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { User, Mail } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { AuthHeader } from './AuthHeader';
@@ -207,7 +207,7 @@ export const SignUpView: React.FC = () => {
         {/* Divider */}
         <div className="relative flex py-1.5 items-center">
           <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
-          <span className="flex-shrink mx-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          <span className="flex-shrink mx-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
             OR CONTINUE WITH
           </span>
           <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
@@ -241,3 +241,4 @@ export const SignUpView: React.FC = () => {
     </div>
   );
 };
+

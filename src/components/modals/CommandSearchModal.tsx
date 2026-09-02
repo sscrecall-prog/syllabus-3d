@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+﻿import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { Search, X, ArrowRight, Sparkles, BookOpen, Check } from 'lucide-react';
@@ -130,7 +130,7 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
               <X className="w-4 h-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-bold bg-[#EEEEE8] dark:bg-[#232438] text-[#85877E] rounded-md border border-[#D8D8CF] dark:border-[#2E3048]">
+          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono font-bold bg-[#EEEEE8] dark:bg-[#232438] text-[#85877E] rounded-md border border-[#D8D8CF] dark:border-[#2E3048]">
             ESC
           </kbd>
         </div>
@@ -163,7 +163,7 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
                       {item.topic.name}
                     </h5>
                     <p className="text-[11px] text-[#85877E] truncate">
-                      <span className="font-semibold text-[#596B35] dark:text-[#7AA2F7]">{item.subjectName}</span> · {item.chapterName}
+                      <span className="font-semibold text-[#596B35] dark:text-[#7AA2F7]">{item.subjectName}</span> Â· {item.chapterName}
                     </p>
                   </div>
                 </div>
@@ -185,10 +185,11 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
         {/* Footer info strip */}
         <div className="flex items-center justify-between px-4 py-2.5 bg-white dark:bg-[#161726] border-t border-[#D8D8CF] dark:border-[#28293D] text-[11px] text-[#85877E] font-mono">
           <span>{filteredTopics.length} matches found</span>
-          <span className="hidden sm:inline">↑↓ Navigate • ↵ Select • ESC Close</span>
+          <span className="hidden sm:inline">â†‘â†“ Navigate â€¢ â†µ Select â€¢ ESC Close</span>
         </div>
       </div>
     </div>,
     document.body
   );
 };
+

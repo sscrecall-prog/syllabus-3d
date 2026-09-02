@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import {
   Mic,
   MicOff,
@@ -336,7 +336,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
               <h3 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
                 Voice Notes & Audio Memos
               </h3>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-[#EEEEE8] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA]">
+              <span className="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-[#EEEEE8] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA]">
                 {audioMemos.length} {audioMemos.length === 1 ? 'Memo' : 'Memos'}
               </span>
             </div>
@@ -405,8 +405,8 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
           {/* Live Speech-to-Text Transcript Preview if available */}
           {recordingTranscript && (
             <div className="p-3 rounded-xl bg-white/5 border border-purple-500/20 text-xs text-purple-200 leading-relaxed max-h-24 overflow-y-auto">
-              <span className="text-[10px] font-bold text-purple-400 uppercase block mb-0.5">
-                💬 Live Speech-to-Text:
+              <span className="text-[11px] font-bold text-purple-400 uppercase block mb-0.5">
+                ðŸ’¬ Live Speech-to-Text:
               </span>
               "{recordingTranscript}"
             </div>
@@ -545,8 +545,8 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                   {/* Title & Metadata */}
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-mono">
-                        🎙️ Voice Memo #{index + 1}
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-mono">
+                        ðŸŽ™ï¸ Voice Memo #{index + 1}
                       </span>
                       <span className="text-[11px] font-bold font-mono text-[#596B35] dark:text-[#8B5CF6]">
                         {formatTime(memo.durationSeconds)}
@@ -563,7 +563,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                       </p>
                     )}
 
-                    <div className="flex items-center gap-3 text-[10px] text-[#85877E] dark:text-[#71717A] pt-0.5">
+                    <div className="flex items-center gap-3 text-[11px] text-[#85877E] dark:text-[#71717A] pt-0.5">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         <span>Recorded {memo.recordedAt}</span>
@@ -589,7 +589,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                   {/* Insert Transcript to Notes Button */}
                   {memo.transcript && onInsertTranscriptToNotes && (
                     <button
-                      onClick={() => onInsertTranscriptToNotes(`\n> 🎙️ **Voice Memo (${memo.title})**:\n> ${memo.transcript}\n`)}
+                      onClick={() => onInsertTranscriptToNotes(`\n> ðŸŽ™ï¸ **Voice Memo (${memo.title})**:\n> ${memo.transcript}\n`)}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#DCE8B7] dark:hover:bg-purple-500/20 text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold transition-colors cursor-pointer"
                       title="Insert Transcript into Topic Notes"
                     >
@@ -669,3 +669,4 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
     </div>
   );
 };
+

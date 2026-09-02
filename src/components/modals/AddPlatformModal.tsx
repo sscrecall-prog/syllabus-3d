@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+﻿import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -35,7 +35,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Live & recorded batch lectures, DPPs, and video solutions',
     color: '#5A4FCF',
-    icon: '⚡',
+    icon: 'âš¡',
     loginHint: 'PW Mobile / Email'
   },
   {
@@ -44,7 +44,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'SSC, Banking & State exams video batches by top educators',
     color: '#E11D48',
-    icon: '🎓',
+    icon: 'ðŸŽ“',
     loginHint: 'Careerwill Phone Number'
   },
   {
@@ -53,7 +53,7 @@ const PRESET_TEMPLATES = [
     category: 'test_series' as PlatformCategory,
     description: 'All India Live Mocks, Previous Year Papers & Percentile Analysis',
     color: '#0284C7',
-    icon: '📝',
+    icon: 'ðŸ“',
     loginHint: 'Testbook Account Email'
   },
   {
@@ -62,7 +62,7 @@ const PRESET_TEMPLATES = [
     category: 'test_series' as PlatformCategory,
     description: 'High-difficulty mock tests, sectional tests & topic quizzes',
     color: '#16A34A',
-    icon: '🎯',
+    icon: 'ðŸŽ¯',
     loginHint: 'Oliveboard Login Email'
   },
   {
@@ -71,7 +71,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Live interactive classes, educator batches and doubt solving',
     color: '#08BD80',
-    icon: '🏛️',
+    icon: 'ðŸ›ï¸',
     loginHint: 'Unacademy Plus User'
   },
   {
@@ -80,7 +80,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Master math, algebra, geometry & science fundamentals',
     color: '#14BF96',
-    icon: '📖',
+    icon: 'ðŸ“–',
     loginHint: 'Khan Academy Account'
   },
   {
@@ -89,7 +89,7 @@ const PRESET_TEMPLATES = [
     category: 'test_series' as PlatformCategory,
     description: 'Exam survey analysis, rank predictor, and free sectional mocks',
     color: '#F59E0B',
-    icon: '📊',
+    icon: 'ðŸ“Š',
     loginHint: 'RBE Portal Login'
   },
   {
@@ -98,21 +98,21 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Free dedicated educator YouTube playlist or marathon lecture',
     color: '#FF0000',
-    icon: '▶️',
+    icon: 'â–¶ï¸',
     loginHint: ''
   }
 ];
 
 // Popular Indian Coaching & Study Platform Quick Suggestions
 const POPULAR_SUGGESTIONS = [
-  { name: 'Exampur', url: 'https://exampur.com/', category: 'course' as PlatformCategory, icon: '🔥', color: '#E11D48' },
-  { name: 'Rojgar With Ankit (RWA)', url: 'https://rojgarwithankit.co.in/', category: 'course' as PlatformCategory, icon: '🏆', color: '#0284C7' },
-  { name: 'Adda247', url: 'https://www.adda247.com/', category: 'course' as PlatformCategory, icon: '🎯', color: '#F59E0B' },
-  { name: 'Practicemock', url: 'https://www.practicemock.com/', category: 'test_series' as PlatformCategory, icon: '📝', color: '#16A34A' },
-  { name: 'Sankalp Bharat', url: 'https://sankalpbharat.com/', category: 'course' as PlatformCategory, icon: '🚀', color: '#5A4FCF' },
-  { name: 'StudyIQ Education', url: 'https://www.studyiq.com/', category: 'course' as PlatformCategory, icon: '📚', color: '#08BD80' },
-  { name: 'Notion / Study Notes', url: 'https://www.notion.so/', category: 'reference' as PlatformCategory, icon: '🧠', color: '#11120F' },
-  { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: '✈️', color: '#0284C7' },
+  { name: 'Exampur', url: 'https://exampur.com/', category: 'course' as PlatformCategory, icon: 'ðŸ”¥', color: '#E11D48' },
+  { name: 'Rojgar With Ankit (RWA)', url: 'https://rojgarwithankit.co.in/', category: 'course' as PlatformCategory, icon: 'ðŸ†', color: '#0284C7' },
+  { name: 'Adda247', url: 'https://www.adda247.com/', category: 'course' as PlatformCategory, icon: 'ðŸŽ¯', color: '#F59E0B' },
+  { name: 'Practicemock', url: 'https://www.practicemock.com/', category: 'test_series' as PlatformCategory, icon: 'ðŸ“', color: '#16A34A' },
+  { name: 'Sankalp Bharat', url: 'https://sankalpbharat.com/', category: 'course' as PlatformCategory, icon: 'ðŸš€', color: '#5A4FCF' },
+  { name: 'StudyIQ Education', url: 'https://www.studyiq.com/', category: 'course' as PlatformCategory, icon: 'ðŸ“š', color: '#08BD80' },
+  { name: 'Notion / Study Notes', url: 'https://www.notion.so/', category: 'reference' as PlatformCategory, icon: 'ðŸ§ ', color: '#11120F' },
+  { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: 'âœˆï¸', color: '#0284C7' },
 ];
 
 // Quick Custom Category Suggestions
@@ -129,7 +129,7 @@ const CUSTOM_CATEGORY_SUGGESTIONS = [
   'Telegram Study'
 ];
 
-const EMOJI_OPTIONS = ['⚡', '🎓', '📝', '🎯', '🏛️', '📖', '📊', '▶️', '🏆', '🔥', '💻', '🔬', '📐', '🧠', '🌐', '📚', '🚀', '✈️'];
+const EMOJI_OPTIONS = ['âš¡', 'ðŸŽ“', 'ðŸ“', 'ðŸŽ¯', 'ðŸ›ï¸', 'ðŸ“–', 'ðŸ“Š', 'â–¶ï¸', 'ðŸ†', 'ðŸ”¥', 'ðŸ’»', 'ðŸ”¬', 'ðŸ“', 'ðŸ§ ', 'ðŸŒ', 'ðŸ“š', 'ðŸš€', 'âœˆï¸'];
 const COLOR_OPTIONS = [
   '#5A4FCF', // Purple
   '#E11D48', // Rose
@@ -158,7 +158,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const [category, setCategory] = useState<PlatformCategory>(editPlatformData?.category || 'course');
   const [customCategoryName, setCustomCategoryName] = useState(editPlatformData?.customCategoryName || '');
   const [description, setDescription] = useState(editPlatformData?.description || '');
-  const [icon, setIcon] = useState(editPlatformData?.icon || '⚡');
+  const [icon, setIcon] = useState(editPlatformData?.icon || 'âš¡');
   const [color, setColor] = useState(editPlatformData?.color || '#5A4FCF');
   const [loginHint, setLoginHint] = useState(editPlatformData?.loginHint || '');
   const [notes, setNotes] = useState(editPlatformData?.notes || '');
@@ -238,20 +238,20 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     soundManager.playClick();
     
     if (newCat === 'custom') {
-      setIcon('🌐');
+      setIcon('ðŸŒ');
       setTimeout(() => {
         customCatInputRef.current?.focus();
       }, 100);
     } else if (newCat === 'course') {
-      setIcon('🎓');
+      setIcon('ðŸŽ“');
       setCustomCategoryName('');
       nameInputRef.current?.focus();
     } else if (newCat === 'test_series') {
-      setIcon('📝');
+      setIcon('ðŸ“');
       setCustomCategoryName('');
       nameInputRef.current?.focus();
     } else if (newCat === 'reference') {
-      setIcon('📖');
+      setIcon('ðŸ“–');
       setCustomCategoryName('');
       nameInputRef.current?.focus();
     }
@@ -260,7 +260,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const handleSelectSavedCustomCategory = (catName: string) => {
     setCategory('custom');
     setCustomCategoryName(catName);
-    setIcon('🌐');
+    setIcon('ðŸŒ');
     soundManager.playClick();
     nameInputRef.current?.focus();
   };
@@ -273,7 +273,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setNotes('');
     setCategory('custom');
     setCustomCategoryName('');
-    setIcon('🌐');
+    setIcon('ðŸŒ');
     setColor('#5A4FCF');
     setError(null);
     soundManager.playClick();
@@ -448,7 +448,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <button
                   type="button"
                   onClick={handleResetForm}
-                  className="text-[10px] font-mono font-bold text-[#85877E] hover:text-[#596B35] dark:hover:text-[#7AA2F7] flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] font-mono font-bold text-[#85877E] hover:text-[#596B35] dark:hover:text-[#7AA2F7] flex items-center gap-1 cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Clear / Custom Mode</span>
@@ -475,7 +475,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       }`}>
                         {preset.name.split(' ')[0]}
                       </span>
-                      <span className={`text-[10px] uppercase font-mono font-bold block ${
+                      <span className={`text-[11px] uppercase font-mono font-bold block ${
                         name === preset.name ? 'text-white/70 dark:text-black/70' : 'text-[#85877E]'
                       }`}>
                         {preset.category === 'course' ? 'Course' : 'Mock Test'}
@@ -487,7 +487,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
               {/* Quick Tags / Popular Portals */}
               <div className="pt-1">
-                <span className="text-[10px] font-mono text-[#85877E] flex items-center gap-1 mb-1.5">
+                <span className="text-[11px] font-mono text-[#85877E] flex items-center gap-1 mb-1.5">
                   <Tag className="w-3 h-3 text-[#596B35]" />
                   Other Popular Coaching & Portals:
                 </span>
@@ -510,7 +510,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
           {error && (
             <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 animate-shake">
-              ⚠️ {error}
+              âš ï¸ {error}
             </div>
           )}
 
@@ -522,7 +522,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
                   Platform Category *
                 </label>
-                <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">
+                <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">
                   {category === 'custom' 
                     ? (customCategoryName ? `Custom: ${customCategoryName}` : 'Custom Category Mode') 
                     : `${category} Mode`}
@@ -557,7 +557,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 })}
               </div>
 
-              {/* 🌟 SAVED CUSTOM CATEGORIES FROM PREVIOUS LOGS (Always Available) */}
+              {/* ðŸŒŸ SAVED CUSTOM CATEGORIES FROM PREVIOUS LOGS (Always Available) */}
               {savedCustomCategories.length > 0 && (
                 <div className="p-3 rounded-2xl bg-amber-500/5 dark:bg-[#1E1E26] border border-amber-500/20 dark:border-[#333] space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-700 dark:text-amber-300">
@@ -580,7 +580,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                           }`}
                         >
                           {isCurrentCat && <Check className="w-3 h-3 stroke-[3]" />}
-                          <span>✨ {savedCat}</span>
+                          <span>âœ¨ {savedCat}</span>
                         </button>
                       );
                     })}
@@ -594,7 +594,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                       <span>Type Custom Category Name *</span>
-                      <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono">e.g. Current Affairs, PYQ Vault...</span>
+                      <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono">e.g. Current Affairs, PYQ Vault...</span>
                     </label>
                     <input
                       ref={customCatInputRef}
@@ -608,7 +608,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
                   {/* Quick Custom Category Suggestions */}
                   <div className="space-y-1">
-                    <span className="text-[10px] font-mono text-[#85877E] block">1-Click Category Suggestions:</span>
+                    <span className="text-[11px] font-mono text-[#85877E] block">1-Click Category Suggestions:</span>
                     <div className="flex flex-wrap gap-1.5">
                       {CUSTOM_CATEGORY_SUGGESTIONS.map(catSug => (
                         <button
@@ -618,7 +618,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                             setCustomCategoryName(catSug);
                             soundManager.playClick();
                           }}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer border ${
+                          className={`px-2 py-0.5 rounded-lg text-[11px] font-bold font-mono transition-all cursor-pointer border ${
                             customCategoryName.trim().toLowerCase() === catSug.toLowerCase()
                               ? 'bg-[#596B35] text-white border-transparent'
                               : 'bg-white dark:bg-[#12141A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
@@ -638,7 +638,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>{getNameLabel()}</span>
-                  <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
+                  <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
                 </label>
                 <input
                   ref={nameInputRef}
@@ -657,7 +657,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>Website / Batch Link *</span>
-                  <span className="text-[10px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
+                  <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
                 </label>
                 <div className="relative">
                   <Globe className="w-4 h-4 absolute left-3 top-3 text-[#85877E]" />
@@ -681,7 +681,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>Login ID / User Hint (Optional)</span>
-                  <span className="text-[10px] text-[#85877E] font-normal">For 1-click clipboard copy</span>
+                  <span className="text-[11px] text-[#85877E] font-normal">For 1-click clipboard copy</span>
                 </label>
                 <div className="relative">
                   <KeyRound className="w-4 h-4 absolute left-3 top-3 text-[#85877E]" />
@@ -813,3 +813,4 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     document.body
   );
 };
+

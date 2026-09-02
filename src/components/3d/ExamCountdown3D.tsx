@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { Calendar, Target } from 'lucide-react';
 
@@ -83,7 +83,7 @@ export const ExamCountdown3D: React.FC = () => {
             <span className={`text-2xl sm:text-3xl md:text-4xl font-black font-mono tracking-tight block ${c.color} drop-shadow-xs`}>
               {String(c.value).padStart(2, '0')}
             </span>
-            <span className="text-[9px] sm:text-[10px] font-black text-[#65675F] dark:text-[#A9B1D6] uppercase tracking-widest block font-mono mt-1">
+            <span className="text-[11px] sm:text-[11px] font-black text-[#65675F] dark:text-[#A9B1D6] uppercase tracking-widest block font-mono mt-1">
               {c.label}
             </span>
           </div>
@@ -92,3 +92,4 @@ export const ExamCountdown3D: React.FC = () => {
     </div>
   );
 };
+

@@ -211,13 +211,13 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
         {/* Hovered Topic Tooltip Card (Floating) */}
         {hoveredNode && (
           <div className="absolute top-4 left-4 z-30 p-3.5 rounded-2xl bg-slate-900/95 border border-cyan-500/40 shadow-2xl backdrop-blur-xl max-w-xs animate-fade-in pointer-events-none">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
-              {hoveredNode.subjectName} · {hoveredNode.chapterName}
+            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+              {hoveredNode.subjectName} Â· {hoveredNode.chapterName}
             </span>
             <h4 className="text-xs sm:text-sm font-bold text-white mt-0.5 mb-1">
               {hoveredNode.topic.name}
             </h4>
-            <div className="flex items-center gap-2 text-[10px] text-slate-300">
+            <div className="flex items-center gap-2 text-[11px] text-slate-300">
               <span className="px-1.5 py-0.5 rounded bg-slate-800 font-bold">
                 {hoveredNode.topic.difficulty}
               </span>
@@ -228,7 +228,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 {hoveredNode.topic.accuracy}% Accuracy
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">Click node to open detail drawer ↗</p>
+            <p className="text-[11px] text-slate-400 mt-1">Click node to open detail drawer â†—</p>
           </div>
         )}
 
@@ -243,13 +243,13 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               {/* Central Core Exam Node */}
               <div className="relative z-20 w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-cyan-500 via-purple-600 to-pink-500 p-1 shadow-[0_0_40px_rgba(0,210,255,0.4)] flex items-center justify-center animate-pulse">
                 <div className="w-full h-full rounded-full bg-[#05091e] flex flex-col items-center justify-center text-center p-2">
-                  <span className="text-[9px] font-extrabold text-cyan-400 uppercase tracking-wider">
+                  <span className="text-[11px] font-black text-cyan-400 uppercase tracking-wider">
                     TARGET CORE
                   </span>
-                  <h3 className="text-xs sm:text-sm font-black text-white leading-tight">
+                  <h3 className="text-sm sm:text-[15px] font-black text-white leading-tight mt-1">
                     {currentExam.name}
                   </h3>
-                  <span className="text-[10px] text-slate-400 font-bold mt-0.5">
+                  <span className="text-[11px] text-slate-400 font-bold mt-1">
                     {masteredNodesCount}/{totalTopicNodes} Done
                   </span>
                 </div>
@@ -270,11 +270,11 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                           className="w-3 h-3 rounded-full shadow-sm"
                           style={{ backgroundColor: subj.color }}
                         />
-                        <h4 className="text-xs sm:text-sm font-bold text-white">
+                        <h4 className="text-sm sm:text-[15px] font-bold text-white">
                           {subj.name}
                         </h4>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
                         {subj.chapters.reduce((acc, c) => acc + c.topics.length, 0)} Concepts
                       </span>
                     </div>
@@ -283,7 +283,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     <div className="space-y-3">
                       {subj.chapters.map(chap => (
                         <div key={chap.id} className="space-y-1.5">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                             <ChevronRight className="w-3 h-3 text-slate-600" />
                             <span>{chap.name}</span>
                           </span>
@@ -330,7 +330,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <BookOpen className="w-4 h-4 text-cyan-400" />
-                    <h3 className="text-sm font-bold text-white">{subj.name}</h3>
+                    <h3 className="text-[15px] sm:text-base font-bold text-white">{subj.name}</h3>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-2">
@@ -339,7 +339,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                         key={chap.id}
                         className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2"
                       >
-                        <h4 className="text-xs font-extrabold text-slate-300">
+                        <h4 className="text-sm sm:text-[15px] font-extrabold text-slate-300">
                           {chap.name}
                         </h4>
                         <div className="space-y-1">
@@ -358,7 +358,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: nodeColor }} />
                                   <span className="truncate">{top.name}</span>
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400">{top.weightage}m</span>
+                                <span className="text-[11px] font-bold text-slate-400">{top.weightage}m</span>
                               </div>
                             );
                           })}
@@ -375,3 +375,4 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
     </div>
   );
 };
+

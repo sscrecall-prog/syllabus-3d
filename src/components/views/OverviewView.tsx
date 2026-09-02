@@ -73,13 +73,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3.5 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-none">
             <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/15 text-white shadow-lg">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wide">
+              <span className="text-[11px] sm:text-[13px] font-mono font-bold tracking-wide">
                 Target: {examName} ({examYear})
               </span>
             </div>
             
-            <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[#FACC15]/20 backdrop-blur-md border border-[#FACC15]/30 text-[#FACC15] text-[10px] sm:text-xs font-bold shadow-lg">
-              <span>🏆 {overallStats.completionPercentage}% Mastered</span>
+            <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[#FACC15]/20 backdrop-blur-md border border-[#FACC15]/30 text-[#FACC15] text-[11px] sm:text-[13px] font-bold shadow-lg">
+              <span>ðŸ† {overallStats.completionPercentage}% Mastered</span>
             </div>
           </div>
         </div>
@@ -103,17 +103,17 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <Target className="w-5 h-5 stroke-[2]" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-black text-[#191A17] dark:text-[#F5F5F7]">
+                <h3 className="text-[15px] sm:text-base font-black text-[#191A17] dark:text-[#F5F5F7]">
                   Syllabus Mastery Engine
                 </h3>
-                <span className="text-[10px] text-[#65675F] dark:text-[#85877E]">
+                <span className="text-[11px] text-[#65675F] dark:text-[#85877E]">
                   Target Exam: {examName}
                 </span>
               </div>
             </div>
 
-            <span className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-[#EEEEE8] dark:bg-[#23232A] text-[#596B35] dark:text-[#7AA2F7] font-mono border border-transparent dark:border-[#7AA2F7]/20">
-              Lvl {profile.level} • {profile.levelTitle}
+            <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-[#EEEEE8] dark:bg-[#23232A] text-[#596B35] dark:text-[#7AA2F7] font-mono border border-transparent dark:border-[#7AA2F7]/20">
+              Lvl {profile.level} â€¢ {profile.levelTitle}
             </span>
           </div>
 
@@ -145,10 +145,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </svg>
 
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-2xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+                <span className="text-2xl sm:text-3xl font-black tabular-nums text-[#11120F] dark:text-[#F5F5F7] font-serif">
                   {overallStats.completionPercentage}%
                 </span>
-                <span className="text-[9px] font-bold text-[#596B35] dark:text-[#7AA2F7] uppercase tracking-widest mt-0.5 font-mono">
+                <span className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] uppercase tracking-widest mt-0.5 font-mono">
                   Mastered
                 </span>
               </div>
@@ -158,21 +158,21 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <div className="w-full space-y-2.5 flex-1">
               <div className="grid grid-cols-2 gap-2 text-left">
                 <div className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] space-y-1">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#65675F] dark:text-[#85877E]">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#65675F] dark:text-[#85877E]">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#4F7A45] dark:text-emerald-400 shrink-0" />
                     <span>Completed Topics</span>
                   </div>
-                  <span className="text-sm sm:text-base font-extrabold text-[#191A17] dark:text-[#F5F5F7] font-mono block">
+                  <span className="text-sm sm:text-base font-black tabular-nums text-[#191A17] dark:text-[#F5F5F7] font-mono block">
                     {overallStats.completedCount} <span className="text-xs text-[#85877E]">/ {overallStats.totalTopics}</span>
                   </span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] space-y-1">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#65675F] dark:text-[#85877E]">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#65675F] dark:text-[#85877E]">
                     <Clock className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
                     <span>Study Time</span>
                   </div>
-                  <span className="text-sm sm:text-base font-extrabold text-[#596B35] dark:text-[#7AA2F7] font-mono block">
+                  <span className="text-sm sm:text-base font-black tabular-nums text-[#596B35] dark:text-[#7AA2F7] font-mono block">
                     {overallStats.totalStudyHours} <span className="text-xs text-[#85877E]">hrs</span>
                   </span>
                 </div>
@@ -180,7 +180,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
               {/* Multi-Segment Status Progress Bar */}
               <div className="p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] space-y-1.5">
-                <div className="flex justify-between items-center text-[10px] font-bold">
+                <div className="flex justify-between items-center text-[11px] font-bold">
                   <span className="text-[#596B35] dark:text-[#7AA2F7] flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7]" />
                     In Progress ({overallStats.inProgressCount})
@@ -191,7 +191,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   </span>
                 </div>
 
-                <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#18181D] overflow-hidden flex">
+                <div className="w-full h-2.5 rounded-full bg-[#EEEEE8] dark:bg-[#18181D] overflow-hidden flex">
                   <div
                     className="h-full bg-emerald-500 transition-all duration-500"
                     style={{ width: `${(overallStats.completedCount / (overallStats.totalTopics || 1)) * 100}%` }}
@@ -218,10 +218,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <CalendarCheck className="w-5 h-5 stroke-[2]" />
               </div>
               <div>
-                <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7]">
+                <h4 className="text-[15px] sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
                   Daily Study Planner
                 </h4>
-                <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
+                <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
                   {completedTodayTasks.length} of {totalTasksToday} targets finished
                 </p>
               </div>
@@ -238,9 +238,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <div className="space-y-1.5 p-3 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730]">
             <div className="flex justify-between text-xs font-bold">
               <span className="text-[#191A17] dark:text-[#F5F5F7]">Today's Target Velocity</span>
-              <span className="text-[#596B35] dark:text-[#7AA2F7] font-mono">{todayProgressPercent}%</span>
+              <span className="text-[#596B35] dark:text-[#7AA2F7] font-mono tabular-nums">{todayProgressPercent}%</span>
             </div>
-            <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#18181D] overflow-hidden">
+            <div className="w-full h-2.5 rounded-full bg-[#EEEEE8] dark:bg-[#18181D] overflow-hidden">
               <div
                 className="h-full bg-[#596B35] dark:bg-[#7AA2F7] rounded-full transition-all duration-500"
                 style={{ width: `${todayProgressPercent}%` }}
@@ -249,7 +249,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </div>
 
           <div className="space-y-2">
-            <span className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+            <span className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
               Active Focus Queue
             </span>
             {todayPlannerTasks.length > 0 ? (
@@ -262,14 +262,14 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   <span className="font-bold text-[#191A17] dark:text-[#F5F5F7] truncate pr-2">
                     {task.topicName}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono text-[#596B35] dark:text-[#7AA2F7] bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 shrink-0 font-bold">
+                  <span className="px-2 py-0.5 rounded-md text-[11px] font-mono tabular-nums text-[#596B35] dark:text-[#7AA2F7] bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 shrink-0 font-bold">
                     {task.estimatedMinutes}m
                   </span>
                 </div>
               ))
             ) : (
               <p className="text-xs text-[#85877E] py-1 text-center font-serif">
-                ✨ All targets completed for today!
+                âœ¨ All targets completed for today!
               </p>
             )}
           </div>
@@ -284,10 +284,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               <Globe className="w-4 h-4 stroke-[2]" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
+              <h3 className="text-[15px] sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
                 Study Station & Connected Platforms
               </h3>
-              <p className="text-[10px] text-[#65675F] dark:text-[#85877E]">
+              <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
                 Physics Wallah, Careerwill, Testbook, Oliveboard batches
               </p>
             </div>
@@ -317,13 +317,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-xs border border-white/20 shrink-0 group-hover:scale-105 transition-transform"
                   style={{ backgroundColor: plat.color || '#5A4FCF' }}
                 >
-                  {plat.icon || '⚡'}
+                  {plat.icon || 'âš¡'}
                 </div>
                 <div className="min-w-0">
                   <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
                     {plat.name}
                   </span>
-                  <span className="text-[10px] text-[#85877E] uppercase font-mono font-bold block truncate">
+                  <span className="text-[11px] text-[#85877E] uppercase font-mono font-bold block truncate">
                     {plat.category === 'course' ? 'Course Batch' : 'Mock Series'}
                   </span>
                 </div>
@@ -342,7 +342,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               <Layers className="w-4 h-4 stroke-[2]" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
+              <h3 className="text-[15px] sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
                 Subject Mastery Breakdown
               </h3>
             </div>
@@ -377,16 +377,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     className="w-3 h-3 rounded-full shrink-0 shadow-xs"
                     style={{ backgroundColor: subj.color || '#596B35' }}
                   />
-                  <h4 className="text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
+                  <h4 className="text-sm sm:text-[15px] font-bold text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
                     {subj.subjectName}
                   </h4>
                 </div>
-                <span className="text-xs font-bold font-mono text-[#596B35] dark:text-[#7AA2F7] shrink-0">
+                <span className="text-xs font-bold font-mono tabular-nums text-[#596B35] dark:text-[#7AA2F7] shrink-0">
                   {subj.percentage}%
                 </span>
               </div>
 
-              <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#23232A] overflow-hidden">
+              <div className="w-full h-2.5 rounded-full bg-[#EEEEE8] dark:bg-[#23232A] overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500 shadow-xs"
                   style={{
@@ -397,7 +397,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 />
               </div>
 
-              <div className="flex items-center justify-between text-[10px] text-[#85877E] font-medium">
+              <div className="flex items-center justify-between text-[11px] text-[#85877E] font-medium">
                 <span>{subj.completedTopics} / {subj.totalTopics} Mastered</span>
                 {subj.weakCount > 0 && (
                   <span className="text-rose-500 font-bold">{subj.weakCount} Weak</span>
@@ -410,3 +410,4 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     </div>
   );
 };
+

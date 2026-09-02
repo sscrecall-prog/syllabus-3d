@@ -34,58 +34,58 @@ export const AnalyticsView: React.FC = () => {
             </div>
             <div>
               <h4 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
-                Level {profile.level} • {profile.levelTitle}
+                Level {profile.level} â€¢ {profile.levelTitle}
               </h4>
               <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
                 Earn XP through active topic mastery and spaced revision.
               </p>
             </div>
           </div>
-          <span className="text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono">
+          <span className="text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono tabular-nums">
             {profile.xp} / {profile.level * 300} XP
           </span>
         </div>
-        <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#23232A] overflow-hidden">
+        <div className="w-full h-2.5 rounded-full bg-[#EEEEE8] dark:bg-[#23232A] overflow-hidden">
           <div className="h-full bg-[#596B35] dark:bg-[#8B5CF6] rounded-full" style={{ width: `${(profile.xp % 300) / 3}%` }} />
         </div>
       </div>
 
       {/* 3 Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
-        <div className="p-4 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
+        <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
           <div className="flex items-center gap-2 text-[#596B35] dark:text-[#8B5CF6] mb-1">
             <Target className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-wider font-mono">Readiness Score</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider font-mono">Readiness Score</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#11120F] dark:text-[#F5F5F7] font-serif tabular-nums">
             {readinessScore} <span className="text-xs text-[#85877E]">/ 100</span>
           </h3>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
+        <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
           <div className="flex items-center gap-2 text-[#4F7A45] mb-1">
             <CheckCircle2 className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-wider font-mono">Practice Accuracy</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider font-mono">Practice Accuracy</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-[#4F7A45] font-serif">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#4F7A45] font-serif tabular-nums">
             {overallStats.averageAccuracy}%
           </h3>
         </div>
 
-        <div className="p-4 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
+        <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
           <div className="flex items-center gap-2 text-[#C49A3A] mb-1">
             <Award className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-wider font-mono">Badges Unlocked</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider font-mono">Badges Unlocked</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-[#11120F] dark:text-[#F5F5F7] font-serif">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#11120F] dark:text-[#F5F5F7] font-serif tabular-nums">
             {unLockedBadges.length} <span className="text-xs text-[#85877E]">/ {achievements.length}</span>
           </h3>
         </div>
       </div>
 
       {/* Achievement Medals Grid */}
-      <div className="space-y-3">
-        <h3 className="text-base font-bold text-[#191A17] dark:text-[#F5F5F7] flex items-center gap-2">
+      <div className="space-y-4 sm:space-y-5">
+        <h3 className="text-[15px] sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7] flex items-center gap-2">
           <Award className="w-4 h-4 text-[#596B35]" />
           <span>Achievement Medals</span>
         </h3>
@@ -98,3 +98,4 @@ export const AnalyticsView: React.FC = () => {
     </div>
   );
 };
+

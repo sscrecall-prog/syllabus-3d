@@ -354,11 +354,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {/* Today's Velocity */}
           <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-emerald-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Velocity</span>
+              <span className="text-[11px] tabular-nums font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Velocity</span>
               <h4 className="text-xl font-black font-mono text-white leading-none">
                 {todayProgressPercent}%
               </h4>
-              <span className="text-[10px] text-[#A1A1B2]">
+              <span className="text-[11px] text-[#A1A1B2]">
                 {completedTodayCount}/{totalTodayCount} Done
               </span>
             </div>
@@ -370,11 +370,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {/* Daily Streak */}
           <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-orange-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Streak</span>
+              <span className="text-[11px] tabular-nums font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Streak</span>
               <h4 className="text-xl font-black font-mono text-orange-400 leading-none">
                 {profile.currentStreak} <span className="text-xs font-sans text-[#9A9CAE]">days</span>
               </h4>
-              <span className="text-[10px] text-orange-400/80 font-medium">Best: {profile.longestStreak}d</span>
+              <span className="text-[11px] text-orange-400/80 font-medium">Best: {profile.longestStreak}d</span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30 group-hover:scale-110 transition-transform">
               <Flame className="w-5 h-5 animate-pulse" />
@@ -384,11 +384,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {/* Study Time */}
           <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Planned</span>
+              <span className="text-[11px] tabular-nums font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Planned</span>
               <h4 className="text-xl font-black font-mono text-white leading-none">
                 {(totalPlannedMinutes / 60).toFixed(1)} <span className="text-xs font-sans text-[#9A9CAE]">hrs</span>
               </h4>
-              <span className="text-[10px] text-emerald-400 font-medium">{(completedMinutes / 60).toFixed(1)}h finished</span>
+              <span className="text-[11px] text-emerald-400 font-medium">{(completedMinutes / 60).toFixed(1)}h finished</span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center border border-blue-500/30 group-hover:scale-110 transition-transform">
               <Clock className="w-5 h-5 stroke-[2.2]" />
@@ -398,11 +398,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {/* Focus XP */}
           <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">XP Level</span>
+              <span className="text-[11px] tabular-nums font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">XP Level</span>
               <h4 className="text-xl font-black font-mono text-purple-400 leading-none">
                 Lvl {profile.level}
               </h4>
-              <span className="text-[10px] text-purple-400 font-medium">{profile.xp} XP</span>
+              <span className="text-[11px] text-purple-400 font-medium">{profile.xp} XP</span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
               <Star className="w-5 h-5 stroke-[2.2]" />
@@ -414,7 +414,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         {/* Smart Suggestions Chips (if any) */}
         {smartSuggestions.length > 0 && (
           <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-2 border-t border-white/10">
-            <span className="text-[10px] font-bold text-[#C5C8D8] uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
+            <span className="text-[11px] tabular-nums font-bold tabular-nums text-[#C5C8D8] uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Suggested:</span>
             </span>
@@ -428,7 +428,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 </span>
                 <button
                   onClick={() => handleAddSuggestion(sug.topicName, sug.subjectName, sug.subjectColor, sug.topicId)}
-                  className="px-2 py-0.5 rounded-lg bg-[#FACC15] hover:bg-[#EAB308] text-black text-[10px] font-extrabold cursor-pointer transition-all active:scale-95"
+                  className="px-2 py-0.5 rounded-lg bg-[#FACC15] hover:bg-[#EAB308] text-black text-[11px] font-extrabold cursor-pointer transition-all active:scale-95"
                 >
                   + Add
                 </button>
@@ -548,11 +548,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     <div className={`p-1.5 rounded-xl ${col.badgeCol}`}>
                       <ColIcon className="w-4 h-4" />
                     </div>
-                    <h3 className="text-xs font-black text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide">
+                    <h3 className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide">
                       {col.title}
                     </h3>
                   </div>
-                  <span className={`px-2 py-0.5 text-[10px] font-black rounded-lg font-mono ${col.badgeCol}`}>
+                  <span className={`px-2 py-0.5 text-[11px] font-black rounded-lg font-mono ${col.badgeCol}`}>
                     {col.tasks.length}
                   </span>
                 </div>
@@ -592,7 +592,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                               >
                                 {isDone && <Check className="w-3 h-3 stroke-[3]" />}
                               </button>
-                              <span className={`text-xs font-bold leading-snug line-clamp-2 ${
+                              <span className={`text-[13px] font-bold leading-snug line-clamp-2 ${
                                 isDone ? 'line-through text-[#85877E]' : 'text-[#11120F] dark:text-[#C0CAF5]'
                               }`}>
                                 {task.topicName}
@@ -612,7 +612,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                           </div>
 
                           {/* Subject & Priority Chips */}
-                          <div className="flex items-center justify-between gap-1 text-[10px]">
+                          <div className="flex items-center justify-between gap-1 text-[11px]">
                             <span className="px-2 py-0.5 rounded-md font-bold truncate max-w-[110px] bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#24283B]">
                               {task.subjectName}
                             </span>
@@ -632,14 +632,14 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                                   soundManager.playClick();
                                   onOpenFocusChamber(task.topicId);
                                 }}
-                                className="px-2.5 py-1 rounded-lg bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                className="px-2.5 py-1 rounded-lg bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[11px] tabular-nums font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                               >
                                 <Zap className="w-3 h-3 fill-current" />
                                 <span>Focus</span>
                               </button>
                             ) : <div />}
 
-                            <div className="flex items-center gap-1 ml-auto text-[9px] font-bold">
+                            <div className="flex items-center gap-1 ml-auto text-[11px] tabular-nums font-bold">
                               {col.id !== 'today' && (
                                 <button
                                   onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'today'); }}
@@ -705,7 +705,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               </button>
             </div>
 
-            <div className="text-xs font-black text-[#11120F] dark:text-[#C0CAF5] font-mono flex items-center gap-2">
+            <div className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] font-mono flex items-center gap-2">
               <Calendar className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
               <span>{weekDays[0]?.monthName} {weekDays[0]?.dayNum} – {weekDays[6]?.monthName} {weekDays[6]?.dayNum}</span>
             </div>
@@ -732,7 +732,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className={`text-[10px] font-bold uppercase font-mono block ${
+                      <span className={`text-[11px] tabular-nums font-bold uppercase font-mono block ${
                         day.isToday ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E]'
                       }`}>
                         {day.dayName}
@@ -760,7 +760,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                       <div
                         key={t.id}
                         onClick={() => handleToggleWithConfetti(t.id)}
-                        className={`p-2 rounded-xl border text-[11px] font-bold cursor-pointer transition-all ${
+                        className={`p-2 rounded-xl border text-[11px] tabular-nums font-bold cursor-pointer transition-all ${
                           t.status === 'completed'
                             ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 line-through'
                             : 'bg-white dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#24283B] text-[#11120F] dark:text-[#C0CAF5]'
@@ -803,7 +803,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               
               {/* Option A: Search Syllabus Topics */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">
+                <label className="text-[11px] tabular-nums font-bold text-[#85877E] uppercase font-mono tracking-wider">
                   Pick from Syllabus (Recommended)
                 </label>
                 <div className="relative">
@@ -830,7 +830,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                         className="p-2 text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] hover:bg-[#EEEEE8] dark:hover:bg-[#1F2335] cursor-pointer flex items-center justify-between"
                       >
                         <span>{t.topic.name}</span>
-                        <span className="text-[10px] text-[#85877E]">{t.subjectName}</span>
+                        <span className="text-[11px] text-[#85877E]">{t.subjectName}</span>
                       </div>
                     ))}
                   </div>
@@ -839,7 +839,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
               {/* Option B: Custom Title */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">
+                <label className="text-[11px] tabular-nums font-bold text-[#85877E] uppercase font-mono tracking-wider">
                   Or Custom Target Title
                 </label>
                 <input
@@ -857,7 +857,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               {/* Priority & Estimated Minutes */}
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">
+                  <label className="text-[11px] tabular-nums font-bold text-[#85877E] uppercase font-mono tracking-wider">
                     Priority
                   </label>
                   <select
@@ -872,7 +872,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#85877E] uppercase font-mono tracking-wider">
+                  <label className="text-[11px] tabular-nums font-bold text-[#85877E] uppercase font-mono tracking-wider">
                     Duration (Minutes)
                   </label>
                   <input
@@ -903,3 +903,4 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
     </div>
   );
 };
+

@@ -310,7 +310,7 @@ export const SettingsView: React.FC = () => {
               )}
 
               {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[9px] font-bold transition-opacity backdrop-blur-2xs">
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[11px] font-bold transition-opacity backdrop-blur-2xs">
                 <Camera className="w-4 h-4" />
                 <span>Upload</span>
               </div>
@@ -334,12 +334,12 @@ export const SettingsView: React.FC = () => {
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-xs cursor-pointer"
+                  className="px-3 py-1 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-[13px] font-bold shadow-xs cursor-pointer"
                 >
                   Save
                 </button>
@@ -359,7 +359,7 @@ export const SettingsView: React.FC = () => {
                 {(profile.avatarUrl || user?.avatarUrl) && (
                   <button
                     onClick={handleRemoveAvatar}
-                    className="px-2 py-0.5 rounded-lg text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 border border-rose-500/20 cursor-pointer transition-colors"
+                    className="px-2 py-0.5 rounded-lg text-[11px] font-bold text-rose-500 hover:bg-rose-500/10 border border-rose-500/20 cursor-pointer transition-colors"
                     title="Remove Photo and use initial letter"
                   >
                     Remove Photo
@@ -369,7 +369,7 @@ export const SettingsView: React.FC = () => {
             )}
 
             <div className="flex items-center gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
                 Lvl {profile.level} • {profile.levelTitle}
               </span>
               <span>•</span>
@@ -398,13 +398,13 @@ export const SettingsView: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleLogout}
-                className="px-3.5 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shadow-xs cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[13px] font-bold shadow-xs cursor-pointer"
               >
                 Confirm Logout
               </button>
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
               >
                 Cancel
               </button>
@@ -412,7 +412,7 @@ export const SettingsView: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold transition-all cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -441,7 +441,7 @@ export const SettingsView: React.FC = () => {
                 soundManager.playClick();
                 setActiveTab(tab.id);
               }}
-              className={`flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
+              className={`flex-1 min-w-[110px] py-2 px-3 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
                 isActive
                   ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-sm'
                   : 'text-[#65675F] dark:text-[#A9B1D6] hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335]'
@@ -477,7 +477,7 @@ export const SettingsView: React.FC = () => {
 
           {/* Quick Presets */}
           <div className="space-y-1.5">
-            <span className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+            <span className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
               Quick Exam Presets
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -505,7 +505,7 @@ export const SettingsView: React.FC = () => {
           <form onSubmit={handleSaveExamSettings} className="space-y-3.5 pt-1">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="sm:col-span-2 space-y-1">
-                <label className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+                <label className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
                   Exam Title
                 </label>
                 <input
@@ -513,12 +513,12 @@ export const SettingsView: React.FC = () => {
                   value={examName}
                   onChange={e => setExamName(e.target.value)}
                   placeholder="e.g. SSC CGL 2026"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+                <label className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
                   Target Year
                 </label>
                 <input
@@ -527,14 +527,14 @@ export const SettingsView: React.FC = () => {
                   onChange={e => setTargetYear(Number(e.target.value))}
                   min={2025}
                   max={2035}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                 />
               </div>
             </div>
 
             {/* Exam Date & Adjusters */}
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+              <label className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
                 Exam Date
               </label>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -542,7 +542,7 @@ export const SettingsView: React.FC = () => {
                   type="date"
                   value={examDate}
                   onChange={e => setExamDate(e.target.value)}
-                  className="px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] cursor-pointer"
                 />
                 <div className="flex items-center gap-1.5">
                   {[{ label: '+30d', days: 30 }, { label: '+60d', days: 60 }, { label: '+90d', days: 90 }, { label: '+180d', days: 180 }].map(b => (
@@ -550,7 +550,7 @@ export const SettingsView: React.FC = () => {
                       type="button"
                       key={b.label}
                       onClick={() => handleAddDays(b.days)}
-                      className="px-2 py-1 rounded-lg text-[10px] font-mono font-bold bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                      className="px-2 py-1 rounded-lg text-[11px] font-mono font-bold bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
                     >
                       {b.label}
                     </button>
@@ -590,7 +590,7 @@ export const SettingsView: React.FC = () => {
                 Switch between high-contrast Tokyo Night Dark and Classic Paper Light mode.
               </p>
             </div>
-            <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7] capitalize">
+            <span className="px-3 py-1 rounded-xl text-[13px] font-bold font-mono bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7] capitalize">
               {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
             </span>
           </div>
@@ -616,10 +616,10 @@ export const SettingsView: React.FC = () => {
                 {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
               </div>
               <div>
-                <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
                   Tokyo Night Dark
                 </span>
-                <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
                   Deep dark glassmorphism for focused study
                 </span>
               </div>
@@ -645,10 +645,10 @@ export const SettingsView: React.FC = () => {
                 {theme === 'oled' && <Check className="w-4 h-4 text-cyan-400" />}
               </div>
               <div>
-                <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
                   🕶️ Pure OLED Black
                 </span>
-                <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
                   100% pitch black for zero eye fatigue & battery saving
                 </span>
               </div>
@@ -674,10 +674,10 @@ export const SettingsView: React.FC = () => {
                 {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
               </div>
               <div>
-                <span className="text-xs font-extrabold text-[#11120F] dark:text-white block">
+                <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
                   Classic Paper Light
                 </span>
-                <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
                   Warm academic paper tones for daylight reading
                 </span>
               </div>
@@ -706,7 +706,7 @@ export const SettingsView: React.FC = () => {
               onClick={() => {
                 handleUpdateAudio({ masterEnabled: !audioConfig.masterEnabled });
               }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-95 shadow-xs ${
+              className={`px-3.5 py-1.5 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-95 shadow-xs ${
                 audioConfig.masterEnabled
                   ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D]'
                   : 'bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black'
@@ -729,7 +729,7 @@ export const SettingsView: React.FC = () => {
           {/* Master Volume Slider */}
           <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#10111A] border border-[#D8D8CF] dark:border-[#24283B] space-y-2.5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#11120F] dark:text-white">
+              <div className="flex items-center gap-2 text-[13px] font-bold text-[#11120F] dark:text-white">
                 <Sliders className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
                 <span>Master Volume</span>
               </div>
@@ -751,7 +751,7 @@ export const SettingsView: React.FC = () => {
 
           {/* Individual Audio Channels */}
           <div className="space-y-3 pt-1">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#85877E] font-mono">
+            <h4 className="text-[13px] font-bold uppercase tracking-wider text-[#85877E] font-mono">
               Individual Audio Channels
             </h4>
 
@@ -762,10 +762,10 @@ export const SettingsView: React.FC = () => {
                   <Sliders className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-white block">
                     UI Click & Navigation Taps
                   </span>
-                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                  <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6]">
                     Tactile audio feedback when switching tabs and buttons
                   </span>
                 </div>
@@ -774,7 +774,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playClick()}
-                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -792,10 +792,10 @@ export const SettingsView: React.FC = () => {
                   <Bell className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-white block">
                     Pomodoro Session Alert Bell
                   </span>
-                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                  <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6]">
                     Gentle Tibetan singing bell when focus session starts & completes
                   </span>
                 </div>
@@ -804,7 +804,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playPomodoroBell()}
-                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -822,10 +822,10 @@ export const SettingsView: React.FC = () => {
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-white block">
                     Target Mastery Celebration Chime
                   </span>
-                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                  <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6]">
                     Euphoric harmonic chime when completing a topic or daily target
                   </span>
                 </div>
@@ -834,7 +834,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playCompleteChime()}
-                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -852,10 +852,10 @@ export const SettingsView: React.FC = () => {
                   <Award className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-white block">
                     Level Up & Streak Milestone Fanfare
                   </span>
-                  <span className="text-[10px] text-[#85877E] dark:text-[#A9B1D6]">
+                  <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6]">
                     Special victory fanfare on leveling up or reaching streak milestones
                   </span>
                 </div>
@@ -864,7 +864,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playLevelUp()}
-                  className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -897,7 +897,7 @@ export const SettingsView: React.FC = () => {
                 setTestLaunched(true);
                 setTimeout(() => setTestLaunched(false), 2500);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[13px] font-bold transition-all cursor-pointer active:scale-95"
             >
               <Play className="w-3 h-3 fill-current" />
               <span>{testLaunched ? 'Visible!' : 'Preview Pill'}</span>
@@ -913,8 +913,8 @@ export const SettingsView: React.FC = () => {
             ].map(item => (
               <div key={item.key} className="flex items-center justify-between p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
                 <div className="pr-3">
-                  <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] block">{item.label}</span>
-                  <span className="text-[10px] text-[#85877E] dark:text-[#787C99]">{item.desc}</span>
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] block">{item.label}</span>
+                  <span className="text-[11px] text-[#85877E] dark:text-[#787C99]">{item.desc}</span>
                 </div>
                 <ToggleSwitch
                   checked={item.checked}
@@ -925,7 +925,7 @@ export const SettingsView: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-1.5">
-                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] block">Widget Width</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] block">Widget Width</span>
                 <div className="flex gap-2">
                   {(['standard', 'compact'] as const).map(s => (
                     <button
@@ -935,7 +935,7 @@ export const SettingsView: React.FC = () => {
                         soundManager.playClick();
                         updateSettings({ size: s });
                       }}
-                      className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      className={`flex-1 py-1.5 rounded-xl text-[13px] font-bold transition-all cursor-pointer ${
                         settings.size === s
                           ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
                           : 'bg-white dark:bg-[#16161E] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42]'
@@ -949,7 +949,7 @@ export const SettingsView: React.FC = () => {
 
               <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">Opacity</span>
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">Opacity</span>
                   <span className="text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
                     {Math.round((settings.opacity || 0.95) * 100)}%
                   </span>
@@ -988,16 +988,16 @@ export const SettingsView: React.FC = () => {
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                 <div>
-                  <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5] block leading-tight">
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] block leading-tight">
                     Continuous Local Auto-Save: Active
                   </span>
-                  <span className="text-[10px] text-[#85877E] dark:text-[#787C99]">
+                  <span className="text-[11px] text-[#85877E] dark:text-[#787C99]">
                     Zero risk of progress loss — synced instantly on every note, target, or score edit.
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold shrink-0 self-start sm:self-auto">
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-mono text-[11px] font-bold shrink-0 self-start sm:self-auto">
                 <Check className="w-3 h-3 stroke-[2.5]" />
                 <span>Last Synced: {lastSavedAt}</span>
               </div>
@@ -1006,20 +1006,20 @@ export const SettingsView: React.FC = () => {
             {/* Storage Metric Pills */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-[#D8D8CF]/50 dark:border-[#292E42]/50 text-center font-mono">
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Topics & Notes</span>
-                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">{overallStats.totalTopics} Topics</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Topics & Notes</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">{overallStats.totalTopics} Topics</span>
               </div>
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">SRS Flashcards</span>
-                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">{revisions.length} Cards</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">SRS Flashcards</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">{revisions.length} Cards</span>
               </div>
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Targets & Reflections</span>
-                <span className="text-xs font-bold text-[#11120F] dark:text-[#C0CAF5]">{top3Targets.length + reflectionsHistory.length} Entries</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Targets & Reflections</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">{top3Targets.length + reflectionsHistory.length} Entries</span>
               </div>
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[10px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Total Stored Data</span>
-                <span className="text-xs font-bold text-[#596B35] dark:text-[#7AA2F7]">~{storageUsageKb} KB</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Total Stored Data</span>
+                <span className="text-[13px] font-bold text-[#596B35] dark:text-[#7AA2F7]">~{storageUsageKb} KB</span>
               </div>
             </div>
           </div>
@@ -1028,13 +1028,13 @@ export const SettingsView: React.FC = () => {
           <div className="flex flex-wrap gap-2.5 pt-1">
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[13px] font-bold shadow-xs transition-all cursor-pointer active:scale-95"
             >
               <Download className="w-4 h-4" />
               <span>Export Full Backup (.json)</span>
             </button>
 
-            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-xs font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95">
+            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-[13px] font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95">
               <Upload className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
               <span>Restore Backup File</span>
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />
@@ -1042,7 +1042,7 @@ export const SettingsView: React.FC = () => {
 
             <button
               onClick={() => setShowPwaModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-xs font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-[13px] font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95"
             >
               <Smartphone className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
               <span>{isInstalled ? 'App Installed ✓' : 'Install PWA App 📲'}</span>
@@ -1052,7 +1052,7 @@ export const SettingsView: React.FC = () => {
           {importStatus === 'success' && (
             <div className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-[13px] font-bold text-emerald-600 dark:text-emerald-400">
                 ✓ Full backup restored successfully! All topics, notes, PDF highlights, reflections & settings synced.
               </span>
             </div>
@@ -1061,7 +1061,7 @@ export const SettingsView: React.FC = () => {
           {importStatus === 'error' && (
             <div className="flex items-center gap-2 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 animate-fade-in">
               <Trash2 className="w-4 h-4 text-rose-500" />
-              <span className="text-xs font-bold text-rose-600 dark:text-rose-400">
+              <span className="text-[13px] font-bold text-rose-600 dark:text-rose-400">
                 Invalid backup format. Please select a valid Syllabus 3D backup JSON file.
               </span>
             </div>
@@ -1069,7 +1069,7 @@ export const SettingsView: React.FC = () => {
 
           {/* Danger Zone */}
           <div className="pt-3 border-t border-[#EEEEE8] dark:border-[#24283B] space-y-2">
-            <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider block font-mono">
+            <span className="text-[11px] font-bold text-rose-500 uppercase tracking-wider block font-mono">
               ⚠ Danger Zone
             </span>
             <div className="flex flex-wrap gap-2">
@@ -1080,13 +1080,13 @@ export const SettingsView: React.FC = () => {
                       resetToDemo();
                       setShowResetConfirm(false);
                     }}
-                    className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold cursor-pointer shadow-xs"
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white text-[13px] font-bold cursor-pointer shadow-xs"
                   >
                     Yes, Reset Demo
                   </button>
                   <button
                     onClick={() => setShowResetConfirm(false)}
-                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1094,7 +1094,7 @@ export const SettingsView: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setShowResetConfirm(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset Demo Data</span>
@@ -1108,13 +1108,13 @@ export const SettingsView: React.FC = () => {
                       clearAllDemoData();
                       setShowClearConfirm(false);
                     }}
-                    className="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold cursor-pointer shadow-xs"
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white text-[13px] font-bold cursor-pointer shadow-xs"
                   >
                     Yes, Delete Everything
                   </button>
                   <button
                     onClick={() => setShowClearConfirm(false)}
-                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1122,7 +1122,7 @@ export const SettingsView: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setShowClearConfirm(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Start Fresh (Blank Canvas)</span>
@@ -1138,3 +1138,4 @@ export const SettingsView: React.FC = () => {
     </div>
   );
 };
+
