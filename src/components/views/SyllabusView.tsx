@@ -817,7 +817,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
       
       {/* 1. TOP BATCH HERO BANNER WITH NIGHT STUDY DESK BACKGROUND */}
-      <div className="p-4 sm:p-6 rounded-[28px] sm:rounded-3xl bg-[#0D0F17] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-3.5">
+      <div className="p-4 sm:p-6 rounded-[28px] sm:rounded-3xl bg-[#0D0F17] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-4">
         
         {/* Study Desk Background Image with Warm Lamp Glow */}
         <div 
@@ -826,71 +826,66 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         />
 
         {/* Multi-layered Glass Gradients for 100% Text Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0D0F17] via-[#0D0F17]/85 md:via-[#0D0F17]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0F17]/80 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0D0F17] via-[#0D0F17]/90 md:via-[#0D0F17]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0F17]/85 via-transparent to-transparent pointer-events-none" />
         
-        {/* Banner Content (Badge + Title + Expiry Date) */}
-        <div className="relative z-10 flex items-center gap-3.5 sm:gap-4 min-w-0">
+        {/* Banner Content (Badge + Title + Meta + CTA) */}
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
           
-          {/* Left Visual Badge Banner */}
-          <div className="w-20 sm:w-28 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19]/90 via-[#161F36]/90 to-[#0A0D14]/90 border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-lg relative overflow-hidden font-serif">
-            <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
-              SYLLABUS
-            </span>
-            <span className="text-[11px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-1">
-              EXPLORER
-            </span>
-          </div>
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
+            {/* Left Visual Badge Banner */}
+            <div className="w-20 sm:w-24 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-[#0B0F19]/90 via-[#161F36]/90 to-[#0A0D14]/90 border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-lg relative overflow-hidden font-serif">
+              <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
+                SYLLABUS
+              </span>
+              <span className="text-[10px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-1">
+                EXPLORER
+              </span>
+            </div>
 
-          {/* Banner Meta Info */}
-          <div className="space-y-1 min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#C2C5D6] flex-wrap">
-                <span className="flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10 backdrop-blur-md">
+            {/* Banner Meta Info */}
+            <div className="space-y-1.5 min-w-0 flex-1">
+              <div className="flex items-center gap-2 text-[11px] font-bold text-[#C2C5D6] flex-wrap">
+                <span className="flex items-center gap-1.5 bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10 backdrop-blur-md">
                   <Calendar className="w-3 h-3 text-[#FACC15]" />
                   <span>Exam Date: {formattedExamDate}</span>
                 </span>
                 {daysRemaining > 0 && (
-                  <span className="px-2 py-0.5 rounded-lg text-[11px] font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
-                    {daysRemaining}d left
+                  <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
+                    ⚡ {daysRemaining}d left
                   </span>
                 )}
+                <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-mono tabular-nums font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  🏆 {overallPercentage}% Mastered
+                </span>
               </div>
 
-              {onBackToDashboard && (
-                <button
-                  onClick={onBackToDashboard}
-                  className="flex items-center gap-1 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
-                  title="Return to Dashboard"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-                  <span>Dashboard</span>
-                </button>
-              )}
-            </div>
+              <h1 className="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight font-serif truncate drop-shadow-sm">
+                {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
+              </h1>
 
-            <h1 className="text-base sm:text-xl font-black text-white tracking-tight font-serif truncate drop-shadow-sm">
-              {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
-            </h1>
-
-            <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-[#A1A1B2] flex-wrap">
-              <span>{currentExam.subjects.length} Subjects</span>
-              <span>•</span>
-              <span>{totalTopicsCount} Topics</span>
-              <span>•</span>
-              <span className="text-emerald-400 font-bold">{overallPercentage}% Mastered</span>
+              <div className="flex items-center gap-2 text-[11px] sm:text-xs font-mono font-semibold text-[#A1A1B2] flex-wrap">
+                <span>{currentExam.subjects.length} Subjects</span>
+                <span>•</span>
+                <span>{totalTopicsCount} Topics</span>
+                <span>•</span>
+                <span>{completedTopicsCount} Completed</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Quick Add Custom Topic Action */}
-        <button
-          onClick={onOpenAddTopic}
-          className="relative z-10 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#789047] hover:from-[#667b3d] hover:to-[#88a350] dark:from-[#7AA2F7] dark:to-[#8B5CF6] text-white dark:text-black text-xs font-extrabold shadow-md transition-all active:scale-[0.99] cursor-pointer border border-white/15"
-        >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>+ Add Custom Topic</span>
-        </button>
+          {/* Quick Add Custom Topic Action */}
+          <div className="shrink-0 pt-1 sm:pt-0">
+            <button
+              onClick={onOpenAddTopic}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#789047] hover:from-[#667b3d] hover:to-[#88a350] dark:from-[#7AA2F7] dark:to-[#8B5CF6] text-white dark:text-black text-xs font-black shadow-lg hover:shadow-xl transition-all active:scale-95 cursor-pointer border border-white/20 hover:scale-[1.02]"
+              title="Add a custom topic"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span>Add Custom Topic</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* 2. PORTAL CONTENT CONTAINER */}
