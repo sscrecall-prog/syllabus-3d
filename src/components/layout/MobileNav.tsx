@@ -26,8 +26,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onOpenMobileMenu
 }) => {
   return (
-    <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-3xl bg-[#FAF9F5]/90 dark:bg-[#12131F]/90 backdrop-blur-2xl border border-[#D8D8CF]/85 dark:border-[#272A3D] shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
+    <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[env(safe-area-inset-bottom)] pointer-events-auto">
+      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-3xl bg-[#FAF9F5]/96 dark:bg-[#12131F]/96 backdrop-blur-md border border-[#D8D8CF]/90 dark:border-[#272A3D] shadow-xl">
         
         {/* Item 1: Home Dashboard */}
         <button

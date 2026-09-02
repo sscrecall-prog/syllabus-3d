@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { Calendar, Target } from 'lucide-react';
 
-export const ExamCountdown3D: React.FC = () => {
+export const ExamCountdown3D: React.FC = React.memo(() => {
   const { currentExam } = useSyllabus();
 
   const [timeLeft, setTimeLeft] = useState<{
@@ -19,14 +19,17 @@ export const ExamCountdown3D: React.FC = () => {
       const difference = examDate - now;
 
       if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60)
+        const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const h = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((difference / 1000 / 60) % 60);
+        const s = Math.floor((difference / 1000) % 60);
+
+        setTimeLeft(prev => {
+          if (prev.seconds === s && prev.minutes === m && prev.hours === h && prev.days === d) return prev;
+          return { days: d, hours: h, minutes: m, seconds: s };
         });
       } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft(prev => (prev.days === 0 && prev.seconds === 0 ? prev : { days: 0, hours: 0, minutes: 0, seconds: 0 }));
       }
     };
 
@@ -91,5 +94,5 @@ export const ExamCountdown3D: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 

@@ -397,7 +397,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     tick();
-    tickIntervalRef.current = setInterval(tick, 250);
+    tickIntervalRef.current = setInterval(tick, 1000);
 
     return () => {
       if (tickIntervalRef.current) {
@@ -407,15 +407,14 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [session.status, session.mode, session.startTimestamp, session.targetEndTimestamp, session.accumulatedPausedMs, handleSessionComplete]);
 
-  // Keep alive MediaSession & Screen WakeLock while timer is running
+  // Keep alive MediaSession & Screen WakeLock ONLY on status transitions (zero lag)
   useEffect(() => {
     if (session.status === 'running') {
       acquireWakeLock();
       if (typeof navigator !== 'undefined' && 'mediaSession' in navigator && (window as any).MediaMetadata) {
         try {
-          const minsLeft = Math.floor(session.remainingSec / 60);
           navigator.mediaSession.metadata = new (window as any).MediaMetadata({
-            title: `⏱️ ${session.topicName || 'Study Session'} (${minsLeft}m left)`,
+            title: `⏱️ ${session.topicName || 'Study Session'}`,
             artist: 'Syllabus 3D Active Study Timer',
             album: session.subjectName || 'Competitive Exam Mastery'
           });
@@ -433,7 +432,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } catch (e) {}
       }
     }
-  }, [session.status, session.remainingSec, session.topicName, session.subjectName, acquireWakeLock, releaseWakeLock, pauseTimer, resumeTimer, stopTimer]);
+  }, [session.status, session.topicName, session.subjectName, acquireWakeLock, releaseWakeLock, pauseTimer, resumeTimer, stopTimer]);
 
   // Background Visibility & Focus Real-Time Timestamp Synchronization
   useEffect(() => {
