@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 bg-[#F7F6F0]/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#D8D8CF] dark:border-[#272730] px-3 sm:px-6 py-2.5 transition-colors">
-      <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between gap-2 w-full">
         
         {/* Left Side: Mobile Menu Button & Global Back Navigation */}
         <div className="flex items-center gap-2">
