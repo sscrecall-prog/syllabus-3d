@@ -7,6 +7,13 @@ import { SyllabusProvider } from './context/SyllabusContext';
 import { TimerProvider } from './context/TimerContext';
 import './index.css';
 
+// Request Persistent Storage & Background Keep-Alive for Android / PWA
+if (typeof window !== 'undefined') {
+  if ('storage' in navigator && navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().catch(() => {});
+  }
+}
+
 // Register PWA Service Worker for Offline Reliability
 if ('serviceWorker' in navigator && (import.meta.env.PROD || window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
   window.addEventListener('load', () => {

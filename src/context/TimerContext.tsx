@@ -155,7 +155,29 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
+  const wakeLockRef = useRef<any>(null);
+
+  const acquireWakeLock = useCallback(async () => {
+    if (typeof navigator !== 'undefined' && 'wakeLock' in navigator && (navigator as any).wakeLock) {
+      try {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      } catch (err) {
+        // wake lock request may fail if battery saver is on
+      }
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(() => {
+    if (wakeLockRef.current) {
+      try {
+        wakeLockRef.current.release();
+      } catch (err) {}
+      wakeLockRef.current = null;
+    }
+  }, []);
+
   const handleSessionComplete = useCallback(() => {
+    releaseWakeLock();
     setSession(prev => {
       const completedState: TimerSessionState = {
         ...prev,
@@ -170,6 +192,17 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     soundManager.playCompleteChime();
     confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
 
+    // Background Web Notification
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification('Study Session Completed! 🎉', {
+          body: `${session.topicName || 'Topic'} study goal reached! Great job!`,
+          icon: '/logo.png',
+          tag: 'study-timer-complete'
+        });
+      } catch (e) {}
+    }
+
     if (session.totalDurationSec > 0) {
       logStudySession(Math.round(session.totalDurationSec / 60), session.topicId);
     }
@@ -183,7 +216,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       pipWindowRef.current = null;
       setIsPiPActive(false);
     }
-  }, [session.totalDurationSec, session.topicId, logStudySession, persistSession, notifyAndroidTimerChange]);
+  }, [session.totalDurationSec, session.topicId, session.topicName, logStudySession, persistSession, notifyAndroidTimerChange, releaseWakeLock]);
 
   const startTimer = useCallback((options?: StartTimerOptions) => {
     const now = Date.now();
@@ -374,14 +407,51 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [session.status, session.mode, session.startTimestamp, session.targetEndTimestamp, session.accumulatedPausedMs, handleSessionComplete]);
 
+  // Keep alive MediaSession & Screen WakeLock while timer is running
+  useEffect(() => {
+    if (session.status === 'running') {
+      acquireWakeLock();
+      if (typeof navigator !== 'undefined' && 'mediaSession' in navigator && (window as any).MediaMetadata) {
+        try {
+          const minsLeft = Math.floor(session.remainingSec / 60);
+          navigator.mediaSession.metadata = new (window as any).MediaMetadata({
+            title: `⏱️ ${session.topicName || 'Study Session'} (${minsLeft}m left)`,
+            artist: 'Syllabus 3D Active Study Timer',
+            album: session.subjectName || 'Competitive Exam Mastery'
+          });
+          navigator.mediaSession.playbackState = 'playing';
+          navigator.mediaSession.setActionHandler('pause', () => pauseTimer());
+          navigator.mediaSession.setActionHandler('play', () => resumeTimer());
+          navigator.mediaSession.setActionHandler('stop', () => stopTimer());
+        } catch (e) {}
+      }
+    } else {
+      releaseWakeLock();
+      if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+        try {
+          navigator.mediaSession.playbackState = session.status === 'paused' ? 'paused' : 'none';
+        } catch (e) {}
+      }
+    }
+  }, [session.status, session.remainingSec, session.topicName, session.subjectName, acquireWakeLock, releaseWakeLock, pauseTimer, resumeTimer, stopTimer]);
+
+  // Background Visibility & Focus Real-Time Timestamp Synchronization
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && session.status === 'running' && session.targetEndTimestamp) {
+      if (session.status === 'running') {
         const now = Date.now();
-        const remaining = Math.max(0, Math.ceil((session.targetEndTimestamp - now) / 1000));
-        setSession(prev => ({ ...prev, remainingSec: remaining }));
-        if (remaining <= 0) {
-          handleSessionComplete();
+        if (session.mode === 'stopwatch' && session.startTimestamp) {
+          const elapsed = Math.floor((now - session.startTimestamp - session.accumulatedPausedMs) / 1000);
+          setSession(prev => ({ ...prev, stopwatchElapsedSec: elapsed }));
+        } else if (session.targetEndTimestamp) {
+          const remaining = Math.max(0, Math.ceil((session.targetEndTimestamp - now) / 1000));
+          setSession(prev => ({ ...prev, remainingSec: remaining }));
+          if (remaining <= 0) {
+            handleSessionComplete();
+          }
+        }
+        if (document.visibilityState === 'visible') {
+          acquireWakeLock();
         }
       }
     };
@@ -392,7 +462,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleVisibilityChange);
     };
-  }, [session.status, session.targetEndTimestamp, handleSessionComplete]);
+  }, [session.status, session.mode, session.startTimestamp, session.targetEndTimestamp, session.accumulatedPausedMs, handleSessionComplete, acquireWakeLock]);
 
   const requestPictureInPicture = useCallback(async (): Promise<boolean> => {
     if ('documentPictureInPicture' in window && window.documentPictureInPicture) {
