@@ -52,7 +52,8 @@ import {
   PenTool,
   Eraser,
   RotateCcw,
-  Square
+  Square,
+  ArrowLeft
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -304,6 +305,23 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [content, noteItems, onSave, isFullscreen, isZenMode]);
 
+  // Handle Browser History & Android Back Button / Gesture in Fullscreen & Zen Mode
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    window.history.pushState({ modal: 'notes_fullscreen' }, '');
+
+    const handlePopState = () => {
+      setIsFullscreen(false);
+      setIsZenMode(false);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isFullscreen]);
+
   // ----------------------------------------------------------------------------------
   // MULTI-NOTE ACTIONS (Add, Rename, Duplicate, Delete)
   // ----------------------------------------------------------------------------------
@@ -397,7 +415,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // TEXT & BOX HIGHLIGHTER LOGIC
   // ----------------------------------------------------------------------------------
   const handleMouseUpSelection = () => {
-    if (!isHighlighterActive || highlighterMode !== 'box') return;
+    if (viewMode !== 'study') return;
 
     setTimeout(() => {
       const sel = window.getSelection();
@@ -415,17 +433,21 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         const range = sel.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         if (rect && rect.width > 0) {
+          const centerX = rect.left + rect.width / 2;
+          const clampedX = Math.min(window.innerWidth - 130, Math.max(130, centerX));
+          const posY = rect.top < 65 ? rect.bottom + 12 : rect.top - 8;
+
           setSelectionTooltip({
             visible: true,
-            x: Math.max(12, rect.left + rect.width / 2),
-            y: Math.max(10, rect.top - 8),
+            x: clampedX,
+            y: posY,
             text
           });
         }
       } catch (e) {
         // ignore
       }
-    }, 20);
+    }, 40);
   };
 
   const applyHighlight = (colorPrefix: '' | 'g:' | 'p:' | 'b:' | 'r:') => {
@@ -1662,7 +1684,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // RENDER FLOATING TEXT HIGHLIGHTER TOOLTIP (For Box Mode)
   // ----------------------------------------------------------------------------------
   const renderFloatingHighlighter = () => {
-    if (!selectionTooltip.visible || !isHighlighterActive || highlighterMode !== 'box') return null;
+    if (!selectionTooltip.visible) return null;
 
     return (
       <div
@@ -1673,19 +1695,20 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           transform: 'translate(-50%, -100%)',
           zIndex: 9999
         }}
-        className="flex items-center gap-1.5 p-1.5 px-2.5 rounded-2xl bg-[#11120F] dark:bg-[#1C1D26] text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
+        className="flex items-center gap-1.5 p-1.5 px-2.5 rounded-2xl bg-[#11120F]/95 dark:bg-[#1C1D26]/95 text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
         onMouseDown={e => e.preventDefault()}
+        onTouchStart={e => e.stopPropagation()}
       >
         <span className="text-[11px] font-bold text-[#A1A1B2] font-mono flex items-center gap-1">
           <Highlighter className="w-3.5 h-3.5 text-amber-400" />
-          <span>Highlight:</span>
+          <span className="hidden sm:inline">Highlight:</span>
         </span>
 
         {/* 🟡 Yellow Highlight */}
         <button
           type="button"
           onClick={() => applyHighlight('')}
-          className="w-5 h-5 rounded-full bg-yellow-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          className="w-5 h-5 rounded-full bg-yellow-400 hover:scale-125 active:scale-95 transition-transform shadow-xs cursor-pointer border border-black/30"
           title="Yellow (==text==)"
         />
 
@@ -1693,7 +1716,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <button
           type="button"
           onClick={() => applyHighlight('g:')}
-          className="w-5 h-5 rounded-full bg-emerald-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          className="w-5 h-5 rounded-full bg-emerald-400 hover:scale-125 active:scale-95 transition-transform shadow-xs cursor-pointer border border-black/30"
           title="Green (==g:text==)"
         />
 
@@ -1701,7 +1724,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <button
           type="button"
           onClick={() => applyHighlight('p:')}
-          className="w-5 h-5 rounded-full bg-purple-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          className="w-5 h-5 rounded-full bg-purple-400 hover:scale-125 active:scale-95 transition-transform shadow-xs cursor-pointer border border-black/30"
           title="Purple (==p:text==)"
         />
 
@@ -1709,7 +1732,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <button
           type="button"
           onClick={() => applyHighlight('b:')}
-          className="w-5 h-5 rounded-full bg-sky-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          className="w-5 h-5 rounded-full bg-sky-400 hover:scale-125 active:scale-95 transition-transform shadow-xs cursor-pointer border border-black/30"
           title="Blue (==b:text==)"
         />
 
@@ -1717,7 +1740,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <button
           type="button"
           onClick={() => applyHighlight('r:')}
-          className="w-5 h-5 rounded-full bg-rose-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
+          className="w-5 h-5 rounded-full bg-rose-400 hover:scale-125 active:scale-95 transition-transform shadow-xs cursor-pointer border border-black/30"
           title="Rose (==r:text==)"
         />
 
@@ -1725,7 +1748,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <button
           type="button"
           onClick={() => removeHighlight(selectionTooltip.text)}
-          className="px-2 py-0.5 ml-1 rounded-lg bg-rose-500/25 hover:bg-rose-500 text-rose-200 hover:text-white text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer border border-rose-500/40"
+          className="px-2 py-0.5 ml-0.5 rounded-lg bg-rose-500/25 hover:bg-rose-500 text-rose-200 hover:text-white text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer border border-rose-500/40 active:scale-95"
           title="Remove Highlight (Erase ==tags==)"
         >
           <span>🧽 Erase</span>
@@ -1734,7 +1757,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <button
           type="button"
           onClick={() => setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' })}
-          className="p-0.5 text-slate-400 hover:text-white rounded hover:bg-white/10 ml-0.5"
+          className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/10 ml-0.5 cursor-pointer"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -1973,13 +1996,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         {/* Fullscreen Zen Floating Controls (Visible when Top Bar is Hidden in Zen Mode) */}
         {isZenMode && (
           <>
-            {/* Left: Floating Highlighter Controls in Pure Notes Only View */}
-            <div className="fixed top-4 left-5 z-[170]">
+            {/* Left: Floating Highlighter Controls in Pure Notes Only View (Visible on Desktop / Web only) */}
+            <div className="hidden sm:block fixed top-4 left-5 z-[170]">
               {renderHighlighterControlsWidget(true)}
             </div>
 
-            {/* Right: Show All Controls & Exit Fullscreen */}
-            <div className="fixed top-4 right-5 z-[170] flex items-center gap-2 animate-fade-in">
+            {/* Right: Show All Controls & Exit Fullscreen (Visible on Desktop / Web only) */}
+            <div className="hidden sm:flex fixed top-4 right-5 z-[170] items-center gap-2 animate-fade-in">
               <button
                 type="button"
                 onClick={() => {
@@ -2004,6 +2027,35 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 title="Exit Fullscreen (ESC)"
               >
                 <Minimize2 className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Mobile Floating Minimal Back Action (Clean at Bottom-Right, Doesn't Cover Any Notes Text) */}
+            <div className="sm:hidden fixed bottom-6 right-4 z-[170] flex items-center gap-2 animate-fade-in">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsZenMode(false);
+                }}
+                className="p-2.5 rounded-full bg-white/90 dark:bg-[#1C1D26]/90 text-slate-800 dark:text-white border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl backdrop-blur-md active:scale-90 transition-transform cursor-pointer flex items-center justify-center"
+                title="Show Controls"
+              >
+                <Eye className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsFullscreen(false);
+                  setIsZenMode(false);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#11120F]/90 dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-2xl backdrop-blur-md active:scale-90 transition-transform cursor-pointer border border-white/20"
+                title="Exit back to Topic Notes"
+              >
+                <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+                <span>Back to Notes</span>
               </button>
             </div>
           </>
@@ -2189,7 +2241,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         )}
 
         {/* Fullscreen Content Area */}
-        <div className={`flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar ${isZenMode ? 'pt-14' : ''}`}>
+        <div className={`flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar ${isZenMode ? 'pt-4 sm:pt-16 pb-24 sm:pb-8' : ''}`}>
           <div className={`mx-auto ${getReaderWidthClass()}`}>
             {viewMode === 'study' && (
               <div className="relative" ref={fsNotesContainerRef}>
