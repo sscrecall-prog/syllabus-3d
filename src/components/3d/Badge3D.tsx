@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { AchievementBadge } from '../../types/syllabus';
 import { Trophy, Flame, Target, ShieldCheck, Zap, RotateCw, Calculator, Lock, Check } from 'lucide-react';
 

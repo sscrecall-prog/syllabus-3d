@@ -163,11 +163,11 @@ export const HeatmapView: React.FC = () => {
               <span className="font-bold text-slate-900 dark:text-white">
                 {new Date(hoveredDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
-              <span>Â·</span>
+              <span>·</span>
               <span>{formatMinutes(hoveredDay.studyMinutes)} studied</span>
-              <span>Â·</span>
+              <span>·</span>
               <span>{hoveredDay.topicsCompleted} topics completed</span>
-              <span>Â·</span>
+              <span>·</span>
               <span>{hoveredDay.revisionsCompleted} revisions</span>
             </div>
           ) : (

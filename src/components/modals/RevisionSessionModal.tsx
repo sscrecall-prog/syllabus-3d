@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { X, RotateCw, Trophy, ArrowRight, Check, RefreshCcw, Sparkles } from 'lucide-react';
@@ -221,7 +221,7 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
                   onClick={() => handleGrade('easy')}
                   className="py-2.5 px-2 rounded-2xl bg-[#D4AF37] hover:bg-[#B89327] text-[#171717] text-xs font-black shadow-md shadow-[#D4AF37]/30 transition-all cursor-pointer"
                 >
-                  Easy (14d) â˜…
+                  Easy (14d) ★
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { User, Mail } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { AuthHeader } from './AuthHeader';

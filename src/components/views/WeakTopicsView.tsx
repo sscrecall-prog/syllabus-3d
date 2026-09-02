@@ -228,9 +228,9 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
           <div className="flex items-center gap-1 p-1 rounded-2xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-xs shrink-0 overflow-x-auto">
             {[
               { id: 'all' as SeverityFilter, label: 'All Weak' },
-              { id: 'critical' as SeverityFilter, label: 'ðŸ”´ Critical (<50%)' },
-              { id: 'moderate' as SeverityFilter, label: 'ðŸŸ¡ Moderate (50-70%)' },
-              { id: 'traps_only' as SeverityFilter, label: 'âš¡ Has Traps' }
+              { id: 'critical' as SeverityFilter, label: '🔴 Critical (<50%)' },
+              { id: 'moderate' as SeverityFilter, label: '🟡 Moderate (50-70%)' },
+              { id: 'traps_only' as SeverityFilter, label: '⚡ Has Traps' }
             ].map(sev => (
               <button
                 key={sev.id}

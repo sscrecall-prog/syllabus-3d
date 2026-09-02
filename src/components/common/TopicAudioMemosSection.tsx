@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Mic,
   MicOff,
@@ -406,7 +406,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
           {recordingTranscript && (
             <div className="p-3 rounded-xl bg-white/5 border border-purple-500/20 text-xs text-purple-200 leading-relaxed max-h-24 overflow-y-auto">
               <span className="text-[11px] font-bold text-purple-400 uppercase block mb-0.5">
-                ðŸ’¬ Live Speech-to-Text:
+                💬 Live Speech-to-Text:
               </span>
               "{recordingTranscript}"
             </div>
@@ -546,7 +546,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-mono">
-                        ðŸŽ™ï¸ Voice Memo #{index + 1}
+                        🎙️ Voice Memo #{index + 1}
                       </span>
                       <span className="text-[11px] font-bold font-mono text-[#596B35] dark:text-[#8B5CF6]">
                         {formatTime(memo.durationSeconds)}
@@ -589,7 +589,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                   {/* Insert Transcript to Notes Button */}
                   {memo.transcript && onInsertTranscriptToNotes && (
                     <button
-                      onClick={() => onInsertTranscriptToNotes(`\n> ðŸŽ™ï¸ **Voice Memo (${memo.title})**:\n> ${memo.transcript}\n`)}
+                      onClick={() => onInsertTranscriptToNotes(`\n> 🎙️ **Voice Memo (${memo.title})**:\n> ${memo.transcript}\n`)}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#DCE8B7] dark:hover:bg-purple-500/20 text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold transition-colors cursor-pointer"
                       title="Insert Transcript into Topic Notes"
                     >

@@ -249,14 +249,14 @@ export const PlatformsView: React.FC = () => {
         <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#EAE8DF] dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272732] overflow-x-auto custom-scrollbar shadow-inner shrink-0 max-w-full">
           {[
             { id: 'all', label: 'All' },
-            { id: 'course', label: 'Courses ðŸ“š' },
-            { id: 'test_series', label: 'Mock Tests ðŸ“' },
-            { id: 'reference', label: 'Tools & Reference ðŸ”' },
+            { id: 'course', label: 'Courses 📚' },
+            { id: 'test_series', label: 'Mock Tests 📝' },
+            { id: 'reference', label: 'Tools & Reference 🔍' },
             ...customCategoriesList.map(cat => ({ 
               id: cat, 
-              label: `âœ¨ ${cat}` 
+              label: `✨ ${cat}` 
             })),
-            { id: 'pinned', label: 'Pinned â­' },
+            { id: 'pinned', label: 'Pinned ⭐' },
           ].map(tab => {
             const isSelected = selectedCategory === tab.id;
             return (
@@ -293,7 +293,7 @@ export const PlatformsView: React.FC = () => {
               onClick={() => setSearchQuery('')}
               className="absolute right-3 top-2 text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
             >
-              âœ•
+              ✕
             </button>
           )}
         </div>
@@ -303,7 +303,7 @@ export const PlatformsView: React.FC = () => {
       {filteredPlatforms.length === 0 ? (
         <div className="p-14 rounded-3xl bg-white dark:bg-[#181822] border border-[#D8D8CF] dark:border-[#272732] text-center space-y-4 shadow-sm">
           <div className="w-16 h-16 rounded-3xl bg-[#F7F6F0] dark:bg-[#20212C] flex items-center justify-center text-3xl mx-auto border border-[#D8D8CF] dark:border-[#333]">
-            ðŸŒ
+            🌐
           </div>
           <div className="space-y-1">
             <h3 className="text-base font-black text-[#11120F] dark:text-white font-serif">
@@ -360,7 +360,7 @@ export const PlatformsView: React.FC = () => {
                         className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-xs border border-white/20 shrink-0"
                         style={{ backgroundColor: platform.color || '#5A4FCF' }}
                       >
-                        {platform.icon || 'âš¡'}
+                        {platform.icon || '⚡'}
                       </div>
 
                       <div className="min-w-0 space-y-1">

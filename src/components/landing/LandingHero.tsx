@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Target, RotateCw, BarChart3, Trophy, ArrowRight, ShieldCheck } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 

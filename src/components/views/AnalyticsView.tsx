@@ -34,7 +34,7 @@ export const AnalyticsView: React.FC = () => {
             </div>
             <div>
               <h4 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
-                Level {profile.level} â€¢ {profile.levelTitle}
+                Level {profile.level} • {profile.levelTitle}
               </h4>
               <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
                 Earn XP through active topic mastery and spaced revision.

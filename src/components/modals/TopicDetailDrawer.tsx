@@ -242,7 +242,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const parsedBulkSubtopics = useMemo(() => {
     return bulkSubtopicsInput
       .split(/[\n,]/)
-      .map(line => line.trim().replace(/^[â€¢*]\s*/, '').trim())
+      .map(line => line.trim().replace(/^[•*]\s*/, '').trim())
       .filter(line => line.length > 0);
   }, [bulkSubtopicsInput]);
 
@@ -268,7 +268,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     if (newSubtopicInput.includes(',') || newSubtopicInput.includes('\n')) {
       const parts = newSubtopicInput
         .split(/[\n,]/)
-        .map(s => s.trim().replace(/^[â€¢*]\s*/, '').trim())
+        .map(s => s.trim().replace(/^[•*]\s*/, '').trim())
         .filter(Boolean);
       if (parts.length > 0) {
         if (addMultipleSubtopics) {
@@ -346,7 +346,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-[13px] font-bold text-[#596B35] dark:text-[#8B5CF6]">
                 <span>{subjectName || 'Subject'}</span>
-                <span>â€¢</span>
+                <span>•</span>
                 <span className="truncate">{chapterName || 'Chapter'}</span>
               </div>
               <div className="flex items-center gap-2.5 flex-wrap mt-0.5">
@@ -398,7 +398,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   onClick={() => setIsEditing(false)}
                   className="text-xs text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
                 >
-                  Close Form âœ•
+                  Close Form ✕
                 </button>
               </div>
 
@@ -549,10 +549,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 icon: FileText,
                 badge: (() => {
                   const items: string[] = [];
-                  if (imagesCount > 0) items.push(`${imagesCount} ðŸ“¸`);
+                  if (imagesCount > 0) items.push(`${imagesCount} 📸`);
                   if (pdfCount > 0) items.push(`${pdfCount} PDF`);
-                  if (audioCount > 0) items.push(`${audioCount} ðŸŽ™ï¸`);
-                  return items.length > 0 ? items.join(' â€¢ ') : null;
+                  if (audioCount > 0) items.push(`${audioCount} 🎙️`);
+                  return items.length > 0 ? items.join(' • ') : null;
                 })(),
                 badgeColor: 'bg-rose-500'
               },
@@ -791,10 +791,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {[
-                      { id: 'not_started', label: 'Not Started â­•', activeClasses: 'bg-slate-700 text-white border-transparent shadow-sm' },
-                      { id: 'in_progress', label: 'In Progress âš¡', activeClasses: 'bg-amber-500 text-white border-transparent shadow-sm shadow-amber-500/20' },
-                      { id: 'completed', label: 'Mastered âœ“', activeClasses: 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20' },
-                      { id: 'weak', label: 'Weak âš ï¸', activeClasses: 'bg-rose-600 text-white border-transparent shadow-sm shadow-rose-600/20' },
+                      { id: 'not_started', label: 'Not Started ⭕', activeClasses: 'bg-slate-700 text-white border-transparent shadow-sm' },
+                      { id: 'in_progress', label: 'In Progress ⚡', activeClasses: 'bg-amber-500 text-white border-transparent shadow-sm shadow-amber-500/20' },
+                      { id: 'completed', label: 'Mastered ✓', activeClasses: 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20' },
+                      { id: 'weak', label: 'Weak ⚠️', activeClasses: 'bg-rose-600 text-white border-transparent shadow-sm shadow-rose-600/20' },
                     ].map((st) => (
                       <button
                         key={st.id}
@@ -856,7 +856,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                             : 'text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
                         }`}
                       >
-                        <span>âš¡ Bulk (Multiple)</span>
+                        <span>⚡ Bulk (Multiple)</span>
                       </button>
                     </div>
                   </div>
@@ -955,7 +955,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                               : 'bg-[#EEEEE8] dark:bg-[#282833] text-[#85877E] cursor-not-allowed opacity-60'
                           }`}
                         >
-                          <span>âš¡ Add All {parsedBulkSubtopics.length > 0 ? `(${parsedBulkSubtopics.length})` : ''} Subtopics</span>
+                          <span>⚡ Add All {parsedBulkSubtopics.length > 0 ? `(${parsedBulkSubtopics.length})` : ''} Subtopics</span>
                         </button>
                       </div>
                     </div>

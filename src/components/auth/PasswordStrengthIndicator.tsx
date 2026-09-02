@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { PasswordStrength } from '../../types/auth';
 import { Check, X } from 'lucide-react';
 

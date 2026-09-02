@@ -104,7 +104,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
       }
 
       // Only strip bullet points if present, preserve numbers (e.g. 1. Introduction, 100 Rules, 3D Geometry)
-      name = name.replace(/^[â€¢*]\s*/, '').trim();
+      name = name.replace(/^[•*]\s*/, '').trim();
 
       return {
         name,
@@ -225,7 +225,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                 onClick={() => setIsNewSubject(p => !p)}
                 className="text-[13px] font-bold text-[#D4AF37] hover:underline cursor-pointer"
               >
-                {isNewSubject ? 'â† Choose Existing Subject' : '+ Create New Subject'}
+                {isNewSubject ? '← Choose Existing Subject' : '+ Create New Subject'}
               </button>
             </div>
 
@@ -342,7 +342,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                       : 'text-[#6B7280] hover:text-[#171717] dark:hover:text-white'
                   }`}
                 >
-                  âš¡ Bulk Multi-Topic (Fast)
+                  ⚡ Bulk Multi-Topic (Fast)
                 </button>
                 <button
                   type="button"
@@ -365,7 +365,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   <span>Paste Multiple Topics (One per line):</span>
                   {parsedBulkTopics.length > 0 && (
                     <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold">
-                      âœ“ {parsedBulkTopics.length} Topics Ready to Add
+                      ✓ {parsedBulkTopics.length} Topics Ready to Add
                     </span>
                   )}
                 </div>
@@ -476,7 +476,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>
                 {creationMode === 'bulk'
-                  ? `Add ${parsedBulkTopics.length > 0 ? parsedBulkTopics.length : ''} Topics Now ðŸš€`
+                  ? `Add ${parsedBulkTopics.length > 0 ? parsedBulkTopics.length : ''} Topics Now 🚀`
                   : 'Add Topic'}
               </span>
             </button>

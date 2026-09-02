@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useTimer } from '../../context/TimerContext';
@@ -215,7 +215,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                 {isSettingsOpen ? 'Timer Configuration' : '3D Focus Chamber'}
               </h3>
               <p className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
-                {isSettingsOpen ? 'Protocol Settings' : 'Deep Study Session â€¢ +25 XP'}
+                {isSettingsOpen ? 'Protocol Settings' : 'Deep Study Session • +25 XP'}
               </p>
             </div>
           </div>
@@ -370,7 +370,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                   </span>
                   {selectedTopic && (
                     <span className="text-[11px] text-[#65675F] dark:text-[#A9B1D6] truncate font-mono">
-                      â€¢ {selectedTopic.subjectName}
+                      • {selectedTopic.subjectName}
                     </span>
                   )}
                 </div>
@@ -540,11 +540,11 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
               <div className="grid grid-cols-5 gap-1">
                 {[
-                  { id: 'rain' as AmbientSoundType, label: 'ðŸŒ§ï¸ Rain' },
-                  { id: 'ocean' as AmbientSoundType, label: 'ðŸŒŠ Ocean' },
-                  { id: 'binaural' as AmbientSoundType, label: 'ðŸ§  Alpha' },
-                  { id: 'fireplace' as AmbientSoundType, label: 'ðŸ”¥ Camp' },
-                  { id: 'none' as AmbientSoundType, label: 'ðŸ”‡ Mute' }
+                  { id: 'rain' as AmbientSoundType, label: '🌧️ Rain' },
+                  { id: 'ocean' as AmbientSoundType, label: '🌊 Ocean' },
+                  { id: 'binaural' as AmbientSoundType, label: '🧠 Alpha' },
+                  { id: 'fireplace' as AmbientSoundType, label: '🔥 Camp' },
+                  { id: 'none' as AmbientSoundType, label: '🔇 Mute' }
                 ].map(snd => (
                   <button
                     key={snd.id}

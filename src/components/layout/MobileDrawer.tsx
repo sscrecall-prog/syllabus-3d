@@ -124,7 +124,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 
         <div className="pt-4 border-t border-[#D8D8CF] dark:border-[#242638]">
           <p className="text-[11px] text-[#85877E] text-center font-mono">
-            Syllabus 3D â€¢ Focus First
+            Syllabus 3D • Focus First
           </p>
         </div>
       </div>

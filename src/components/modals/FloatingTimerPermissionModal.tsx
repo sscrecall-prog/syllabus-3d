@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import { useTimer } from '../../context/TimerContext';
 import { Shield, Sparkles, X, CheckCircle2 } from 'lucide-react';

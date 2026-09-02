@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   FileText,
   Upload,
@@ -303,7 +303,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
                     <span className="px-1.5 py-0.2 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">
                       {formatFileSize(att.fileSize)}
                     </span>
-                    <span>â€¢</span>
+                    <span>•</span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3 text-[#85877E]" />
                       <span>{new Date(att.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>

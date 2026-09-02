@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -85,7 +85,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'fire',
       label: 'Unstoppable',
       shortLabel: 'Fire',
-      emoji: 'ðŸ”¥',
+      emoji: '🔥',
       icon: Flame,
       color: 'text-orange-400 border-orange-500/40',
       activeBg: 'bg-orange-500/25 border-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.4)] text-orange-300',
@@ -95,7 +95,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'lightning',
       label: 'Productive',
       shortLabel: 'Great',
-      emoji: 'âš¡',
+      emoji: '⚡',
       icon: Zap,
       color: 'text-amber-400 border-amber-500/40',
       activeBg: 'bg-amber-500/25 border-amber-400 shadow-[0_0_18px_rgba(245,158,11,0.4)] text-amber-300',
@@ -105,7 +105,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'happy',
       label: 'Moderate',
       shortLabel: 'Good',
-      emoji: 'ðŸ™‚',
+      emoji: '🙂',
       icon: Smile,
       color: 'text-emerald-400 border-emerald-500/40',
       activeBg: 'bg-emerald-500/25 border-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.4)] text-emerald-300',
@@ -115,7 +115,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'tired',
       label: 'Distracted',
       shortLabel: 'Lost',
-      emoji: 'ðŸ¥±',
+      emoji: '🥱',
       icon: Coffee,
       color: 'text-sky-400 border-sky-500/40',
       activeBg: 'bg-sky-500/25 border-sky-400 shadow-[0_0_18px_rgba(56,189,248,0.4)] text-sky-300',
@@ -125,7 +125,7 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
       id: 'stressed',
       label: 'Low Energy',
       shortLabel: 'Low',
-      emoji: 'ðŸ˜´',
+      emoji: '😴',
       icon: BatteryLow,
       color: 'text-rose-400 border-rose-500/40',
       activeBg: 'bg-rose-500/25 border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.4)] text-rose-300',
@@ -143,49 +143,49 @@ export const DailyReflectionModal: React.FC<DailyReflectionModalProps> = ({
   }> = [
     {
       id: 'none',
-      label: 'None - 100% Focused ðŸ†',
+      label: 'None - 100% Focused 🏆',
       shortLabel: '100% Focused',
-      emoji: 'ðŸ†',
+      emoji: '🏆',
       activeStyle: 'bg-emerald-500/25 border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-emerald-400/80 hover:bg-emerald-500/10'
     },
     {
       id: 'social_media',
-      label: 'Social Media / Reels ðŸ“±',
+      label: 'Social Media / Reels 📱',
       shortLabel: 'Social Media',
-      emoji: 'ðŸ“±',
+      emoji: '📱',
       activeStyle: 'bg-rose-500/25 border-rose-400 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-rose-500/10 hover:text-rose-300'
     },
     {
       id: 'youtube',
-      label: 'YouTube Rabbit Hole ðŸ“º',
+      label: 'YouTube Rabbit Hole 📺',
       shortLabel: 'YouTube Trap',
-      emoji: 'ðŸ“º',
+      emoji: '📺',
       activeStyle: 'bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-cyan-500/10 hover:text-cyan-300'
     },
     {
       id: 'overthinking',
-      label: 'Overthinking / Anxiety ðŸ§ ',
+      label: 'Overthinking / Anxiety 🧠',
       shortLabel: 'Overthinking',
-      emoji: 'ðŸ§ ',
+      emoji: '🧠',
       activeStyle: 'bg-purple-500/25 border-purple-400 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-purple-500/10 hover:text-purple-300'
     },
     {
       id: 'fatigue',
-      label: 'Sleepiness / Low Energy ðŸ¥±',
+      label: 'Sleepiness / Low Energy 🥱',
       shortLabel: 'Sleepiness',
-      emoji: 'ðŸ¥±',
+      emoji: '🥱',
       activeStyle: 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-amber-400/90 hover:bg-amber-500/10 hover:text-amber-300'
     },
     {
       id: 'other',
-      label: 'Other Interruption âš ï¸',
+      label: 'Other Interruption ⚠️',
       shortLabel: 'Other Interruption',
-      emoji: 'âš ï¸',
+      emoji: '⚠️',
       activeStyle: 'bg-indigo-500/25 border-indigo-400 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] font-bold',
       inactiveStyle: 'bg-[#161726] border-[#2B2E42] text-[#C2C5D6] hover:bg-indigo-500/10 hover:text-indigo-300'
     }

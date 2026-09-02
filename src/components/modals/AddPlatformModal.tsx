@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -35,7 +35,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Live & recorded batch lectures, DPPs, and video solutions',
     color: '#5A4FCF',
-    icon: 'âš¡',
+    icon: '⚡',
     loginHint: 'PW Mobile / Email'
   },
   {
@@ -44,7 +44,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'SSC, Banking & State exams video batches by top educators',
     color: '#E11D48',
-    icon: 'ðŸŽ“',
+    icon: '🎓',
     loginHint: 'Careerwill Phone Number'
   },
   {
@@ -53,7 +53,7 @@ const PRESET_TEMPLATES = [
     category: 'test_series' as PlatformCategory,
     description: 'All India Live Mocks, Previous Year Papers & Percentile Analysis',
     color: '#0284C7',
-    icon: 'ðŸ“',
+    icon: '📝',
     loginHint: 'Testbook Account Email'
   },
   {
@@ -62,7 +62,7 @@ const PRESET_TEMPLATES = [
     category: 'test_series' as PlatformCategory,
     description: 'High-difficulty mock tests, sectional tests & topic quizzes',
     color: '#16A34A',
-    icon: 'ðŸŽ¯',
+    icon: '🎯',
     loginHint: 'Oliveboard Login Email'
   },
   {
@@ -71,7 +71,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Live interactive classes, educator batches and doubt solving',
     color: '#08BD80',
-    icon: 'ðŸ›ï¸',
+    icon: '🏛️',
     loginHint: 'Unacademy Plus User'
   },
   {
@@ -80,7 +80,7 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Master math, algebra, geometry & science fundamentals',
     color: '#14BF96',
-    icon: 'ðŸ“–',
+    icon: '📖',
     loginHint: 'Khan Academy Account'
   },
   {
@@ -89,7 +89,7 @@ const PRESET_TEMPLATES = [
     category: 'test_series' as PlatformCategory,
     description: 'Exam survey analysis, rank predictor, and free sectional mocks',
     color: '#F59E0B',
-    icon: 'ðŸ“Š',
+    icon: '📊',
     loginHint: 'RBE Portal Login'
   },
   {
@@ -98,21 +98,21 @@ const PRESET_TEMPLATES = [
     category: 'course' as PlatformCategory,
     description: 'Free dedicated educator YouTube playlist or marathon lecture',
     color: '#FF0000',
-    icon: 'â–¶ï¸',
+    icon: '▶️',
     loginHint: ''
   }
 ];
 
 // Popular Indian Coaching & Study Platform Quick Suggestions
 const POPULAR_SUGGESTIONS = [
-  { name: 'Exampur', url: 'https://exampur.com/', category: 'course' as PlatformCategory, icon: 'ðŸ”¥', color: '#E11D48' },
-  { name: 'Rojgar With Ankit (RWA)', url: 'https://rojgarwithankit.co.in/', category: 'course' as PlatformCategory, icon: 'ðŸ†', color: '#0284C7' },
-  { name: 'Adda247', url: 'https://www.adda247.com/', category: 'course' as PlatformCategory, icon: 'ðŸŽ¯', color: '#F59E0B' },
-  { name: 'Practicemock', url: 'https://www.practicemock.com/', category: 'test_series' as PlatformCategory, icon: 'ðŸ“', color: '#16A34A' },
-  { name: 'Sankalp Bharat', url: 'https://sankalpbharat.com/', category: 'course' as PlatformCategory, icon: 'ðŸš€', color: '#5A4FCF' },
-  { name: 'StudyIQ Education', url: 'https://www.studyiq.com/', category: 'course' as PlatformCategory, icon: 'ðŸ“š', color: '#08BD80' },
-  { name: 'Notion / Study Notes', url: 'https://www.notion.so/', category: 'reference' as PlatformCategory, icon: 'ðŸ§ ', color: '#11120F' },
-  { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: 'âœˆï¸', color: '#0284C7' },
+  { name: 'Exampur', url: 'https://exampur.com/', category: 'course' as PlatformCategory, icon: '🔥', color: '#E11D48' },
+  { name: 'Rojgar With Ankit (RWA)', url: 'https://rojgarwithankit.co.in/', category: 'course' as PlatformCategory, icon: '🏆', color: '#0284C7' },
+  { name: 'Adda247', url: 'https://www.adda247.com/', category: 'course' as PlatformCategory, icon: '🎯', color: '#F59E0B' },
+  { name: 'Practicemock', url: 'https://www.practicemock.com/', category: 'test_series' as PlatformCategory, icon: '📝', color: '#16A34A' },
+  { name: 'Sankalp Bharat', url: 'https://sankalpbharat.com/', category: 'course' as PlatformCategory, icon: '🚀', color: '#5A4FCF' },
+  { name: 'StudyIQ Education', url: 'https://www.studyiq.com/', category: 'course' as PlatformCategory, icon: '📚', color: '#08BD80' },
+  { name: 'Notion / Study Notes', url: 'https://www.notion.so/', category: 'reference' as PlatformCategory, icon: '🧠', color: '#11120F' },
+  { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: '✈️', color: '#0284C7' },
 ];
 
 // Quick Custom Category Suggestions
@@ -129,7 +129,7 @@ const CUSTOM_CATEGORY_SUGGESTIONS = [
   'Telegram Study'
 ];
 
-const EMOJI_OPTIONS = ['âš¡', 'ðŸŽ“', 'ðŸ“', 'ðŸŽ¯', 'ðŸ›ï¸', 'ðŸ“–', 'ðŸ“Š', 'â–¶ï¸', 'ðŸ†', 'ðŸ”¥', 'ðŸ’»', 'ðŸ”¬', 'ðŸ“', 'ðŸ§ ', 'ðŸŒ', 'ðŸ“š', 'ðŸš€', 'âœˆï¸'];
+const EMOJI_OPTIONS = ['⚡', '🎓', '📝', '🎯', '🏛️', '📖', '📊', '▶️', '🏆', '🔥', '💻', '🔬', '📐', '🧠', '🌐', '📚', '🚀', '✈️'];
 const COLOR_OPTIONS = [
   '#5A4FCF', // Purple
   '#E11D48', // Rose
@@ -158,7 +158,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const [category, setCategory] = useState<PlatformCategory>(editPlatformData?.category || 'course');
   const [customCategoryName, setCustomCategoryName] = useState(editPlatformData?.customCategoryName || '');
   const [description, setDescription] = useState(editPlatformData?.description || '');
-  const [icon, setIcon] = useState(editPlatformData?.icon || 'âš¡');
+  const [icon, setIcon] = useState(editPlatformData?.icon || '⚡');
   const [color, setColor] = useState(editPlatformData?.color || '#5A4FCF');
   const [loginHint, setLoginHint] = useState(editPlatformData?.loginHint || '');
   const [notes, setNotes] = useState(editPlatformData?.notes || '');
@@ -238,20 +238,20 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     soundManager.playClick();
     
     if (newCat === 'custom') {
-      setIcon('ðŸŒ');
+      setIcon('🌐');
       setTimeout(() => {
         customCatInputRef.current?.focus();
       }, 100);
     } else if (newCat === 'course') {
-      setIcon('ðŸŽ“');
+      setIcon('🎓');
       setCustomCategoryName('');
       nameInputRef.current?.focus();
     } else if (newCat === 'test_series') {
-      setIcon('ðŸ“');
+      setIcon('📝');
       setCustomCategoryName('');
       nameInputRef.current?.focus();
     } else if (newCat === 'reference') {
-      setIcon('ðŸ“–');
+      setIcon('📖');
       setCustomCategoryName('');
       nameInputRef.current?.focus();
     }
@@ -260,7 +260,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const handleSelectSavedCustomCategory = (catName: string) => {
     setCategory('custom');
     setCustomCategoryName(catName);
-    setIcon('ðŸŒ');
+    setIcon('🌐');
     soundManager.playClick();
     nameInputRef.current?.focus();
   };
@@ -273,7 +273,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setNotes('');
     setCategory('custom');
     setCustomCategoryName('');
-    setIcon('ðŸŒ');
+    setIcon('🌐');
     setColor('#5A4FCF');
     setError(null);
     soundManager.playClick();
@@ -510,7 +510,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
           {error && (
             <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 animate-shake">
-              âš ï¸ {error}
+              ⚠️ {error}
             </div>
           )}
 
@@ -557,7 +557,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 })}
               </div>
 
-              {/* ðŸŒŸ SAVED CUSTOM CATEGORIES FROM PREVIOUS LOGS (Always Available) */}
+              {/* 🌟 SAVED CUSTOM CATEGORIES FROM PREVIOUS LOGS (Always Available) */}
               {savedCustomCategories.length > 0 && (
                 <div className="p-3 rounded-2xl bg-amber-500/5 dark:bg-[#1E1E26] border border-amber-500/20 dark:border-[#333] space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-700 dark:text-amber-300">
@@ -580,7 +580,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                           }`}
                         >
                           {isCurrentCat && <Check className="w-3 h-3 stroke-[3]" />}
-                          <span>âœ¨ {savedCat}</span>
+                          <span>✨ {savedCat}</span>
                         </button>
                       );
                     })}

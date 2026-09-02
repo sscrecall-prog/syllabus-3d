@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MistakeRecord, MistakeType, Topic } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
 import {
@@ -284,8 +284,8 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           {[
             { id: 'all', label: `All (${mistakes.length})` },
-            { id: 'unresolved', label: `ðŸ”´ Active (${activeCount})` },
-            { id: 'resolved', label: `ðŸŸ¢ Mastered (${resolvedCount})` },
+            { id: 'unresolved', label: `🔴 Active (${activeCount})` },
+            { id: 'resolved', label: `🟢 Mastered (${resolvedCount})` },
             { id: 'conceptual', label: 'Conceptual' },
             { id: 'calculation', label: 'Calculation' },
             { id: 'formula', label: 'Formula' },
@@ -708,14 +708,14 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
               {isRevealed ? (
                 <div className="p-3 rounded-xl bg-[#DCE8B7]/40 dark:bg-[#8B5CF6]/20/40 border border-[#596B35]/40 space-y-2 animate-fade-in">
                   <span className="text-[11px] font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono uppercase block">
-                    âœ“ Golden Solution & Rule:
+                    ✓ Golden Solution & Rule:
                   </span>
                   <p className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] whitespace-pre-line">
                     {mistakes[currentFlashcardIndex].correctApproach}
                   </p>
                   {mistakes[currentFlashcardIndex].goldenRule && (
                     <p className="text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] font-serif pt-1 border-t border-[#596B35]/20">
-                      â˜… {mistakes[currentFlashcardIndex].goldenRule}
+                      ★ {mistakes[currentFlashcardIndex].goldenRule}
                     </p>
                   )}
                 </div>
@@ -725,7 +725,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   onClick={() => setIsRevealed(true)}
                   className="w-full py-3 rounded-xl bg-[#EEEEE8] dark:bg-[#18181D] hover:bg-[#DCE8B7] dark:hover:bg-[#8B5CF6]/20 text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] border border-dashed border-[#596B35]/40 transition-colors cursor-pointer text-center"
                 >
-                  ðŸ” Click to Reveal Golden Solution
+                  🔍 Click to Reveal Golden Solution
                 </button>
               )}
             </div>
@@ -758,7 +758,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 }}
                 className="px-6 py-2 rounded-xl bg-[#11120F] hover:bg-[#596B35] text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
               >
-                {currentFlashcardIndex < mistakes.length - 1 ? 'Next Trap âž”' : 'Finish Review'}
+                {currentFlashcardIndex < mistakes.length - 1 ? 'Next Trap ➔' : 'Finish Review'}
               </button>
             </div>
           </div>

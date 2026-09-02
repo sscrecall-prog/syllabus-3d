@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   X,
@@ -270,7 +270,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
                 >
                   {attachments.map(att => (
                     <option key={att.id} value={att.id}>
-                      ðŸ“‘ {att.name}
+                      📑 {att.name}
                     </option>
                   ))}
                 </select>
@@ -388,8 +388,8 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             {showZoomDropdown && (
               <div className="absolute right-0 top-full mt-2 w-36 rounded-xl bg-[#1F2335] border border-[#292E42] shadow-2xl p-1.5 space-y-1 z-50 animate-fade-in">
                 {[
-                  { label: 'Fit to Width (â†”)', mode: 'fit-width' as PdfFitMode, scale: 1.0 },
-                  { label: 'Fit to Page (â†•)', mode: 'fit-page' as PdfFitMode, scale: 1.0 },
+                  { label: 'Fit to Width (↔)', mode: 'fit-width' as PdfFitMode, scale: 1.0 },
+                  { label: 'Fit to Page (↕)', mode: 'fit-page' as PdfFitMode, scale: 1.0 },
                   { label: '50%', mode: 'custom' as PdfFitMode, scale: 0.5 },
                   { label: '75%', mode: 'custom' as PdfFitMode, scale: 0.75 },
                   { label: '100% (Actual)', mode: 'custom' as PdfFitMode, scale: 1.0 },
@@ -618,7 +618,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               }}
               className="px-4 py-2 rounded-xl bg-[#24283B] hover:bg-[#2F354D] text-white text-xs font-bold border border-[#292E42] transition-all cursor-pointer"
             >
-              â† Return to Notes
+              ← Return to Notes
             </button>
           </div>
         ) : pdfBlobUrl ? (

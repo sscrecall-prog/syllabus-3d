@@ -79,7 +79,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </div>
             
             <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[#FACC15]/20 backdrop-blur-md border border-[#FACC15]/30 text-[#FACC15] text-[11px] sm:text-[13px] font-bold shadow-lg">
-              <span>ðŸ† {overallStats.completionPercentage}% Mastered</span>
+              <span>🏆 {overallStats.completionPercentage}% Mastered</span>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </div>
 
             <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-[#EEEEE8] dark:bg-[#23232A] text-[#596B35] dark:text-[#7AA2F7] font-mono border border-transparent dark:border-[#7AA2F7]/20">
-              Lvl {profile.level} â€¢ {profile.levelTitle}
+              Lvl {profile.level} • {profile.levelTitle}
             </span>
           </div>
 
@@ -269,7 +269,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               ))
             ) : (
               <p className="text-xs text-[#85877E] py-1 text-center font-serif">
-                âœ¨ All targets completed for today!
+                ✨ All targets completed for today!
               </p>
             )}
           </div>
@@ -317,7 +317,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-xs border border-white/20 shrink-0 group-hover:scale-105 transition-transform"
                   style={{ backgroundColor: plat.color || '#5A4FCF' }}
                 >
-                  {plat.icon || 'âš¡'}
+                  {plat.icon || '⚡'}
                 </div>
                 <div className="min-w-0">
                   <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">

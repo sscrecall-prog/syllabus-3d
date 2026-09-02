@@ -212,7 +212,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
         {hoveredNode && (
           <div className="absolute top-4 left-4 z-30 p-3.5 rounded-2xl bg-slate-900/95 border border-cyan-500/40 shadow-2xl backdrop-blur-xl max-w-xs animate-fade-in pointer-events-none">
             <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
-              {hoveredNode.subjectName} Â· {hoveredNode.chapterName}
+              {hoveredNode.subjectName} · {hoveredNode.chapterName}
             </span>
             <h4 className="text-xs sm:text-sm font-bold text-white mt-0.5 mb-1">
               {hoveredNode.topic.name}
@@ -228,7 +228,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 {hoveredNode.topic.accuracy}% Accuracy
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">Click node to open detail drawer â†—</p>
+            <p className="text-[11px] text-slate-400 mt-1">Click node to open detail drawer ↗</p>
           </div>
         )}
 

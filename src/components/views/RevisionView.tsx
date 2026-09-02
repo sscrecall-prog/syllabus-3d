@@ -83,7 +83,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               </h2>
             </div>
             <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-normal leading-relaxed">
-              Lock concepts into permanent memory with active recall intervals (1d â†’ 3d â†’ 7d â†’ 21d+).
+              Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
             </p>
           </div>
 
@@ -298,10 +298,10 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-[#596B35]/15 dark:bg-[#8B5CF6]/20 text-[#596B35] dark:text-[#8B5CF6] border border-[#596B35]/25 dark:border-[#8B5CF6]/30 font-mono">
-                        Stage {rev.stage} â€¢ {rev.intervalDays}d
+                        Stage {rev.stage} • {rev.intervalDays}d
                       </span>
                       <span className="text-[11px] font-medium text-[#65675F] dark:text-[#A1A1AA] truncate">
-                        {rev.subjectName} â€¢ {rev.chapterName}
+                        {rev.subjectName} • {rev.chapterName}
                       </span>
                     </div>
 
@@ -339,7 +339,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               </div>
               <div className="space-y-1">
                 <h3 className="text-base sm:text-lg font-bold text-[#191A17] dark:text-[#F5F5F7]">
-                  All Due Revisions Cleared Today! ðŸŽ‰
+                  All Due Revisions Cleared Today! 🎉
                 </h3>
                 <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto">
                   Your spaced repetition queue is fully up to date. You can review upcoming cards early or inspect your mastered vault.
@@ -378,7 +378,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                       Stage {rev.stage}
                     </span>
                     <span className="text-[11px] text-[#65675F] dark:text-[#A1A1AA] truncate">
-                      {rev.subjectName} â€¢ {rev.chapterName}
+                      {rev.subjectName} • {rev.chapterName}
                     </span>
                   </div>
                   <h4 className="text-xs sm:text-sm font-semibold text-[#191A17] dark:text-[#F5F5F7] truncate">
@@ -412,7 +412,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                 <div className="space-y-1 flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                      âœ“ Mastered
+                      ✓ Mastered
                     </span>
                     <span className="text-[11px] text-[#65675F] dark:text-[#A1A1AA] truncate">{rev.subjectName}</span>
                   </div>

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -32,34 +32,34 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
   const getMoodBadge = (mood: DailyMood) => {
     switch (mood) {
       case 'fire':
-        return { label: 'Unstoppable', emoji: 'ðŸ”¥', color: 'text-orange-400 bg-orange-500/15 border-orange-500/30' };
+        return { label: 'Unstoppable', emoji: '🔥', color: 'text-orange-400 bg-orange-500/15 border-orange-500/30' };
       case 'lightning':
-        return { label: 'Productive', emoji: 'âš¡', color: 'text-amber-400 bg-amber-500/15 border-amber-500/30' };
+        return { label: 'Productive', emoji: '⚡', color: 'text-amber-400 bg-amber-500/15 border-amber-500/30' };
       case 'happy':
-        return { label: 'Moderate', emoji: 'ðŸ™‚', color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' };
+        return { label: 'Moderate', emoji: '🙂', color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' };
       case 'tired':
-        return { label: 'Distracted', emoji: 'ðŸ¥±', color: 'text-sky-400 bg-sky-500/15 border-sky-500/30' };
+        return { label: 'Distracted', emoji: '🥱', color: 'text-sky-400 bg-sky-500/15 border-sky-500/30' };
       case 'stressed':
-        return { label: 'Low Energy', emoji: 'ðŸ˜´', color: 'text-rose-400 bg-rose-500/15 border-rose-500/30' };
+        return { label: 'Low Energy', emoji: '😴', color: 'text-rose-400 bg-rose-500/15 border-rose-500/30' };
       default:
-        return { label: 'Completed', emoji: 'âœ¨', color: 'text-purple-400 bg-purple-500/15 border-purple-500/30' };
+        return { label: 'Completed', emoji: '✨', color: 'text-purple-400 bg-purple-500/15 border-purple-500/30' };
     }
   };
 
   const getDistractionInfo = (reason: DistractionCategory) => {
     switch (reason) {
       case 'none':
-        return { label: '100% Focused â€¢ Zero Traps', emoji: 'ðŸ†', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+        return { label: '100% Focused • Zero Traps', emoji: '🏆', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
       case 'social_media':
-        return { label: 'Social Media / Reels', emoji: 'ðŸ“±', color: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
+        return { label: 'Social Media / Reels', emoji: '📱', color: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
       case 'youtube':
-        return { label: 'YouTube Rabbit Hole', emoji: 'ðŸ“º', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
+        return { label: 'YouTube Rabbit Hole', emoji: '📺', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
       case 'overthinking':
-        return { label: 'Overthinking / Anxiety', emoji: 'ðŸ§ ', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+        return { label: 'Overthinking / Anxiety', emoji: '🧠', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
       case 'fatigue':
-        return { label: 'Fatigue / Sleepiness', emoji: 'ðŸ¥±', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+        return { label: 'Fatigue / Sleepiness', emoji: '🥱', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
       default:
-        return { label: 'Other Interruption', emoji: 'âš ï¸', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
+        return { label: 'Other Interruption', emoji: '⚠️', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
     }
   };
 

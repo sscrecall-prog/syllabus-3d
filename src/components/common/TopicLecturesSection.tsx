@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Plus,
   ExternalLink,
@@ -235,7 +235,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                 </div>
                 <div className="min-w-0 flex-1">
                   <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 inline-block mb-1">
-                    âœ“ Valid YouTube Video Detected
+                    ✓ Valid YouTube Video Detected
                   </span>
                   <p className="text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] truncate">
                     Video ID: <span className="font-mono text-red-500">{liveVideoId}</span>
@@ -380,7 +380,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                         <span>Added {lecture.addedAt}</span>
                       </span>
                       <span className="hidden xs:inline text-red-500/80 font-medium">
-                        Click to Open in YouTube â†—
+                        Click to Open in YouTube ↗
                       </span>
                     </div>
 

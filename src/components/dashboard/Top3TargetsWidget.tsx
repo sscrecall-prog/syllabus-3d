@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Target,
   CheckCircle2,
@@ -76,7 +76,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
   };
 
   const targetSlotLabels = [
-    { num: '01', title: 'Top Non-Negotiable Target', subtitle: 'Highest priority â€” must crush first' },
+    { num: '01', title: 'Top Non-Negotiable Target', subtitle: 'Highest priority — must crush first' },
     { num: '02', title: 'Core Practice & Problem Sprint', subtitle: 'Deep work & active problem solving' },
     { num: '03', title: 'Revision or Supporting Milestone', subtitle: 'Vocab, formulas, or sectional mock' }
   ];
@@ -108,7 +108,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 </h3>
                 {completedTargets.length === 3 && (
                   <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
-                    ðŸ”¥ 3/3 CRUSHED!
+                    🔥 3/3 CRUSHED!
                   </span>
                 )}
               </div>
@@ -328,7 +328,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 <div className="pt-2 border-t border-[#EEEEE8] dark:border-[#242533] flex items-center justify-between text-[11px] font-mono text-[#85877E]">
                   <span>Status:</span>
                   <span className={target.completed ? 'text-emerald-500 font-bold' : hasText ? 'text-amber-500 font-medium' : 'text-[#85877E]'}>
-                    {target.completed ? 'Done âœ…' : hasText ? 'In Progress â³' : 'Not Set'}
+                    {target.completed ? 'Done ✅' : hasText ? 'In Progress ⏳' : 'Not Set'}
                   </span>
                 </div>
               </div>
@@ -355,8 +355,8 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
           <p className="text-[11px] text-[#85877E] italic text-center sm:text-right">
             {completedTargets.length === 3
-              ? 'ðŸŽ‰ Outstanding work! All 3 non-negotiables crushed.'
-              : 'âš¡ Finish these 3 tasks before checking off minor items.'}
+              ? '🎉 Outstanding work! All 3 non-negotiables crushed.'
+              : '⚡ Finish these 3 tasks before checking off minor items.'}
           </p>
         </div>
 
