@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   FileText,
@@ -329,8 +330,13 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
     } catch {}
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#0B0B0D] text-[#F5F5F7] animate-fade-in select-none">
+  return createPortal(
+    <div
+      onClick={e => e.stopPropagation()}
+      onMouseDown={e => e.stopPropagation()}
+      onTouchStart={e => e.stopPropagation()}
+      className="fixed inset-0 z-[200] flex flex-col bg-[#0B0B0D] text-[#F5F5F7] animate-fade-in"
+    >
       
       {/* Invisible overlay during dragging to prevent iframe from capturing mouse pointer */}
       {isDragging && (
@@ -855,7 +861,7 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
           </div>
         </div>
       )}
-
-    </div>
+    </div>,
+    document.body
   );
 };

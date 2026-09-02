@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   Play,
@@ -320,8 +321,13 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
 
   combinedTimestamps.sort((a, b) => a.timeSeconds - b.timeSeconds);
 
-  return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#16161E] text-[#C0CAF5] animate-fade-in select-none overflow-hidden font-sans">
+  return createPortal(
+    <div
+      onClick={e => e.stopPropagation()}
+      onMouseDown={e => e.stopPropagation()}
+      onTouchStart={e => e.stopPropagation()}
+      className="fixed inset-0 z-[200] flex flex-col bg-[#16161E] text-[#C0CAF5] animate-fade-in overflow-hidden font-sans"
+    >
       
       {/* Invisible overlay during drag */}
       {isDragging && <div className="fixed inset-0 z-50 cursor-col-resize select-none" />}
@@ -839,7 +845,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
         </div>
 
       </div>
-
-    </div>
+    </div>,
+    document.body
   );
 };

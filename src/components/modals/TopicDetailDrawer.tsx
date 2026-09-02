@@ -308,13 +308,17 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   };
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[100] overflow-hidden bg-black/70 backdrop-blur-sm animate-fade-in select-none"
-      onClick={onClose}
-    >
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+    <div className="fixed inset-0 z-[100] overflow-hidden flex justify-end">
+      {/* Explicit Dark Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-fade-in pointer-events-auto transition-opacity"
+        onClick={onClose}
+      />
+
+      <div className="relative z-10 max-w-full flex pl-0 sm:pl-10 pointer-events-auto">
         <div
           onClick={e => e.stopPropagation()}
+          onMouseDown={e => e.stopPropagation()}
           style={{
             transform: dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
             transition: dragOffsetY === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
