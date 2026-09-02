@@ -85,19 +85,20 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Desktop Exam Selector */}
-          <div className="hidden md:flex relative">
+          {/* Responsive Exam Selector (Mobile & Desktop) */}
+          <div className="relative">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth max-w-[140px] sm:max-w-xs truncate"
+              title="Switch Exam Target"
             >
-              <GraduationCap className="w-4 h-4 text-[#596B35] dark:text-[#8B5CF6]" />
-              <span>{examName}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#85877E]" />
+              <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#596B35] dark:text-[#8B5CF6] shrink-0" />
+              <span className="truncate">{examName}</span>
+              <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] shrink-0" />
             </button>
 
             {isExamMenuOpen && (
-              <div className="absolute top-full left-0 mt-1.5 w-60 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-elevated-card p-1.5 z-40 animate-fade-in">
+              <div className="absolute top-full left-0 mt-1.5 w-60 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-elevated-card p-1.5 z-40 animate-fade-in">
                 {exams.map(ex => (
                   <button
                     key={ex.id}
@@ -105,7 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
                       setSelectedExamId(ex.id);
                       setIsExamMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-[13px] font-semibold flex items-center justify-between transition-colors ${
+                    className={`w-full text-left px-3 py-2 rounded-xl text-[13px] font-semibold flex items-center justify-between transition-colors ${
                       ex.id === currentExam?.id
                         ? 'bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#11120F] dark:text-[#F5F5F7] font-bold'
                         : 'hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] text-[#65675F] dark:text-[#A1A1AA]'

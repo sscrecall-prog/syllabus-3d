@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   BookOpen,
   Plus,
+  Compass,
   Timer
 } from 'lucide-react';
 import { AppView } from './Sidebar';
@@ -14,91 +15,129 @@ interface MobileNavProps {
   onSelectView: (view: AppView) => void;
   onOpenAddTopic?: () => void;
   onOpenFocus?: () => void;
+  onOpenMobileMenu?: () => void;
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
   activeView,
   onSelectView,
   onOpenAddTopic,
-  onOpenFocus
+  onOpenFocus,
+  onOpenMobileMenu
 }) => {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF9F5]/95 dark:bg-[#10111A]/95 backdrop-blur-xl border-t border-[#D8D8CF] dark:border-[#242638] px-3 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] select-none shadow-[0_-4px_25px_rgba(0,0,0,0.1)]">
-      <div className="flex items-center justify-around relative max-w-md mx-auto">
+    <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-3xl bg-[#FAF9F5]/90 dark:bg-[#12131F]/90 backdrop-blur-2xl border border-[#D8D8CF]/85 dark:border-[#272A3D] shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
         
-        {/* Item 1: Home */}
+        {/* Item 1: Home Dashboard */}
         <button
           onClick={() => {
             soundManager.playClick();
             onSelectView('overview');
           }}
-          className={`flex flex-col items-center justify-center min-w-[60px] min-h-[50px] px-2.5 py-1 rounded-2xl transition-all active:scale-90 cursor-pointer ${
+          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
             activeView === 'overview'
-              ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] font-black shadow-xs'
+              ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
               : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
           }`}
+          title="Home Dashboard"
         >
+          {activeView === 'overview' && (
+            <span className="absolute inset-0 bg-[#596B35]/12 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+          )}
           <LayoutDashboard className={`w-5 h-5 ${activeView === 'overview' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
-          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Home</span>
+          <span className="text-[11px] mt-0.5 tracking-tight font-sans">Home</span>
+          {activeView === 'overview' && (
+            <span className="w-1 h-1 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          )}
         </button>
 
-        {/* Item 2: Planner */}
-        <button
-          onClick={() => {
-            soundManager.playClick();
-            onSelectView('planner');
-          }}
-          className={`flex flex-col items-center justify-center min-w-[60px] min-h-[50px] px-2.5 py-1 rounded-2xl transition-all active:scale-90 cursor-pointer ${
-            activeView === 'planner'
-              ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] font-black shadow-xs'
-              : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
-          }`}
-        >
-          <CalendarCheck className={`w-5 h-5 ${activeView === 'planner' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
-          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Planner</span>
-        </button>
-
-        {/* Center Primary Action FAB (+) */}
-        {onOpenAddTopic && (
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              onOpenAddTopic();
-            }}
-            className="w-13 h-13 -mt-6 rounded-2xl bg-gradient-to-br from-[#1B1D30] to-[#11120F] dark:from-[#7AA2F7] dark:to-[#5B82D7] text-white dark:text-[#0B0B0D] shadow-[0_4px_20px_rgba(0,0,0,0.3)] dark:shadow-[0_4px_20px_rgba(122,162,247,0.4)] flex items-center justify-center active:scale-90 transition-transform cursor-pointer border-2 border-white dark:border-[#10111A]"
-            title="Add Custom Study Target"
-            aria-label="Add Custom Study Target"
-          >
-            <Plus className="w-6 h-6 stroke-[3]" />
-          </button>
-        )}
-
-        {/* Item 3: Syllabus */}
+        {/* Item 2: Syllabus Explorer */}
         <button
           onClick={() => {
             soundManager.playClick();
             onSelectView('syllabus');
           }}
-          className={`flex flex-col items-center justify-center min-w-[60px] min-h-[50px] px-2.5 py-1 rounded-2xl transition-all active:scale-90 cursor-pointer ${
+          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
             activeView === 'syllabus'
-              ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] font-black shadow-xs'
+              ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
               : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
           }`}
+          title="Syllabus Explorer"
         >
+          {activeView === 'syllabus' && (
+            <span className="absolute inset-0 bg-[#596B35]/12 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+          )}
           <BookOpen className={`w-5 h-5 ${activeView === 'syllabus' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
-          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Syllabus</span>
+          <span className="text-[11px] mt-0.5 tracking-tight font-sans">Syllabus</span>
+          {activeView === 'syllabus' && (
+            <span className="w-1 h-1 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          )}
         </button>
 
-        {/* Item 4: Timer */}
+        {/* Center Primary Action Button (Add Target & Focus) */}
+        <div className="flex items-center justify-center px-1">
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              if (onOpenAddTopic) onOpenAddTopic();
+            }}
+            className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#596B35] to-[#7FA04B] dark:from-[#7AA2F7] dark:to-[#5B82D7] text-white dark:text-[#0B0B0D] shadow-md shadow-[#596B35]/25 dark:shadow-[#7AA2F7]/30 flex items-center justify-center active:scale-90 transition-transform cursor-pointer border-2 border-white dark:border-[#12131F]"
+            title="Add Custom Study Target"
+            aria-label="Add Custom Target"
+          >
+            <Plus className="w-5 h-5 stroke-[3]" />
+          </button>
+        </div>
+
+        {/* Item 3: Planner */}
         <button
           onClick={() => {
             soundManager.playClick();
-            if (onOpenFocus) onOpenFocus();
+            onSelectView('planner');
           }}
-          className="flex flex-col items-center justify-center min-w-[60px] min-h-[50px] px-2.5 py-1 rounded-2xl text-[#85877E] dark:text-[#8E90A6] hover:text-[#596B35] dark:hover:text-[#7AA2F7] transition-all active:scale-90 cursor-pointer"
+          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
+            activeView === 'planner'
+              ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
+              : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
+          }`}
+          title="Daily Planner"
         >
-          <Timer className="w-5 h-5 stroke-[2]" />
-          <span className="text-[11px] font-bold mt-0.5 tracking-tight">Timer</span>
+          {activeView === 'planner' && (
+            <span className="absolute inset-0 bg-[#596B35]/12 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+          )}
+          <CalendarCheck className={`w-5 h-5 ${activeView === 'planner' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+          <span className="text-[11px] mt-0.5 tracking-tight font-sans">Planner</span>
+          {activeView === 'planner' && (
+            <span className="w-1 h-1 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          )}
+        </button>
+
+        {/* Item 4: More / Hub Drawer */}
+        <button
+          onClick={() => {
+            soundManager.playClick();
+            if (onOpenMobileMenu) {
+              onOpenMobileMenu();
+            } else if (onOpenFocus) {
+              onOpenFocus();
+            }
+          }}
+          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
+            ['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView)
+              ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
+              : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
+          }`}
+          title="More Sections & Tools"
+        >
+          {['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView) && (
+            <span className="absolute inset-0 bg-[#596B35]/12 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+          )}
+          <Compass className={`w-5 h-5 ${['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView) ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+          <span className="text-[11px] mt-0.5 tracking-tight font-sans">Hub</span>
+          {['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView) && (
+            <span className="w-1 h-1 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          )}
         </button>
       </div>
     </nav>

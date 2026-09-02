@@ -401,6 +401,7 @@ export const App: React.FC = () => {
           window.history.pushState({ modal: 'add_topic' }, '');
         }}
         onOpenFocus={() => handleLaunchFocus(undefined)}
+        onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
       />
 
       {/* Floating Background Timer Overlay */}
