@@ -2138,13 +2138,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   </button>
                 </div>
 
-                {/* 🎨 Theme Switcher */}
-                <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+                {/* 🎨 Theme Switcher (Paper, Sepia, OLED - Visible on Mobile & Desktop) */}
+                <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('paper')}
-                    className={`px-2 py-1 rounded-lg transition-all ${
-                      readerTheme === 'paper' ? 'bg-white text-black shadow-xs border border-black/10' : 'text-[#85877E] hover:text-black'
+                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                      readerTheme === 'paper' ? 'bg-white text-black shadow-xs border border-black/10' : 'text-[#85877E] hover:text-black dark:hover:text-white'
                     }`}
                     title="Paper White"
                   >
@@ -2153,7 +2153,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('sepia')}
-                    className={`px-2 py-1 rounded-lg transition-all ${
+                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
                       readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs border border-[#D9C4A1]' : 'text-[#85877E] hover:text-[#4A3B22]'
                     }`}
                     title="Kindle Book Warm Sepia"
@@ -2163,7 +2163,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('oled')}
-                    className={`px-2 py-1 rounded-lg transition-all ${
+                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
                       readerTheme === 'oled' ? 'bg-black text-white shadow-xs border border-white/20' : 'text-[#85877E] hover:text-white'
                     }`}
                     title="Pitch Dark OLED"
@@ -2172,15 +2172,15 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   </button>
                 </div>
 
-                {/* Font Size Adjuster */}
-                <div className="hidden sm:flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
+                {/* Font Size Adjuster (Visible on Mobile & Desktop) */}
+                <div className="flex items-center gap-1 bg-[#F7F6F0] dark:bg-[#1C1D26] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold">
                   <span className="text-[11px] text-[#85877E]">Size:</span>
                   {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setReaderFontSize(size)}
-                      className={`px-1.5 py-0.5 rounded uppercase ${
+                      className={`px-1.5 py-0.5 rounded uppercase cursor-pointer ${
                         readerFontSize === size ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black' : 'text-[#85877E] hover:text-[#11120F]'
                       }`}
                     >
@@ -2418,12 +2418,48 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <span>{promptCopied ? '✓ Copied' : 'AI Prompt'}</span>
             </button>
 
+            {/* Theme Switcher in Normal Toolbar */}
+            {viewMode === 'study' && (
+              <div className="flex items-center gap-0.5 bg-[#F4F2EB] dark:bg-[#0D0E15] p-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => handleSelectTheme('paper')}
+                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                    readerTheme === 'paper' ? 'bg-white text-black shadow-xs' : 'text-[#85877E] hover:text-black dark:hover:text-white'
+                  }`}
+                  title="Paper White"
+                >
+                  📄 Paper
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectTheme('sepia')}
+                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                    readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs' : 'text-[#85877E] hover:text-[#4A3B22]'
+                  }`}
+                  title="Sepia"
+                >
+                  📜 Sepia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectTheme('oled')}
+                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                    readerTheme === 'oled' ? 'bg-black text-white shadow-xs' : 'text-[#85877E] hover:text-white'
+                  }`}
+                  title="OLED Dark"
+                >
+                  🖤 OLED
+                </button>
+              </div>
+            )}
+
             {/* Font Family Switcher */}
-            <div className="hidden sm:flex items-center gap-1 bg-[#F4F2EB] dark:bg-[#0D0E15] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
+            <div className="flex items-center gap-1 bg-[#F4F2EB] dark:bg-[#0D0E15] px-2 py-1 rounded-xl border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold">
               <button
                 type="button"
                 onClick={() => handleSelectFont('serif')}
-                className={`px-1.5 py-0.5 rounded font-serif ${
+                className={`px-1.5 py-0.5 rounded font-serif cursor-pointer ${
                   readerFontFamily === 'serif'
                     ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
@@ -2435,7 +2471,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <button
                 type="button"
                 onClick={() => handleSelectFont('sans')}
-                className={`px-1.5 py-0.5 rounded font-sans ${
+                className={`px-1.5 py-0.5 rounded font-sans cursor-pointer ${
                   readerFontFamily === 'sans'
                     ? 'bg-[#596B35] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
