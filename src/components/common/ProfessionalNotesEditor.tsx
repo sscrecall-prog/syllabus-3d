@@ -196,8 +196,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     visible: boolean;
     x: number;
     y: number;
+    isBelow?: boolean;
     text: string;
-  }>({ visible: false, x: 0, y: 0, text: '' });
+  }>({ visible: false, x: 0, y: 0, isBelow: false, text: '' });
 
   const [copied, setCopied] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
@@ -414,41 +415,63 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // ----------------------------------------------------------------------------------
   // TEXT & BOX HIGHLIGHTER LOGIC
   // ----------------------------------------------------------------------------------
-  const handleMouseUpSelection = () => {
+  const updateSelectionTooltip = useCallback(() => {
     if (viewMode !== 'study') return;
 
-    setTimeout(() => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed) {
-        setSelectionTooltip(prev => (prev.visible ? { ...prev, visible: false } : prev));
-        return;
-      }
-      const text = sel.toString().trim();
-      if (!text || text.length < 2) {
-        setSelectionTooltip(prev => (prev.visible ? { ...prev, visible: false } : prev));
-        return;
-      }
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) {
+      setSelectionTooltip(prev => (prev.visible ? { ...prev, visible: false } : prev));
+      return;
+    }
+    const text = sel.toString().trim();
+    if (!text || text.length < 2) {
+      setSelectionTooltip(prev => (prev.visible ? { ...prev, visible: false } : prev));
+      return;
+    }
 
-      try {
-        const range = sel.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        if (rect && rect.width > 0) {
-          const centerX = rect.left + rect.width / 2;
-          const clampedX = Math.min(window.innerWidth - 130, Math.max(130, centerX));
-          const posY = rect.top < 65 ? rect.bottom + 12 : rect.top - 8;
+    try {
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      if (rect && rect.width > 0) {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+        const centerX = rect.left + rect.width / 2;
+        const clampedX = Math.min(window.innerWidth - 130, Math.max(130, centerX));
+        // On mobile, place below selection to avoid colliding with Android Chrome's top Copy/Share action bar
+        const isBelow = isMobile || rect.top < 65;
+        const posY = isBelow ? rect.bottom + 14 : rect.top - 8;
 
-          setSelectionTooltip({
-            visible: true,
-            x: clampedX,
-            y: posY,
-            text
-          });
-        }
-      } catch (e) {
-        // ignore
+        setSelectionTooltip({
+          visible: true,
+          x: clampedX,
+          y: posY,
+          isBelow,
+          text
+        });
       }
-    }, 40);
+    } catch (e) {
+      // ignore
+    }
+  }, [viewMode]);
+
+  const handleMouseUpSelection = () => {
+    setTimeout(updateSelectionTooltip, 30);
   };
+
+  useEffect(() => {
+    if (viewMode !== 'study') return;
+
+    let timeoutId: any = null;
+    const handleSelectionChange = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateSelectionTooltip, 80);
+    };
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange);
+      clearTimeout(timeoutId);
+    };
+  }, [viewMode, updateSelectionTooltip]);
 
   const applyHighlight = (colorPrefix: '' | 'g:' | 'p:' | 'b:' | 'r:') => {
     const text = selectionTooltip.text;
@@ -1692,7 +1715,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           position: 'fixed',
           left: `${selectionTooltip.x}px`,
           top: `${selectionTooltip.y}px`,
-          transform: 'translate(-50%, -100%)',
+          transform: selectionTooltip.isBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)',
           zIndex: 9999
         }}
         className="flex items-center gap-1.5 p-1.5 px-2.5 rounded-2xl bg-[#11120F]/95 dark:bg-[#1C1D26]/95 text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
