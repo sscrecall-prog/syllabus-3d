@@ -61,7 +61,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
   // Greeting based on time of day
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const greeting = hour < 12 ? 'GOOD MORNING' : hour < 17 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
   const userName = user?.name || user?.email?.split('@')[0] || profile.name || 'Scholar';
 
   return (
