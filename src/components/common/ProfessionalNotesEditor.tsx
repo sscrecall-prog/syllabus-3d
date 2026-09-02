@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Edit3,
@@ -48,7 +48,11 @@ import {
   FileText,
   MoreVertical,
   Layers,
-  CopyPlus
+  CopyPlus,
+  PenTool,
+  Eraser,
+  RotateCcw,
+  Square
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -77,6 +81,20 @@ type ReaderFontSize = 'sm' | 'base' | 'lg' | 'xl';
 type ReaderWidth = 'normal' | 'wide' | 'full';
 type ReaderFontFamily = 'serif' | 'sans' | 'lexend' | 'mono';
 type ReaderTheme = 'default' | 'sepia' | 'paper' | 'oled';
+type HighlighterMode = 'box' | 'freefall';
+
+interface DrawingPoint {
+  x: number;
+  y: number;
+}
+
+interface DrawingStroke {
+  id: string;
+  color: string;
+  size: number;
+  isEraser?: boolean;
+  points: DrawingPoint[];
+}
 
 export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = ({
   initialContent,
@@ -154,6 +172,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     return (localStorage.getItem('syllabus3d_notes_theme') as ReaderTheme) || 'default';
   });
 
+  // ----------------------------------------------------------------------------------
+  // HIGHLIGHTER MODES (Box / Text Selection vs Freefall Drawing Pen)
+  // ----------------------------------------------------------------------------------
+  const [isHighlighterActive, setIsHighlighterActive] = useState(true);
+  const [highlighterMode, setHighlighterMode] = useState<HighlighterMode>('box');
+  const [selectedHighlightColor, setSelectedHighlightColor] = useState<'' | 'g:' | 'p:' | 'b:' | 'r:'>('');
+
+  // Freefall Drawing State
+  const [freefallColor, setFreefallColor] = useState<string>('rgba(250, 204, 21, 0.42)'); // Yellow
+  const [freefallSize, setFreefallSize] = useState<number>(14); // 5 (fine), 14 (marker), 24 (highlighter)
+  const [isFreefallEraser, setIsFreefallEraser] = useState<boolean>(false);
+  const [strokes, setStrokes] = useState<DrawingStroke[]>([]);
+  const currentStrokeRef = useRef<DrawingStroke | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fullscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const notesContainerRef = useRef<HTMLDivElement>(null);
+  const fsNotesContainerRef = useRef<HTMLDivElement>(null);
+
   // Text Selection Highlighter State
   const [selectionTooltip, setSelectionTooltip] = useState<{
     visible: boolean;
@@ -161,8 +197,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     y: number;
     text: string;
   }>({ visible: false, x: 0, y: 0, text: '' });
-  const [isHighlighterActive, setIsHighlighterActive] = useState(true);
-  const [selectedHighlightColor, setSelectedHighlightColor] = useState<'' | 'g:' | 'p:' | 'b:' | 'r:'>('');
 
   const [copied, setCopied] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
@@ -179,8 +213,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const speechRecognitionRef = useRef<any>(null);
   const fileInputImageRef = useRef<HTMLInputElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isFirstMount = useRef(true);
-  const notesContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync with initialNoteItems / initialContent if topic changed
   useEffect(() => {
@@ -202,6 +234,21 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       setActiveNoteId('note_1');
     }
   }, [initialNoteItems, initialContent]);
+
+  // Load Saved Freehand Strokes per Topic & Note
+  useEffect(() => {
+    try {
+      const storageKey = `syllabus3d_draw_${topicName}_${activeNoteId}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        setStrokes(JSON.parse(saved));
+      } else {
+        setStrokes([]);
+      }
+    } catch (err) {
+      setStrokes([]);
+    }
+  }, [topicName, activeNoteId]);
 
   // Debounced Auto-Save
   const updateContentAndSave = (newText: string, customItems?: TopicNoteItem[]) => {
@@ -226,10 +273,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }, 600);
   };
 
-  // Keyboard shortcuts:
-  // - Ctrl+S: Save
-  // - ESC: Exit Zen mode or Exit Fullscreen
-  // - Z: Toggle Zen Focus Mode
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -349,9 +393,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
   const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-  // Handle Text Selection for Floating Highlighter
+  // ----------------------------------------------------------------------------------
+  // TEXT & BOX HIGHLIGHTER LOGIC
+  // ----------------------------------------------------------------------------------
   const handleMouseUpSelection = () => {
-    if (!isHighlighterActive) return;
+    if (!isHighlighterActive || highlighterMode !== 'box') return;
 
     setTimeout(() => {
       const sel = window.getSelection();
@@ -415,6 +461,147 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     updateContentAndSave(updated);
     setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' });
     window.getSelection()?.removeAllRanges();
+  };
+
+  // ----------------------------------------------------------------------------------
+  // FREEFALL / FREEHAND CANVAS DRAWING ENGINE
+  // ----------------------------------------------------------------------------------
+  const redrawCanvas = useCallback((targetCanvas: HTMLCanvasElement | null) => {
+    if (!targetCanvas) return;
+    const ctx = targetCanvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+    strokes.forEach(stroke => {
+      if (!stroke.points || stroke.points.length < 2) return;
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = stroke.size;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (stroke.isEraser) {
+        ctx.globalCompositeOperation = 'destination-out';
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+      for (let i = 1; i < stroke.points.length; i++) {
+        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    });
+  }, [strokes]);
+
+  // Sync canvas dimensions with notes text container
+  const updateCanvasSize = useCallback((canvas: HTMLCanvasElement | null, container: HTMLElement | null) => {
+    if (!canvas || !container) return;
+    const rect = container.getBoundingClientRect();
+    const scrollW = Math.max(container.scrollWidth, rect.width);
+    const scrollH = Math.max(container.scrollHeight, rect.height);
+
+    if (canvas.width !== scrollW || canvas.height !== scrollH) {
+      canvas.width = scrollW;
+      canvas.height = scrollH;
+      redrawCanvas(canvas);
+    }
+  }, [redrawCanvas]);
+
+  useEffect(() => {
+    if (viewMode === 'study') {
+      const activeCanvas = isFullscreen ? fullscreenCanvasRef.current : canvasRef.current;
+      const activeContainer = isFullscreen ? fsNotesContainerRef.current : notesContainerRef.current;
+      updateCanvasSize(activeCanvas, activeContainer);
+      redrawCanvas(activeCanvas);
+    }
+  }, [strokes, isFullscreen, viewMode, activeNoteId, updateCanvasSize, redrawCanvas]);
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (highlighterMode !== 'freefall' || !isHighlighterActive) return;
+    const canvas = isFullscreen ? fullscreenCanvasRef.current : canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const newStroke: DrawingStroke = {
+      id: 'str_' + Date.now(),
+      color: isFreefallEraser ? '#000000' : freefallColor,
+      size: freefallSize,
+      isEraser: isFreefallEraser,
+      points: [{ x, y }]
+    };
+    currentStrokeRef.current = newStroke;
+  };
+
+  const drawMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!currentStrokeRef.current || highlighterMode !== 'freefall' || !isHighlighterActive) return;
+    const canvas = isFullscreen ? fullscreenCanvasRef.current : canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const currentStroke = currentStrokeRef.current;
+    currentStroke.points.push({ x, y });
+
+    const ctx = canvas.getContext('2d');
+    if (ctx && currentStroke.points.length >= 2) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = currentStroke.color;
+      ctx.lineWidth = currentStroke.size;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      if (currentStroke.isEraser) {
+        ctx.globalCompositeOperation = 'destination-out';
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      const prev = currentStroke.points[currentStroke.points.length - 2];
+      ctx.moveTo(prev.x, prev.y);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  const endDrawing = () => {
+    if (!currentStrokeRef.current) return;
+    const finishedStroke = currentStrokeRef.current;
+    currentStrokeRef.current = null;
+    if (finishedStroke.points.length >= 2) {
+      const updated = [...strokes, finishedStroke];
+      setStrokes(updated);
+      try {
+        const storageKey = `syllabus3d_draw_${topicName}_${activeNoteId}`;
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      } catch (err) {}
+    }
+  };
+
+  const clearAllDrawings = () => {
+    if (window.confirm('Clear all freehand drawings on this note?')) {
+      soundManager.playClick();
+      setStrokes([]);
+      try {
+        const storageKey = `syllabus3d_draw_${topicName}_${activeNoteId}`;
+        localStorage.removeItem(storageKey);
+      } catch (err) {}
+      const canvas = isFullscreen ? fullscreenCanvasRef.current : canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
   };
 
   // Compress image before embedding
@@ -741,7 +928,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }
   };
 
-  // Rich Inline Markdown Parser with Multi-color Highlighters
+  // Rich Inline Markdown Parser with Interactive Multi-color Highlighters
   const parseInlineMarkdown = (text: string, keyPrefix: string = 'inline'): React.ReactNode[] => {
     if (!text) return [];
 
@@ -1257,8 +1444,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const charCount = content.length;
 
   // ----------------------------------------------------------------------------------
-  // MULTIPLE NOTES TABS RENDERER
-  // ----------------------------------------------------------------------------------
   // MULTIPLE NOTES TABS RENDERER (Clean, Modern IDE / Notion Style)
   // ----------------------------------------------------------------------------------
   const renderNoteTabs = (inFullscreen: boolean = false) => {
@@ -1472,10 +1657,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   };
 
   // ----------------------------------------------------------------------------------
-  // RENDER FLOATING TEXT HIGHLIGHTER TOOLTIP
+  // RENDER FLOATING TEXT HIGHLIGHTER TOOLTIP (For Box Mode)
   // ----------------------------------------------------------------------------------
   const renderFloatingHighlighter = () => {
-    if (!selectionTooltip.visible || !isHighlighterActive) return null;
+    if (!selectionTooltip.visible || !isHighlighterActive || highlighterMode !== 'box') return null;
 
     return (
       <div
@@ -1556,6 +1741,222 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   };
 
   // ----------------------------------------------------------------------------------
+  // HIGHLIGHTER CONTROLS WIDGET (Box & Freefall Mode Switcher)
+  // ----------------------------------------------------------------------------------
+  const renderHighlighterControlsWidget = (isFloating: boolean = false) => {
+    return (
+      <div className={`flex items-center gap-2 p-1.5 px-2.5 rounded-2xl ${
+        isFloating
+          ? 'bg-white/95 dark:bg-[#1C1D26]/95 border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl backdrop-blur-md text-xs font-bold'
+          : 'bg-[#F4F2EB] dark:bg-[#0D0E15] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold'
+      } animate-fade-in flex-wrap`}>
+        
+        {/* Highlighter ON/OFF Toggle */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsHighlighterActive(prev => !prev);
+            soundManager.playClick();
+          }}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
+            isHighlighterActive
+              ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs'
+              : 'text-slate-400 hover:text-slate-700 dark:hover:text-white'
+          }`}
+          title="Toggle Highlighter"
+        >
+          <Highlighter className="w-3.5 h-3.5" />
+          <span>{isHighlighterActive ? 'Highlight ON' : 'Highlight OFF'}</span>
+        </button>
+
+        {isHighlighterActive && (
+          <>
+            {/* Mode Switcher: 🔲 Box vs ✍️ Freefall */}
+            <div className="flex items-center gap-1 p-0.5 bg-black/5 dark:bg-white/5 rounded-xl border border-[#D8D8CF] dark:border-[#383A48]">
+              <button
+                type="button"
+                onClick={() => {
+                  setHighlighterMode('box');
+                  setIsFreefallEraser(false);
+                  soundManager.playClick();
+                }}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  highlighterMode === 'box'
+                    ? 'bg-white dark:bg-[#2A2B3A] text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
+                }`}
+                title="Box / Text Selection Highlighter (Select text while reading to highlight)"
+              >
+                <Square className="w-3 h-3" />
+                <span>Box</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setHighlighterMode('freefall');
+                  soundManager.playClick();
+                }}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  highlighterMode === 'freefall'
+                    ? 'bg-white dark:bg-[#2A2B3A] text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
+                }`}
+                title="Freefall Pen Highlighter (Freehand drawing / sketching directly over notes)"
+              >
+                <PenTool className="w-3 h-3" />
+                <span>Freefall</span>
+              </button>
+            </div>
+
+            {/* Colors Switcher */}
+            <div className="flex items-center gap-1.5 pl-1.5 border-l border-[#D8D8CF] dark:border-[#383A48]">
+              {/* Yellow */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedHighlightColor('');
+                  setFreefallColor('rgba(250, 204, 21, 0.42)');
+                  setIsFreefallEraser(false);
+                  soundManager.playClick();
+                }}
+                className={`w-4 h-4 rounded-full bg-yellow-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${
+                  (highlighterMode === 'box' && selectedHighlightColor === '') || (highlighterMode === 'freefall' && !isFreefallEraser && freefallColor.includes('250, 204, 21'))
+                    ? 'ring-2 ring-amber-500 scale-110'
+                    : ''
+                }`}
+                title="Yellow"
+              />
+              {/* Green */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedHighlightColor('g:');
+                  setFreefallColor('rgba(52, 211, 153, 0.42)');
+                  setIsFreefallEraser(false);
+                  soundManager.playClick();
+                }}
+                className={`w-4 h-4 rounded-full bg-emerald-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${
+                  (highlighterMode === 'box' && selectedHighlightColor === 'g:') || (highlighterMode === 'freefall' && !isFreefallEraser && freefallColor.includes('52, 211, 153'))
+                    ? 'ring-2 ring-emerald-500 scale-110'
+                    : ''
+                }`}
+                title="Green"
+              />
+              {/* Purple */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedHighlightColor('p:');
+                  setFreefallColor('rgba(192, 132, 252, 0.42)');
+                  setIsFreefallEraser(false);
+                  soundManager.playClick();
+                }}
+                className={`w-4 h-4 rounded-full bg-purple-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${
+                  (highlighterMode === 'box' && selectedHighlightColor === 'p:') || (highlighterMode === 'freefall' && !isFreefallEraser && freefallColor.includes('192, 132, 252'))
+                    ? 'ring-2 ring-purple-500 scale-110'
+                    : ''
+                }`}
+                title="Purple"
+              />
+              {/* Blue */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedHighlightColor('b:');
+                  setFreefallColor('rgba(56, 189, 248, 0.42)');
+                  setIsFreefallEraser(false);
+                  soundManager.playClick();
+                }}
+                className={`w-4 h-4 rounded-full bg-sky-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${
+                  (highlighterMode === 'box' && selectedHighlightColor === 'b:') || (highlighterMode === 'freefall' && !isFreefallEraser && freefallColor.includes('56, 189, 248'))
+                    ? 'ring-2 ring-sky-500 scale-110'
+                    : ''
+                }`}
+                title="Blue"
+              />
+              {/* Rose */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedHighlightColor('r:');
+                  setFreefallColor('rgba(251, 113, 133, 0.42)');
+                  setIsFreefallEraser(false);
+                  soundManager.playClick();
+                }}
+                className={`w-4 h-4 rounded-full bg-rose-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${
+                  (highlighterMode === 'box' && selectedHighlightColor === 'r:') || (highlighterMode === 'freefall' && !isFreefallEraser && freefallColor.includes('251, 113, 133'))
+                    ? 'ring-2 ring-rose-500 scale-110'
+                    : ''
+                }`}
+                title="Rose"
+              />
+            </div>
+
+            {/* Freefall Specific Tools (Pen Size, Eraser, Clear All) */}
+            {highlighterMode === 'freefall' && (
+              <div className="flex items-center gap-1.5 pl-1.5 border-l border-[#D8D8CF] dark:border-[#383A48]">
+                {/* Pen Size */}
+                <button
+                  type="button"
+                  onClick={() => setFreefallSize(6)}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${freefallSize === 6 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
+                  title="Fine Pen (6px)"
+                >
+                  Fine
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFreefallSize(14)}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${freefallSize === 14 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
+                  title="Marker (14px)"
+                >
+                  Med
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFreefallSize(24)}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${freefallSize === 24 ? 'bg-slate-800 text-white dark:bg-white dark:text-black' : 'text-slate-400'}`}
+                  title="Thick Highlighter (24px)"
+                >
+                  Thick
+                </button>
+
+                {/* Eraser */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsFreefallEraser(prev => !prev);
+                    soundManager.playClick();
+                  }}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    isFreefallEraser ? 'bg-rose-500 text-white shadow-xs' : 'text-slate-400 hover:text-slate-800 dark:hover:text-white'
+                  }`}
+                  title="Erase Freefall Drawings"
+                >
+                  <Eraser className="w-3 h-3" />
+                  <span>Eraser</span>
+                </button>
+
+                {/* Clear All Drawings */}
+                {strokes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearAllDrawings}
+                    className="p-1 rounded text-rose-500 hover:bg-rose-500/10 cursor-pointer transition-colors"
+                    title="Clear All Drawings"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+
+  // ----------------------------------------------------------------------------------
   // FULL SCREEN IMMERSIVE READING EXPERIENCE MODAL
   // ----------------------------------------------------------------------------------
   const renderFullScreenReaderModal = () => {
@@ -1563,85 +1964,19 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
     return createPortal(
       <div
-        className="fixed inset-0 z-[150] bg-[#FAF8F5] dark:bg-[#0B0B0E] text-[#11120F] dark:text-[#F5F5F7] flex flex-col select-none animate-fade-in"
+        className="fixed inset-0 z-[150] bg-[#FAF8F5] dark:bg-[#0B0B0E] text-[#11120F] dark:text-[#F5F5F7] flex flex-col animate-fade-in"
         onMouseUp={handleMouseUpSelection}
         onTouchEnd={handleMouseUpSelection}
       >
         {/* Fullscreen Zen Floating Controls (Visible when Top Bar is Hidden in Zen Mode) */}
         {isZenMode && (
           <>
-            {/* Left: Floating Small Highlighter Quick Palette Widget in Pure Notes Only View */}
-            <div className="fixed top-4 left-5 z-[170] flex items-center gap-2 p-1.5 px-3 rounded-2xl bg-white/90 dark:bg-[#1C1D26]/90 border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl backdrop-blur-md animate-fade-in text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsHighlighterActive(prev => !prev);
-                  soundManager.playClick();
-                }}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
-                  isHighlighterActive
-                    ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs'
-                    : 'text-slate-400 hover:text-slate-700 dark:hover:text-white'
-                }`}
-                title="Toggle Live Highlighter (Select text while reading to highlight)"
-              >
-                <Highlighter className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Highlight {isHighlighterActive ? 'ON' : 'OFF'}</span>
-              </button>
-
-              {/* Quick Color Dots */}
-              {isHighlighterActive && (
-                <div className="flex items-center gap-1.5 pl-1.5 border-l border-[#D8D8CF] dark:border-[#383A48]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedHighlightColor('');
-                      soundManager.playClick();
-                    }}
-                    className={`w-4 h-4 rounded-full bg-yellow-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === '' ? 'ring-2 ring-amber-500 scale-110' : ''}`}
-                    title="Yellow (Default)"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedHighlightColor('g:');
-                      soundManager.playClick();
-                    }}
-                    className={`w-4 h-4 rounded-full bg-emerald-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'g:' ? 'ring-2 ring-emerald-500 scale-110' : ''}`}
-                    title="Green"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedHighlightColor('p:');
-                      soundManager.playClick();
-                    }}
-                    className={`w-4 h-4 rounded-full bg-purple-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'p:' ? 'ring-2 ring-purple-500 scale-110' : ''}`}
-                    title="Purple"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedHighlightColor('b:');
-                      soundManager.playClick();
-                    }}
-                    className={`w-4 h-4 rounded-full bg-sky-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'b:' ? 'ring-2 ring-sky-500 scale-110' : ''}`}
-                    title="Blue"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedHighlightColor('r:');
-                      soundManager.playClick();
-                    }}
-                    className={`w-4 h-4 rounded-full bg-rose-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'r:' ? 'ring-2 ring-rose-500 scale-110' : ''}`}
-                    title="Rose"
-                  />
-                </div>
-              )}
+            {/* Left: Floating Highlighter Controls in Pure Notes Only View */}
+            <div className="fixed top-4 left-5 z-[170]">
+              {renderHighlighterControlsWidget(true)}
             </div>
 
-            {/* Right: Show All Controls & Exit */}
+            {/* Right: Show All Controls & Exit Fullscreen */}
             <div className="fixed top-4 right-5 z-[170] flex items-center gap-2 animate-fade-in">
               <button
                 type="button"
@@ -1817,21 +2152,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   ))}
                 </div>
 
-                {/* Highlighter Toggle */}
-                <button
-                  type="button"
-                  onClick={() => setIsHighlighterActive(prev => !prev)}
-                  title="Toggle interactive text selection highlighter"
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                    isHighlighterActive
-                      ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300'
-                      : 'bg-[#F7F6F0] dark:bg-[#1C1D26] border-[#D8D8CF] dark:border-[#272730] text-[#85877E]'
-                  }`}
-                >
-                  <Highlighter className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Highlighter {isHighlighterActive ? 'ON' : 'OFF'}</span>
-                </button>
-
                 {/* PDF Export */}
                 <button
                   type="button"
@@ -1859,16 +2179,38 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             </div>
 
             {/* Note Pages Tab Strip in Fullscreen Mode */}
-            <div className="pt-1">{renderNoteTabs(true)}</div>
+            <div className="pt-1 flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex-1">{renderNoteTabs(true)}</div>
+              <div>{renderHighlighterControlsWidget(false)}</div>
+            </div>
           </div>
         )}
 
         {/* Fullscreen Content Area */}
-        <div className={`flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar ${isZenMode ? 'pt-8' : ''}`}>
+        <div className={`flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar ${isZenMode ? 'pt-14' : ''}`}>
           <div className={`mx-auto ${getReaderWidthClass()}`}>
             {viewMode === 'study' && (
-              <div className={`p-6 sm:p-12 rounded-3xl ${getThemeContainerClass()} min-h-[70vh]`}>
-                {renderFormattedNotes(getFontSizeClass())}
+              <div className="relative" ref={fsNotesContainerRef}>
+                <div className={`p-6 sm:p-12 rounded-3xl ${getThemeContainerClass()} min-h-[70vh] select-text cursor-text relative z-10`}>
+                  {renderFormattedNotes(getFontSizeClass())}
+                </div>
+
+                {/* Freefall Canvas Overlay */}
+                <canvas
+                  ref={fullscreenCanvasRef}
+                  onMouseDown={startDrawing}
+                  onMouseMove={drawMove}
+                  onMouseUp={endDrawing}
+                  onMouseLeave={endDrawing}
+                  onTouchStart={startDrawing}
+                  onTouchMove={drawMove}
+                  onTouchEnd={endDrawing}
+                  className={`absolute inset-0 z-20 rounded-3xl ${
+                    highlighterMode === 'freefall' && isHighlighterActive
+                      ? 'pointer-events-auto cursor-crosshair'
+                      : 'pointer-events-none'
+                  }`}
+                />
               </div>
             )}
 
@@ -1893,7 +2235,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                   rows={26}
                   className="w-full p-5 rounded-3xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-xl"
                 />
-                <div className={`p-6 rounded-3xl ${getThemeContainerClass()} overflow-y-auto max-h-[80vh] custom-scrollbar`}>
+                <div className={`p-6 rounded-3xl ${getThemeContainerClass()} overflow-y-auto max-h-[80vh] custom-scrollbar select-text`}>
                   {renderFormattedNotes(getFontSizeClass())}
                 </div>
               </div>
@@ -1911,7 +2253,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // MAIN COMPONENT JSX (Normal Drawer View)
   // ----------------------------------------------------------------------------------
   return (
-    <div className="space-y-3" onPaste={handlePaste} ref={notesContainerRef} onMouseUp={handleMouseUpSelection} onTouchEnd={handleMouseUpSelection}>
+    <div className="space-y-3" onPaste={handlePaste} onMouseUp={handleMouseUpSelection} onTouchEnd={handleMouseUpSelection}>
       
       {/* 🌟 UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
       <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#D8D8CF]/60 dark:divide-[#272730]">
@@ -1992,7 +2334,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             </button>
           </div>
 
-          {/* Middle Cluster: Smart AI & Reading Tools */}
+          {/* Middle Cluster: Highlighter Widget (Box & Freefall) */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {renderHighlighterControlsWidget(false)}
+          </div>
+
+          {/* Right Cluster: AI Tools, Utilities & Status */}
           <div className="flex items-center gap-1.5 flex-wrap">
             {/* Format AI Notes */}
             <button
@@ -2003,7 +2350,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Format AI Notes</span>
+              <span>Format AI</span>
             </button>
 
             {/* Copy AI Prompt */}
@@ -2014,25 +2361,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 cursor-pointer"
             >
               <Bot className="w-3.5 h-3.5" />
-              <span>{promptCopied ? '✓ Prompt Copied' : 'AI Prompt'}</span>
-            </button>
-
-            {/* Highlighter Toggle */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsHighlighterActive(prev => !prev);
-                soundManager.playClick();
-              }}
-              title="Toggle interactive text selection highlighter"
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                isHighlighterActive
-                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300 shadow-xs'
-                  : 'bg-[#F4F2EB] dark:bg-[#0D0E15] border-[#D8D8CF] dark:border-[#272730] text-slate-500'
-              }`}
-            >
-              <Highlighter className="w-3.5 h-3.5" />
-              <span>Highlight {isHighlighterActive ? 'ON' : 'OFF'}</span>
+              <span>{promptCopied ? '✓ Copied' : 'AI Prompt'}</span>
             </button>
 
             {/* Font Family Switcher */}
@@ -2062,10 +2391,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 Sans
               </button>
             </div>
-          </div>
 
-          {/* Right Cluster: Utilities & Status */}
-          <div className="flex items-center gap-1.5 flex-wrap">
             {/* Split PDF (if exists) */}
             {onOpenSplitPdf && hasPdfAttachments && (
               <button
@@ -2466,12 +2792,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             onPaste={handlePaste}
             placeholder={`Paste your notes from Gemini or ChatGPT here, or write your own!\n\n💡 Pro-Tip: After pasting from Gemini/ChatGPT, click "✨ Format AI Notes" in the toolbar above to instantly generate structured callouts, formulas, traps & tables!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
             rows={14}
-            className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] dark:focus:ring-[#7AA2F7] shadow-inner"
+            className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] dark:focus:ring-[#7AA2F7] shadow-inner select-text"
           />
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
             <span>{wordCount} words · {charCount} chars</span>
-            <span>Supports Markdown, Tables, LaTeX Math & Multiple Notes</span>
+            <span>Supports Markdown, Tables, LaTeX Math, Box & Freefall Highlighter</span>
           </div>
         </div>
       )}
@@ -2491,7 +2817,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               onPaste={handlePaste}
               placeholder="Type or paste markdown..."
               rows={16}
-              className="flex-1 w-full p-3.5 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-inner resize-none"
+              className="flex-1 w-full p-3.5 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] shadow-inner resize-none select-text"
             />
           </div>
 
@@ -2499,7 +2825,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <div className="text-[11px] font-bold text-[#85877E] uppercase font-mono px-1">
               <span>Live Visual Notes Preview ({activeNote.title})</span>
             </div>
-            <div className={`flex-1 p-4 sm:p-5 rounded-2xl ${getThemeContainerClass()} overflow-y-auto max-h-[480px] custom-scrollbar`}>
+            <div className={`flex-1 p-4 sm:p-5 rounded-2xl ${getThemeContainerClass()} overflow-y-auto max-h-[480px] custom-scrollbar select-text`}>
               {renderFormattedNotes()}
             </div>
           </div>
@@ -2507,10 +2833,29 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       )}
 
       {viewMode === 'study' && (
-        /* Study Mode (Clean, magazine-quality visual notes) */
+        /* Study Mode (Clean, magazine-quality visual notes with Freefall & Box Overlay) */
         <div className="space-y-4">
-          <div className={`p-4 sm:p-7 rounded-3xl ${getThemeContainerClass()} min-h-[220px]`}>
-            {renderFormattedNotes()}
+          <div className="relative" ref={notesContainerRef}>
+            <div className={`p-4 sm:p-7 rounded-3xl ${getThemeContainerClass()} min-h-[220px] select-text cursor-text relative z-10`}>
+              {renderFormattedNotes()}
+            </div>
+
+            {/* Freefall Canvas Overlay */}
+            <canvas
+              ref={canvasRef}
+              onMouseDown={startDrawing}
+              onMouseMove={drawMove}
+              onMouseUp={endDrawing}
+              onMouseLeave={endDrawing}
+              onTouchStart={startDrawing}
+              onTouchMove={drawMove}
+              onTouchEnd={endDrawing}
+              className={`absolute inset-0 z-20 rounded-3xl ${
+                highlighterMode === 'freefall' && isHighlighterActive
+                  ? 'pointer-events-auto cursor-crosshair'
+                  : 'pointer-events-none'
+              }`}
+            />
           </div>
 
           {/* Attached Screenshots Gallery */}
@@ -2577,7 +2922,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         </div>
       )}
 
-      {/* Floating Selection Highlighter Tooltip in Study View */}
+      {/* Floating Selection Highlighter Tooltip in Study View (For Box Mode) */}
       {renderFloatingHighlighter()}
 
       {/* Fullscreen Zen Reader Experience */}
