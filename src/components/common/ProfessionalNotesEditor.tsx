@@ -932,7 +932,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const parseInlineMarkdown = (text: string, keyPrefix: string = 'inline'): React.ReactNode[] => {
     if (!text) return [];
 
-    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|⏱️\s*\[\d{1,2}:\d{2}(?::\d{2})?\]|\[\d{1,2}:\d{2}(?::\d{2})?\])/g;
+    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|⏱️\s*(?:\[\d{1,2}:\d{2}(?::\d{2})?\]|\d{1,2}:\d{2}(?::\d{2})?))/g;
     const parts = text.split(tokenRegex);
 
     return parts.map((part, index) => {
@@ -1031,28 +1031,30 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </span>
         );
       }
-      // Video Timestamp jump
-      const tsMatch = part.match(/(?:⏱️\s*)?(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?/);
-      if (tsMatch && tsMatch[1] && (part.includes(':') || part.includes('⏱️'))) {
-        const timeStr = tsMatch[1];
-        const seconds = parseTimestampToSeconds(timeStr);
-        return (
-          <button
-            key={k}
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              if (onOpenSplitLecture) {
-                onOpenSplitLecture(lectures?.[0]?.id, seconds);
-              }
-            }}
-            className="inline-flex items-center gap-1 px-2 py-0.5 mx-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-white border border-red-500/30 text-[11px] font-mono font-bold cursor-pointer transition-all active:scale-95 shadow-xs"
-            title={`Click to jump lecture video to ${timeStr} ⏱️`}
-          >
-            <Play className="w-2.5 h-2.5 fill-current" />
-            <span>{timeStr}</span>
-          </button>
-        );
+      // Video Timestamp jump (Requires explicit ⏱️ prefix so normal clock times like "3:15 PM" or "9:30 AM" are not affected)
+      if (part.startsWith('⏱️')) {
+        const tsMatch = part.match(/⏱️\s*\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?/);
+        if (tsMatch && tsMatch[1]) {
+          const timeStr = tsMatch[1];
+          const seconds = parseTimestampToSeconds(timeStr);
+          return (
+            <button
+              key={k}
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                if (onOpenSplitLecture) {
+                  onOpenSplitLecture(lectures?.[0]?.id, seconds);
+                }
+              }}
+              className="inline-flex items-center gap-1 px-2 py-0.5 mx-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 dark:text-red-400 hover:text-white border border-red-500/30 text-[11px] font-mono font-bold cursor-pointer transition-all active:scale-95 shadow-xs"
+              title={`Click to jump lecture video to ${timeStr} ⏱️`}
+            >
+              <Play className="w-2.5 h-2.5 fill-current" />
+              <span>{timeStr}</span>
+            </button>
+          );
+        }
       }
 
       return part;
