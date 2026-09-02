@@ -162,6 +162,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     text: string;
   }>({ visible: false, x: 0, y: 0, text: '' });
   const [isHighlighterActive, setIsHighlighterActive] = useState(true);
+  const [selectedHighlightColor, setSelectedHighlightColor] = useState<'' | 'g:' | 'p:' | 'b:' | 'r:'>('');
 
   const [copied, setCopied] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
@@ -346,6 +347,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     soundManager.playClick();
   };
 
+  const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   // Handle Text Selection for Floating Highlighter
   const handleMouseUpSelection = () => {
     if (!isHighlighterActive) return;
@@ -376,7 +379,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       } catch (e) {
         // ignore
       }
-    }, 10);
+    }, 20);
   };
 
   const applyHighlight = (colorPrefix: '' | 'g:' | 'p:' | 'b:' | 'r:') => {
@@ -384,16 +387,32 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     if (!text) return;
 
     soundManager.playCompleteChime();
-    const tag = `==${colorPrefix}${text}==`;
+    setSelectedHighlightColor(colorPrefix);
+    const newTag = `==${colorPrefix}${text}==`;
 
-    if (content.includes(text)) {
-      const updated = content.replace(text, tag);
-      updateContentAndSave(updated);
+    // Regex to match if this exact text is already highlighted with any prefix
+    const highlightPattern = new RegExp(`==(?:[gpbr]:)?${escapeRegExp(text)}==`, 'g');
+
+    let updated = content;
+    if (highlightPattern.test(content)) {
+      updated = content.replace(highlightPattern, newTag);
+    } else if (content.includes(text)) {
+      updated = content.replace(text, newTag);
     } else {
-      const updated = content + `\n${tag}`;
-      updateContentAndSave(updated);
+      updated = content + `\n${newTag}`;
     }
 
+    updateContentAndSave(updated);
+    setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' });
+    window.getSelection()?.removeAllRanges();
+  };
+
+  const removeHighlight = (text: string) => {
+    if (!text) return;
+    soundManager.playClick();
+    const highlightPattern = new RegExp(`==(?:[gpbr]:)?${escapeRegExp(text)}==`, 'g');
+    let updated = content.replace(highlightPattern, text);
+    updateContentAndSave(updated);
     setSelectionTooltip({ visible: false, x: 0, y: 0, text: '' });
     window.getSelection()?.removeAllRanges();
   };
@@ -783,7 +802,19 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         return (
           <mark
             key={k}
-            className={`${colorClass} px-1.5 py-0.5 mx-0.5 rounded font-bold shadow-xs transition-colors`}
+            onClick={(e) => {
+              e.stopPropagation();
+              soundManager.playClick();
+              const rect = e.currentTarget.getBoundingClientRect();
+              setSelectionTooltip({
+                visible: true,
+                x: Math.max(12, rect.left + rect.width / 2),
+                y: Math.max(10, rect.top - 8),
+                text: highlightText
+              });
+            }}
+            className={`${colorClass} px-1.5 py-0.5 mx-0.5 rounded font-bold shadow-xs transition-all cursor-pointer hover:opacity-85 hover:scale-[1.02]`}
+            title="Click to change color or erase highlight 🖍️"
           >
             {highlightText}
           </mark>
@@ -1455,11 +1486,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           transform: 'translate(-50%, -100%)',
           zIndex: 9999
         }}
-        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#11120F] dark:bg-[#1C1D26] text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
+        className="flex items-center gap-1.5 p-1.5 px-2.5 rounded-2xl bg-[#11120F] dark:bg-[#1C1D26] text-white shadow-2xl border border-white/20 animate-fade-in select-none backdrop-blur-md"
         onMouseDown={e => e.preventDefault()}
       >
-        <span className="text-[10px] font-bold text-[#A1A1B2] px-1 font-mono flex items-center gap-1">
-          <Highlighter className="w-3 h-3 text-amber-400" />
+        <span className="text-[10px] font-bold text-[#A1A1B2] font-mono flex items-center gap-1">
+          <Highlighter className="w-3.5 h-3.5 text-amber-400" />
           <span>Highlight:</span>
         </span>
 
@@ -1468,7 +1499,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           type="button"
           onClick={() => applyHighlight('')}
           className="w-5 h-5 rounded-full bg-yellow-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
-          title="Yellow Highlight (==text==)"
+          title="Yellow (==text==)"
         />
 
         {/* 🟢 Green Highlight */}
@@ -1476,7 +1507,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           type="button"
           onClick={() => applyHighlight('g:')}
           className="w-5 h-5 rounded-full bg-emerald-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
-          title="Green Highlight (==g:text==)"
+          title="Green (==g:text==)"
         />
 
         {/* 🟣 Purple Highlight */}
@@ -1484,7 +1515,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           type="button"
           onClick={() => applyHighlight('p:')}
           className="w-5 h-5 rounded-full bg-purple-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
-          title="Purple Highlight (==p:text==)"
+          title="Purple (==p:text==)"
         />
 
         {/* 🔵 Blue Highlight */}
@@ -1492,7 +1523,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           type="button"
           onClick={() => applyHighlight('b:')}
           className="w-5 h-5 rounded-full bg-sky-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
-          title="Blue Highlight (==b:text==)"
+          title="Blue (==b:text==)"
         />
 
         {/* 🔴 Rose Highlight */}
@@ -1500,8 +1531,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           type="button"
           onClick={() => applyHighlight('r:')}
           className="w-5 h-5 rounded-full bg-rose-400 hover:scale-125 transition-transform shadow-xs cursor-pointer border border-black/30"
-          title="Rose Highlight (==r:text==)"
+          title="Rose (==r:text==)"
         />
+
+        {/* 🧽 Erase / Remove Highlight Button */}
+        <button
+          type="button"
+          onClick={() => removeHighlight(selectionTooltip.text)}
+          className="px-2 py-0.5 ml-1 rounded-lg bg-rose-500/25 hover:bg-rose-500 text-rose-200 hover:text-white text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border border-rose-500/40"
+          title="Remove Highlight (Erase ==tags==)"
+        >
+          <span>🧽 Erase</span>
+        </button>
 
         <button
           type="button"
@@ -1524,36 +1565,111 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       <div
         className="fixed inset-0 z-[150] bg-[#FAF8F5] dark:bg-[#0B0B0E] text-[#11120F] dark:text-[#F5F5F7] flex flex-col select-none animate-fade-in"
         onMouseUp={handleMouseUpSelection}
+        onTouchEnd={handleMouseUpSelection}
       >
-        {/* Fullscreen Zen Floating Trigger (Visible when Top Bar is Hidden in Zen Mode) */}
+        {/* Fullscreen Zen Floating Controls (Visible when Top Bar is Hidden in Zen Mode) */}
         {isZenMode && (
-          <div className="fixed top-4 right-5 z-[170] flex items-center gap-2 animate-fade-in">
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setIsZenMode(false);
-              }}
-              className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/90 dark:bg-[#1C1D26]/90 hover:bg-white dark:hover:bg-[#282A38] text-slate-900 dark:text-white border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl text-xs font-black transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
-              title="Show All Header Sections & Toolbar Buttons (Press Z or ESC)"
-            >
-              <Eye className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
-              <span>Show All Controls</span>
-            </button>
+          <>
+            {/* Left: Floating Small Highlighter Quick Palette Widget in Pure Notes Only View */}
+            <div className="fixed top-4 left-5 z-[170] flex items-center gap-2 p-1.5 px-3 rounded-2xl bg-white/90 dark:bg-[#1C1D26]/90 border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl backdrop-blur-md animate-fade-in text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsHighlighterActive(prev => !prev);
+                  soundManager.playClick();
+                }}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
+                  isHighlighterActive
+                    ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs'
+                    : 'text-slate-400 hover:text-slate-700 dark:hover:text-white'
+                }`}
+                title="Toggle Live Highlighter (Select text while reading to highlight)"
+              >
+                <Highlighter className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Highlight {isHighlighterActive ? 'ON' : 'OFF'}</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setIsFullscreen(false);
-                setIsZenMode(false);
-              }}
-              className="p-2 rounded-2xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 shadow-2xl transition-all cursor-pointer backdrop-blur-md"
-              title="Exit Fullscreen (ESC)"
-            >
-              <Minimize2 className="w-4 h-4" />
-            </button>
-          </div>
+              {/* Quick Color Dots */}
+              {isHighlighterActive && (
+                <div className="flex items-center gap-1.5 pl-1.5 border-l border-[#D8D8CF] dark:border-[#383A48]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedHighlightColor('');
+                      soundManager.playClick();
+                    }}
+                    className={`w-4 h-4 rounded-full bg-yellow-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === '' ? 'ring-2 ring-amber-500 scale-110' : ''}`}
+                    title="Yellow (Default)"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedHighlightColor('g:');
+                      soundManager.playClick();
+                    }}
+                    className={`w-4 h-4 rounded-full bg-emerald-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'g:' ? 'ring-2 ring-emerald-500 scale-110' : ''}`}
+                    title="Green"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedHighlightColor('p:');
+                      soundManager.playClick();
+                    }}
+                    className={`w-4 h-4 rounded-full bg-purple-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'p:' ? 'ring-2 ring-purple-500 scale-110' : ''}`}
+                    title="Purple"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedHighlightColor('b:');
+                      soundManager.playClick();
+                    }}
+                    className={`w-4 h-4 rounded-full bg-sky-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'b:' ? 'ring-2 ring-sky-500 scale-110' : ''}`}
+                    title="Blue"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedHighlightColor('r:');
+                      soundManager.playClick();
+                    }}
+                    className={`w-4 h-4 rounded-full bg-rose-400 hover:scale-125 transition-transform cursor-pointer border border-black/20 ${selectedHighlightColor === 'r:' ? 'ring-2 ring-rose-500 scale-110' : ''}`}
+                    title="Rose"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Right: Show All Controls & Exit */}
+            <div className="fixed top-4 right-5 z-[170] flex items-center gap-2 animate-fade-in">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsZenMode(false);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/90 dark:bg-[#1C1D26]/90 hover:bg-white dark:hover:bg-[#282A38] text-slate-900 dark:text-white border border-[#D8D8CF] dark:border-[#383A48] shadow-2xl text-xs font-black transition-all cursor-pointer hover:scale-105 active:scale-95 backdrop-blur-md"
+                title="Show All Header Sections & Toolbar Buttons (Press Z or ESC)"
+              >
+                <Eye className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <span>Show All Controls</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsFullscreen(false);
+                  setIsZenMode(false);
+                }}
+                className="p-2 rounded-2xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 shadow-2xl transition-all cursor-pointer backdrop-blur-md"
+                title="Exit Fullscreen (ESC)"
+              >
+                <Minimize2 className="w-4 h-4" />
+              </button>
+            </div>
+          </>
         )}
 
         {/* Fullscreen Zen Header Bar (Hides smoothly when isZenMode is true) */}
@@ -1795,7 +1911,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // MAIN COMPONENT JSX (Normal Drawer View)
   // ----------------------------------------------------------------------------------
   return (
-    <div className="space-y-3" onPaste={handlePaste} ref={notesContainerRef} onMouseUp={handleMouseUpSelection}>
+    <div className="space-y-3" onPaste={handlePaste} ref={notesContainerRef} onMouseUp={handleMouseUpSelection} onTouchEnd={handleMouseUpSelection}>
       
       {/* 🌟 UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
       <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#D8D8CF]/60 dark:divide-[#272730]">
