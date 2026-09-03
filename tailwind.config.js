@@ -58,11 +58,12 @@ export default {
         'wide-label': '0.04em',
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', '"Inter"', '"Outfit"', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Lora"', 'Georgia', 'Cambria', 'serif'],
-        lexend: ['"Lexend"', '"Plus Jakarta Sans"', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', '"Outfit"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'Menlo', 'monospace']
+        sans: ['"Inter"', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
+        serif: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
+        lexend: ['"Plus Jakarta Sans"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'Menlo', 'Consolas', 'monospace']
       },
       boxShadow: {
         'subtle-depth': '0 2px 8px -2px rgba(17, 18, 15, 0.05), 0 8px 16px -4px rgba(17, 18, 15, 0.04)',
