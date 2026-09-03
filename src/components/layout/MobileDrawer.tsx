@@ -177,7 +177,17 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+                          {item.id === 'overview' ? (
+                            <img
+                              src="/dashboard_icon_3d.png"
+                              alt="Dashboard"
+                              className={`w-4 h-4 object-contain transition-transform ${
+                                isActive ? 'scale-110 drop-shadow-sm' : 'opacity-85'
+                              }`}
+                            />
+                          ) : (
+                            <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+                          )}
                           <span>{item.label}</span>
                         </div>
                         {Boolean(item.badge) && (

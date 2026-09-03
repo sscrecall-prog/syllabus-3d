@@ -45,7 +45,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           {activeView === 'overview' && (
             <span className="absolute inset-0 bg-[#596B35]/12 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
           )}
-          <LayoutDashboard className={`w-5 h-5 ${activeView === 'overview' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+          <img
+            src="/dashboard_icon_3d.png"
+            alt="Dashboard"
+            className={`w-5 h-5 object-contain transition-transform ${
+              activeView === 'overview' ? 'scale-110 drop-shadow-sm' : 'opacity-80'
+            }`}
+          />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Home</span>
           {activeView === 'overview' && (
             <span className="w-1 h-1 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />

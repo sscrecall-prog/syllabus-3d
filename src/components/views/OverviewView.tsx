@@ -70,8 +70,11 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       {/* 1. PERSONALIZED GREETING HEADER */}
       <div className="flex items-center justify-between gap-3 pt-1">
         <div className="min-w-0">
-          <h1 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight leading-tight">
-            {greeting}, <span className="text-[#596B35] dark:text-[#7AA2F7]">{userName}</span> 👋
+          <h1 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center gap-2">
+            <img src="/dashboard_icon_3d.png" alt="Dashboard" className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0 drop-shadow-sm" />
+            <span>
+              {greeting}, <span className="text-[#596B35] dark:text-[#7AA2F7]">{userName}</span> 👋
+            </span>
           </h1>
           <p className="text-xs sm:text-[13px] text-[#65675F] dark:text-[#85877E] mt-0.5 font-medium">
             {overallStats.completionPercentage > 0 

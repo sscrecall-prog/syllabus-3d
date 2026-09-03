@@ -188,9 +188,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )}
 
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <Icon className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
-                    isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E] group-hover:scale-110'
-                  }`} />
+                  {item.id === 'overview' ? (
+                    <img
+                      src="/dashboard_icon_3d.png"
+                      alt="Dashboard"
+                      className={`w-4 h-4 object-contain shrink-0 transition-transform ${
+                        isActive ? 'scale-110 drop-shadow-sm' : 'opacity-80 group-hover:scale-110'
+                      }`}
+                    />
+                  ) : (
+                    <Icon className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
+                      isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E] group-hover:scale-110'
+                    }`} />
+                  )}
                   <span className="truncate text-[13px] font-semibold">{item.label}</span>
                 </div>
 
