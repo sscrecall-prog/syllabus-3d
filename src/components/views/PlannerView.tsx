@@ -303,19 +303,23 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD WITH 3D GLASS CALENDAR BACKGROUND ═══════════════ */}
       <div className="p-5 sm:p-7 rounded-[32px] bg-[#0A0D14] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-4">
         
-        {/* 3D Glass Calendar & Stopwatch Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-right md:bg-right pointer-events-none opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
-          style={{ backgroundImage: `url('/planner_banner.png')` }}
-        />
+        {/* Full Uncropped High-Fidelity 3D Planner & Stopwatch Artwork (Zero crop, fits card perfectly) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
+          <img
+            src="/planner_banner.png"
+            alt="Daily Study Planner 3D"
+            className="h-full w-auto max-w-none object-contain object-right opacity-80 sm:opacity-95 select-none"
+            loading="eager"
+          />
+        </div>
 
         {/* Multi-layered Glass Gradients for 100% Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0D14] via-[#0A0D14]/85 md:via-[#0A0D14]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0D14]/85 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0D14] via-[#0A0D14]/80 md:via-[#0A0D14]/40 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0D14]/70 via-transparent to-transparent pointer-events-none z-0" />
         
         {/* Subtle Ambient Glow Orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#596B35]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#596B35]/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row */}
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -324,7 +328,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               <CalendarCheck className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h2 className="text-base sm:text-xl font-black text-white font-serif uppercase tracking-tight drop-shadow-sm">
+              <h2 className="text-base sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm">
                 Daily Study Planner
               </h2>
               <p className="text-xs text-[#C5C8D8]">
