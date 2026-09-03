@@ -109,19 +109,23 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
       {/* 1. TOP HEADER DIAGNOSTICS BANNER WITH 3D CYBER CHESS TRAP MAZE BACKGROUND */}
       <div className="p-5 sm:p-7 rounded-[32px] bg-[#0A0B12] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-4">
         
-        {/* 3D Glowing Crystal Chess & Laser Trap Maze Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-right md:bg-right pointer-events-none opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
-          style={{ backgroundImage: `url('/weak_traps_banner.png')` }}
-        />
+        {/* Full Uncropped High-Fidelity 3D Strategy & Diagnostics Artwork (Zero crop, fits card perfectly) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
+          <img
+            src="/weak_traps_banner.png"
+            alt="Weak Areas & Examiner Traps Diagnostics 3D"
+            className="h-full w-auto max-w-none object-contain object-right opacity-80 sm:opacity-95 select-none"
+            loading="eager"
+          />
+        </div>
 
         {/* Multi-layered Glass Gradients for 100% Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0B12] via-[#0A0B12]/85 md:via-[#0A0B12]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0B12]/85 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0B12] via-[#0A0B12]/80 md:via-[#0A0B12]/40 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0B12]/70 via-transparent to-transparent pointer-events-none z-0" />
         
         {/* Subtle Ambient Glow Orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row */}
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -131,7 +135,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg sm:text-xl font-black text-white font-serif uppercase tracking-tight drop-shadow-sm">
+                <h2 className="text-lg sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm">
                   Weak Areas & Examiner Traps Diagnostics
                 </h2>
               </div>
