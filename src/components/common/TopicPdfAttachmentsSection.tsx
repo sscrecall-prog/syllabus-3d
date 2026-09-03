@@ -175,15 +175,12 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
             <FileText className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-2 font-serif">
+            <h4 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-2 font-sans">
               <span>Attached Topic PDFs & Materials</span>
               <span className="px-2 py-0.2 rounded-full text-[11px] font-mono bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold">
                 {attachments.length}
               </span>
             </h4>
-            <p className="text-[11px] text-[#65675F] dark:text-[#85877E]">
-              Attach coaching notes, formulas, or textbook PDFs to view directly in-app.
-            </p>
           </div>
         </div>
 

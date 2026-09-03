@@ -340,9 +340,6 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                 {audioMemos.length} {audioMemos.length === 1 ? 'Memo' : 'Memos'}
               </span>
             </div>
-            <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] mt-0.5 font-normal">
-              Record quick audio summaries, formulas, and concept explanations for fast on-the-go revision.
-            </p>
           </div>
         </div>
 
@@ -647,9 +644,6 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                 <h4 className="text-sm sm:text-base font-bold text-[#191A17] dark:text-[#F5F5F7]">
                   No Voice Notes Recorded Yet
                 </h4>
-                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-sm mx-auto font-normal">
-                  Record 30-second voice summaries, formula tricks, or teacher explanations to listen anytime.
-                </p>
               </div>
 
               <div className="pt-1">
