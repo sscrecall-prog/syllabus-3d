@@ -284,34 +284,39 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     if (lower.includes('quant') || lower.includes('math')) {
       return {
         badgeText,
-        containerClass: 'bg-gradient-to-br from-[#2b080c] via-[#450a0a] to-[#1f0507] border border-red-500/40 text-[#FACC15] shadow-[0_0_10px_rgba(239,68,68,0.2)]',
+        icon: Calculator,
+        containerClass: 'bg-gradient-to-br from-[#3b0b11] via-[#5c131c] to-[#25070b] border border-red-500/40 text-red-300 shadow-[0_0_12px_rgba(239,68,68,0.25)]',
         accentColor: '#EF4444'
       };
     }
     if (lower.includes('gk') || lower.includes('general awareness') || lower.includes('general knowledge') || lower.includes('gs')) {
       return {
         badgeText,
-        containerClass: 'bg-gradient-to-br from-[#0c1a2e] via-[#0f2744] to-[#08111e] border border-blue-500/40 text-[#FACC15] shadow-[0_0_10px_rgba(59,130,246,0.2)]',
-        accentColor: '#3B82F6'
+        icon: Globe,
+        containerClass: 'bg-gradient-to-br from-[#0c2340] via-[#113563] to-[#08172c] border border-sky-500/40 text-sky-300 shadow-[0_0_12px_rgba(14,165,233,0.25)]',
+        accentColor: '#0EA5E9'
       };
     }
     if (lower.includes('reasoning') || lower.includes('intelligence')) {
       return {
         badgeText,
-        containerClass: 'bg-gradient-to-br from-[#1e0e33] via-[#2d124d] to-[#120820] border border-purple-500/40 text-[#FACC15] shadow-[0_0_10px_rgba(168,85,247,0.2)]',
+        icon: BrainCircuit,
+        containerClass: 'bg-gradient-to-br from-[#2a134a] via-[#3e1a6e] to-[#1a0c2e] border border-purple-500/40 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.25)]',
         accentColor: '#A855F7'
       };
     }
     if (lower.includes('english') || lower.includes('comprehension')) {
       return {
         badgeText,
-        containerClass: 'bg-gradient-to-br from-[#2a0e0e] via-[#3d1414] to-[#1a0707] border border-rose-500/40 text-[#FACC15] shadow-[0_0_10px_rgba(244,63,94,0.2)]',
-        accentColor: '#F43F5E'
+        icon: BookOpen,
+        containerClass: 'bg-gradient-to-br from-[#0a3225] via-[#104b38] to-[#062017] border border-emerald-500/40 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]',
+        accentColor: '#10B981'
       };
     }
     return {
       badgeText,
-      containerClass: 'bg-gradient-to-br from-[#18181D] to-[#24283B] border border-[#292E42] text-[#FACC15] shadow-md',
+      icon: FolderOpen,
+      containerClass: 'bg-gradient-to-br from-[#181926] via-[#24263a] to-[#12131d] border border-[#3b3d56] text-indigo-300 shadow-md',
       accentColor: '#7AA2F7'
     };
   };
@@ -641,105 +646,132 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const completedSubjectTopics = activeSubject.chapters.reduce((a, c) => a + c.topics.filter(t => t.status === 'completed').length, 0);
     const subjectPercent = totalSubjectTopics > 0 ? Math.round((completedSubjectTopics / totalSubjectTopics) * 100) : 0;
     const subjectBadge = getSubjectBadgeStyle(activeSubject.name);
+    const SubjectBadgeIcon = subjectBadge.icon;
 
     return (
       <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
-        {/* 1. TOP SUBJECT HERO BANNER (Mobile-Friendly Clean Layout) */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-3.5">
+        {/* 1. TOP SUBJECT HERO BANNER */}
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#D8D8CF] dark:border-[#262738] shadow-subtle-depth space-y-4">
           <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-3.5 min-w-0">
+              
               {/* Left Visual Badge Thumbnail */}
-              <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 shadow-md relative overflow-hidden font-serif ${subjectBadge.containerClass}`}>
-                <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none truncate max-w-full">
+              <div className={`w-13 sm:w-15 h-13 sm:h-15 rounded-2xl flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden ${subjectBadge.containerClass}`}>
+                <SubjectBadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
+                <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                   {subjectBadge.badgeText}
-                </span>
-                <span className="text-[11px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
-                  SUBJECT
                 </span>
               </div>
 
               {/* Banner Meta & Title */}
-              <div className="min-w-0">
+              <div className="min-w-0 space-y-1">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
                   <span>{currentExam.name}</span>
                   <span>•</span>
                   <span>Subject Content</span>
                 </div>
 
-                <h1 className="text-sm sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight font-serif uppercase truncate mt-0.5">
+                <h1 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                   {activeSubject.name} – CHAPTERS
                 </h1>
               </div>
             </div>
 
-            {/* Quick Actions (Back & Edit) */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-auto">
+            {/* Quick Actions (Back, Mastery Pill & Edit) */}
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
               <button
                 onClick={handleBackToSubjects}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#CBD5E1] border border-[#D8D8CF] dark:border-[#262738] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0"
                 title="Return to Batch Subjects Portal"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-                <span>Subjects</span>
+                <span>All Subjects</span>
               </button>
 
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono tabular-nums font-black text-[#354126] dark:text-[#7AA2F7]">
+              <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
+                subjectPercent === 100
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
+                  : subjectPercent > 0
+                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                  : 'bg-[#FAF9F5] dark:bg-[#151622] text-[#65675F] dark:text-[#888A9E] border-[#D8D8CF] dark:border-[#262738]'
+              }`}>
+                {subjectPercent === 100 ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                ) : (
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                )}
                 <span>{subjectPercent}%</span>
               </div>
 
               <button
                 onClick={() => setEditingSubject(activeSubject)}
-                className="p-1.5 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] border border-[#D8D8CF]/60 dark:border-[#292E42] transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#FAF9F5] dark:hover:bg-[#151622] border border-[#D8D8CF]/60 dark:border-[#262738] transition-colors cursor-pointer"
                 title="Edit Subject"
               >
-                <Edit2 className="w-3.5 h-3.5" />
+                <Edit2 className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="flex items-center gap-2.5 text-[11px] font-mono font-medium text-[#85877E] dark:text-[#787C99] pt-2 border-t border-[#EEEEE8] dark:border-[#292E42] flex-wrap">
-            <span>{activeSubject.chapters.length} Chapters</span>
-            <span>•</span>
-            <span>{totalSubjectTopics} Files / Topics</span>
-            <span>•</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold">{completedSubjectTopics} Mastered</span>
+          {/* Quick Metrics KPI Bento Pills */}
+          <div className="flex items-center gap-2 pt-3 border-t border-[#EEEEE8] dark:border-[#262738] flex-wrap">
+            <span className="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-[#151622] px-2.5 py-1 rounded-xl border border-[#D8D8CF]/70 dark:border-[#262738] text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
+              <Layers className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+              <span>{activeSubject.chapters.length} {activeSubject.chapters.length === 1 ? 'Chapter' : 'Chapters'}</span>
+            </span>
+
+            <span className="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-[#151622] px-2.5 py-1 rounded-xl border border-[#D8D8CF]/70 dark:border-[#262738] text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
+              <FileText className="w-3.5 h-3.5 text-[#85877E]" />
+              <span>{totalSubjectTopics} Total Topics</span>
+            </span>
+
+            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-mono font-bold ${
+              completedSubjectTopics > 0
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                : 'bg-[#FAF9F5] dark:bg-[#151622] text-[#85877E] border-[#D8D8CF]/70 dark:border-[#262738]'
+            }`}>
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{completedSubjectTopics} Mastered</span>
+            </span>
           </div>
         </div>
 
         {/* 2. CHAPTERS CONTENT CONTAINER */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#D8D8CF] dark:border-[#262738] shadow-subtle-depth space-y-4">
           
-          {/* Header Bar: Tab & Search */}
-          <div className="space-y-3 pb-3 border-b border-[#EEEEE8] dark:border-[#292E42]">
-            <div className="flex items-center justify-between gap-2">
-              <button
-                onClick={() => setActiveTab('content')}
-                className="pb-1 text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] border-b-2 border-[#596B35] dark:border-[#7AA2F7] cursor-pointer transition-colors"
-              >
-                <span>Chapters ({activeSubject.chapters.length})</span>
-              </button>
+          {/* Executive Header & Search Toolbar */}
+          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738]">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                  Chapters & Syllabus Modules
+                </h2>
+                <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5">
+                  Select a chapter to study topics, monitor completion, and track revisions
+                </p>
+              </div>
 
-              <span className="text-xs font-mono text-[#85877E] dark:text-[#A9B1D6]">
-                {totalSubjectTopics} Total Topics
-              </span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                <span>{filteredChapters.length} of {activeSubject.chapters.length} Chapters</span>
+              </div>
             </div>
 
-            {/* Clean Mobile Full-Width Search Input */}
+            {/* Clean Full-Width Search Input */}
             <div className="relative w-full">
+              <Search className="w-4 h-4 text-[#85877E] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={`Search chapters in ${activeSubject.name}...`}
-                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+                className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
               />
-              <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                  title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -747,58 +779,128 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
           </div>
 
-          {/* 3. CHAPTER CARDS LIST (Clean Direct-Touch Mobile Cards) */}
-          <div className="space-y-2.5">
+          {/* 3. CHAPTER CARDS LIST (Executive Bento Architecture) */}
+          <div className="space-y-3">
             {filteredChapters.length === 0 ? (
-              <div className="py-10 px-4 text-center rounded-2xl bg-[#F7F6F0]/50 dark:bg-[#1F2335]/50 border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-2">
-                <FolderOpen className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-                <h4 className="text-xs font-bold text-[#191A17] dark:text-[#C0CAF5]">No chapters found</h4>
-                <p className="text-[11px] text-[#85877E]">No chapters match your search query.</p>
+              <div className="py-12 px-4 text-center rounded-3xl bg-[#FAF9F5] dark:bg-[#151622] border border-dashed border-[#D8D8CF] dark:border-[#262738] space-y-2.5">
+                <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center mx-auto text-[#85877E]">
+                  <FolderOpen className="w-6 h-6 stroke-[1.8]" />
+                </div>
+                <h4 className="text-sm font-bold text-[#11120F] dark:text-[#F5F5F7]">No chapters match your search</h4>
+                <p className="text-xs text-[#85877E] dark:text-[#787C99]">Try searching with a different keyword.</p>
               </div>
             ) : (
               filteredChapters.map((chapter, idx) => {
                 const totalInChapter = chapter.topics.length;
                 const completedInChapter = chapter.topics.filter(t => t.status === 'completed').length;
+                const inProgressInChapter = chapter.topics.filter(t => t.status === 'in_progress').length;
                 const chapterPercent = totalInChapter > 0 ? Math.round((completedInChapter / totalInChapter) * 100) : 0;
+                const isChapterMastered = chapterPercent === 100;
+                const hasChapterStarted = chapterPercent > 0 || inProgressInChapter > 0;
                 const chapterBadge = getChapterBadgeStyle(activeSubject.name, idx);
+                const ChapterIcon = chapterBadge.icon;
+                const accentColor = activeSubject.color || chapterBadge.accentColor || '#596B35';
 
                 return (
                   <div
                     key={chapter.id}
                     onClick={() => handleSelectChapter(chapter.id)}
-                    className="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 cursor-pointer shadow-xs group flex items-center justify-between gap-3 active:scale-[0.99]"
+                    className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1B1D2C] border border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3.5 overflow-hidden"
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {/* Left Dark Stylized Chapter Thumbnail Badge */}
-                      <div className={`w-14 sm:w-16 h-10 sm:h-11 rounded-xl flex items-center justify-center font-black font-serif text-[11px] sm:text-xs shrink-0 tracking-wider transition-transform group-hover:scale-105 ${chapterBadge.containerClass}`}>
-                        <span>{chapterBadge.badgeText}</span>
+                    {/* Subtle Top Glow Accent */}
+                    <div
+                      className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`
+                      }}
+                    />
+
+                    {/* Main Info Row */}
+                    <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                      
+                      {/* Left: Thumbnail & Titles */}
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        
+                        {/* Modern 3D Squircle Chapter Badge */}
+                        <div className={`w-12 sm:w-14 h-12 sm:h-14 rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${chapterBadge.containerClass}`}>
+                          <ChapterIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
+                          <span className="text-[9px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                            {chapterBadge.badgeText}
+                          </span>
+                        </div>
+
+                        {/* Chapter Title & Meta */}
+                        <div className="min-w-0 space-y-1">
+                          <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
+                            {chapter.name}
+                          </h3>
+
+                          {/* Meta Chips */}
+                          <div className="flex items-center gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#A1A1B2] flex-wrap">
+                            <span className="flex items-center gap-1 bg-[#FAF9F5] dark:bg-[#1E1F2E] px-2 py-0.5 rounded-lg border border-[#D8D8CF]/70 dark:border-[#262738]">
+                              <FileText className="w-3 h-3 text-[#85877E]" />
+                              <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
+                            </span>
+
+                            {completedInChapter > 0 && (
+                              <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-lg border border-emerald-500/20 font-bold">
+                                <CheckCircle2 className="w-3 h-3" />
+                                <span>{completedInChapter} Mastered</span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Chapter Title & Subtitle */}
-                      <div className="min-w-0 space-y-0.5">
-                        <h3 className="text-sm sm:text-[15px] font-extrabold text-[#11120F] dark:text-[#C0CAF5] tracking-wide group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors font-serif truncate">
-                          {chapter.name}
-                        </h3>
+                      {/* Right: Status Pill & Action Chevron */}
+                      <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto ml-auto sm:ml-0">
                         
-                        <div className="flex items-center gap-2 text-[11px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] font-mono">
-                          <span>📄 {totalInChapter} files / topics</span>
-                          {completedInChapter > 0 && (
-                            <span className="text-emerald-600 dark:text-emerald-400 font-bold">• {completedInChapter} mastered</span>
+                        {/* Status Pill */}
+                        <div className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-mono tabular-nums font-bold flex items-center gap-1.5 ${
+                          isChapterMastered
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
+                            : hasChapterStarted
+                            ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                            : 'bg-[#FAF9F5] dark:bg-[#1E1F2E] text-[#65675F] dark:text-[#888A9E] border border-[#D8D8CF] dark:border-[#262738]'
+                        }`}>
+                          {isChapterMastered ? (
+                            <>
+                              <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                              <span>100% Mastered</span>
+                            </>
+                          ) : hasChapterStarted ? (
+                            <>
+                              <Zap className="w-3.5 h-3.5 fill-current" />
+                              <span>{chapterPercent}% Done</span>
+                            </>
+                          ) : (
+                            <span>0% Not Started</span>
                           )}
+                        </div>
+
+                        {/* Action Chevron */}
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF9F5] dark:bg-[#1E1F2E] border border-[#D8D8CF]/80 dark:border-[#262738] flex items-center justify-center text-[#65675F] dark:text-[#A1A1B2] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs">
+                          <ChevronRight className="w-4 h-4 stroke-[2.5]" />
                         </div>
                       </div>
                     </div>
 
-                    {/* Progress Badge */}
-                    <div className="shrink-0">
-                      <div className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-mono tabular-nums font-bold ${
-                        chapterPercent === 100
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                          : chapterPercent > 0
-                          ? 'bg-[#16161E] dark:bg-[#16161E] text-amber-400 border border-[#292E42]'
-                          : 'bg-[#F7F6F0] dark:bg-[#16161E] text-slate-600 dark:text-slate-400 border border-[#D8D8CF] dark:border-[#292E42]'
-                      }`}>
-                        {chapterPercent}%
+                    {/* Sleek Integrated Progress Track */}
+                    <div className="space-y-1 pt-0.5">
+                      <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#85877E] dark:text-[#787C99]">
+                        <span className="uppercase tracking-wider">Chapter Progress</span>
+                        <span className="tabular-nums">{chapterPercent}% ({completedInChapter}/{totalInChapter})</span>
+                      </div>
+
+                      <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#11121A] overflow-hidden p-0.5 border border-[#D8D8CF]/50 dark:border-[#262738]/50">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${chapterPercent}%`,
+                            backgroundColor: accentColor,
+                            boxShadow: chapterPercent > 0 ? `0 0 10px ${accentColor}80` : 'none'
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
