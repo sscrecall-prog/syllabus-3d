@@ -4,14 +4,11 @@ import {
   X,
   Plus,
   Globe,
-  Sparkles,
   Bookmark,
   GraduationCap,
   FileCheck2,
   BookOpen,
   KeyRound,
-  RotateCcw,
-  Tag,
   PenTool,
   Check,
   Clock
@@ -27,93 +24,6 @@ interface AddPlatformModalProps {
 }
 
 const STORAGE_KEY_SAVED_CATEGORIES = 'syllabus3d_saved_custom_categories';
-
-const PRESET_TEMPLATES = [
-  {
-    name: 'Physics Wallah (PW)',
-    url: 'https://www.pw.live/study/batches',
-    category: 'course' as PlatformCategory,
-    description: 'Live & recorded batch lectures, DPPs, and video solutions',
-    color: '#5A4FCF',
-    icon: '⚡',
-    loginHint: 'PW Mobile / Email'
-  },
-  {
-    name: 'Careerwill App / Web',
-    url: 'https://careerwill.com/',
-    category: 'course' as PlatformCategory,
-    description: 'SSC, Banking & State exams video batches by top educators',
-    color: '#E11D48',
-    icon: '🎓',
-    loginHint: 'Careerwill Phone Number'
-  },
-  {
-    name: 'Testbook Pass & Mock Series',
-    url: 'https://testbook.com/test-series',
-    category: 'test_series' as PlatformCategory,
-    description: 'All India Live Mocks, Previous Year Papers & Percentile Analysis',
-    color: '#0284C7',
-    icon: '📝',
-    loginHint: 'Testbook Account Email'
-  },
-  {
-    name: 'Oliveboard Mocks & Tests',
-    url: 'https://www.oliveboard.in/',
-    category: 'test_series' as PlatformCategory,
-    description: 'High-difficulty mock tests, sectional tests & topic quizzes',
-    color: '#16A34A',
-    icon: '🎯',
-    loginHint: 'Oliveboard Login Email'
-  },
-  {
-    name: 'Unacademy Plus',
-    url: 'https://unacademy.com/',
-    category: 'course' as PlatformCategory,
-    description: 'Live interactive classes, educator batches and doubt solving',
-    color: '#08BD80',
-    icon: '🏛️',
-    loginHint: 'Unacademy Plus User'
-  },
-  {
-    name: 'Khan Academy',
-    url: 'https://www.khanacademy.org/',
-    category: 'course' as PlatformCategory,
-    description: 'Master math, algebra, geometry & science fundamentals',
-    color: '#14BF96',
-    icon: '📖',
-    loginHint: 'Khan Academy Account'
-  },
-  {
-    name: 'RBE Revolution By Education',
-    url: 'https://rbeeducation.com/',
-    category: 'test_series' as PlatformCategory,
-    description: 'Exam survey analysis, rank predictor, and free sectional mocks',
-    color: '#F59E0B',
-    icon: '📊',
-    loginHint: 'RBE Portal Login'
-  },
-  {
-    name: 'YouTube Course / Playlist',
-    url: 'https://www.youtube.com/',
-    category: 'course' as PlatformCategory,
-    description: 'Free dedicated educator YouTube playlist or marathon lecture',
-    color: '#FF0000',
-    icon: '▶️',
-    loginHint: ''
-  }
-];
-
-// Popular Indian Coaching & Study Platform Quick Suggestions
-const POPULAR_SUGGESTIONS = [
-  { name: 'Exampur', url: 'https://exampur.com/', category: 'course' as PlatformCategory, icon: '🔥', color: '#E11D48' },
-  { name: 'Rojgar With Ankit (RWA)', url: 'https://rojgarwithankit.co.in/', category: 'course' as PlatformCategory, icon: '🏆', color: '#0284C7' },
-  { name: 'Adda247', url: 'https://www.adda247.com/', category: 'course' as PlatformCategory, icon: '🎯', color: '#F59E0B' },
-  { name: 'Practicemock', url: 'https://www.practicemock.com/', category: 'test_series' as PlatformCategory, icon: '📝', color: '#16A34A' },
-  { name: 'Sankalp Bharat', url: 'https://sankalpbharat.com/', category: 'course' as PlatformCategory, icon: '🚀', color: '#5A4FCF' },
-  { name: 'StudyIQ Education', url: 'https://www.studyiq.com/', category: 'course' as PlatformCategory, icon: '📚', color: '#08BD80' },
-  { name: 'Notion / Study Notes', url: 'https://www.notion.so/', category: 'reference' as PlatformCategory, icon: '🧠', color: '#11120F' },
-  { name: 'Telegram Web / Channel', url: 'https://web.telegram.org/', category: 'reference' as PlatformCategory, icon: '✈️', color: '#0284C7' },
-];
 
 // Quick Custom Category Suggestions
 const CUSTOM_CATEGORY_SUGGESTIONS = [
@@ -207,32 +117,6 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSelectPreset = (preset: typeof PRESET_TEMPLATES[0]) => {
-    setName(preset.name);
-    setUrl(preset.url);
-    setCategory(preset.category);
-    setCustomCategoryName('');
-    setDescription(preset.description);
-    setColor(preset.color);
-    setIcon(preset.icon);
-    if (preset.loginHint) setLoginHint(preset.loginHint);
-    setError(null);
-    soundManager.playClick();
-    nameInputRef.current?.focus();
-  };
-
-  const handleSelectSuggestion = (sugg: typeof POPULAR_SUGGESTIONS[0]) => {
-    setName(sugg.name);
-    setUrl(sugg.url);
-    setCategory(sugg.category);
-    setCustomCategoryName('');
-    setIcon(sugg.icon);
-    setColor(sugg.color);
-    setError(null);
-    soundManager.playClick();
-    nameInputRef.current?.focus();
-  };
-
   const handleCategoryChange = (newCat: PlatformCategory) => {
     setCategory(newCat);
     soundManager.playClick();
@@ -261,21 +145,6 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     setCategory('custom');
     setCustomCategoryName(catName);
     setIcon('🌐');
-    soundManager.playClick();
-    nameInputRef.current?.focus();
-  };
-
-  const handleResetForm = () => {
-    setName('');
-    setUrl('');
-    setDescription('');
-    setLoginHint('');
-    setNotes('');
-    setCategory('custom');
-    setCustomCategoryName('');
-    setIcon('🌐');
-    setColor('#5A4FCF');
-    setError(null);
     soundManager.playClick();
     nameInputRef.current?.focus();
   };
@@ -436,77 +305,6 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
         {/* Content Body */}
         <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
-          
-          {/* Quick Presets (Only on Add) */}
-          {!editPlatformData && (
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider font-mono text-[#85877E] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
-                  Popular 1-Click Templates
-                </span>
-                <button
-                  type="button"
-                  onClick={handleResetForm}
-                  className="text-[11px] font-mono font-bold text-[#85877E] hover:text-[#596B35] dark:hover:text-[#7AA2F7] flex items-center gap-1 cursor-pointer"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span>Clear / Custom Mode</span>
-                </button>
-              </div>
-
-              {/* Presets Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {PRESET_TEMPLATES.map((preset) => (
-                  <button
-                    key={preset.name}
-                    type="button"
-                    onClick={() => handleSelectPreset(preset)}
-                    className={`p-2.5 rounded-2xl border text-left transition-all active:scale-95 flex items-center gap-2 cursor-pointer group ${
-                      name === preset.name
-                        ? 'bg-[#11120F] text-white dark:bg-white dark:text-black border-transparent shadow-md'
-                        : 'border-[#D8D8CF] dark:border-[#272730] bg-[#F7F6F0] dark:bg-[#18181D] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
-                    }`}
-                  >
-                    <span className="text-lg shrink-0">{preset.icon}</span>
-                    <div className="min-w-0">
-                      <span className={`text-xs font-bold truncate block ${
-                        name === preset.name ? 'text-inherit' : 'text-[#11120F] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]'
-                      }`}>
-                        {preset.name.split(' ')[0]}
-                      </span>
-                      <span className={`text-[11px] uppercase font-mono font-bold block ${
-                        name === preset.name ? 'text-white/70 dark:text-black/70' : 'text-[#85877E]'
-                      }`}>
-                        {preset.category === 'course' ? 'Course' : 'Mock Test'}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Quick Tags / Popular Portals */}
-              <div className="pt-1">
-                <span className="text-[11px] font-mono text-[#85877E] flex items-center gap-1 mb-1.5">
-                  <Tag className="w-3 h-3 text-[#596B35]" />
-                  Other Popular Coaching & Portals:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {POPULAR_SUGGESTIONS.map(sugg => (
-                    <button
-                      key={sugg.name}
-                      type="button"
-                      onClick={() => handleSelectSuggestion(sugg)}
-                      className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-[#EEEEE8] dark:bg-[#18181D] hover:bg-[#DCE8B7] dark:hover:bg-[#23232A] text-[#11120F] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#272730] transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-                    >
-                      <span>{sugg.icon}</span>
-                      <span>{sugg.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
 
           {error && (
             <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 animate-shake">
