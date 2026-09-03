@@ -665,14 +665,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         </div>
                       </div>
 
-                      {/* Right: Status Pill & Action Button */}
+                      {/* Right: Status Pill & Action Chevron */}
                       <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto ml-auto sm:ml-0">
-                        <div className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${design.statusPillClass}`}>
-                          <BadgeIcon className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>{design.badgeLabel}</span>
-                        </div>
-
-                        <button
+                        <div
                           onClick={(e) => {
                             e.stopPropagation();
                             const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
@@ -683,10 +678,17 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                               soundManager.playClick();
                             }
                           }}
-                          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 ${design.btnClasses}`}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer select-none hover:opacity-90 ${design.statusPillClass}`}
+                          title="Click to toggle status"
                         >
-                          <span>{design.btnLabel}</span>
-                        </button>
+                          <BadgeIcon className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>{design.badgeLabel}</span>
+                        </div>
+
+                        {/* Action Chevron */}
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF9F5] dark:bg-[#1E1F2E] border border-[#D8D8CF]/80 dark:border-[#262738] flex items-center justify-center text-[#65675F] dark:text-[#A1A1B2] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs">
+                          <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                        </div>
                       </div>
                     </div>
                   </div>
