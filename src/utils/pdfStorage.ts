@@ -165,3 +165,20 @@ export function revokePdfBlobUrl(url: string | null): void {
     URL.revokeObjectURL(url);
   }
 }
+
+/**
+ * Check storage quota and usage
+ */
+export async function checkStorageQuota(): Promise<{ usageMB: number; quotaMB: number; percentUsed: number }> {
+  if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.estimate) {
+    try {
+      const estimate = await navigator.storage.estimate();
+      const usageMB = Math.round((estimate.usage || 0) / (1024 * 1024));
+      const quotaMB = Math.round((estimate.quota || 0) / (1024 * 1024));
+      const percentUsed = quotaMB > 0 ? Math.round((usageMB / quotaMB) * 100) : 0;
+      return { usageMB, quotaMB, percentUsed };
+    } catch {}
+  }
+  return { usageMB: 0, quotaMB: 0, percentUsed: 0 };
+}
+

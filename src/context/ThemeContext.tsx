@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark' | 'oled';
+export type Theme = 'light' | 'dark' | 'oled' | 'sepia';
 
 interface ThemeContextType {
   theme: Theme;
@@ -8,6 +8,7 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void;
   isDark: boolean;
   isOled: boolean;
+  isSepia: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -17,7 +18,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem('syllabus3d_theme');
-        if (saved === 'light' || saved === 'dark' || saved === 'oled') return saved;
+        if (saved === 'light' || saved === 'dark' || saved === 'oled' || saved === 'sepia') return saved;
         return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       } catch {
         return 'dark';
@@ -28,14 +29,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.remove('dark', 'oled', 'sepia');
     if (theme === 'oled') {
       root.classList.add('dark', 'oled');
     } else if (theme === 'dark') {
       root.classList.add('dark');
-      root.classList.remove('oled');
-    } else {
-      root.classList.remove('dark', 'oled');
+    } else if (theme === 'sepia') {
+      root.classList.add('sepia');
     }
+    // 'light' = no class needed
     try {
       localStorage.setItem('syllabus3d_theme', theme);
     } catch {}
@@ -43,7 +45,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const toggleTheme = () => {
     setThemeState(prev => {
-      if (prev === 'light') return 'dark';
+      if (prev === 'light') return 'sepia';
+      if (prev === 'sepia') return 'dark';
       if (prev === 'dark') return 'oled';
       return 'light';
     });
@@ -59,7 +62,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       toggleTheme,
       setTheme,
       isDark: theme === 'dark' || theme === 'oled',
-      isOled: theme === 'oled'
+      isOled: theme === 'oled',
+      isSepia: theme === 'sepia'
     }}>
       {children}
     </ThemeContext.Provider>

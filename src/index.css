@@ -95,6 +95,24 @@
     --color-text-muted: #8E90A6;
   }
 
+  .sepia {
+    /* Warm Sepia — Eye-Soothing Parchment Theme for Long Study Sessions */
+    --color-background: #F5F0E8;
+    --color-primary: #3B3022;
+    --color-primary-accent: #8B6914;
+    --color-accent-light: #E8D5A3;
+    --color-secondary-accent: #A07D2E;
+    --color-surface: #FBF7F0;
+    --color-surface-soft: #EDE6D6;
+    --color-border: #D5C9AD;
+    --color-text-primary: #3B3022;
+    --color-text-secondary: #5C4E3A;
+    --color-text-muted: #8A7D6B;
+    --color-success: #5A7A2E;
+    --color-warning: #B38622;
+    --color-error: #A0463E;
+  }
+
   ::selection {
     background-color: rgba(122, 162, 247, 0.35);
     color: #FFFFFF;
@@ -133,6 +151,16 @@
   .dark.oled body {
     background-color: #000000 !important;
     color: #E2E4F0 !important;
+  }
+
+  .sepia body {
+    background-color: #F5F0E8;
+    color: #3B3022;
+  }
+
+  .sepia ::selection {
+    background-color: rgba(139, 105, 20, 0.3);
+    color: #3B3022;
   }
 
   /* App Titles & Headings → Google Sans Bold with tighter tracking */
@@ -347,3 +375,79 @@
   perspective: 1000px;
   will-change: transform, opacity;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SEPIA THEME — Eye-Soothing Parchment Color Overrides
+   Overrides hardcoded Tailwind classes for warm sepia tones
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Backgrounds */
+.sepia .bg-white { background-color: #FBF7F0 !important; }
+.sepia .bg-\[\#F7F6F0\] { background-color: #EDE6D6 !important; }
+.sepia .bg-\[\#EEEEE8\] { background-color: #E5DCCA !important; }
+.sepia .bg-\[\#23232A\] { background-color: #EDE6D6 !important; }
+.sepia .bg-\[\#18181D\] { background-color: #FBF7F0 !important; }
+.sepia .bg-\[\#16161E\] { background-color: #F5F0E8 !important; }
+.sepia .bg-\[\#1E2030\] { background-color: #EDE6D6 !important; }
+.sepia .bg-\[\#0B0F19\] { background-color: #3B3022 !important; }
+
+/* Borders */
+.sepia .border-\[\#D8D8CF\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#272730\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#24283B\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#292E42\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#EEEEE8\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#E5E5DC\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#242533\] { border-color: #D5C9AD !important; }
+.sepia .border-\[\#1D201A\] { border-color: #D5C9AD !important; }
+
+/* Text: Primary */
+.sepia .text-\[\#11120F\] { color: #3B3022 !important; }
+.sepia .text-\[\#191A17\] { color: #3B3022 !important; }
+.sepia .text-\[\#F5F5F7\] { color: #3B3022 !important; }
+.sepia .text-\[\#C0CAF5\] { color: #3B3022 !important; }
+
+/* Text: Secondary / Muted */
+.sepia .text-\[\#65675F\] { color: #7A6E5A !important; }
+.sepia .text-\[\#85877E\] { color: #8A7D6B !important; }
+.sepia .text-\[\#A1A1AA\] { color: #8A7D6B !important; }
+.sepia .text-\[\#A9B1D6\] { color: #8A7D6B !important; }
+.sepia .text-\[\#3D4039\] { color: #5C4E3A !important; }
+
+/* Accent: Primary green → warm amber */
+.sepia .text-\[\#596B35\] { color: #8B6914 !important; }
+.sepia .text-\[\#7AA2F7\] { color: #8B6914 !important; }
+.sepia .text-\[\#354126\] { color: #5A4510 !important; }
+.sepia .bg-\[\#596B35\] { background-color: #8B6914 !important; }
+.sepia .bg-\[\#DCE8B7\] { background-color: #E8D5A3 !important; }
+.sepia .bg-\[\#7AA2F7\]\/20 { background-color: rgba(139, 105, 20, 0.15) !important; }
+.sepia .bg-\[\#7AA2F7\]\/15 { background-color: rgba(139, 105, 20, 0.12) !important; }
+.sepia .bg-\[\#7AA2F7\]\/10 { background-color: rgba(139, 105, 20, 0.08) !important; }
+.sepia .bg-\[\#596B35\]\/10 { background-color: rgba(139, 105, 20, 0.08) !important; }
+.sepia .border-\[\#596B35\] { border-color: #8B6914 !important; }
+.sepia .border-\[\#7AA2F7\] { border-color: #8B6914 !important; }
+.sepia .border-\[\#596B35\]\/20 { border-color: rgba(139, 105, 20, 0.2) !important; }
+.sepia .border-\[\#7AA2F7\]\/20 { border-color: rgba(139, 105, 20, 0.2) !important; }
+.sepia .border-\[\#7AA2F7\]\/15 { border-color: rgba(139, 105, 20, 0.15) !important; }
+.sepia .ring-\[\#596B35\]\/30 { --tw-ring-color: rgba(139, 105, 20, 0.3) !important; }
+.sepia .ring-\[\#7AA2F7\]\/30 { --tw-ring-color: rgba(139, 105, 20, 0.3) !important; }
+.sepia .ring-\[\#7AA2F7\]\/40 { --tw-ring-color: rgba(139, 105, 20, 0.4) !important; }
+
+/* Hover accents */
+.sepia .hover\:text-\[\#596B35\]:hover { color: #8B6914 !important; }
+.sepia .hover\:text-\[\#7AA2F7\]:hover { color: #8B6914 !important; }
+.sepia .hover\:border-\[\#596B35\]:hover { border-color: #8B6914 !important; }
+.sepia .hover\:border-\[\#7AA2F7\]:hover { border-color: #8B6914 !important; }
+.sepia .group-hover\:text-\[\#596B35\] { color: #8B6914 !important; }
+.sepia .group-hover\:text-\[\#7AA2F7\] { color: #8B6914 !important; }
+
+/* Secondary accents */
+.sepia .bg-indigo-500\/10 { background-color: rgba(139, 105, 20, 0.08) !important; }
+.sepia .text-indigo-500 { color: #8B6914 !important; }
+.sepia .bg-\[\#5A4FCF\]\/10 { background-color: rgba(139, 105, 20, 0.08) !important; }
+.sepia .text-\[\#5A4FCF\] { color: #8B6914 !important; }
+
+/* Scrollbar for sepia */
+.sepia ::-webkit-scrollbar-track { background: #EDE6D6; }
+.sepia ::-webkit-scrollbar-thumb { background: #C4B896; }
+.sepia ::-webkit-scrollbar-thumb:hover { background: #A89A78; }

@@ -591,11 +591,11 @@ export const SettingsView: React.FC = () => {
               </p>
             </div>
             <span className="px-3 py-1 rounded-xl text-[13px] font-bold font-mono bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7] capitalize">
-              {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+              {theme === 'dark' ? '🌙 Dark' : theme === 'oled' ? '🕶️ OLED' : theme === 'sepia' ? '📜 Sepia' : '☀️ Light'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
             {/* Tokyo Night Dark */}
             <button
               type="button"
@@ -679,6 +679,35 @@ export const SettingsView: React.FC = () => {
                 </span>
                 <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
                   Warm academic paper tones for daylight reading
+                </span>
+              </div>
+            </button>
+
+            {/* Sepia — Eye-Soothing Warm Parchment */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setTheme('sepia');
+              }}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                theme === 'sepia'
+                  ? 'bg-[#FBF7F0] border-[#8B6914] ring-2 ring-[#8B6914]/30 shadow-sm'
+                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] border border-[#D5C9AD] flex items-center justify-center text-[#8B6914] shrink-0">
+                  <span className="text-lg">📜</span>
+                </div>
+                {theme === 'sepia' && <Check className="w-4 h-4 text-[#8B6914]" />}
+              </div>
+              <div>
+                <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
+                  Sepia Parchment
+                </span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                  Eye-soothing warm tones for long study sessions
                 </span>
               </div>
             </button>

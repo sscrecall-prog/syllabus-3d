@@ -1,4 +1,5 @@
 import { AuthUser } from '../types/auth';
+import { AuthAdapter, hashPassword } from './authAdapter';
 
 const SESSION_STORAGE_KEY = 'syllabus3d_auth_session';
 const USERS_DB_KEY = 'syllabus3d_users_db';
@@ -33,7 +34,11 @@ function saveUsersDB(users: Array<AuthUser & { passwordHash: string }>) {
   } catch {}
 }
 
-export const authService = {
+export const authService: AuthAdapter & {
+  login: (email: string, password?: string) => Promise<AuthUser>;
+  signup: (name: string, email: string, password?: string) => Promise<AuthUser>;
+  loginWithGoogle: () => Promise<AuthUser>;
+} = {
   async getSession(): Promise<AuthUser | null> {
     await new Promise(r => setTimeout(r, 80));
     if (typeof window === 'undefined') return null;
@@ -46,17 +51,29 @@ export const authService = {
     return null;
   },
 
-  async login(email: string, password: string): Promise<AuthUser> {
+  async login(email: string, password: string = ''): Promise<AuthUser> {
     await new Promise(r => setTimeout(r, 350));
     const normalizedEmail = email.trim().toLowerCase();
     const users = getUsersDB();
 
     // 1. Check local users database
-    let matchedUser = users.find(u => u.email.toLowerCase() === normalizedEmail);
+    const matchedUser = users.find(u => u.email.toLowerCase() === normalizedEmail);
 
     if (matchedUser) {
-      if (matchedUser.passwordHash !== password) {
+      const computedHash = await hashPassword(password);
+      // Support both legacy plaintext check and new cryptographic hash
+      const isPasswordValid =
+        matchedUser.passwordHash === password ||
+        matchedUser.passwordHash === computedHash;
+
+      if (!isPasswordValid) {
         throw new Error('Incorrect password. Please verify and try again.');
+      }
+
+      // Upgrade plaintext password to hash if needed
+      if (matchedUser.passwordHash === password && password !== '') {
+        matchedUser.passwordHash = computedHash;
+        saveUsersDB(users);
       }
     } else {
       throw new Error('No account found with this email. Please sign up first.');
@@ -72,19 +89,21 @@ export const authService = {
       lastLoginAt: new Date().toISOString()
     };
 
-    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    }
     return authUser;
   },
 
-  async signup(name: string, email: string, password: string): Promise<AuthUser> {
+  async signup(name: string, email: string, password: string = ''): Promise<AuthUser> {
     await new Promise(r => setTimeout(r, 350));
     const normalizedEmail = email.trim().toLowerCase();
     const users = getUsersDB();
+    const hashedPassword = await hashPassword(password);
 
     const existing = users.find(u => u.email.toLowerCase() === normalizedEmail);
     if (existing) {
-      // Update password and login
-      existing.passwordHash = password;
+      existing.passwordHash = hashedPassword;
       existing.name = name.trim() || existing.name;
       existing.lastLoginAt = new Date().toISOString();
       saveUsersDB(users);
@@ -97,7 +116,9 @@ export const authService = {
         createdAt: existing.createdAt,
         lastLoginAt: existing.lastLoginAt
       };
-      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+      }
       return authUser;
     }
 
@@ -105,7 +126,7 @@ export const authService = {
       id: 'usr_' + Math.random().toString(36).substr(2, 9),
       name: name.trim() || 'Aspirant Scholar',
       email: normalizedEmail,
-      passwordHash: password,
+      passwordHash: hashedPassword,
       provider: 'email' as const,
       createdAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString()
@@ -123,24 +144,25 @@ export const authService = {
       lastLoginAt: newUserRecord.lastLoginAt
     };
 
-    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    }
     return authUser;
   },
 
-  async loginWithGoogle(): Promise<AuthUser> {
+  async loginWithOAuth(provider: 'google' | 'gitlab' | 'github'): Promise<AuthUser> {
     await new Promise(r => setTimeout(r, 350));
-    
     const users = getUsersDB();
-    const googleEmail = 'aspirant.google@gmail.com';
-    let matchedUser = users.find(u => u.email === googleEmail);
+    const oauthEmail = `aspirant.${provider}@example.com`;
+    let matchedUser = users.find(u => u.email === oauthEmail);
 
     if (!matchedUser) {
       matchedUser = {
-        id: 'usr_g_' + Math.random().toString(36).substr(2, 9),
-        name: 'Google Aspirant',
-        email: googleEmail,
-        passwordHash: 'OAuthGoogle',
-        provider: 'google',
+        id: `usr_${provider}_` + Math.random().toString(36).substr(2, 9),
+        name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} Aspirant`,
+        email: oauthEmail,
+        passwordHash: 'OAuthValidated',
+        provider: provider as any,
         createdAt: new Date().toISOString(),
         lastLoginAt: new Date().toISOString()
       };
@@ -152,18 +174,23 @@ export const authService = {
       id: matchedUser.id,
       name: matchedUser.name,
       email: matchedUser.email,
-      provider: 'google',
+      provider: matchedUser.provider,
       createdAt: matchedUser.createdAt,
       lastLoginAt: new Date().toISOString()
     };
 
-    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    }
     return authUser;
   },
 
-  async resetPassword(email: string): Promise<boolean> {
+  async loginWithGoogle(): Promise<AuthUser> {
+    return this.loginWithOAuth('google');
+  },
+
+  async resetPassword(email: string): Promise<void> {
     await new Promise(r => setTimeout(r, 300));
-    return true;
   },
 
   async logout(): Promise<void> {
