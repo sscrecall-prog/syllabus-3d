@@ -194,10 +194,6 @@ export const PlatformsView: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-sans tracking-tight">
               Course Batches & Mock Portals
             </h1>
-
-            <p className="text-xs sm:text-sm text-[#B4B7CA] leading-relaxed">
-              Physics Wallah, Careerwill, Testbook, AI Tools, ya apne coaching batches ko 1-click me direct launch karein.
-            </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
