@@ -19,6 +19,7 @@ import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
 import { ExamCountdown3D } from '../3d/ExamCountdown3D';
 import { Top3TargetsWidget } from '../dashboard/Top3TargetsWidget';
+import { AppFooter } from '../common/AppFooter';
 import { soundManager } from '../../utils/soundEffects';
 
 interface OverviewViewProps {
@@ -558,6 +559,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           })}
         </div>
       </div>
+
+      {/* 8. PROFESSIONAL & ADVANCED HOMEPAGE FOOTER */}
+      <AppFooter onNavigate={onNavigate} />
     </div>
   );
 };
