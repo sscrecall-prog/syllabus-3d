@@ -20,35 +20,35 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     { label: string; bg: string; text: string; border: string; icon: React.ElementType }
   > = {
     completed: {
-      label: 'Mastered ✓',
+      label: 'Mastered',
       bg: 'bg-emerald-500/15 dark:bg-emerald-500/20',
       text: 'text-emerald-700 dark:text-emerald-300',
       border: 'border-emerald-500/35',
       icon: CheckCircle2,
     },
     in_progress: {
-      label: 'In Progress ⚡',
+      label: 'In Progress',
       bg: 'bg-amber-500/15 dark:bg-amber-500/20',
       text: 'text-amber-800 dark:text-amber-300',
       border: 'border-amber-500/40',
       icon: Zap,
     },
     revision_due: {
-      label: 'Revise Due ⏳',
+      label: 'Revision Due',
       bg: 'bg-purple-500/15 dark:bg-purple-500/20',
       text: 'text-purple-700 dark:text-purple-300',
       border: 'border-purple-500/35',
       icon: RotateCw,
     },
     weak: {
-      label: 'Weak Topic ⚠️',
+      label: 'Weak Topic',
       bg: 'bg-rose-500/15 dark:bg-rose-500/20',
       text: 'text-rose-700 dark:text-rose-300',
       border: 'border-rose-500/40',
       icon: AlertTriangle,
     },
     not_started: {
-      label: 'Not Started ⭕',
+      label: 'Not Started',
       bg: 'bg-slate-100 dark:bg-slate-800/80',
       text: 'text-slate-600 dark:text-slate-400',
       border: 'border-slate-300 dark:border-slate-700',
