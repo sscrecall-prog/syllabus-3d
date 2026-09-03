@@ -24,6 +24,14 @@ import { useSyllabus } from '../../context/SyllabusContext';
 import { AddPlatformModal } from '../modals/AddPlatformModal';
 import { soundManager } from '../../utils/soundEffects';
 
+export const stripEmojis = (str: string): string => {
+  if (!str) return '';
+  return str
+    .replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}✨⭐📚📝🔍🔥🎓🏛️📖📊▶️🏆💻🔬📐🧠🌐🚀✈️]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 export const PlatformsView: React.FC = () => {
   const { platforms, togglePinPlatform, deletePlatform } = useSyllabus();
 
@@ -33,12 +41,13 @@ export const PlatformsView: React.FC = () => {
   const [editingPlatform, setEditingPlatform] = useState<ExternalPlatform | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Dynamic custom categories from existing platforms
+  // Dynamic custom categories from existing platforms (Cleaned from emojis)
   const customCategoriesList = useMemo(() => {
     const list = new Set<string>();
     platforms.forEach(p => {
       if (p.customCategoryName && p.customCategoryName.trim()) {
-        list.add(p.customCategoryName.trim());
+        const clean = stripEmojis(p.customCategoryName.trim());
+        if (clean) list.add(clean);
       }
     });
     return Array.from(list);
@@ -63,8 +72,10 @@ export const PlatformsView: React.FC = () => {
       if (p.category === 'custom' || Boolean(p.customCategoryName)) counts.custom++;
 
       if (p.customCategoryName && p.customCategoryName.trim()) {
-        const cat = p.customCategoryName.trim();
-        counts[cat] = (counts[cat] || 0) + 1;
+        const cat = stripEmojis(p.customCategoryName.trim());
+        if (cat) {
+          counts[cat] = (counts[cat] || 0) + 1;
+        }
       }
     });
 
@@ -90,7 +101,7 @@ export const PlatformsView: React.FC = () => {
       if (selectedCategory === 'custom') return p.category === 'custom' || Boolean(p.customCategoryName);
       
       // Match by custom category name
-      if (p.customCategoryName === selectedCategory) return true;
+      if (p.customCategoryName && stripEmojis(p.customCategoryName).toLowerCase() === selectedCategory.toLowerCase()) return true;
 
       return p.category === selectedCategory;
     });
@@ -335,15 +346,15 @@ export const PlatformsView: React.FC = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 pt-0.5">
           {[
             { id: 'all', label: 'All Portals', count: categoryCounts.all },
-            { id: 'course', label: 'Courses 📚', count: categoryCounts.course },
-            { id: 'test_series', label: 'Mock Tests 📝', count: categoryCounts.test_series },
-            { id: 'reference', label: 'Tools & Reference 🔍', count: categoryCounts.reference },
+            { id: 'course', label: 'Courses', count: categoryCounts.course },
+            { id: 'test_series', label: 'Mock Tests', count: categoryCounts.test_series },
+            { id: 'reference', label: 'Tools & Reference', count: categoryCounts.reference },
             ...customCategoriesList.map(cat => ({ 
               id: cat, 
-              label: `✨ ${cat}`,
+              label: cat,
               count: categoryCounts[cat] || 0
             })),
-            { id: 'pinned', label: 'Pinned ⭐', count: categoryCounts.pinned },
+            { id: 'pinned', label: 'Pinned', count: categoryCounts.pinned },
           ].map(tab => {
             const isSelected = selectedCategory === tab.id;
             return (
@@ -415,7 +426,7 @@ export const PlatformsView: React.FC = () => {
             const isCopied = copiedId === platform.id;
             const cleanDomain = formatCleanDomain(platform.url);
 
-            const categoryBadgeLabel = platform.customCategoryName || (
+            const categoryBadgeLabel = stripEmojis(platform.customCategoryName || '') || (
               platform.category === 'course'
                 ? 'Course Batch'
                 : platform.category === 'test_series'

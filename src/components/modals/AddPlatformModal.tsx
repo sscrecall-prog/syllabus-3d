@@ -23,6 +23,14 @@ interface AddPlatformModalProps {
   editPlatformData?: ExternalPlatform | null;
 }
 
+const stripEmojis = (str: string): string => {
+  if (!str) return '';
+  return str
+    .replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}✨⭐📚📝🔍🔥🎓🏛️📖📊▶️🏆💻🔬📐🧠🌐🚀✈️]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 const STORAGE_KEY_SAVED_CATEGORIES = 'syllabus3d_saved_custom_categories';
 
 // Quick Custom Category Suggestions
@@ -66,7 +74,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const [name, setName] = useState(editPlatformData?.name || '');
   const [url, setUrl] = useState(editPlatformData?.url || '');
   const [category, setCategory] = useState<PlatformCategory>(editPlatformData?.category || 'course');
-  const [customCategoryName, setCustomCategoryName] = useState(editPlatformData?.customCategoryName || '');
+  const [customCategoryName, setCustomCategoryName] = useState(stripEmojis(editPlatformData?.customCategoryName || ''));
   const [description, setDescription] = useState(editPlatformData?.description || '');
   const [icon, setIcon] = useState(editPlatformData?.icon || '⚡');
   const [color, setColor] = useState(editPlatformData?.color || '#5A4FCF');
@@ -76,7 +84,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
   const [pinned, setPinned] = useState(editPlatformData?.pinned || false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load and combine all saved & existing custom categories
+  // Load and combine all saved & existing custom categories (Cleaned from emojis)
   const savedCustomCategories = useMemo(() => {
     const set = new Set<string>();
     
@@ -88,7 +96,8 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         if (Array.isArray(parsed)) {
           parsed.forEach((cat: string) => {
             if (cat && typeof cat === 'string' && cat.trim()) {
-              set.add(cat.trim());
+              const clean = stripEmojis(cat.trim());
+              if (clean) set.add(clean);
             }
           });
         }
@@ -100,7 +109,8 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
     // 2. From all active platforms
     platforms.forEach(p => {
       if (p.customCategoryName && p.customCategoryName.trim()) {
-        set.add(p.customCategoryName.trim());
+        const clean = stripEmojis(p.customCategoryName.trim());
+        if (clean) set.add(clean);
       }
     });
 
@@ -167,11 +177,12 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
       cleanUrl = 'https://' + cleanUrl;
     }
 
+    const cleanCustomCat = stripEmojis(customCategoryName.trim());
     const payloadCustomCat = category === 'custom'
-      ? (customCategoryName.trim() || 'Custom Portal')
-      : (customCategoryName.trim() || undefined);
+      ? (cleanCustomCat || 'Custom Portal')
+      : (cleanCustomCat || undefined);
 
-    // Save custom category to localStorage history for future 1-click use
+    // Save custom category to localStorage history for future 1-click use (stripped of emojis)
     if (payloadCustomCat && payloadCustomCat !== 'Custom Portal') {
       try {
         const saved = localStorage.getItem(STORAGE_KEY_SAVED_CATEGORIES);
@@ -378,7 +389,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                           }`}
                         >
                           {isCurrentCat && <Check className="w-3 h-3 stroke-[3]" />}
-                          <span>✨ {savedCat}</span>
+                          <span>{stripEmojis(savedCat)}</span>
                         </button>
                       );
                     })}
@@ -398,7 +409,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       ref={customCatInputRef}
                       type="text"
                       value={customCategoryName}
-                      onChange={(e) => setCustomCategoryName(e.target.value)}
+                      onChange={(e) => setCustomCategoryName(stripEmojis(e.target.value))}
                       placeholder="e.g. Current Affairs, Maths Special, PYQ Practice, Telegram..."
                       className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                     />
