@@ -910,9 +910,6 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           + Add
                         </button>
                       </form>
-                      <p className="text-[11px] text-[#85877E] dark:text-[#787C99]">
-                        💡 Pro-tip: You can type comma-separated items like <span className="font-mono text-[#596B35] dark:text-[#7AA2F7]">"Fractions, Percentages, Word Problems"</span> to add them all at once!
-                      </p>
                     </div>
                   ) : (
                     /* BULK MULTI-SUBTOPIC MODE */
