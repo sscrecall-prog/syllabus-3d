@@ -33,7 +33,9 @@ import {
   Image as ImageIcon,
   HardDrive,
   FileCheck2,
-  RefreshCw
+  RefreshCw,
+  BookOpen,
+  Zap
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { usePWA } from '../../hooks/usePWA';
@@ -273,13 +275,15 @@ export const SettingsView: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4 sm:space-y-5 pb-20 max-w-4xl mx-auto select-none font-sans animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 pb-24 sm:pb-20 max-w-4xl mx-auto select-none font-sans animate-fade-in">
       
       {/* ═══════════════════════════════════════════════════
-          1. COMPACT PROFILE & LEVEL STRIP
+          1. EXECUTIVE PROFILE & LEVEL STRIP
           ═══════════════════════════════════════════════════ */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth flex flex-col sm:flex-row items-center justify-between gap-4">
-        
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
+        {/* Top ambient accent glow */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#596B35] dark:via-[#7AA2F7] to-transparent opacity-60" />
+
         {/* Hidden File Input for Avatar Photo */}
         <input
           ref={fileInputRef}
@@ -289,14 +293,14 @@ export const SettingsView: React.FC = () => {
           onChange={handleAvatarFileChange}
         />
 
-        {/* Left: Avatar + Name + Level Pill */}
-        <div className="flex items-center gap-3.5 min-w-0 w-full sm:w-auto">
-          {/* Avatar Squircle with Camera Badge */}
+        {/* Left: Avatar + Name + Level Badges */}
+        <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+          {/* Avatar Squircle with Dual Ring */}
           <div className="relative group shrink-0">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center text-xl font-black shadow-md cursor-pointer overflow-hidden relative border-2 border-white dark:border-[#24283B] active:scale-95 transition-transform"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#2E371B] dark:from-[#7AA2F7] dark:to-[#3D5BA9] text-white dark:text-[#0B0B0D] flex items-center justify-center text-xl sm:text-2xl font-black shadow-md cursor-pointer overflow-hidden relative border-2 border-white dark:border-[#272730] active:scale-95 transition-transform"
               title="Click to Upload Profile Photo"
             >
               {(profile.avatarUrl || user?.avatarUrl) ? (
@@ -309,49 +313,49 @@ export const SettingsView: React.FC = () => {
                 <span>{(user?.name || profile.name || 'A').charAt(0).toUpperCase()}</span>
               )}
 
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[11px] font-bold transition-opacity backdrop-blur-2xs">
-                <Camera className="w-4 h-4" />
+              {/* Hover Blur Overlay */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[10px] font-bold transition-opacity backdrop-blur-xs">
+                <Camera className="w-4 h-4 mb-0.5" />
                 <span>Upload</span>
               </div>
             </button>
 
-            {/* Corner Camera Button */}
+            {/* Floating Camera Button */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] border-2 border-white dark:border-[#16161E] flex items-center justify-center shadow-xs cursor-pointer active:scale-90 hover:scale-110 transition-transform"
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black border-2 border-white dark:border-[#18181D] flex items-center justify-center shadow-xs cursor-pointer active:scale-90 hover:scale-110 transition-transform"
               title="Change Profile Photo"
             >
               <Camera className="w-3 h-3" />
             </button>
           </div>
 
-          <div className="space-y-1 min-w-0 flex-1">
+          <div className="space-y-1.5 min-w-0 flex-1">
             {isEditingName ? (
               <form onSubmit={handleSaveProfile} className="flex items-center gap-2">
                 <input
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="px-3 py-1.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-[13px] font-bold shadow-xs cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black text-xs font-black shadow-xs cursor-pointer"
                 >
                   Save
                 </button>
               </form>
             ) : (
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight truncate font-serif">
+                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                   {user?.name || profile.name || 'Aspirant'}
                 </h2>
                 <button
                   onClick={() => setIsEditingName(true)}
-                  className="p-1 rounded-lg hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335] text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer transition-colors"
+                  className="p-1 rounded-lg hover:bg-[#FAF9F5] dark:hover:bg-[#242533] text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer transition-colors"
                   title="Edit Name"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -359,7 +363,7 @@ export const SettingsView: React.FC = () => {
                 {(profile.avatarUrl || user?.avatarUrl) && (
                   <button
                     onClick={handleRemoveAvatar}
-                    className="px-2 py-0.5 rounded-lg text-[11px] font-bold text-rose-500 hover:bg-rose-500/10 border border-rose-500/20 cursor-pointer transition-colors"
+                    className="px-2 py-0.5 rounded-lg text-[10px] font-bold text-rose-500 hover:bg-rose-500/10 border border-rose-500/20 cursor-pointer transition-colors"
                     title="Remove Photo and use initial letter"
                   >
                     Remove Photo
@@ -368,23 +372,26 @@ export const SettingsView: React.FC = () => {
               </div>
             )}
 
-            <div className="flex items-center gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#A9B1D6] flex-wrap">
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
-                Lvl {profile.level} • {profile.levelTitle}
+            {/* Micro-Badges Strip (No Raw Emojis!) */}
+            <div className="flex items-center gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] flex-wrap">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                <Zap className="w-3 h-3 fill-current" />
+                <span>Lvl {profile.level} • {profile.levelTitle}</span>
               </span>
               <span>•</span>
-              <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400 font-bold">
-                <Flame className="w-3.5 h-3.5 fill-current" />
-                {profile.currentStreak}d Streak
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg font-bold bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/25">
+                <Flame className="w-3 h-3 fill-current" />
+                <span>{profile.currentStreak}d Streak</span>
               </span>
               <span>•</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                {overallStats.completedCount}/{overallStats.totalTopics} Topics ({overallStats.completionPercentage}%)
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>{overallStats.completedCount}/{overallStats.totalTopics} Topics ({overallStats.completionPercentage}%)</span>
               </span>
             </div>
 
             {avatarNotice && (
-              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
+              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 animate-fade-in pt-0.5">
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
                 <span>Profile picture updated!</span>
               </p>
@@ -398,13 +405,13 @@ export const SettingsView: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleLogout}
-                className="px-3.5 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[13px] font-bold shadow-xs cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-black shadow-xs cursor-pointer"
               >
                 Confirm Logout
               </button>
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] cursor-pointer"
               >
                 Cancel
               </button>
@@ -412,7 +419,7 @@ export const SettingsView: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A1A1AA] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold transition-all cursor-pointer active:scale-95"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -422,9 +429,9 @@ export const SettingsView: React.FC = () => {
       </div>
 
       {/* ═══════════════════════════════════════════════════
-          2. CONCISE CATEGORY NAVIGATION TABS
+          2. SEGMENTED CATEGORY NAVIGATION TABS
           ═══════════════════════════════════════════════════ */}
-      <div className="flex items-center justify-between p-1 rounded-2xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-xs gap-1 overflow-x-auto scrollbar-none">
+      <div className="p-1.5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {[
           { id: 'exam' as SettingsTab, label: 'Exam Target', icon: Target },
           { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
@@ -441,10 +448,10 @@ export const SettingsView: React.FC = () => {
                 soundManager.playClick();
                 setActiveTab(tab.id);
               }}
-              className={`flex-1 min-w-[110px] py-2 px-3 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
+              className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
                 isActive
-                  ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-sm'
-                  : 'text-[#65675F] dark:text-[#A9B1D6] hover:bg-[#F7F6F0] dark:hover:bg-[#1F2335]'
+                  ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
+                  : 'text-[#65675F] dark:text-[#94A3B8] hover:bg-[#FAF9F5] dark:hover:bg-[#20212E] hover:text-[#11120F] dark:hover:text-white'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -460,27 +467,35 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 1: EXAM TARGET & COUNTDOWN CONFIG */}
       {activeTab === 'exam' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
-            <div>
-              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
-                Exam Target & Live Countdown
-              </h3>
-              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
-                Configure your target exam name and exam date to sync the live flip clock.
-              </p>
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 animate-fade-in relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/25 flex items-center justify-center shrink-0">
+                <Target className="w-5 h-5 stroke-[2.2]" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-tight">
+                  Exam Target & Live Countdown
+                </h3>
+                <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium">
+                  Configure your target exam name and exam date to sync the live flip clock.
+                </p>
+              </div>
             </div>
-            <span className="px-3 py-1 rounded-xl text-xs font-mono font-bold bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7]">
-              {daysRemaining} Days Left
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-black bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 shrink-0 self-start sm:self-auto">
+              <Clock className="w-3.5 h-3.5" />
+              <span>{daysRemaining} Days Left</span>
             </span>
           </div>
 
           {/* Quick Presets */}
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
-              Quick Exam Presets
+          <div className="space-y-2">
+            <span className="text-[11px] font-mono font-bold text-[#85877E] uppercase tracking-wider block flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              <span>Quick Exam Presets</span>
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {[
                 { label: 'SSC CGL 2026', year: 2026, days: 90 },
                 { label: 'SSC CHSL 2026', year: 2026, days: 120 },
@@ -488,24 +503,31 @@ export const SettingsView: React.FC = () => {
                 { label: 'RRB NTPC 2026', year: 2026, days: 100 },
                 { label: 'SBI PO 2026', year: 2026, days: 60 },
                 { label: 'UPSC CSE 2026', year: 2026, days: 180 }
-              ].map(p => (
-                <button
-                  type="button"
-                  key={p.label}
-                  onClick={() => handleApplyPresetExam(p.label, p.year, p.days)}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer"
-                >
-                  {p.label}
-                </button>
-              ))}
+              ].map(p => {
+                const isSelected = examName.toLowerCase() === p.label.toLowerCase();
+                return (
+                  <button
+                    type="button"
+                    key={p.label}
+                    onClick={() => handleApplyPresetExam(p.label, p.year, p.days)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border active:scale-95 ${
+                      isSelected
+                        ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
+                        : 'bg-[#FAF9F5] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSaveExamSettings} className="space-y-3.5 pt-1">
+          <form onSubmit={handleSaveExamSettings} className="space-y-4 pt-1">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="sm:col-span-2 space-y-1">
-                <label className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+              <div className="sm:col-span-2 space-y-1.5">
+                <label className="text-[11px] font-mono font-bold text-[#85877E] uppercase tracking-wider block">
                   Exam Title
                 </label>
                 <input
@@ -513,12 +535,12 @@ export const SettingsView: React.FC = () => {
                   value={examName}
                   onChange={e => setExamName(e.target.value)}
                   placeholder="e.g. SSC CGL 2026"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-mono font-bold text-[#85877E] uppercase tracking-wider block">
                   Target Year
                 </label>
                 <input
@@ -527,30 +549,30 @@ export const SettingsView: React.FC = () => {
                   onChange={e => setTargetYear(Number(e.target.value))}
                   min={2025}
                   max={2035}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                 />
               </div>
             </div>
 
-            {/* Exam Date & Adjusters */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-[#85877E] uppercase tracking-wider block font-mono">
+            {/* Exam Date & Quick Increment Buttons */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono font-bold text-[#85877E] uppercase tracking-wider block">
                 Exam Date
               </label>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
                 <input
                   type="date"
                   value={examDate}
                   onChange={e => setExamDate(e.target.value)}
-                  className="px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] cursor-pointer"
                 />
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   {[{ label: '+30d', days: 30 }, { label: '+60d', days: 60 }, { label: '+90d', days: 90 }, { label: '+180d', days: 180 }].map(b => (
                     <button
                       type="button"
                       key={b.label}
                       onClick={() => handleAddDays(b.days)}
-                      className="px-2 py-1 rounded-lg text-[11px] font-mono font-bold bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-[#FAF9F5] dark:bg-[#14151F] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#65675F] dark:text-[#94A3B8] border border-[#D8D8CF] dark:border-[#272730] transition-colors cursor-pointer active:scale-95"
                     >
                       {b.label}
                     </button>
@@ -562,13 +584,13 @@ export const SettingsView: React.FC = () => {
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs transition-all cursor-pointer active:scale-95 flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 flex items-center gap-2"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save Schedule</span>
               </button>
               {examSaved && (
-                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5 animate-fade-in font-mono">
                   <Check className="w-4 h-4 stroke-[3]" />
                   <span>Countdown synced across app!</span>
                 </span>
@@ -580,18 +602,18 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 2: APPEARANCE & THEME */}
       {activeTab === 'appearance' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#242533] pb-3">
             <div>
-              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide">
                 Color Theme & Palette
               </h3>
-              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
-                Switch between high-contrast Tokyo Night Dark and Classic Paper Light mode.
+              <p className="text-[11px] text-[#65675F] dark:text-[#94A3B8]">
+                Switch between high-contrast Tokyo Night Dark, Pure OLED, Sepia, and Paper Light mode.
               </p>
             </div>
-            <span className="px-3 py-1 rounded-xl text-[13px] font-bold font-mono bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7] capitalize">
-              {theme === 'dark' ? '🌙 Dark' : theme === 'oled' ? '🕶️ OLED' : theme === 'sepia' ? '📜 Sepia' : '☀️ Light'}
+            <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-[#11120F] dark:text-[#F5F5F7] capitalize">
+              {theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : 'Paper Light'}
             </span>
           </div>
 
@@ -606,7 +628,7 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'dark'
                   ? 'bg-[#1F2335] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/30 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -619,7 +641,7 @@ export const SettingsView: React.FC = () => {
                 <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
                   Tokyo Night Dark
                 </span>
-                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5">
                   Deep dark glassmorphism for focused study
                 </span>
               </div>
@@ -635,7 +657,7 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'oled'
                   ? 'bg-[#0A0B10] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/40 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -646,9 +668,9 @@ export const SettingsView: React.FC = () => {
               </div>
               <div>
                 <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
-                  🕶️ Pure OLED Black
+                  Pure OLED Black
                 </span>
-                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5">
                   100% pitch black for zero eye fatigue & battery saving
                 </span>
               </div>
@@ -664,7 +686,7 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'light'
                   ? 'bg-[#FAF8F5] border-[#596B35] ring-2 ring-[#596B35]/30 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -677,7 +699,7 @@ export const SettingsView: React.FC = () => {
                 <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
                   Classic Paper Light
                 </span>
-                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5">
                   Warm academic paper tones for daylight reading
                 </span>
               </div>
@@ -693,12 +715,12 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'sepia'
                   ? 'bg-[#FBF7F0] border-[#8B6914] ring-2 ring-[#8B6914]/30 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#16161E] border-[#D8D8CF] dark:border-[#292E42] opacity-70 hover:opacity-100'
+                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
                 <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] border border-[#D5C9AD] flex items-center justify-center text-[#8B6914] shrink-0">
-                  <span className="text-lg">📜</span>
+                  <BookOpen className="w-5 h-5" />
                 </div>
                 {theme === 'sepia' && <Check className="w-4 h-4 text-[#8B6914]" />}
               </div>
@@ -706,7 +728,7 @@ export const SettingsView: React.FC = () => {
                 <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
                   Sepia Parchment
                 </span>
-                <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6] block mt-0.5">
+                <span className="text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5">
                   Eye-soothing warm tones for long study sessions
                 </span>
               </div>
@@ -717,15 +739,15 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB: SOUND & MOTIVATION AUDIO */}
       {activeTab === 'sound' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-5 animate-fade-in">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-5 animate-fade-in">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#24283B] pb-3.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-3.5">
             <div>
-              <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide flex items-center gap-2">
+              <h3 className="text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide flex items-center gap-2">
                 <Volume2 className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
                 <span>Audio & Motivation Effects</span>
               </h3>
-              <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+              <p className="text-[11px] text-[#65675F] dark:text-[#94A3B8]">
                 Configure audio cues, Tibetan focus bell, and library silent mode.
               </p>
             </div>
@@ -737,7 +759,7 @@ export const SettingsView: React.FC = () => {
               }}
               className={`px-3.5 py-1.5 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-95 shadow-xs ${
                 audioConfig.masterEnabled
-                  ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D]'
+                  ? 'bg-[#11120F] dark:bg-white text-white dark:text-black font-black'
                   : 'bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black'
               }`}
             >
@@ -749,7 +771,7 @@ export const SettingsView: React.FC = () => {
               ) : (
                 <>
                   <VolumeX className="w-3.5 h-3.5" />
-                  <span>🤫 Library Silent Mode</span>
+                  <span>Library Silent Mode</span>
                 </>
               )}
             </button>
