@@ -65,66 +65,74 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const userName = user?.name || user?.email?.split('@')[0] || profile.name || 'Scholar';
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20">
+    <div className="pb-20">
       
-      {/* 1. PERSONALIZED GREETING HEADER */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <div className="min-w-0">
-          <h1 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight leading-tight">
-            {greeting}, <span className="text-[#596B35] dark:text-[#7AA2F7]">{userName}</span> 👋
-          </h1>
-          <p className="text-xs sm:text-[13px] text-[#65675F] dark:text-[#85877E] mt-0.5 font-medium">
-            {overallStats.completionPercentage > 0 
-              ? `You've mastered ${overallStats.completionPercentage}% of your syllabus. Keep pushing!`
-              : 'Start your preparation journey today!'}
-          </p>
-        </div>
+      {/* ═══ ABOVE THE FOLD — Fills entire viewport ═══ */}
+      <div className="min-h-[calc(100dvh-5rem)] flex flex-col justify-between gap-3 sm:gap-4">
+      
+        {/* 1. PERSONALIZED GREETING HEADER */}
+        <div className="flex items-center justify-between gap-3 pt-1">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight leading-tight">
+              {greeting}, <span className="text-[#596B35] dark:text-[#7AA2F7]">{userName}</span> 👋
+            </h1>
+            <p className="text-xs sm:text-[13px] text-[#65675F] dark:text-[#85877E] mt-0.5 font-medium">
+              {overallStats.completionPercentage > 0 
+                ? `You've mastered ${overallStats.completionPercentage}% of your syllabus. Keep pushing!`
+                : 'Start your preparation journey today!'}
+            </p>
+          </div>
 
-        {/* Quick Stats Cluster */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {profile.currentStreak > 0 && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 shrink-0">
-              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 tabular-nums font-mono">{profile.currentStreak}d</span>
+          {/* Quick Stats Cluster */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {profile.currentStreak > 0 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 shrink-0">
+                <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 tabular-nums font-mono">{profile.currentStreak}d</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#596B35]/10 dark:bg-[#7AA2F7]/10 border border-[#596B35]/20 dark:border-[#7AA2F7]/20 shrink-0">
+              <TrendingUp className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+              <span className="text-[11px] font-black text-[#596B35] dark:text-[#7AA2F7] font-mono">Lvl {profile.level}</span>
             </div>
-          )}
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#596B35]/10 dark:bg-[#7AA2F7]/10 border border-[#596B35]/20 dark:border-[#7AA2F7]/20 shrink-0">
-            <TrendingUp className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
-            <span className="text-[11px] font-black text-[#596B35] dark:text-[#7AA2F7] font-mono">Lvl {profile.level}</span>
           </div>
         </div>
-      </div>
 
-      {/* 2. HERO ARTWORK BANNER — Clean 4:3 on mobile, 16:9 on desktop */}
-      <div className="relative rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] shadow-sm bg-[#0B0F19] group">
-        <div className="relative aspect-[4/3] sm:aspect-[16/9] w-full overflow-hidden">
-          <img
-            src="/dashboard-hero.jpg"
-            alt="Focus Plan Achieve - Syllabus 3D Mastery"
-            className="w-full h-full object-cover object-center"
-            loading="eager"
-          />
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />
-          
-          {/* Bottom Pills */}
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-none">
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm border border-white/10 text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] sm:text-xs font-bold font-mono tracking-wide">
-                {examName} ({examYear})
-              </span>
-            </div>
+        {/* 2. HERO ARTWORK BANNER — Fills remaining space */}
+        <div className="relative rounded-2xl overflow-hidden border border-[#D8D8CF] dark:border-[#272730] shadow-sm bg-[#0B0F19] flex-1 min-h-0">
+          <div className="relative w-full h-full min-h-[200px] overflow-hidden">
+            <img
+              src="/dashboard-hero.jpg"
+              alt="Focus Plan Achieve - Syllabus 3D Mastery"
+              className="w-full h-full object-cover object-center absolute inset-0"
+              loading="eager"
+            />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />
             
-            <div className="px-2.5 py-1.5 rounded-xl bg-[#FACC15]/15 backdrop-blur-sm border border-[#FACC15]/25 text-[#FACC15] text-[11px] sm:text-xs font-bold">
-              🏆 {overallStats.completionPercentage}% Mastered
+            {/* Bottom Pills */}
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 pointer-events-none">
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm border border-white/10 text-white">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[11px] sm:text-xs font-bold font-mono tracking-wide">
+                  {examName} ({examYear})
+                </span>
+              </div>
+              
+              <div className="px-2.5 py-1.5 rounded-xl bg-[#FACC15]/15 backdrop-blur-sm border border-[#FACC15]/25 text-[#FACC15] text-[11px] sm:text-xs font-bold">
+                🏆 {overallStats.completionPercentage}% Mastered
+              </div>
             </div>
           </div>
         </div>
+
+        {/* 3. EXAM COUNTDOWN */}
+        <ExamCountdown3D />
+      
       </div>
 
-      {/* 3. EXAM COUNTDOWN */}
-      <ExamCountdown3D />
+      {/* ═══ BELOW THE FOLD — Visible on scroll ═══ */}
+      <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
 
       {/* 4. TOP 3 NON-NEGOTIABLES */}
       <Top3TargetsWidget />
@@ -424,6 +432,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
