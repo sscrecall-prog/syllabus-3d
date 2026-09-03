@@ -9,7 +9,20 @@ import {
   X,
   Trophy,
   ArrowRight,
-  Clock} from 'lucide-react';
+  Clock,
+  Zap,
+  BrainCircuit,
+  ShieldCheck,
+  Layers,
+  Sparkles,
+  Calculator,
+  Globe,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  Flame,
+  FileText
+} from 'lucide-react';
 import { getTodayDateString, formatDateReadable, isDatePastOrToday } from '../../utils/dateUtils';
 import { RevisionRecord, Topic } from '../../types/syllabus';
 import { soundManager } from '../../utils/soundEffects';
@@ -22,7 +35,8 @@ interface RevisionViewProps {
 
 export const RevisionView: React.FC<RevisionViewProps> = ({
   onOpenRevisionSession,
-  onOpenTopicDrawer}) => {
+  onOpenTopicDrawer
+}) => {
   const { revisions, dueRevisions, allTopics, currentExam } = useSyllabus();
 
   const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'history'>('today');
@@ -43,6 +57,102 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
   const historyList = useMemo(() => {
     return revisions.filter(r => r.completedDate);
   }, [revisions]);
+
+  // Subject Icon & Theme Meta
+  const getSubjectMeta = (name: string, fallbackColor?: string) => {
+    const lower = name.toLowerCase();
+    if (lower.includes('quant') || lower.includes('math')) {
+      return {
+        icon: Calculator,
+        color: fallbackColor || '#EF4444',
+        gradient: 'from-[#3b0b11] to-[#25070b]',
+        border: 'border-red-500/30',
+        text: 'text-red-400',
+        bg: 'bg-red-500/10'
+      };
+    }
+    if (lower.includes('gk') || lower.includes('general awareness') || lower.includes('knowledge') || lower.includes('gs') || lower.includes('pyq')) {
+      return {
+        icon: Globe,
+        color: fallbackColor || '#0EA5E9',
+        gradient: 'from-[#0c2340] to-[#08172c]',
+        border: 'border-sky-500/30',
+        text: 'text-sky-400',
+        bg: 'bg-sky-500/10'
+      };
+    }
+    if (lower.includes('reasoning') || lower.includes('intelligence')) {
+      return {
+        icon: BrainCircuit,
+        color: fallbackColor || '#A855F7',
+        gradient: 'from-[#2a134a] to-[#1a0c2e]',
+        border: 'border-purple-500/30',
+        text: 'text-purple-400',
+        bg: 'bg-purple-500/10'
+      };
+    }
+    if (lower.includes('english') || lower.includes('editorial') || lower.includes('comprehension')) {
+      return {
+        icon: BookOpen,
+        color: fallbackColor || '#10B981',
+        gradient: 'from-[#0a3225] to-[#062017]',
+        border: 'border-emerald-500/30',
+        text: 'text-emerald-400',
+        bg: 'bg-emerald-500/10'
+      };
+    }
+    return {
+      icon: Layers,
+      color: fallbackColor || '#7AA2F7',
+      gradient: 'from-[#181926] to-[#12131d]',
+      border: 'border-[#3b3d56]',
+      text: 'text-indigo-400',
+      bg: 'bg-indigo-500/10'
+    };
+  };
+
+  // Stage Meta & Styling
+  const getStageMeta = (stage: number) => {
+    switch (stage) {
+      case 1:
+        return {
+          label: 'Stage 1 • 1d',
+          phase: 'Initial Recall',
+          subtitle: 'Fresh concepts learned',
+          badgeClass: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/25',
+          accent: '#3B82F6',
+          icon: Zap
+        };
+      case 2:
+        return {
+          label: 'Stage 2 • 3d',
+          phase: 'Consolidation',
+          subtitle: 'Memory reinforcing',
+          badgeClass: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/25',
+          accent: '#F59E0B',
+          icon: Flame
+        };
+      case 3:
+        return {
+          label: 'Stage 3 • 7d',
+          phase: 'Long-Term',
+          subtitle: 'Core memory recall',
+          badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/25',
+          accent: '#A855F7',
+          icon: BrainCircuit
+        };
+      case 4:
+      default:
+        return {
+          label: 'Stage 4 • 21d+',
+          phase: 'Permanently Locked',
+          subtitle: 'Exam-ready recall',
+          badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/25',
+          accent: '#10B981',
+          icon: ShieldCheck
+        };
+    }
+  };
 
   // Apply Subject & Search Filters
   const filterRecordList = (list: RevisionRecord[]) => {
@@ -68,36 +178,44 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
   const stage4Count = revisions.filter(r => r.stage >= 4 || r.completedDate).length;
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto select-none">
+    <div className="space-y-4 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto select-none font-sans animate-fade-in">
       
-      {/* 1. HEADER & START REVISION BUTTON */}
-      <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 space-y-3 sm:space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center">
-                <RotateCw className="w-4 h-4" />
+      {/* 1. EXECUTIVE HERO BANNER */}
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          
+          {/* Title and Icon Capsule */}
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-gradient-to-br from-[#0a3225] via-[#104b38] to-[#062017] border border-emerald-500/40 text-emerald-300 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)] shrink-0">
+              <RotateCw className="w-6 h-6 stroke-[2.3] animate-spin-slow" />
+            </div>
+
+            <div className="min-w-0 space-y-0.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                <span>Ebbinghaus Spaced Repetition</span>
+                <span>•</span>
+                <span>Memory Retention Engine</span>
               </div>
-              <h2 className="text-base sm:text-2xl font-bold text-[#191A17] dark:text-[#F5F5F7]">
+              <h2 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Spaced Repetition & Revision
               </h2>
+              <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
+                Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
+              </p>
             </div>
-            <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-normal leading-relaxed">
-              Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
-            </p>
           </div>
 
-          {/* Action Button */}
+          {/* High-Impact Action Button */}
           <button
             onClick={() => {
               soundManager.playClick();
               onOpenRevisionSession();
             }}
             disabled={dueRevisions.length === 0}
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer shrink-0 ${
+            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 border ${
               dueRevisions.length > 0
-                ? 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] hover:bg-[#596B35] dark:hover:bg-[#6090F5] shadow-[#7AA2F7]/25'
-                : 'bg-[#EEEEE8] dark:bg-[#23232A] text-[#85877E] dark:text-[#71717A] cursor-not-allowed opacity-60'
+                ? 'bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#E2E4F0] border-transparent shadow-[0_4px_15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                : 'bg-[#FAF9F5] dark:bg-[#1E1F2A] text-[#85877E] dark:text-[#71717A] border-[#D8D8CF] dark:border-[#2E3044] cursor-not-allowed opacity-75'
             }`}
           >
             <Play className={`w-3.5 h-3.5 ${dueRevisions.length > 0 ? 'fill-current' : ''}`} />
@@ -110,93 +228,100 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
         </div>
       </div>
 
-      {/* 2. 4-STAGE RETENTION PIPELINE CARDS (MOBILE-OPTIMIZED GRID) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+      {/* 2. 4-STAGE RETENTION PIPELINE BENTO CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
         
         {/* Stage 1 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-blue-500/50 shadow-subtle-depth space-y-2 transition-all">
+        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-blue-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
               Stage 1 • 1d
             </span>
-            <span className="text-[11px] text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 1</span>
+            <span className="text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 1</span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
-              {stage1Count} <span className="text-xs font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
+              {stage1Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-xs sm:text-[13px] font-bold text-blue-600 dark:text-blue-400 mt-1">Initial Recall</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5">Fresh concepts learned</p>
+            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Fresh concepts learned</p>
           </div>
         </div>
 
         {/* Stage 2 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-amber-500/50 shadow-subtle-depth space-y-2 transition-all">
+        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-amber-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
               Stage 2 • 3d
             </span>
-            <span className="text-[11px] text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 3</span>
+            <span className="text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 3</span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
-              {stage2Count} <span className="text-xs font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
+              {stage2Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-xs sm:text-[13px] font-bold text-amber-600 dark:text-amber-400 mt-1">Consolidation</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5">Memory reinforcing</p>
+            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Memory reinforcing</p>
           </div>
         </div>
 
         {/* Stage 3 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-purple-500/50 shadow-subtle-depth space-y-2 transition-all">
+        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-purple-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/25">
+            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/25">
               Stage 3 • 7d
             </span>
-            <span className="text-[11px] text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 7</span>
+            <span className="text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 7</span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
-              {stage3Count} <span className="text-xs font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
+              {stage3Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
-            <p className="text-xs sm:text-[13px] font-bold text-purple-600 dark:text-purple-400 mt-1">Long-Term</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5">Core memory recall</p>
+            <p className="text-xs sm:text-[13px] font-bold text-purple-600 dark:text-purple-400 mt-1">Long-Term Sync</p>
+            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Core memory recall</p>
           </div>
         </div>
 
         {/* Stage 4 / Mastered */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-emerald-500/50 shadow-subtle-depth space-y-2 transition-all">
+        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-emerald-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
               Stage 4 • 21d+
             </span>
-            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">★ Mastered</span>
+            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5">
+              <ShieldCheck className="w-3 h-3" />
+              <span>Mastered</span>
+            </span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black tabular-nums text-emerald-600 dark:text-emerald-400">
-              {stage4Count} <span className="text-xs font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-emerald-600 dark:text-emerald-400">
+              {stage4Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-xs sm:text-[13px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">Permanently Locked</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5">Exam-ready recall</p>
+            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Exam-ready recall</p>
           </div>
         </div>
       </div>
 
-      {/* 3. SEARCH & QUEUE FILTER BAR */}
-      <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+      {/* 3. SEARCH & QUEUE FILTER TOOLBAR */}
+      <div className="p-3.5 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
         
         {/* Search & Tabs Row */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           
-          {/* Search Box */}
+          {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#85877E] pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#85877E] pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search topics in revision queue..."
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#8B5CF6]"
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
             />
             {searchQuery && (
               <button
@@ -208,72 +333,87 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             )}
           </div>
 
-          {/* Queue Tab Buttons */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {/* Queue Tab Switchers */}
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] shadow-2xs overflow-x-auto no-scrollbar">
             {[
-              { id: 'today', label: 'Due Today', count: dueList.length },
-              { id: 'upcoming', label: 'Upcoming', count: upcomingList.length },
-              { id: 'history', label: 'Mastered', count: historyList.length },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  soundManager.playClick();
-                  setActiveTab(tab.id as any);
-                }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer shrink-0 ${
-                  activeTab === tab.id
-                    ? 'bg-[#11120F] dark:bg-[#8B5CF6] text-white border-transparent shadow-sm'
-                    : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
-                }`}
-              >
-                <span>{tab.label}</span>
-                <span className={`px-1.5 py-0.2 rounded-md text-[11px] font-mono ${
-                  activeTab === tab.id
-                    ? 'bg-white/20 text-white'
-                    : 'bg-[#EEEEE8] dark:bg-[#18181D] text-[#85877E] dark:text-[#A1A1AA]'
-                }`}>
-                  {tab.count}
-                </span>
-              </button>
-            ))}
+              { id: 'today', label: 'Due Today', count: dueList.length, icon: Clock },
+              { id: 'upcoming', label: 'Upcoming', count: upcomingList.length, icon: Calendar },
+              { id: 'history', label: 'Mastered Vault', count: historyList.length, icon: Trophy },
+            ].map(tab => {
+              const TabIcon = tab.icon;
+              const isSel = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    soundManager.playClick();
+                    setActiveTab(tab.id as any);
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                    isSel
+                      ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
+                      : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
+                  }`}
+                >
+                  <TabIcon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
+                    isSel
+                      ? 'bg-white/20 dark:bg-black/20'
+                      : 'bg-[#EEEEE8] dark:bg-[#20212E] text-[#85877E]'
+                  }`}>
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Subject Filter Pills Row */}
+        {/* Subject Filter Pills */}
         {currentExam && currentExam.subjects.length > 0 && (
-          <div className="flex items-center gap-1.5 overflow-x-auto pt-2.5 border-t border-[#D8D8CF]/60 dark:border-[#272730] no-scrollbar">
-            <span className="text-[11px] font-semibold text-[#85877E] dark:text-[#A1A1AA] flex items-center gap-1 shrink-0 mr-0.5">
-              <Filter className="w-3 h-3" />
-              <span>Subject:</span>
-            </span>
-
+          <div className="flex items-center gap-1.5 overflow-x-auto pt-3 border-t border-[#EEEEE8] dark:border-[#242533] no-scrollbar">
             <button
-              onClick={() => setSelectedSubjectFilter('all')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer border ${
+              onClick={() => {
+                soundManager.playClick();
+                setSelectedSubjectFilter('all');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
                 selectedSubjectFilter === 'all'
-                  ? 'bg-[#596B35] dark:bg-[#8B5CF6] text-white border-transparent shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730]'
+                  ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
+                  : 'bg-[#FAF9F5] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
               }`}
             >
-              All ({revisions.length})
+              <Layers className="w-3.5 h-3.5" />
+              <span>All ({revisions.length})</span>
             </button>
 
             {currentExam.subjects.map(s => {
               const count = revisions.filter(r => r.subjectName === s.name).length;
+              const isSelected = selectedSubjectFilter === s.name;
+              const meta = getSubjectMeta(s.name, s.color);
+              const SubjIcon = meta.icon;
+
               return (
                 <button
                   key={s.id}
-                  onClick={() => setSelectedSubjectFilter(s.name)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer border ${
-                    selectedSubjectFilter === s.name
-                      ? 'bg-[#596B35] dark:bg-[#8B5CF6] text-white border-transparent shadow-sm'
-                      : 'bg-[#F7F6F0] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730]'
+                  onClick={() => {
+                    soundManager.playClick();
+                    setSelectedSubjectFilter(s.name);
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
+                    isSelected
+                      ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
+                      : 'bg-[#FAF9F5] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
                   }`}
                 >
-                  <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: s.color || '#596B35' }} />
+                  <SubjIcon className="w-3.5 h-3.5" style={{ color: isSelected ? undefined : meta.color }} />
                   <span>{s.name}</span>
-                  <span className="text-[11px] opacity-75">({count})</span>
+                  <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
+                    isSelected ? 'bg-white/20 dark:bg-black/20' : 'bg-[#EEEEE8] dark:bg-[#20212E] text-[#85877E]'
+                  }`}>
+                    {count}
+                  </span>
                 </button>
               );
             })}
@@ -282,49 +422,68 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
       </div>
 
       {/* 4. REVISION CARDS QUEUE */}
-      <div className="space-y-2.5 sm:space-y-3">
+      <div className="space-y-3">
         
         {/* DUE TODAY LIST */}
         {activeTab === 'today' && (
           displayedDue.length > 0 ? (
             displayedDue.map(rev => {
               const topicObj = allTopics.find(t => t.topic.id === rev.topicId);
+              const meta = getSubjectMeta(rev.subjectName);
+              const SubjIcon = meta.icon;
+              const stageMeta = getStageMeta(rev.stage);
 
               return (
                 <div
                   key={rev.id}
-                  className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#8B5CF6] shadow-subtle-depth transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group"
+                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-emerald-500/50 dark:hover:border-emerald-500/40 shadow-subtle-depth transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group relative overflow-hidden"
                 >
-                  <div className="space-y-1 flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-[#596B35]/15 dark:bg-[#8B5CF6]/20 text-[#596B35] dark:text-[#8B5CF6] border border-[#596B35]/25 dark:border-[#8B5CF6]/30 font-mono">
-                        Stage {rev.stage} • {rev.intervalDays}d
-                      </span>
-                      <span className="text-[11px] font-medium text-[#65675F] dark:text-[#A1A1AA] truncate">
-                        {rev.subjectName} • {rev.chapterName}
-                      </span>
+                  {/* Subtle Left Accent Line */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 w-1 opacity-80 group-hover:opacity-100"
+                    style={{ backgroundColor: stageMeta.accent }}
+                  />
+
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1 pl-1">
+                    
+                    {/* 3D Squircle Subject Badge */}
+                    <div
+                      className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shadow-xs shrink-0`}
+                    >
+                      <SubjIcon className="w-5 h-5 stroke-[2.2]" />
                     </div>
 
-                    <h4 className="text-sm sm:text-base font-semibold text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#8B5CF6] transition-colors">
-                      {rev.topicName}
-                    </h4>
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap text-xs">
+                        <span className={`px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg border ${stageMeta.badgeClass}`}>
+                          {stageMeta.label}
+                        </span>
+                        <span className="text-[11px] font-mono font-bold text-[#65675F] dark:text-[#A1A1AA] truncate">
+                          {rev.subjectName} • {rev.chapterName}
+                        </span>
+                      </div>
+
+                      <h4 className="text-sm sm:text-base font-black text-[#191A17] dark:text-[#F5F5F7] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                        {rev.topicName}
+                      </h4>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EEEEE8] dark:border-[#242533]">
                     {topicObj && onOpenTopicDrawer && (
                       <button
                         onClick={() => onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName)}
-                        className="px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
+                        className="px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-all active:scale-95"
                       >
-                        Notes & Details
+                        Notes
                       </button>
                     )}
 
                     <button
                       onClick={onOpenRevisionSession}
-                      className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#11120F] dark:bg-[#8B5CF6] hover:bg-[#596B35] dark:hover:bg-[#7C3AED] text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                      className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
                     >
-                      <RotateCw className="w-3.5 h-3.5" />
+                      <RotateCw className="w-3.5 h-3.5 stroke-[2.5]" />
                       <span>Review Card</span>
                     </button>
                   </div>
@@ -333,30 +492,30 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             })
           ) : (
             /* Clean Empty State */
-            <div className="py-10 sm:py-14 px-4 text-center rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
-              <div className="w-14 h-14 rounded-2xl bg-[#596B35]/15 dark:bg-[#8B5CF6]/20 border border-[#596B35]/30 dark:border-[#8B5CF6]/30 flex items-center justify-center text-[#596B35] dark:text-[#8B5CF6] mx-auto shadow-sm">
-                <Trophy className="w-7 h-7" />
+            <div className="py-12 sm:py-16 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0a3225] to-[#062017] border border-emerald-500/30 text-emerald-300 flex items-center justify-center mx-auto shadow-md">
+                <Trophy className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-bold text-[#191A17] dark:text-[#F5F5F7]">
+                <h3 className="text-base sm:text-lg font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-tight">
                   All Due Revisions Cleared Today! 🎉
                 </h3>
-                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto">
+                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto font-medium">
                   Your spaced repetition queue is fully up to date. You can review upcoming cards early or inspect your mastered vault.
                 </p>
               </div>
 
               {upcomingList.length > 0 && (
-                <div className="pt-1">
+                <div className="pt-2">
                   <button
                     onClick={() => {
                       soundManager.playClick();
                       setActiveTab('upcoming');
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#DCE8B7] dark:hover:bg-[#8B5CF6]/20 border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
                   >
                     <span>View {upcomingList.length} Upcoming Cards</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#596B35] dark:text-[#8B5CF6]" />
+                    <ArrowRight className="w-3.5 h-3.5 text-emerald-500" />
                   </button>
                 </div>
               )}
@@ -367,35 +526,49 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
         {/* UPCOMING LIST */}
         {activeTab === 'upcoming' && (
           displayedUpcoming.length > 0 ? (
-            displayedUpcoming.map(rev => (
-              <div
-                key={rev.id}
-                className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex items-center justify-between gap-3"
-              >
-                <div className="space-y-1 flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-[#EEEEE8] dark:bg-[#23232A] text-[#65675F] dark:text-[#A1A1AA]">
-                      Stage {rev.stage}
-                    </span>
-                    <span className="text-[11px] text-[#65675F] dark:text-[#A1A1AA] truncate">
-                      {rev.subjectName} • {rev.chapterName}
+            displayedUpcoming.map(rev => {
+              const meta = getSubjectMeta(rev.subjectName);
+              const SubjIcon = meta.icon;
+              const stageMeta = getStageMeta(rev.stage);
+
+              return (
+                <div
+                  key={rev.id}
+                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex items-center justify-between gap-4 group"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    <div
+                      className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}
+                    >
+                      <SubjIcon className="w-5 h-5 stroke-[2.2]" />
+                    </div>
+
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 text-[11px] font-mono font-black rounded-lg border ${stageMeta.badgeClass}`}>
+                          {stageMeta.label}
+                        </span>
+                        <span className="text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">
+                          {rev.subjectName} • {rev.chapterName}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
+                        {rev.topicName}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="px-3 py-1 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#596B35] dark:text-[#7AA2F7] font-mono flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{formatDateReadable(rev.scheduledDate)}</span>
                     </span>
                   </div>
-                  <h4 className="text-xs sm:text-sm font-semibold text-[#191A17] dark:text-[#F5F5F7] truncate">
-                    {rev.topicName}
-                  </h4>
                 </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="px-2.5 py-1 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#596B35] dark:text-[#8B5CF6] font-mono flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{formatDateReadable(rev.scheduledDate)}</span>
-                  </span>
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
-            <div className="py-10 text-center text-xs text-[#65675F] dark:text-[#A1A1AA] rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
+            <div className="py-12 text-center text-xs text-[#65675F] dark:text-[#A1A1AA] rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
               No upcoming revisions found matching filter.
             </div>
           )
@@ -404,30 +577,43 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
         {/* MASTERED VAULT LIST */}
         {activeTab === 'history' && (
           displayedHistory.length > 0 ? (
-            displayedHistory.map(rev => (
-              <div
-                key={rev.id}
-                className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#18181D] border border-emerald-500/30 shadow-subtle-depth flex items-center justify-between gap-3"
-              >
-                <div className="space-y-1 flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                      ✓ Mastered
-                    </span>
-                    <span className="text-[11px] text-[#65675F] dark:text-[#A1A1AA] truncate">{rev.subjectName}</span>
-                  </div>
-                  <h4 className="text-xs sm:text-sm font-semibold text-[#191A17] dark:text-[#F5F5F7] truncate">
-                    {rev.topicName}
-                  </h4>
-                </div>
+            displayedHistory.map(rev => {
+              const meta = getSubjectMeta(rev.subjectName);
+              const SubjIcon = meta.icon;
 
-                <span className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-mono shrink-0">
-                  {rev.completedDate ? `Mastered on ${rev.completedDate}` : 'Retained'}
-                </span>
-              </div>
-            ))
+              return (
+                <div
+                  key={rev.id}
+                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-emerald-500/30 shadow-subtle-depth flex items-center justify-between gap-4"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    <div
+                      className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}
+                    >
+                      <SubjIcon className="w-5 h-5 stroke-[2.2]" />
+                    </div>
+
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-0.5 text-[11px] font-mono font-bold rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          ✓ Mastered
+                        </span>
+                        <span className="text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">{rev.subjectName}</span>
+                      </div>
+                      <h4 className="text-sm font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
+                        {rev.topicName}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-mono shrink-0">
+                    {rev.completedDate ? `Mastered on ${rev.completedDate}` : 'Retained'}
+                  </span>
+                </div>
+              );
+            })
           ) : (
-            <div className="py-10 text-center text-xs text-[#65675F] dark:text-[#A1A1AA] rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
+            <div className="py-12 text-center text-xs text-[#65675F] dark:text-[#A1A1AA] rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
               No mastered cards yet. Complete revision cards to fill your Mastered Vault!
             </div>
           )
