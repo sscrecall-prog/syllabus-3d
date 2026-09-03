@@ -424,7 +424,7 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
                   : 'text-[#A9B1D6] hover:text-white'
               }`}
             >
-              <FileText className="w-3.5 h-3.5" />
+              <img src="/notes_icon_3d.png" alt="Notes" className="w-3.5 h-3.5 object-contain shrink-0" />
               <span>Notes</span>
             </button>
           </div>

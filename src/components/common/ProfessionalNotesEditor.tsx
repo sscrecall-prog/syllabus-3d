@@ -1517,7 +1517,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     : 'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
                 }`}
               >
-                <FileText className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-slate-400'}`} />
+                <img src="/notes_icon_3d.png" alt="Note" className="w-4 h-4 object-contain shrink-0 drop-shadow-xs" />
 
                 {isEditing ? (
                   <form
@@ -1626,7 +1626,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 onClick={() => handleAddNewNote()}
                 className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
               >
-                <FileText className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <img src="/notes_icon_3d.png" alt="Notes" className="w-5 h-5 object-contain shrink-0 drop-shadow-xs" />
                 <div>
                   <div className="font-bold">📄 Blank Notes Page</div>
                   <div className="text-[11px] text-slate-400 font-normal">Start with clean canvas</div>

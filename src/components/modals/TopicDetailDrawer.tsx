@@ -578,7 +578,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       : 'border-transparent text-[#65675F] dark:text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  {tab.id === 'notes' ? (
+                    <img src="/notes_icon_3d.png" alt="Notes" className="w-4 h-4 object-contain rounded-xs shadow-xs" />
+                  ) : (
+                    <Icon className="w-3.5 h-3.5" />
+                  )}
                   <span>{tab.label}</span>
                   {tab.badge && (
                     <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono text-white ${tab.badgeColor || 'bg-[#B94A48]'}`}>
