@@ -2907,11 +2907,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             rows={14}
             className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#D8D8CF] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#596B35] dark:focus:ring-[#7AA2F7] shadow-inner select-text"
           />
-
-          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
-            <span>{wordCount} words · {charCount} chars</span>
-            <span>Supports Markdown, Tables, LaTeX Math, Box & Freefall Highlighter</span>
-          </div>
         </div>
       )}
 
