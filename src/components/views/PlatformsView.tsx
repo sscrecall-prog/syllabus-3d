@@ -161,19 +161,23 @@ export const PlatformsView: React.FC = () => {
       {/* 1. HERO BENTO BANNER WITH 3D AMBIENT NODES */}
       <div className="p-6 sm:p-8 rounded-3xl bg-[#0B0C15] border border-[#242636] shadow-xl relative overflow-hidden text-white">
         
-        {/* Background Banner Artwork */}
-        <div 
-          className="absolute inset-0 bg-cover bg-right md:bg-center pointer-events-none opacity-60 mix-blend-screen"
-          style={{ backgroundImage: `url('/study_hub_banner.png')` }}
-        />
+        {/* Full Uncropped High-Fidelity 3D Portal Artwork (Zero crop, fits card perfectly) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
+          <img
+            src="/study_hub_banner.png"
+            alt="Connected Study Portals"
+            className="h-full w-auto max-w-none object-contain object-right opacity-80 sm:opacity-95 select-none"
+            loading="eager"
+          />
+        </div>
 
-        {/* Ambient Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C15] via-[#0B0C15]/85 md:via-[#0B0C15]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C15] via-transparent to-transparent pointer-events-none" />
+        {/* Ambient Gradient Overlays for 100% Text Legibility & Smooth Blend */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C15] via-[#0B0C15]/80 md:via-[#0B0C15]/40 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C15]/70 via-transparent to-transparent pointer-events-none z-0" />
         
         {/* Ambient Glow Accents */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#7AA2F7]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-72 h-72 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#7AA2F7]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-72 h-72 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div className="space-y-2.5 max-w-2xl">
