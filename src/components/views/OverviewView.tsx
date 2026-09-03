@@ -376,32 +376,41 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
       {/* 6. STUDY STATION & PLATFORMS */}
       {platforms.length > 0 && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 dark:bg-[#7AA2F7]/15 text-indigo-500 dark:text-[#7AA2F7] flex items-center justify-center shrink-0">
-                <Globe className="w-4 h-4 stroke-[2]" />
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 relative overflow-hidden select-none">
+          
+          {/* Subtle Ambient Glow */}
+          <div className="absolute -top-16 -right-16 w-48 h-48 bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] rounded-full blur-2xl pointer-events-none" />
+
+          {/* Header */}
+          <div className="relative z-10 flex items-center justify-between gap-3 pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-600/20 shrink-0">
+                <Globe className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-[15px] font-black text-[#191A17] dark:text-[#F5F5F7]">
-                  Study Station
+                <h3 className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                  Study Station & Portals
                 </h3>
-                <p className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#85877E]">
-                  Connected learning platforms
+                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-medium">
+                  1-Click launch into your study resources, test portals & notes
                 </p>
               </div>
             </div>
 
             <button
-              onClick={() => onNavigate('platforms')}
-              className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline flex items-center gap-1 cursor-pointer"
+              onClick={() => {
+                soundManager.playClick();
+                onNavigate('platforms');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1E1F2A] border border-[#D8D8CF] dark:border-[#2E3044] text-[#65675F] dark:text-[#CBD5E1] hover:text-[#596B35] dark:hover:text-[#7AA2F7] hover:border-[#596B35] dark:hover:border-[#7AA2F7] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
             >
               <span>View All</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {/* Interactive Platform Launcher Grid */}
+          <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
             {platforms.slice(0, 4).map(plat => (
               <div
                 key={plat.id}
@@ -409,19 +418,22 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   soundManager.playClick();
                   window.open(plat.url, '_blank', 'noopener,noreferrer');
                 }}
-                className="p-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1E2030] border border-[#E5E5DC] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer flex items-center gap-2 group active:scale-[0.98]"
+                className="p-3 sm:p-3.5 rounded-2xl bg-[#FAF9F5]/90 dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] hover:border-indigo-500/50 dark:hover:border-indigo-400/50 transition-all duration-200 cursor-pointer flex items-center gap-3 group shadow-2xs hover:shadow-md active:scale-[0.97]"
               >
                 <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shadow-xs border border-white/20 shrink-0"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center text-base shadow-sm border border-white/20 shrink-0 transition-transform group-hover:scale-105"
                   style={{ backgroundColor: plat.color || '#5A4FCF' }}
                 >
                   {plat.icon || '⚡'}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[11px] font-bold text-[#191A17] dark:text-[#F5F5F7] truncate block group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7]">
-                    {plat.name}
-                  </span>
-                  <span className="text-[10px] text-[#85877E] font-mono block truncate">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs sm:text-[13px] font-black text-[#11120F] dark:text-[#F5F5F7] truncate block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {plat.name}
+                    </span>
+                    <ExternalLink className="w-3 h-3 text-[#85877E] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                  </div>
+                  <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono font-bold uppercase tracking-wider text-[#65675F] dark:text-[#94A3B8] bg-black/5 dark:bg-white/5">
                     {plat.category === 'course' ? 'Course' : 'Mock'}
                   </span>
                 </div>
@@ -432,73 +444,118 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       )}
 
       {/* 7. SUBJECT MASTERY BREAKDOWN */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#596B35]/10 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center shrink-0">
-              <Layers className="w-4 h-4 stroke-[2]" />
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 select-none">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#596B35] to-[#7FA04B] dark:from-[#7AA2F7] dark:to-[#4D76D6] text-white flex items-center justify-center font-bold shadow-md shadow-[#596B35]/20 dark:shadow-[#7AA2F7]/25 shrink-0">
+              <Layers className="w-5 h-5 stroke-[2.4]" />
             </div>
-            <h3 className="text-sm sm:text-[15px] font-black text-[#191A17] dark:text-[#F5F5F7]">
-              Subject Mastery
-            </h3>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                  Subject Mastery Curriculum
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/25">
+                  {subjectStats.length} Subjects
+                </span>
+              </div>
+              <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-medium mt-0.5">
+                Target coverage, topic counts & diagnostic weak spots by subject
+              </p>
+            </div>
           </div>
 
           <button
-            onClick={() => onNavigate('subjects')}
-            className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline flex items-center gap-1 cursor-pointer"
+            onClick={() => {
+              soundManager.playClick();
+              onNavigate('subjects');
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1E1F2A] border border-[#D8D8CF] dark:border-[#2E3044] text-[#65675F] dark:text-[#CBD5E1] hover:text-[#596B35] dark:hover:text-[#7AA2F7] hover:border-[#596B35] dark:hover:border-[#7AA2F7] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 shrink-0"
           >
-            <span>View All</span>
-            <ArrowRight className="w-3 h-3" />
+            <span>Explore All</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-          {subjectStats.map(subj => (
-            <div
-              key={subj.subjectId}
-              onClick={() => {
-                soundManager.playClick();
-                if (onNavigateToSubject) {
-                  onNavigateToSubject(subj.subjectId);
-                } else {
-                  onNavigate('syllabus');
-                }
-              }}
-              className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer space-y-2 group active:scale-[0.98]"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 min-w-0">
+        {/* Subject Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-3.5">
+          {subjectStats.map(subj => {
+            const isMastered = subj.percentage === 100;
+            return (
+              <div
+                key={subj.subjectId}
+                onClick={() => {
+                  soundManager.playClick();
+                  if (onNavigateToSubject) {
+                    onNavigateToSubject(subj.subjectId);
+                  } else {
+                    onNavigate('syllabus');
+                  }
+                }}
+                className="p-3.5 sm:p-4 rounded-2xl bg-[#FAF9F5]/90 dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all duration-200 shadow-2xs hover:shadow-md cursor-pointer space-y-3 group active:scale-[0.98] relative overflow-hidden"
+              >
+                {/* Subject Header Row */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0 shadow-xs ring-2 ring-white/50 dark:ring-black/50"
+                      style={{ backgroundColor: subj.color || '#596B35' }}
+                    />
+                    <h4 className="text-[13px] sm:text-sm font-black text-[#11120F] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
+                      {subj.subjectName}
+                    </h4>
+                  </div>
+
                   <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ backgroundColor: subj.color || '#596B35' }}
-                  />
-                  <h4 className="text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors truncate">
-                    {subj.subjectName}
-                  </h4>
+                    className={`px-2 py-0.5 rounded-lg text-xs font-black font-mono tabular-nums shrink-0 ${
+                      isMastered
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25'
+                        : subj.percentage > 0
+                        ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/25'
+                        : 'bg-black/5 dark:bg-white/5 text-[#85877E]'
+                    }`}
+                  >
+                    {subj.percentage}%
+                  </span>
                 </div>
-                <span className="text-[11px] font-black font-mono tabular-nums text-[#596B35] dark:text-[#7AA2F7] shrink-0">
-                  {subj.percentage}%
-                </span>
-              </div>
 
-              <div className="w-full h-1.5 rounded-full bg-[#EEEEE8] dark:bg-[#23232A] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${subj.percentage}%`,
-                    backgroundColor: subj.color || '#596B35',
-                  }}
-                />
-              </div>
+                {/* Progress Bar */}
+                <div className="w-full h-2 rounded-full bg-[#E8E8DF] dark:bg-[#14151E] overflow-hidden p-0.5">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 shadow-2xs"
+                    style={{
+                      width: `${subj.percentage}%`,
+                      backgroundColor: subj.color || '#596B35',
+                    }}
+                  />
+                </div>
 
-              <div className="flex items-center justify-between text-[10px] text-[#85877E] font-medium">
-                <span>{subj.completedTopics}/{subj.totalTopics}</span>
-                {subj.weakCount > 0 && (
-                  <span className="text-rose-500 font-bold">{subj.weakCount} weak</span>
-                )}
+                {/* Topics & Weak Status Row */}
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="font-mono text-[#65675F] dark:text-[#A1A1B2]">
+                    <strong className="text-[#11120F] dark:text-white font-black">{subj.completedTopics}</strong>
+                    <span className="text-[#85877E] text-[11px]">/{subj.totalTopics} Topics</span>
+                  </span>
+
+                  {subj.weakCount > 0 ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25">
+                      ⚠️ {subj.weakCount} Weak
+                    </span>
+                  ) : isMastered ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                      ✓ Mastered
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-[#85877E] font-medium">
+                      In Progress
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
