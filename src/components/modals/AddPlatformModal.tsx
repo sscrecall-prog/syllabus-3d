@@ -11,7 +11,9 @@ import {
   KeyRound,
   PenTool,
   Check,
-  Clock
+  Clock,
+  Layers,
+  FileText
 } from 'lucide-react';
 import { ExternalPlatform, PlatformCategory } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -284,22 +286,26 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         className="relative w-full max-w-2xl bg-white dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
         onClick={e => e.stopPropagation()}
       >
-        
         {/* Header */}
-        <div className="p-5 sm:p-6 border-b border-[#D8D8CF] dark:border-[#272730] flex items-center justify-between bg-[#F7F6F0]/60 dark:bg-[#18181D]/60 backdrop-blur-sm">
+        <div className="p-5 sm:p-6 border-b border-[#EEEEE8] dark:border-[#242533] flex items-center justify-between bg-[#FAF9F5]/80 dark:bg-[#161722]/80 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-white/20 transition-transform"
+              className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md border border-white/20 transition-all duration-300 shrink-0"
               style={{ backgroundColor: color }}
             >
               {icon}
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] font-serif">
-                {editPlatformData ? 'Edit Study Platform' : 'Add Course / Test Platform'}
-              </h2>
-              <p className="text-xs text-[#85877E] dark:text-[#787C99]">
-                Physics Wallah, Careerwill, Testbook, ya apna custom portal & category add karein
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                  {editPlatformData ? 'Edit Study Platform' : 'Add Course / Test Platform'}
+                </h2>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/25">
+                  PRO
+                </span>
+              </div>
+              <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5">
+                Configure your coaching batches, mock test engines, and digital resources
               </p>
             </div>
           </div>
@@ -308,18 +314,20 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               soundManager.playClick();
               onClose();
             }}
-            className="p-2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-xl hover:bg-[#EEEEE8] dark:hover:bg-[#23232A] transition-colors cursor-pointer"
+            className="p-2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            title="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1 custom-scrollbar">
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 animate-shake">
-              ⚠️ {error}
+            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-bold text-rose-600 dark:text-rose-400 animate-shake flex items-center gap-2">
+              <span>⚠️</span>
+              <span>{error}</span>
             </div>
           )}
 
@@ -328,7 +336,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
             {/* Category Selector */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
+                <label className="text-xs font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wider font-mono">
                   Platform Category *
                 </label>
                 <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">
@@ -339,7 +347,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               </div>
 
               {/* Standard 4 Category Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {[
                   { id: 'course' as PlatformCategory, label: 'Course / Batches', icon: GraduationCap },
                   { id: 'test_series' as PlatformCategory, label: 'Mock Test Series', icon: FileCheck2 },
@@ -353,43 +361,50 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       key={cat.id}
                       type="button"
                       onClick={() => handleCategoryChange(cat.id)}
-                      className={`p-2.5 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
+                      className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-2 transition-all duration-150 cursor-pointer active:scale-95 ${
                         isSelected
-                          ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-md scale-[1.02]'
-                          : 'bg-[#F7F6F0] dark:bg-[#18181D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
+                          ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-md'
+                          : 'bg-[#FAF9F5] dark:bg-[#181926] text-[#65675F] dark:text-[#A1A1B2] border-[#D8D8CF] dark:border-[#27283C] hover:border-[#596B35] dark:hover:border-[#7AA2F7] hover:text-[#11120F] dark:hover:text-white'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span>{cat.label}</span>
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        isSelected
+                          ? 'bg-white/15 dark:bg-black/10'
+                          : 'bg-black/5 dark:bg-white/5'
+                      }`}>
+                        <Icon className="w-4 h-4 stroke-[2.2]" />
+                      </div>
+                      <span className="text-[11px] text-center font-bold tracking-tight">{cat.label}</span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* 🌟 SAVED CUSTOM CATEGORIES FROM PREVIOUS LOGS (Always Available) */}
+              {/* Saved Custom Categories (Clean Bento Box) */}
               {savedCustomCategories.length > 0 && (
-                <div className="p-3 rounded-2xl bg-amber-500/5 dark:bg-[#1E1E26] border border-amber-500/20 dark:border-[#333] space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-700 dark:text-amber-300">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Your Previously Created Categories (1-Click Select):</span>
+                <div className="p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] space-y-2">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#65675F] dark:text-[#94A3B8]">
+                    <Clock className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+                    <span>Quick Category Shortcuts:</span>
                   </div>
                   
                   <div className="flex flex-wrap gap-1.5">
                     {savedCustomCategories.map(savedCat => {
-                      const isCurrentCat = category === 'custom' && customCategoryName.trim().toLowerCase() === savedCat.toLowerCase();
+                      const cleanCat = stripEmojis(savedCat);
+                      const isCurrentCat = category === 'custom' && customCategoryName.trim().toLowerCase() === cleanCat.toLowerCase();
                       return (
                         <button
                           key={savedCat}
                           type="button"
-                          onClick={() => handleSelectSavedCustomCategory(savedCat)}
-                          className={`px-3 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-xs border ${
+                          onClick={() => handleSelectSavedCustomCategory(cleanCat)}
+                          className={`px-3 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
                             isCurrentCat
-                              ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black border-transparent scale-105 ring-2 ring-[#596B35]/40'
-                              : 'bg-white dark:bg-[#12141A] text-[#11120F] dark:text-[#C0CAF5] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
+                              ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs'
+                              : 'bg-white dark:bg-[#12131D] text-[#33352E] dark:text-[#CBD5E1] border-[#D8D8CF] dark:border-[#2A2C40] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
                           }`}
                         >
                           {isCurrentCat && <Check className="w-3 h-3 stroke-[3]" />}
-                          <span>{stripEmojis(savedCat)}</span>
+                          <span>{cleanCat}</span>
                         </button>
                       );
                     })}
@@ -399,7 +414,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
               {/* Custom Category Input & Suggestions (Visible when Custom is Selected) */}
               {category === 'custom' && (
-                <div className="p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] space-y-3 animate-scale-up">
+                <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] space-y-3 animate-scale-up">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                       <span>Type Custom Category Name *</span>
@@ -411,7 +426,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       value={customCategoryName}
                       onChange={(e) => setCustomCategoryName(stripEmojis(e.target.value))}
                       placeholder="e.g. Current Affairs, Maths Special, PYQ Practice, Telegram..."
-                      className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                      className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#12131D] border border-[#D8D8CF] dark:border-[#2A2C40] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
                     />
                   </div>
 
@@ -430,7 +445,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                           className={`px-2 py-0.5 rounded-lg text-[11px] font-bold font-mono transition-all cursor-pointer border ${
                             customCategoryName.trim().toLowerCase() === catSug.toLowerCase()
                               ? 'bg-[#596B35] text-white border-transparent'
-                              : 'bg-white dark:bg-[#12141A] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]'
+                              : 'bg-white dark:bg-[#12131D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#2A2C40] hover:border-[#596B35]'
                           }`}
                         >
                           +{catSug}
@@ -442,34 +457,37 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               )}
             </div>
 
-            {/* Name & URL (Dynamic labels & placeholders) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Name & URL */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>{getNameLabel()}</span>
-                  <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7]">Required</span>
                 </label>
-                <input
-                  ref={nameInputRef}
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    if (error) setError(null);
-                  }}
-                  placeholder={getNamePlaceholder()}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs"
-                />
+                <div className="relative">
+                  <FileText className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
+                  <input
+                    ref={nameInputRef}
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    placeholder={getNamePlaceholder()}
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>Website / Batch Link *</span>
-                  <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">Required</span>
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7]">Required</span>
                 </label>
                 <div className="relative">
-                  <Globe className="w-4 h-4 absolute left-3 top-3 text-[#85877E]" />
+                  <Globe className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
                   <input
                     type="text"
                     required
@@ -479,27 +497,27 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       if (error) setError(null);
                     }}
                     placeholder={getUrlPlaceholder()}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-mono font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
                   />
                 </div>
               </div>
             </div>
 
             {/* Login Hint / Roll Number & Subject Association */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>Login ID / User Hint (Optional)</span>
-                  <span className="text-[11px] text-[#85877E] font-normal">For 1-click clipboard copy</span>
+                  <span className="text-[10px] text-[#85877E] font-mono">1-click copy</span>
                 </label>
                 <div className="relative">
-                  <KeyRound className="w-4 h-4 absolute left-3 top-3 text-[#85877E]" />
+                  <KeyRound className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
                   <input
                     type="text"
                     value={loginHint}
                     onChange={(e) => setLoginHint(e.target.value)}
                     placeholder="e.g. 9876543210 or student@email.com"
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35]"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-2xs transition-all"
                   />
                 </div>
               </div>
@@ -508,18 +526,21 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
                   Link with Subject (Optional)
                 </label>
-                <select
-                  value={associatedSubjectId}
-                  onChange={(e) => setAssociatedSubjectId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35]"
-                >
-                  <option value="">General (All Subjects / Full Mock)</option>
-                  {currentExam?.subjects.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.icon} {s.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <Layers className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
+                  <select
+                    value={associatedSubjectId}
+                    onChange={(e) => setAssociatedSubjectId(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-2xs transition-all cursor-pointer"
+                  >
+                    <option value="">General (All Subjects / Full Mock)</option>
+                    {currentExam?.subjects.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.icon} {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -533,26 +554,26 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. Math Special Batch by Gagan Pratap Sir, Tier 1 Mock analysis..."
-                className="w-full px-3.5 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium focus:outline-none focus:border-[#596B35]"
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-2xs transition-all"
               />
             </div>
 
-            {/* Icon & Color Selector */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            {/* Icon & Color Bento Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
-                  Platform Emoji Icon
+                  Platform Icon
                 </label>
-                <div className="flex flex-wrap gap-1.5 p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
+                <div className="flex flex-wrap gap-1.5 p-2 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C]">
                   {EMOJI_OPTIONS.map(em => (
                     <button
                       key={em}
                       type="button"
                       onClick={() => setIcon(em)}
-                      className={`w-7 h-7 rounded-lg text-base flex items-center justify-center transition-all cursor-pointer ${
+                      className={`w-8 h-8 rounded-xl text-base flex items-center justify-center transition-all cursor-pointer active:scale-90 ${
                         icon === em
-                          ? 'bg-white dark:bg-[#2A2E3D] shadow-sm scale-110 border border-[#596B35]'
-                          : 'hover:bg-white/60 dark:hover:bg-[#222]'
+                          ? 'bg-white dark:bg-[#252636] shadow-sm scale-110 ring-2 ring-[#596B35] dark:ring-[#7AA2F7]'
+                          : 'hover:bg-white/60 dark:hover:bg-white/5 opacity-70 hover:opacity-100'
                       }`}
                     >
                       {em}
@@ -565,14 +586,14 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
                   Theme Color Accent
                 </label>
-                <div className="flex flex-wrap gap-2 p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
+                <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C]">
                   {COLOR_OPTIONS.map(c => (
                     <button
                       key={c}
                       type="button"
                       onClick={() => setColor(c)}
-                      className={`w-6 h-6 rounded-full transition-all cursor-pointer ${
-                        color === c ? 'scale-125 ring-2 ring-offset-2 ring-[#596B35]' : 'hover:scale-110'
+                      className={`w-6 h-6 rounded-full transition-all cursor-pointer shadow-xs active:scale-90 ${
+                        color === c ? 'scale-125 ring-2 ring-offset-2 ring-[#596B35] dark:ring-[#7AA2F7]' : 'hover:scale-110'
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -583,7 +604,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
             {/* Pin to Top Checkbox */}
             <div className="pt-2">
-              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] hover:border-[#596B35] dark:hover:border-[#7AA2F7] cursor-pointer select-none transition-all">
                 <input
                   type="checkbox"
                   checked={pinned}
@@ -591,7 +612,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                   className="w-4 h-4 rounded text-[#596B35] focus:ring-0 cursor-pointer"
                 />
                 <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
-                  <Bookmark className="w-3.5 h-3.5 text-[#F59E0B]" />
+                  <Bookmark className="w-4 h-4 text-[#F59E0B]" />
                   Pin to Top of Study Station for Instant 1-Click Access
                 </span>
               </label>
@@ -600,18 +621,18 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 sm:p-5 border-t border-[#D8D8CF] dark:border-[#272730] bg-[#F7F6F0] dark:bg-[#18181D] flex items-center justify-end gap-2.5">
+        <div className="p-4 sm:p-5 border-t border-[#EEEEE8] dark:border-[#242533] bg-[#FAF9F5]/80 dark:bg-[#161722]/80 flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:bg-[#EEEEE8] dark:hover:bg-[#23232A] cursor-pointer transition-colors"
+            className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
           >
             Cancel
           </button>
           <button
             form="add-platform-form"
             type="submit"
-            className="px-6 py-2.5 rounded-xl bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-md hover:bg-[#596B35] dark:hover:bg-[#6090F5] cursor-pointer transition-all active:scale-95 flex items-center gap-2"
+            className="px-6 py-2.5 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#CBD5E1] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>{editPlatformData ? 'Save Changes' : 'Add Platform'}</span>
