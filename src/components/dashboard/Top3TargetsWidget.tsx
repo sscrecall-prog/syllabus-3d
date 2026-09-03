@@ -137,9 +137,6 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                   </span>
                 ) : null}
               </div>
-              <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] mt-0.5 font-medium">
-                Rule of 3: Focus exclusively on what moves your score today.
-              </p>
             </div>
           </div>
 
@@ -170,7 +167,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all active:scale-95 cursor-pointer"
             >
               <Moon className="w-3.5 h-3.5 text-amber-300" />
-              <span>1-Min Reflection</span>
+              <span>1-Min Journal</span>
             </button>
           </div>
         </div>
