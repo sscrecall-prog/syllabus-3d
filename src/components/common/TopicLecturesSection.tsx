@@ -148,9 +148,6 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                 {lectures.length} {lectures.length === 1 ? 'Lecture' : 'Lectures'}
               </span>
             </div>
-            <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] mt-0.5 font-normal">
-              Paste YouTube video links. 1-click on any lecture directly opens it in YouTube.
-            </p>
           </div>
         </div>
 
