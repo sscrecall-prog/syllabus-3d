@@ -277,8 +277,8 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
                 <ChevronDown className="w-3.5 h-3.5 text-[#A9B1D6] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             ) : (
-              <div className="truncate flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-[#7AA2F7] shrink-0" />
+              <div className="truncate flex items-center gap-2">
+                <img src="/pdf_icon_3d.png" alt="PDF" className="w-5 h-5 object-contain shrink-0 drop-shadow-sm" />
                 <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[150px] sm:max-w-sm">
                   {currentAttachment?.name || topicName}
                 </span>

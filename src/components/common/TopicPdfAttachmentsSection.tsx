@@ -171,8 +171,8 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-            <FileText className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0">
+            <img src="/pdf_icon_3d.png" alt="PDF" className="w-7 h-7 object-contain drop-shadow-sm" />
           </div>
           <div>
             <h4 className="text-xs sm:text-sm font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-2 font-sans">
@@ -275,7 +275,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
       {/* PDF List */}
       {attachments.length === 0 ? (
         <div className="py-6 px-4 text-center rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200 dark:border-slate-800 space-y-2">
-          <FileText className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto" />
+          <img src="/pdf_icon_3d.png" alt="No PDFs" className="w-12 h-12 object-contain mx-auto drop-shadow-md" />
           <p className="text-xs text-slate-500 dark:text-slate-400">
             No PDFs attached for this topic yet. Click <strong>+ Upload PDF</strong> to attach your study notes.
           </p>
@@ -289,8 +289,8 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
             >
               {/* File details */}
               <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                  <img src="/pdf_icon_3d.png" alt="PDF Document" className="w-full h-full object-contain drop-shadow-sm group-hover:scale-105 transition-transform" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h5 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-500 transition-colors">
