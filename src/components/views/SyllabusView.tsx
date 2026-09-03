@@ -328,57 +328,67 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       case 'completed':
         return {
           badgeNum: formattedNum,
-          badgeLabel: 'DONE',
+          badgeLabel: 'Mastered',
           badgeIcon: CheckCircle2,
-          boxClass: 'bg-gradient-to-br from-[#052417] via-[#083b27] to-[#03170e] border border-emerald-500/45 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]',
-          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-emerald-50/40 dark:hover:bg-[#24283B] border-emerald-500/40 hover:border-emerald-500 shadow-xs border-l-4 border-l-emerald-500',
-          titleColor: 'text-emerald-950 dark:text-emerald-200',
-          btnClasses: 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm',
+          boxClass: 'bg-gradient-to-br from-[#06301d] via-[#0b472c] to-[#041d11] border border-emerald-500/40 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]',
+          cardBorderClass: 'bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1A1C2A] border border-[#D8D8CF] dark:border-[#262738] hover:border-emerald-500/60 shadow-xs hover:shadow-lg',
+          accentColor: '#10B981',
+          titleColor: 'text-[#11120F] dark:text-[#F5F5F7]',
+          statusPillClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black',
+          btnClasses: 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs',
           btnLabel: 'Mastered ✓'
         };
       case 'in_progress':
         return {
           badgeNum: formattedNum,
-          badgeLabel: 'DOING',
+          badgeLabel: 'In Progress',
           badgeIcon: Zap,
-          boxClass: 'bg-gradient-to-br from-[#2b1f06] via-[#473307] to-[#171002] border border-amber-500/45 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)] animate-pulse',
-          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-amber-50/40 dark:hover:bg-[#24283B] border-amber-500/40 hover:border-amber-500 shadow-xs border-l-4 border-l-amber-500',
-          titleColor: 'text-amber-950 dark:text-amber-200',
-          btnClasses: 'bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-sm',
-          btnLabel: 'Mark Done ➔'
+          boxClass: 'bg-gradient-to-br from-[#3b2707] via-[#593b09] to-[#241703] border border-amber-500/40 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.25)]',
+          cardBorderClass: 'bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1A1C2A] border border-[#D8D8CF] dark:border-[#262738] hover:border-amber-500/60 shadow-xs hover:shadow-lg',
+          accentColor: '#F59E0B',
+          titleColor: 'text-[#11120F] dark:text-[#F5F5F7]',
+          statusPillClass: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30',
+          btnClasses: 'bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-xs',
+          btnLabel: 'Mark Done ✓'
         };
       case 'weak':
         return {
           badgeNum: formattedNum,
-          badgeLabel: 'WEAK',
+          badgeLabel: 'Weak Focus',
           badgeIcon: AlertTriangle,
-          boxClass: 'bg-gradient-to-br from-[#2e090f] via-[#4d0c18] to-[#1a0307] border border-rose-500/45 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.2)]',
-          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-rose-50/40 dark:hover:bg-[#24283B] border-rose-500/40 hover:border-rose-500 shadow-xs border-l-4 border-l-rose-500',
-          titleColor: 'text-rose-950 dark:text-rose-200',
-          btnClasses: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm',
-          btnLabel: 'Fix Weak 🔥'
+          boxClass: 'bg-gradient-to-br from-[#380c14] via-[#57111e] to-[#24060c] border border-rose-500/40 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]',
+          cardBorderClass: 'bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1A1C2A] border border-[#D8D8CF] dark:border-[#262738] hover:border-rose-500/60 shadow-xs hover:shadow-lg',
+          accentColor: '#F43F5E',
+          titleColor: 'text-[#11120F] dark:text-[#F5F5F7]',
+          statusPillClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30',
+          btnClasses: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-xs',
+          btnLabel: 'Fix Weak'
         };
       case 'revision_due':
         return {
           badgeNum: formattedNum,
-          badgeLabel: 'REVISE',
+          badgeLabel: 'Revise Due',
           badgeIcon: Clock,
-          boxClass: 'bg-gradient-to-br from-[#220c38] via-[#38115e] to-[#120521] border border-purple-500/45 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]',
-          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-purple-50/40 dark:hover:bg-[#24283B] border-purple-500/40 hover:border-purple-500 shadow-xs border-l-4 border-l-purple-500',
-          titleColor: 'text-purple-950 dark:text-purple-200',
-          btnClasses: 'bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-sm',
-          btnLabel: 'Revise Now ⏳'
+          boxClass: 'bg-gradient-to-br from-[#2a1145] via-[#41186b] to-[#180929] border border-purple-500/40 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.25)]',
+          cardBorderClass: 'bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1A1C2A] border border-[#D8D8CF] dark:border-[#262738] hover:border-purple-500/60 shadow-xs hover:shadow-lg',
+          accentColor: '#A855F7',
+          titleColor: 'text-[#11120F] dark:text-[#F5F5F7]',
+          statusPillClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30',
+          btnClasses: 'bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-xs',
+          btnLabel: 'Revise Now'
         };
       default: // not_started
         return {
           badgeNum: formattedNum,
-          badgeLabel: 'TODO',
-          badgeIcon: Circle,
-          boxClass: 'bg-gradient-to-br from-[#18181D] to-[#24283B] border border-[#292E42] text-slate-300 shadow-sm',
-          cardBorderClass: 'bg-white dark:bg-[#1F2335] hover:bg-[#F7F6F0]/80 dark:hover:bg-[#24283B] border-[#D8D8CF]/80 dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-xs border-l-4 border-l-slate-300 dark:border-l-slate-600',
-          titleColor: 'text-[#11120F] dark:text-[#C0CAF5]',
-          btnClasses: 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#191A17] dark:text-[#C0CAF5] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] border border-slate-300 dark:border-[#292E42] font-bold shadow-2xs',
-          btnLabel: 'Start Topic ➔'
+          badgeLabel: 'Not Started',
+          badgeIcon: BookOpen,
+          boxClass: 'bg-gradient-to-br from-[#181926] via-[#24263a] to-[#12131d] border border-[#3b3d56] text-slate-300 shadow-sm',
+          cardBorderClass: 'bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1A1C2A] border border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg',
+          accentColor: '#596B35',
+          titleColor: 'text-[#11120F] dark:text-[#F5F5F7]',
+          statusPillClass: 'bg-[#FAF9F5] dark:bg-[#1E1F2E] text-[#65675F] dark:text-[#888A9E] border border-[#D8D8CF] dark:border-[#262738]',
+          btnClasses: 'bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] font-bold shadow-xs',
+          btnLabel: 'Start Topic →'
         };
     }
   };
@@ -393,44 +403,43 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const weakInActiveChapter = activeChapter.topics.filter(t => t.status === 'weak').length;
     const chapterPercent = totalInActiveChapter > 0 ? Math.round((completedInActiveChapter / totalInActiveChapter) * 100) : 0;
     const chapterBadge = getChapterBadgeStyle(activeSubject.name, currentChapterIndex >= 0 ? currentChapterIndex : 0);
+    const ChapterBadgeIcon = chapterBadge.icon;
 
     return (
       <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
-        {/* 1. TOP CHAPTER HERO BANNER (Clean & Responsive) */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-3.5">
+        {/* 1. TOP CHAPTER HERO BANNER */}
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#D8D8CF] dark:border-[#262738] shadow-subtle-depth space-y-4">
           <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-3.5 min-w-0">
               
               {/* Left Visual Badge Thumbnail */}
-              <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex flex-col items-center justify-center text-center px-1 shrink-0 shadow-md relative overflow-hidden font-serif ${chapterBadge.containerClass}`}>
-                <span className="text-[11px] sm:text-xs font-black tracking-wider text-[#FACC15] uppercase leading-none">
+              <div className={`w-13 sm:w-15 h-13 sm:h-15 rounded-2xl flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden ${chapterBadge.containerClass}`}>
+                <ChapterBadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
+                <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                   {chapterBadge.badgeText}
-                </span>
-                <span className="text-[11px] font-bold text-slate-300 tracking-wider uppercase font-mono mt-0.5">
-                  CHAPTER
                 </span>
               </div>
 
               {/* Banner Meta & Title */}
-              <div className="min-w-0">
+              <div className="min-w-0 space-y-1">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
                   <span>{activeSubject.name}</span>
                   <span>•</span>
                   <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
                 </div>
 
-                <h1 className="text-sm sm:text-lg font-black text-[#11120F] dark:text-[#C0CAF5] tracking-tight font-serif break-words leading-tight mt-0.5">
+                <h1 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                   {activeChapter.name}
                 </h1>
               </div>
             </div>
 
             {/* Quick Actions (Back, Switcher & Mastery) */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-auto">
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
               <button
                 onClick={handleBackToChapters}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] text-[#191A17] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group shrink-0"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#CBD5E1] border border-[#D8D8CF] dark:border-[#262738] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0"
                 title="Return to All Chapters"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
@@ -440,81 +449,111 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               {prevChapter && (
                 <button
                   onClick={() => handleSelectChapter(prevChapter.id)}
-                  className="p-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
+                  className="p-2 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#262738] transition-colors cursor-pointer flex items-center gap-1"
                   title={`Previous: ${prevChapter.name}`}
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
               )}
 
               {nextChapter && (
                 <button
                   onClick={() => handleSelectChapter(nextChapter.id)}
-                  className="p-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer flex items-center gap-1"
+                  className="p-2 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#262738] transition-colors cursor-pointer flex items-center gap-1"
                   title={`Next: ${nextChapter.name}`}
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               )}
 
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#596B35]/30 dark:border-[#7AA2F7]/40 text-xs font-mono tabular-nums font-black text-[#354126] dark:text-[#7AA2F7]">
+              <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
+                chapterPercent === 100
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
+                  : chapterPercent > 0
+                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                  : 'bg-[#FAF9F5] dark:bg-[#151622] text-[#65675F] dark:text-[#888A9E] border-[#D8D8CF] dark:border-[#262738]'
+              }`}>
+                {chapterPercent === 100 ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                ) : (
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                )}
                 <span>{chapterPercent}%</span>
               </div>
             </div>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="flex items-center gap-2.5 text-[11px] font-mono font-medium text-[#85877E] dark:text-[#787C99] pt-2 border-t border-[#EEEEE8] dark:border-[#292E42] flex-wrap">
-            <span>{totalInActiveChapter} Topics Total</span>
-            <span>•</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold">{completedInActiveChapter} Mastered</span>
-            <span>•</span>
-            <span className="text-amber-600 dark:text-amber-400 font-bold">{inProgressInActiveChapter} In Progress</span>
+          {/* Quick Metrics KPI Bento Pills */}
+          <div className="flex items-center gap-2 pt-3 border-t border-[#EEEEE8] dark:border-[#262738] flex-wrap">
+            <span className="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-[#151622] px-2.5 py-1 rounded-xl border border-[#D8D8CF]/70 dark:border-[#262738] text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
+              <FileText className="w-3.5 h-3.5 text-[#85877E]" />
+              <span>{totalInActiveChapter} Topics Total</span>
+            </span>
+
+            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-mono font-bold ${
+              completedInActiveChapter > 0
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                : 'bg-[#FAF9F5] dark:bg-[#151622] text-[#85877E] border-[#D8D8CF]/70 dark:border-[#262738]'
+            }`}>
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{completedInActiveChapter} Mastered</span>
+            </span>
+
+            {inProgressInActiveChapter > 0 && (
+              <span className="flex items-center gap-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20 text-[11px] font-mono font-bold">
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                <span>{inProgressInActiveChapter} In Progress</span>
+              </span>
+            )}
+
             {weakInActiveChapter > 0 && (
-              <>
-                <span>•</span>
-                <span className="text-rose-600 dark:text-rose-400 font-bold">{weakInActiveChapter} Weak</span>
-              </>
+              <span className="flex items-center gap-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2.5 py-1 rounded-xl border border-rose-500/20 text-[11px] font-mono font-bold">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>{weakInActiveChapter} Weak</span>
+              </span>
             )}
           </div>
         </div>
 
         {/* 2. TOPICS CONTENT CONTAINER */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#24283B] border border-[#D8D8CF] dark:border-[#292E42] shadow-subtle-depth space-y-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#D8D8CF] dark:border-[#262738] shadow-subtle-depth space-y-4">
           
           {/* Header Bar: Tab, Search & Add Topic */}
-          <div className="space-y-3 pb-3 border-b border-[#EEEEE8] dark:border-[#292E42]">
-            <div className="flex items-center justify-between gap-2">
-              <button
-                onClick={() => setActiveTab('content')}
-                className="pb-1 text-sm font-extrabold text-[#11120F] dark:text-[#C0CAF5] border-b-2 border-[#596B35] dark:border-[#7AA2F7] cursor-pointer transition-colors"
-              >
-                <span>Topics Content ({totalInActiveChapter})</span>
-              </button>
+          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738]">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                  Topics Content ({totalInActiveChapter})
+                </h2>
+                <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5">
+                  Click a topic to launch full study details, notes, revision, and questions
+                </p>
+              </div>
 
               <button
                 onClick={onOpenAddTopic}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#1A1B26] text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#11120F] dark:bg-white hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] text-white dark:text-black text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
               >
-                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                <Plus className="w-4 h-4 stroke-[3]" />
                 <span>Add Topic</span>
               </button>
             </div>
 
-            {/* Clean Mobile Full-Width Search Input */}
+            {/* Clean Full-Width Search Input */}
             <div className="relative w-full">
+              <Search className="w-4 h-4 text-[#85877E] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search topics in this chapter..."
-                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-medium text-[#191A17] dark:text-[#C0CAF5] placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] transition-colors"
+                className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
               />
-              <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2" />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#191A17] p-1 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                  title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -522,41 +561,51 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
           </div>
 
-          {/* Status Filter Pills (Horizontal Scrollable on Mobile) */}
+          {/* Status Filter Pills (Clean Pure Text with Icons, Zero Emojis) */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
             {[
-              { id: 'all', label: 'All', count: statusCounts.all, activeColor: 'bg-[#11120F] dark:bg-white text-white dark:text-black' },
-              { id: 'completed', label: '✓ Mastered', count: statusCounts.completed, activeColor: 'bg-emerald-600 text-white shadow-sm' },
-              { id: 'in_progress', label: '⚡ In Progress', count: statusCounts.in_progress, activeColor: 'bg-amber-500 text-white shadow-sm' },
-              { id: 'weak', label: '⚠️ Weak', count: statusCounts.weak, activeColor: 'bg-rose-600 text-white shadow-sm' },
-              { id: 'not_started', label: '⭕ Not Started', count: statusCounts.not_started, activeColor: 'bg-slate-700 text-white' },
-            ].map(st => (
-              <button
-                key={st.id}
-                onClick={() => setStatusFilter(st.id as any)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-[13px] font-bold transition-all cursor-pointer border shrink-0 ${
-                  statusFilter === st.id
-                    ? `${st.activeColor} border-transparent shadow-sm`
-                    : 'bg-white dark:bg-[#1F2335] text-[#65675F] dark:text-[#A9B1D6] border-[#D8D8CF] dark:border-[#292E42] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
-                }`}
-              >
-                <span>{st.label}</span>
-                <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono ${
-                  statusFilter === st.id ? 'bg-white/20' : 'bg-[#EEEEE8] dark:bg-[#16161E] text-[#85877E]'
-                }`}>
-                  {st.count}
-                </span>
-              </button>
-            ))}
+              { id: 'all', label: 'All', count: statusCounts.all, icon: Layers },
+              { id: 'completed', label: 'Mastered', count: statusCounts.completed, icon: CheckCircle2 },
+              { id: 'in_progress', label: 'In Progress', count: statusCounts.in_progress, icon: Zap },
+              { id: 'weak', label: 'Weak Focus', count: statusCounts.weak, icon: AlertTriangle },
+              { id: 'not_started', label: 'Not Started', count: statusCounts.not_started, icon: Circle },
+            ].map(st => {
+              const Icon = st.icon;
+              const isSelected = statusFilter === st.id;
+              return (
+                <button
+                  key={st.id}
+                  onClick={() => {
+                    setStatusFilter(st.id as any);
+                    soundManager.playClick();
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
+                    isSelected
+                      ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
+                      : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{st.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
+                    isSelected ? 'bg-white/20 dark:bg-black/20' : 'bg-[#EEEEE8] dark:bg-[#1E1F2E] text-[#85877E]'
+                  }`}>
+                    {st.count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* 3. TOPIC CARDS LIST (Polished Modern Course Style with Rich Preparation Visuals) */}
-          <div className="space-y-2.5">
+          {/* 3. TOPIC CARDS LIST (Executive Modern Study Cards) */}
+          <div className="space-y-3">
             {filteredChapterTopics.length === 0 ? (
-              <div className="py-10 px-4 text-center rounded-2xl bg-[#F7F6F0]/50 dark:bg-[#1F2335]/50 border border-dashed border-[#D8D8CF] dark:border-[#292E42] space-y-2">
-                <FileText className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-                <h4 className="text-xs font-bold text-[#191A17] dark:text-[#C0CAF5]">No topics found</h4>
-                <p className="text-[11px] text-[#85877E]">No topics match the search or filter query.</p>
+              <div className="py-12 px-4 text-center rounded-3xl bg-[#FAF9F5] dark:bg-[#151622] border border-dashed border-[#D8D8CF] dark:border-[#262738] space-y-2.5">
+                <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center mx-auto text-[#85877E]">
+                  <FileText className="w-6 h-6 stroke-[1.8]" />
+                </div>
+                <h4 className="text-sm font-bold text-[#11120F] dark:text-[#F5F5F7]">No topics found</h4>
+                <p className="text-xs text-[#85877E] dark:text-[#787C99]">No topics match the search or filter query.</p>
               </div>
             ) : (
               filteredChapterTopics.map((topic, tIdx) => {
@@ -567,56 +616,78 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={topic.id}
                     onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                    className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-3 active:scale-[0.99] ${design.cardBorderClass}`}
+                    className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#FAF9F5] dark:hover:bg-[#1B1D2C] border border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3.5 overflow-hidden"
                   >
-                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                      
-                      {/* Left Fixed Study Emblem Box (Preserves Exact Shape & Size) */}
-                      <div className={`w-14 sm:w-16 h-11 sm:h-12 rounded-xl flex items-center justify-center gap-1.5 px-2 shrink-0 transition-transform group-hover:scale-105 ${design.boxClass}`}>
-                        <span className="text-base sm:text-lg select-none leading-none filter drop-shadow-xs">
-                          📖
-                        </span>
-                        <span className="text-sm sm:text-[15px] font-black font-mono leading-none tracking-tight">
-                          {design.badgeNum}
-                        </span>
-                      </div>
+                    {/* Subtle Top Glow Accent */}
+                    <div
+                      className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${design.accentColor}, transparent)`
+                      }}
+                    />
 
-                      {/* Topic Title & Subtitle Meta */}
-                      <div className="min-w-0 space-y-1">
-                        <h4 className={`text-sm sm:text-[15px] font-bold ${design.titleColor} group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug line-clamp-2`}>
-                          {topic.name}
-                        </h4>
+                    {/* Main Content Row */}
+                    <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                      
+                      {/* Left: Emblem Squircle & Title & Meta */}
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
                         
-                        <div className="flex items-center gap-1.5 text-[11px] sm:text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] flex-wrap font-mono">
-                          {topic.subtopics && topic.subtopics.length > 0 ? (
-                            <span className="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5">
-                              📄 {topic.subtopics.length} subtopics
+                        {/* 3D Squircle Thumbnail Badge (No raw emojis) */}
+                        <div className={`w-12 sm:w-14 h-12 sm:h-14 rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${design.boxClass}`}>
+                          <BadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
+                          <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none">
+                            {design.badgeNum}
+                          </span>
+                        </div>
+
+                        {/* Title & Subtitle Meta Chips (Clean, zero raw emojis) */}
+                        <div className="min-w-0 space-y-1">
+                          <h4 className={`text-sm sm:text-base font-black ${design.titleColor} group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug line-clamp-2`}>
+                            {topic.name}
+                          </h4>
+                          
+                          <div className="flex items-center gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#A1A1B2] flex-wrap">
+                            <span className="flex items-center gap-1 bg-[#FAF9F5] dark:bg-[#1E1F2E] px-2 py-0.5 rounded-lg border border-[#D8D8CF]/70 dark:border-[#262738]">
+                              <Layers className="w-3 h-3 text-[#85877E]" />
+                              <span>{topic.subtopics && topic.subtopics.length > 0 ? `${topic.subtopics.length} Subtopics` : 'Core Concept'}</span>
                             </span>
-                          ) : (
-                            <span className="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5">
-                              📄 Core Concept
+
+                            <span className="flex items-center gap-1 bg-[#FAF9F5] dark:bg-[#1E1F2E] px-2 py-0.5 rounded-lg border border-[#D8D8CF]/70 dark:border-[#262738]">
+                              <Clock className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
+                              <span>{topic.studyTimeMinutes || 0}m Study</span>
                             </span>
-                          )}
-                          <span>•</span>
-                          <span>⏱️ {topic.studyTimeMinutes}m study</span>
-                          <span>•</span>
-                          <span>🎯 {topic.accuracy}% acc</span>
+
+                            <span className="flex items-center gap-1 bg-[#FAF9F5] dark:bg-[#1E1F2E] px-2 py-0.5 rounded-lg border border-[#D8D8CF]/70 dark:border-[#262738]">
+                              <Target className="w-3 h-3 text-rose-500" />
+                              <span>{topic.accuracy || 0}% Accuracy</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Right 1-Click Status Toggle Action */}
-                    <div className="flex items-center justify-end shrink-0 pt-1 sm:pt-0">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
-                          updateTopicStatus(topic.id, nextStatus);
-                        }}
-                        className={`px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 ${design.btnClasses}`}
-                      >
-                        {design.btnLabel}
-                      </button>
+                      {/* Right: Status Pill & Action Button */}
+                      <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto ml-auto sm:ml-0">
+                        <div className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${design.statusPillClass}`}>
+                          <BadgeIcon className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>{design.badgeLabel}</span>
+                        </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const nextStatus: TopicStatus = topic.status === 'completed' ? 'in_progress' : 'completed';
+                            updateTopicStatus(topic.id, nextStatus);
+                            if (nextStatus === 'completed') {
+                              soundManager.playCompleteChime();
+                            } else {
+                              soundManager.playClick();
+                            }
+                          }}
+                          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 ${design.btnClasses}`}
+                        >
+                          <span>{design.btnLabel}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
