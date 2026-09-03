@@ -284,13 +284,57 @@ export const PlatformsView: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. FILTER TABS & SLEEK SEARCH BAR */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      {/* 2. ADVANCED TOOLBAR: PROMINENT SEARCH & SEGMENTED CATEGORY TRACK */}
+      <div className="p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3 select-none">
         
-        {/* Category Tabs (No scrollbar line, clean floating pills) */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#EFEFE8] dark:bg-[#161722] border border-[#D8D8CF] dark:border-[#272838] overflow-x-auto no-scrollbar shadow-xs shrink-0 max-w-full">
+        {/* Row 1: Search Bar + Live Portals Count */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Prominent Search Bar (Full Width / Never Hidden) */}
+          <div className="relative flex-1 max-w-xl">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by platform name, subject, batch, or URL..."
+              className="w-full pl-9 pr-9 py-2 sm:py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] text-xs sm:text-[13px] font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/10 dark:focus:ring-[#7AA2F7]/15 shadow-2xs transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-[#85877E] hover:text-[#11120F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Quick Metrics & Reset Filter */}
+          <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0">
+            <span className="text-xs font-mono font-bold text-[#65675F] dark:text-[#A1A1B2] bg-[#FAF9F5] dark:bg-[#1B1C28] px-3 py-1.5 rounded-xl border border-[#D8D8CF] dark:border-[#2A2C3E]">
+              <strong className="text-[#11120F] dark:text-white font-black">{filteredPlatforms.length}</strong>
+              <span className="text-[#85877E]"> of {platforms.length} Portals</span>
+            </span>
+
+            {selectedCategory !== 'all' && (
+              <button
+                onClick={() => {
+                  setSelectedCategory('all');
+                  soundManager.playClick();
+                }}
+                className="text-xs font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline cursor-pointer px-2"
+              >
+                Reset Filter
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2: Full-Width Category Filter Pills Track (Smooth Horizontal Scroll) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 pt-0.5">
           {[
-            { id: 'all', label: 'All', count: categoryCounts.all },
+            { id: 'all', label: 'All Portals', count: categoryCounts.all },
             { id: 'course', label: 'Courses 📚', count: categoryCounts.course },
             { id: 'test_series', label: 'Mock Tests 📝', count: categoryCounts.test_series },
             { id: 'reference', label: 'Tools & Reference 🔍', count: categoryCounts.reference },
@@ -309,18 +353,18 @@ export const PlatformsView: React.FC = () => {
                   setSelectedCategory(tab.id);
                   soundManager.playClick();
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer whitespace-nowrap active:scale-95 flex items-center gap-1.5 ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer whitespace-nowrap active:scale-95 flex items-center gap-1.5 shrink-0 ${
                   isSelected
-                    ? 'bg-white dark:bg-[#252636] text-[#11120F] dark:text-white shadow-xs font-black border border-[#D8D8CF]/60 dark:border-white/10'
-                    : 'text-[#65675F] dark:text-[#9A9CAE] hover:text-[#11120F] dark:hover:text-white hover:bg-white/40 dark:hover:bg-white/5'
+                    ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-sm font-black'
+                    : 'bg-[#FAF9F5] dark:bg-[#1B1C28] text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#2A2C3E] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
                 }`}
               >
                 <span>{tab.label}</span>
                 {tab.count > 0 && (
                   <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
                     isSelected
-                      ? 'bg-[#11120F]/10 dark:bg-white/15 text-[#11120F] dark:text-white font-bold'
-                      : 'bg-black/5 dark:bg-white/5 text-[#85877E] dark:text-[#7A7C8E]'
+                      ? 'bg-white/20 dark:bg-black/15 text-white dark:text-black font-bold'
+                      : 'bg-black/5 dark:bg-white/5 text-[#85877E] dark:text-[#94A3B8]'
                   }`}>
                     {tab.count}
                   </span>
@@ -330,25 +374,6 @@ export const PlatformsView: React.FC = () => {
           })}
         </div>
 
-        {/* Search Bar */}
-        <div className="relative flex-1 sm:max-w-xs">
-          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-[#85877E]" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search portals, batches, URLs..."
-            className="w-full pl-9 pr-8 py-2 rounded-2xl bg-white dark:bg-[#161722] border border-[#D8D8CF] dark:border-[#272838] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-xs transition-colors"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2.5 text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
       </div>
 
       {/* 3. PLATFORM CARDS GRID (Sleek SaaS Cards) */}
