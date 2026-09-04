@@ -136,7 +136,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
       {/* 1. HEADER & ADD BUTTON */}
       <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/25 shadow-xs">
+          <div className="w-11 h-11 rounded-2xl bg-red-500/10 dark:bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/20 shadow-2xs">
             <YoutubeIcon className="w-5 h-5 fill-current" />
           </div>
           <div>
@@ -144,11 +144,11 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
               <h3 className="text-xs sm:text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide">
                 Video Lectures & Classes
               </h3>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#94A3B8] tabular-nums">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#94A3B8] tabular-nums">
                 {lectures.length} {lectures.length === 1 ? 'Lecture' : 'Lectures'}
               </span>
             </div>
-            <p className="text-[10px] text-[#85877E] font-mono">
+            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] font-sans mt-0.5">
               Stream attached video classes, take timestamped sync notes, and watch PYQs
             </p>
           </div>
@@ -157,7 +157,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
         {!isAdding && (
           <button
             onClick={handleOpenAddForm}
-            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#11120F] dark:bg-white hover:bg-red-600 dark:hover:bg-red-600 text-white dark:text-black hover:text-white dark:hover:text-white text-xs font-black uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 shrink-0"
+            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-95 shrink-0 tap-bounce"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add YouTube Lecture</span>
@@ -299,7 +299,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
             </button>
             <button
               type="submit"
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 tap-bounce"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Save Lecture</span>
@@ -309,7 +309,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
       )}
 
       {/* 3. LECTURES LIST */}
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {lectures.length > 0 ? (
           lectures.map((lecture, index) => {
             const videoId = extractYouTubeVideoId(lecture.youtubeUrl);
@@ -318,22 +318,24 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
             return (
               <div
                 key={lecture.id}
-                onClick={() => handleCardClick(lecture)}
-                className="group relative p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-red-500/60 dark:hover:border-red-500/60 shadow-subtle-depth hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 select-none overflow-hidden"
+                className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-red-500/40 dark:hover:border-red-500/40 shadow-xs hover:shadow-md transition-all select-none overflow-hidden space-y-3.5"
               >
                 {/* Top Subtle Red Ambient Glow Line */}
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                {/* Left Side: Thumbnail with Play Badge + Video Info */}
-                <div className="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
+                {/* Main Content Area: Thumbnail + Info */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 min-w-0">
                   
-                  {/* Thumbnail */}
-                  <div className="relative w-32 sm:w-44 h-20 sm:h-24 rounded-2xl overflow-hidden bg-black shrink-0 shadow-xs border border-[#E2E8F0]/60 dark:border-[#272730] group-hover:scale-[1.02] transition-transform">
+                  {/* 16:9 Thumbnail Container */}
+                  <div
+                    onClick={() => handleCardClick(lecture)}
+                    className="relative w-full sm:w-48 aspect-video rounded-2xl overflow-hidden bg-slate-950 shrink-0 shadow-xs border border-[#E2E8F0]/80 dark:border-[#272730] cursor-pointer group/thumb"
+                  >
                     {thumbnail ? (
                       <img
                         src={thumbnail}
                         alt={lecture.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
                         loading="lazy"
                         onError={(e) => {
                           (e.target as HTMLElement).style.display = 'none';
@@ -341,157 +343,171 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-[#11120F] text-red-500">
-                        <YoutubeIcon className="w-8 h-8 fill-current" />
+                        <YoutubeIcon className="w-10 h-10 fill-current" />
                       </div>
                     )}
 
                     {/* Central Play Badge */}
-                    <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="absolute inset-0 bg-black/25 group-hover/thumb:bg-black/10 transition-colors flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover/thumb:scale-110 transition-transform">
                         <Play className="w-4 h-4 fill-white ml-0.5" />
                       </div>
                     </div>
 
                     {/* Duration Badge */}
                     {lecture.duration && (
-                      <div className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-black/85 backdrop-blur-xs text-white text-[10px] font-mono font-bold border border-white/10">
+                      <div className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-black/85 backdrop-blur-xs text-white text-[11px] font-mono font-bold border border-white/10 shadow-xs">
                         {lecture.duration}
                       </div>
                     )}
                   </div>
 
-                  {/* Text Details */}
-                  <div className="space-y-1.5 min-w-0 flex-1">
+                  {/* Video Information & Chapters */}
+                  <div className="space-y-1.5 flex-1 min-w-0 w-full">
+                    
+                    {/* Meta Pills: Lecture Number + Teacher + Added Date */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/25 font-mono">
+                      <span className="whitespace-nowrap px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 font-mono tracking-wide">
                         Lecture #{index + 1}
                       </span>
                       {lecture.notes && (
-                        <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 font-mono truncate">
+                        <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-medium bg-slate-100 dark:bg-[#1E2030] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 max-w-[200px] truncate">
                           {lecture.notes}
                         </span>
                       )}
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1 sm:ml-auto">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>Added {lecture.addedAt}</span>
+                      </span>
                     </div>
 
-                    <h4 className="text-xs sm:text-sm font-black tracking-tight text-[#191A17] dark:text-[#F5F5F7] group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2">
+                    {/* Title */}
+                    <h4
+                      onClick={() => handleCardClick(lecture)}
+                      className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug line-clamp-2 cursor-pointer hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    >
                       {lecture.title}
                     </h4>
 
-                    <div className="flex items-center gap-3 text-[10px] text-[#85877E] dark:text-[#A1A1AA] pt-0.5">
-                      <span className="flex items-center gap-1 font-mono">
-                        <Clock className="w-3 h-3" />
-                        <span>Added {lecture.addedAt}</span>
-                      </span>
-                      <span className="hidden xs:inline text-red-500 font-mono font-semibold">
-                        Click to Open in YouTube ↗
-                      </span>
-                    </div>
-
-                    {/* Attached Timestamps Chips */}
+                    {/* Attached Timestamps / Key Chapters */}
                     {lecture.timestamps && lecture.timestamps.length > 0 && (
-                      <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                        {lecture.timestamps.slice(0, 5).map(ts => (
-                          <button
-                            key={ts.id}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              soundManager.playClick();
-                              if (onOpenSplitStudy) {
-                                onOpenSplitStudy(lecture.id, ts.timeSeconds);
-                              } else {
-                                openYouTubeLectureInNewTab(lecture.youtubeUrl, ts.timeSeconds);
-                              }
-                            }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-red-600 text-red-500 hover:text-white border border-[#E2E8F0] dark:border-[#272730] hover:border-red-500 text-[10px] font-mono font-bold transition-colors cursor-pointer active:scale-95"
-                            title={`Jump to ${ts.title} (${ts.timeLabel})`}
-                          >
-                            <Play className="w-2 h-2 fill-current" />
-                            <span>{ts.timeLabel}</span>
-                          </button>
-                        ))}
-                        {lecture.timestamps.length > 5 && (
-                          <span className="text-[10px] text-[#85877E] font-mono">
-                            +{lecture.timestamps.length - 5} more
+                      <div className="pt-0.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-0.5">
+                            Chapters:
                           </span>
-                        )}
+                          {lecture.timestamps.slice(0, 5).map(ts => (
+                            <button
+                              key={ts.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                soundManager.playClick();
+                                if (onOpenSplitStudy) {
+                                  onOpenSplitStudy(lecture.id, ts.timeSeconds);
+                                } else {
+                                  openYouTubeLectureInNewTab(lecture.youtubeUrl, ts.timeSeconds);
+                                }
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-slate-100/90 dark:bg-[#1E2030] hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white border border-slate-200 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 text-[11px] font-mono font-semibold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                              title={`Jump to ${ts.title} (${ts.timeLabel})`}
+                            >
+                              <Play className="w-2 h-2 fill-current" />
+                              <span>{ts.timeLabel}</span>
+                            </button>
+                          ))}
+                          {lecture.timestamps.length > 5 && (
+                            <span className="text-[11px] text-slate-400 font-mono font-medium">
+                              +{lecture.timestamps.length - 5} more
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Right Side Action Buttons */}
-                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#E2E8F0] dark:border-[#272730] justify-end flex-wrap">
+                {/* Card Bottom Actions Bar with Divider */}
+                <div className="pt-2.5 border-t border-slate-100 dark:border-[#272730] flex items-center justify-between gap-2 flex-wrap">
                   
-                  {/* Split Study with Synced Notes Button */}
-                  {onOpenSplitStudy && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        soundManager.playClick();
-                        onOpenSplitStudy(lecture.id, 0);
-                      }}
-                      title="Watch Lecture & Take Synced Notes Side-by-Side"
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-600 dark:text-purple-400 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-xs"
-                    >
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>Sync Notes</span>
-                    </button>
-                  )}
+                  {/* Left Status */}
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span>YouTube Ready</span>
+                  </div>
 
-                  {/* Play In-App Button */}
-                  <button
-                    onClick={(e) => handlePlayEmbedded(e, lecture)}
-                    title="Watch In-App Player"
-                    className="p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2D2D35] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-colors cursor-pointer"
-                  >
-                    <Maximize2 className="w-4 h-4" />
-                  </button>
-
-                  {/* Open Direct in YouTube Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCardClick(lecture);
-                    }}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95"
-                  >
-                    <YoutubeIcon className="w-4 h-4 fill-white" />
-                    <span>Watch</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </button>
-
-                  {/* Delete Button */}
-                  {deletingId === lecture.id ? (
-                    <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                      <button
-                        onClick={(e) => handleDeleteConfirm(e, lecture.id)}
-                        className="px-2.5 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold cursor-pointer hover:bg-rose-700"
-                      >
-                        Confirm
-                      </button>
+                  {/* Right Action Suite */}
+                  <div className="flex items-center gap-2 ml-auto flex-wrap">
+                    {/* Split Study with Synced Notes Button */}
+                    {onOpenSplitStudy && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setDeletingId(null);
+                          soundManager.playClick();
+                          onOpenSplitStudy(lecture.id, 0);
                         }}
-                        className="p-1.5 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
+                        title="Watch Lecture & Take Synced Notes Side-by-Side"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#EFF6FF] dark:bg-[#1E2438] hover:bg-[#DBEAFE] dark:hover:bg-[#252E48] border border-[#DBEAFE] dark:border-[#2F3A5C] text-[#2563EB] dark:text-[#7AA2F7] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                       >
-                        <X className="w-4 h-4" />
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>Sync Notes</span>
                       </button>
-                    </div>
-                  ) : (
+                    )}
+
+                    {/* Play In-App (Theater Mode) */}
+                    <button
+                      onClick={(e) => handlePlayEmbedded(e, lecture)}
+                      title="Watch in Theater Modal"
+                      className="p-2 rounded-xl bg-slate-100 dark:bg-[#1E2030] hover:bg-slate-200 dark:hover:bg-[#282C40] border border-slate-200 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer active:scale-95 tap-bounce"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </button>
+
+                    {/* Open Direct in YouTube Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setDeletingId(lecture.id);
+                        handleCardClick(lecture);
                       }}
-                      title="Delete Lecture"
-                      className="p-2 rounded-xl text-[#85877E] hover:text-rose-600 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-95 tap-bounce"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <YoutubeIcon className="w-4 h-4 fill-white" />
+                      <span>Watch</span>
+                      <ExternalLink className="w-3 h-3" />
                     </button>
-                  )}
+
+                    {/* Delete Button */}
+                    {deletingId === lecture.id ? (
+                      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                        <button
+                          onClick={(e) => handleDeleteConfirm(e, lecture.id)}
+                          className="px-3 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold cursor-pointer hover:bg-rose-700 active:scale-95"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeletingId(null);
+                          }}
+                          className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeletingId(lecture.id);
+                        }}
+                        title="Delete Lecture"
+                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -500,7 +516,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
           /* Empty State */
           !isAdding && (
             <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4">
-              <div className="w-16 h-16 rounded-3xl bg-red-500/15 border border-red-500/25 flex items-center justify-center text-red-600 dark:text-red-400 mx-auto shadow-xs">
+              <div className="w-16 h-16 rounded-3xl bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 flex items-center justify-center text-red-600 dark:text-red-400 mx-auto shadow-xs">
                 <YoutubeIcon className="w-8 h-8 fill-current" />
               </div>
               <div className="space-y-1">
@@ -515,7 +531,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
               <div className="pt-2">
                 <button
                   onClick={handleOpenAddForm}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider shadow-xs transition-all cursor-pointer active:scale-95 tap-bounce"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" />
                   <span>Link Your First YouTube Lecture</span>
