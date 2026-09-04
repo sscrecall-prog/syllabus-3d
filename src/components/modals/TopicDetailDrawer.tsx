@@ -172,6 +172,113 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     touchStartY.current = null;
   };
 
+  // ─────────────────────────────────────────────────────────────
+  // Mobile Horizontal Swipe Navigation between Drawer Tabs
+  // (e.g. Overview & Metrics ⇄ Lectures ⇄ Notes & PDF ⇄ Mistakes)
+  // ─────────────────────────────────────────────────────────────
+  const DRAWER_TABS: Array<'overview' | 'lectures' | 'notes' | 'mistakes'> = useMemo(
+    () => ['overview', 'lectures', 'notes', 'mistakes'],
+    []
+  );
+
+  const swipeStartX = useRef<number | null>(null);
+  const swipeStartY = useRef<number | null>(null);
+  const swipeStartTime = useRef<number>(0);
+  const isHorizontalSwipe = useRef<boolean | null>(null);
+  const tabBarRef = useRef<HTMLDivElement>(null);
+
+  // Helper to prevent swipe from hijacking form inputs, sliders, audio/video controls, or text selection
+  const isInteractiveTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof HTMLElement)) return false;
+    return Boolean(
+      target.closest(
+        'input, textarea, select, button, a, [contenteditable="true"], [role="slider"], .no-swipe, [data-no-swipe], audio, video, iframe'
+      )
+    );
+  };
+
+  const handleContentTouchStart = (e: React.TouchEvent) => {
+    if (isInteractiveTarget(e.target)) {
+      swipeStartX.current = null;
+      swipeStartY.current = null;
+      isHorizontalSwipe.current = false;
+      return;
+    }
+
+    swipeStartX.current = e.touches[0].clientX;
+    swipeStartY.current = e.touches[0].clientY;
+    swipeStartTime.current = Date.now();
+    isHorizontalSwipe.current = null;
+  };
+
+  const handleContentTouchMove = (e: React.TouchEvent) => {
+    if (swipeStartX.current === null || swipeStartY.current === null) return;
+
+    const diffX = e.touches[0].clientX - swipeStartX.current;
+    const diffY = e.touches[0].clientY - swipeStartY.current;
+
+    // Detect direction once movement threshold is crossed
+    if (isHorizontalSwipe.current === null) {
+      if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+        if (Math.abs(diffX) > Math.abs(diffY) * 1.25) {
+          isHorizontalSwipe.current = true;
+        } else {
+          isHorizontalSwipe.current = false;
+        }
+      }
+    }
+  };
+
+  const handleContentTouchEnd = (e: React.TouchEvent) => {
+    if (
+      isHorizontalSwipe.current === true &&
+      swipeStartX.current !== null &&
+      e.changedTouches.length > 0
+    ) {
+      const diffX = e.changedTouches[0].clientX - swipeStartX.current;
+      const duration = Date.now() - swipeStartTime.current;
+
+      const isFastFlick = duration < 350 && Math.abs(diffX) > 35;
+      const isNormalSwipe = Math.abs(diffX) > 55;
+
+      if (isFastFlick || isNormalSwipe) {
+        const currentIdx = DRAWER_TABS.indexOf(activeTab);
+
+        if (diffX < 0) {
+          // Swiped Left -> Go to Next Tab (e.g. Overview -> Lectures)
+          if (currentIdx < DRAWER_TABS.length - 1) {
+            const nextTab = DRAWER_TABS[currentIdx + 1];
+            soundManager.playClick();
+            haptics.light();
+            setActiveTab(nextTab);
+          }
+        } else if (diffX > 0) {
+          // Swiped Right -> Go to Previous Tab (e.g. Lectures -> Overview)
+          if (currentIdx > 0) {
+            const prevTab = DRAWER_TABS[currentIdx - 1];
+            soundManager.playClick();
+            haptics.light();
+            setActiveTab(prevTab);
+          }
+        }
+      }
+    }
+
+    swipeStartX.current = null;
+    swipeStartY.current = null;
+    isHorizontalSwipe.current = null;
+  };
+
+  // Auto-scroll the tab bar horizontally so the active tab stays centered in view
+  useEffect(() => {
+    if (tabBarRef.current) {
+      const activeBtn = tabBarRef.current.querySelector<HTMLElement>(`[data-tab-id="${activeTab}"]`);
+      if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+  }, [activeTab]);
+
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isTimerRunning) {
@@ -537,7 +644,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           )}
 
           {/* Tab Navigation */}
-          <div className="flex items-center px-4 sm:px-6 pt-2 pb-0 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar">
+          <div
+            ref={tabBarRef}
+            className="flex items-center px-4 sm:px-6 pt-2 pb-0 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar"
+          >
             {[
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
               {
@@ -573,8 +683,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               return (
                 <button
                   key={tab.id}
+                  data-tab-id={tab.id}
                   onClick={() => {
                     soundManager.playClick();
+                    haptics.light();
                     setActiveTab(tab.id as any);
                   }}
                   className={`flex items-center gap-2 px-3.5 sm:px-4 py-3 border-b-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
@@ -595,12 +707,87 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             })}
           </div>
 
-          {/* Content Area */}
-          <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5">
+          {/* Mobile Swipe Navigation Indicator Bar */}
+          <div className="sm:hidden flex items-center justify-between px-4 py-1.5 bg-[#FAF9F5] dark:bg-[#12131F] border-b border-[#D8D8CF]/60 dark:border-[#272730]/60 text-[11px] font-mono text-[#65675F] dark:text-[#94A3B8] select-none">
+            <button
+              type="button"
+              disabled={activeTab === 'overview'}
+              onClick={() => {
+                const idx = DRAWER_TABS.indexOf(activeTab);
+                if (idx > 0) {
+                  soundManager.playClick();
+                  haptics.light();
+                  setActiveTab(DRAWER_TABS[idx - 1]);
+                }
+              }}
+              className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-lg border transition-all ${
+                activeTab === 'overview'
+                  ? 'opacity-30 border-transparent cursor-not-allowed'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] cursor-pointer active:scale-95'
+              }`}
+              title="Previous Tab (Swipe Right)"
+            >
+              <span>‹ Prev</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                Swipe ‹ › to navigate
+              </span>
+              <div className="flex items-center gap-1">
+                {DRAWER_TABS.map(t => (
+                  <button
+                    type="button"
+                    key={t}
+                    onClick={() => {
+                      soundManager.playClick();
+                      haptics.light();
+                      setActiveTab(t);
+                    }}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      activeTab === t
+                        ? 'w-4 bg-[#596B35] dark:bg-[#7AA2F7]'
+                        : 'w-1.5 bg-[#D8D8CF] dark:bg-[#383A52] hover:bg-[#85877E]'
+                    }`}
+                    title={`Switch to ${t}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              disabled={activeTab === 'mistakes'}
+              onClick={() => {
+                const idx = DRAWER_TABS.indexOf(activeTab);
+                if (idx < DRAWER_TABS.length - 1) {
+                  soundManager.playClick();
+                  haptics.light();
+                  setActiveTab(DRAWER_TABS[idx + 1]);
+                }
+              }}
+              className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-lg border transition-all ${
+                activeTab === 'mistakes'
+                  ? 'opacity-30 border-transparent cursor-not-allowed'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] cursor-pointer active:scale-95'
+              }`}
+              title="Next Tab (Swipe Left)"
+            >
+              <span>Next ›</span>
+            </button>
+          </div>
+
+          {/* Content Area with Touch Handlers for Smooth Swipe Navigation */}
+          <div
+            onTouchStart={handleContentTouchStart}
+            onTouchMove={handleContentTouchMove}
+            onTouchEnd={handleContentTouchEnd}
+            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5"
+          >
             
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (
-              <div className="space-y-4 sm:space-y-5">
+              <div key="overview" className="space-y-4 sm:space-y-5 animate-fade-in">
                 
                 {/* 1. TOPIC STATS HERO TILES (ACCURACY % & STUDY TIME) */}
                 <div className="grid grid-cols-2 gap-3">
@@ -1033,7 +1220,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* LECTURES TAB */}
             {activeTab === 'lectures' && (
-              <div className="space-y-5">
+              <div key="lectures" className="space-y-5 animate-fade-in">
                 <TopicLecturesSection
                   topicId={liveTopic.id}
                   topicName={liveTopic.name}
@@ -1069,7 +1256,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* NOTES TAB */}
             {activeTab === 'notes' && (
-              <div className="space-y-5">
+              <div key="notes" className="space-y-5 animate-fade-in">
                 <ProfessionalNotesEditor
                   initialContent={notes}
                   initialNoteItems={liveTopic.noteItems}
@@ -1149,11 +1336,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* ADVANCED MISTAKES & TRAPS TAB */}
             {activeTab === 'mistakes' && (
-              <AdvancedMistakeJournal
-                topic={liveTopic}
-                subjectName={subjectName}
-                chapterName={chapterName}
-              />
+              <div key="mistakes" className="animate-fade-in">
+                <AdvancedMistakeJournal
+                  topic={liveTopic}
+                  subjectName={subjectName}
+                  chapterName={chapterName}
+                />
+              </div>
             )}
 
           </div>
