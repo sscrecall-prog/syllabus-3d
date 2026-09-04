@@ -32,6 +32,7 @@ import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
 import { SplitScreenLectureStudyModal } from '../common/SplitScreenLectureStudyModal';
 import { StatusBadge } from '../common/StatusBadge';
 import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 
 interface TopicDetailDrawerProps {
   topic: Topic | null;
@@ -832,6 +833,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                             const targetAcc = st.id === 'completed' ? Math.max(85, liveTopic.accuracy || 85) : liveTopic.accuracy;
                             updateTopicStatus(liveTopic.id, st.id as TopicStatus, targetAcc);
                             soundManager.playCompleteChime();
+                            if (st.id === 'completed') {
+                              haptics.success();
+                            } else {
+                              haptics.medium();
+                            }
                           }}
                           className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border flex items-center justify-center gap-1.5 active:scale-95 ${
                             isSelected

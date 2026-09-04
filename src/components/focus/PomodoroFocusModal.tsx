@@ -36,6 +36,8 @@ import {
 } from 'lucide-react';
 import { ambientEngine, AmbientSoundType } from '../../utils/ambientSounds';
 import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
+import { mediaSessionManager } from '../../utils/mediaSession';
 import { TimerMode } from '../../types/timer';
 
 interface PomodoroFocusModalProps {
@@ -113,6 +115,44 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   const isPaused = session.status === 'paused';
   const isIdle = session.status === 'idle';
 
+  // MediaSession API Integration for Lock-Screen and Earbud Controls
+  useEffect(() => {
+    if (!isOpen && session.status === 'idle') {
+      mediaSessionManager.clear();
+      return;
+    }
+
+    const top = allTopics.find(t => t.topic.id === selectedTopicId);
+    const minsLeft = Math.ceil(session.remainingSec / 60);
+
+    mediaSessionManager.updateMetadata({
+      title: session.mode === 'stopwatch'
+        ? `Stopwatch (${formatTime(session.stopwatchElapsedSec)})`
+        : `${session.mode.toUpperCase()} • ${minsLeft}m left`,
+      artist: top ? `${top.topic.name} • ${top.subjectName}` : 'Syllabus 3D Focus Chamber',
+      album: activeSound !== 'none' ? `Ambience: ${activeSound.toUpperCase()}` : 'Focus Mode'
+    });
+
+    mediaSessionManager.setPlaybackState(
+      isRunning ? 'playing' : isPaused ? 'paused' : 'none'
+    );
+
+    mediaSessionManager.setActionHandlers({
+      onPlay: () => {
+        if (!isRunning) handleTogglePlay();
+      },
+      onPause: () => {
+        if (isRunning) handleTogglePlay();
+      },
+      onStop: () => {
+        resetTimer();
+      },
+      onNext: () => {
+        handleSkipNext();
+      }
+    });
+  }, [isOpen, session.status, session.remainingSec, session.stopwatchElapsedSec, session.mode, activeSound, selectedTopicId]);
+
   // Keyboard shortcut listener (Space = Play/Pause, Esc = Close/Minimize)
   useEffect(() => {
     if (!isOpen) return;
@@ -140,6 +180,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   }, [isOpen, isRunning, isPaused, isTopicSearchOpen, isSettingsOpen, isLoopModalOpen]);
 
   const handleTogglePlay = () => {
+    haptics.medium();
     if (isRunning) {
       soundManager.playClick();
       pauseTimer();
@@ -177,6 +218,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
     setIsLoopModalOpen(false);
     setIsSettingsOpen(false);
     soundManager.playClick();
+    haptics.success();
 
     const top = allTopics.find(t => t.topic.id === selectedTopicId);
     startTimer({
@@ -194,6 +236,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
   // Fast on-the-fly minute adjustment
   const handleQuickAdjust = (minutesDelta: number) => {
     soundManager.playClick();
+    haptics.light();
     if (session.mode === 'pomodoro' && session.status === 'idle') {
       const next = Math.max(1, Math.min(180, focusDurationMinutes + minutesDelta));
       setFocusDurationMinutes(next);
@@ -211,6 +254,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
   const handleApplyPreset = (minutes: number) => {
     soundManager.playClick();
+    haptics.light();
     if (session.mode === 'pomodoro') {
       setFocusDurationMinutes(minutes);
       if (isIdle) setSessionMode('pomodoro', minutes);
@@ -225,6 +269,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
 
   const handleSkipNext = () => {
     soundManager.playClick();
+    haptics.medium();
     if (session.isLoopActive && session.mode === 'pomodoro') {
       setSessionMode('break', breakDurationMinutes);
     } else if (session.isLoopActive && session.mode === 'break') {

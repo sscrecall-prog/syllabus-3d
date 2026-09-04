@@ -38,6 +38,7 @@ import {
   Zap
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 import { usePWA } from '../../hooks/usePWA';
 import { PWAInstallModal } from '../modals/PWAInstallModal';
 
@@ -106,11 +107,18 @@ export const SettingsView: React.FC = () => {
 
   // Sound & Motivation Audio state
   const [audioConfig, setAudioConfig] = useState<AudioSettings>(() => soundManager.getSettings());
+  const [hapticsEnabled, setHapticsEnabled] = useState<boolean>(() => haptics.isEnabled());
 
   const handleUpdateAudio = (partial: Partial<AudioSettings>) => {
     soundManager.updateSettings(partial);
     const updated = soundManager.getSettings();
     setAudioConfig(updated);
+  };
+
+  const handleToggleHaptics = (val: boolean) => {
+    haptics.setEnabled(val);
+    setHapticsEnabled(val);
+    if (val) haptics.success();
   };
 
   // Avatar Upload State & Handlers
@@ -922,6 +930,36 @@ export const SettingsView: React.FC = () => {
                 <ToggleSwitch
                   checked={audioConfig.levelUpSound && audioConfig.masterEnabled}
                   onChange={val => handleUpdateAudio({ levelUpSound: val })}
+                />
+              </div>
+            </div>
+
+            {/* Channel 5: Mobile Haptic Feedback */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-[#596B35] dark:text-[#7AA2F7] shrink-0">
+                  <Smartphone className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[13px] font-bold text-[#11120F] dark:text-white block">
+                    Mobile Tactile Haptics (Vibration)
+                  </span>
+                  <span className="text-[11px] text-[#85877E] dark:text-[#A9B1D6]">
+                    Physical vibration pulses when checking off topics, starting timers & switching tabs
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => haptics.success()}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                >
+                  ▶ Test
+                </button>
+                <ToggleSwitch
+                  checked={hapticsEnabled}
+                  onChange={handleToggleHaptics}
                 />
               </div>
             </div>

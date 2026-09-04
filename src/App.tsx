@@ -15,6 +15,8 @@ import { SignUpView } from './components/auth/SignUpView';
 import { ForgotPasswordView } from './components/auth/ForgotPasswordView';
 import { InitialAuthLoading } from './components/auth/InitialAuthLoading';
 import { soundManager } from './utils/soundEffects';
+import { PWAInstallBanner } from './components/common/PWAInstallBanner';
+import { OfflineStatusIndicator } from './components/common/OfflineStatusIndicator';
 
 // ⚡ Lazy Loaded Secondary Views (Code Splitting for Lightning-Fast Initial Load)
 const SyllabusView = lazy(() => import('./components/views/SyllabusView').then(m => ({ default: m.SyllabusView })));
@@ -310,7 +312,7 @@ export const App: React.FC = () => {
           onGoBack={handleBack}
         />
 
-        <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">
+        <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-28 md:pb-8">
           <div key={currentView} className="animate-view-fade">
             {/* Initial Dashboard View (Instant, Non-Lazy) */}
             {currentView === 'overview' && (
@@ -403,6 +405,12 @@ export const App: React.FC = () => {
         onOpenFocus={() => handleLaunchFocus(undefined)}
         onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
       />
+
+      {/* Real-Time Network Offline Status Indicator */}
+      <OfflineStatusIndicator />
+
+      {/* Floating Smart PWA Install Banner */}
+      <PWAInstallBanner />
 
       {/* Floating Background Timer Overlay */}
       <FloatingTimerOverlay />

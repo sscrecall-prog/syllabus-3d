@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { AppView } from './Sidebar';
 import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 
 interface MobileNavProps {
   activeView: AppView;
@@ -27,15 +28,16 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 }) => {
   return (
     <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[env(safe-area-inset-bottom)] pointer-events-none">
-      <div className="pointer-events-auto flex items-center justify-between px-2.5 py-1.5 rounded-3xl bg-[#FAF9F5]/96 dark:bg-[#12131F]/96 backdrop-blur-md border border-[#D8D8CF]/90 dark:border-[#272A3D] shadow-xl">
+      <div className="pointer-events-auto flex items-center justify-between px-2 py-1 rounded-3xl bg-[#FAF9F5]/96 dark:bg-[#12131F]/96 backdrop-blur-md border border-[#D8D8CF]/90 dark:border-[#272A3D] shadow-xl">
         
         {/* Item 1: Home Dashboard */}
         <button
           onClick={() => {
             soundManager.playClick();
+            haptics.light();
             onSelectView('overview');
           }}
-          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
             activeView === 'overview'
               ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
               : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
@@ -62,9 +64,10 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <button
           onClick={() => {
             soundManager.playClick();
+            haptics.light();
             onSelectView('syllabus');
           }}
-          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
             activeView === 'syllabus'
               ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
               : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
@@ -86,6 +89,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           <button
             onClick={() => {
               soundManager.playClick();
+              haptics.medium();
               if (onOpenAddTopic) onOpenAddTopic();
             }}
             className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#596B35] to-[#7FA04B] dark:from-[#7AA2F7] dark:to-[#5B82D7] text-white dark:text-[#0B0B0D] shadow-md shadow-[#596B35]/25 dark:shadow-[#7AA2F7]/30 flex items-center justify-center active:scale-90 transition-transform cursor-pointer border-2 border-white dark:border-[#12131F]"
@@ -100,9 +104,10 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <button
           onClick={() => {
             soundManager.playClick();
+            haptics.light();
             onSelectView('planner');
           }}
-          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
             activeView === 'planner'
               ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
               : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'
@@ -123,13 +128,14 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <button
           onClick={() => {
             soundManager.playClick();
+            haptics.light();
             if (onOpenMobileMenu) {
               onOpenMobileMenu();
             } else if (onOpenFocus) {
               onOpenFocus();
             }
           }}
-          className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 cursor-pointer relative ${
             ['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView)
               ? 'text-[#596B35] dark:text-[#7AA2F7] font-black'
               : 'text-[#85877E] dark:text-[#8E90A6] hover:text-[#11120F] dark:hover:text-white'

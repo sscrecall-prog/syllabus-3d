@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { usePWA } from '../../hooks/usePWA';
+import { haptics } from '../../utils/haptics';
 import {
   Search,
   Flame,
@@ -12,7 +14,8 @@ import {
   ArrowLeft,
   GraduationCap,
   WifiOff,
-  Check
+  Check,
+  Download
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -36,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { currentExam, exams, setSelectedExamId, profile, lastSavedAt, isAutoSaving } = useSyllabus();
   const { user } = useAuth();
   const { toggleTheme: handleThemeToggle, isDark, isOled } = useTheme();
+  const { isInstallable, isInstalled, triggerInstall } = usePWA();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
 
@@ -52,6 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const toggleTheme = () => {
     soundManager.playClick();
+    haptics.light();
     handleThemeToggle();
   };
 
@@ -166,6 +171,22 @@ export const Header: React.FC<HeaderProps> = ({
               {isAutoSaving ? 'Saving...' : `Saved ${lastSavedAt}`}
             </span>
           </div>
+
+          {/* PWA Install Button (Shown when installable on desktop/mobile) */}
+          {isInstallable && !isInstalled && (
+            <button
+              onClick={async () => {
+                haptics.medium();
+                soundManager.playClick();
+                await triggerInstall();
+              }}
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#455328] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs hover:opacity-95 transition-all cursor-pointer shrink-0 active:scale-95"
+              title="Install Syllabus 3D App on device"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Install App</span>
+            </button>
+          )}
 
           {/* Theme Toggle (Light / Dark / OLED) */}
           <button
