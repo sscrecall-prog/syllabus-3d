@@ -9,6 +9,7 @@ interface EditExamTargetModalProps {
 }
 
 const PRESET_EXAMS = [
+  { name: 'SSC CGL 2025', code: 'SSC_CGL', date: '2025-09-15', year: 2025 },
   { name: 'SSC CGL 2026', code: 'SSC_CGL', date: '2026-10-15', year: 2026 },
   { name: 'SSC CHSL 2026', code: 'SSC_CHSL', date: '2026-07-20', year: 2026 },
   { name: 'UPSC CSE 2026', code: 'UPSC_CSE', date: '2026-05-25', year: 2026 },

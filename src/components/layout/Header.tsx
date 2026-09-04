@@ -15,9 +15,11 @@ import {
   GraduationCap,
   WifiOff,
   Check,
-  Download
+  Download,
+  Settings2
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
+import { EditExamTargetModal } from '../modals/EditExamTargetModal';
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -41,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { toggleTheme: handleThemeToggle, isDark, isOled } = useTheme();
   const { isInstallable, isInstalled, triggerInstall } = usePWA();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
+  const [isEditExamModalOpen, setIsEditExamModalOpen] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   useEffect(() => {
@@ -99,33 +102,49 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative min-w-0">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth max-w-[130px] xs:max-w-[170px] sm:max-w-none shrink-0"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth shrink-0 active:scale-95"
               title="Switch Exam Target"
             >
               <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#596B35] dark:text-[#8B5CF6] shrink-0" />
-              <span className="truncate max-w-[75px] xs:max-w-[115px] sm:max-w-none">{examName}</span>
+              <span className="whitespace-nowrap font-bold tracking-tight">{examName}</span>
               <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] shrink-0" />
             </button>
 
             {isExamMenuOpen && (
-              <div className="absolute top-full left-0 mt-1.5 w-60 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-elevated-card p-1.5 z-40 animate-fade-in">
+              <div className="absolute top-full left-0 mt-1.5 w-64 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-elevated-card p-1.5 z-40 animate-fade-in">
+                <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] dark:text-[#71717A]">
+                  Target Exam
+                </div>
                 {exams.map(ex => (
                   <button
                     key={ex.id}
                     onClick={() => {
+                      soundManager.playClick();
                       setSelectedExamId(ex.id);
                       setIsExamMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-[13px] font-semibold flex items-center justify-between transition-colors ${
+                    className={`w-full text-left px-3 py-2 rounded-xl text-[13px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                       ex.id === currentExam?.id
-                        ? 'bg-[#DCE8B7] dark:bg-[#8B5CF6]/20 text-[#11120F] dark:text-[#F5F5F7] font-bold'
+                        ? 'bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#11120F] dark:text-[#F5F5F7] font-bold'
                         : 'hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] text-[#65675F] dark:text-[#A1A1AA]'
                     }`}
                   >
                     <span>{ex.name}</span>
-                    <span className="text-[11px] text-[#85877E]">{ex.targetYear}</span>
+                    <span className="text-[11px] font-mono text-[#85877E]">{ex.targetYear}</span>
                   </button>
                 ))}
+                <div className="my-1 border-t border-[#EEEEE8] dark:border-[#272730]" />
+                <button
+                  onClick={() => {
+                    soundManager.playClick();
+                    setIsExamMenuOpen(false);
+                    setIsEditExamModalOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#596B35] dark:text-[#7AA2F7] hover:bg-[#596B35]/10 dark:hover:bg-[#7AA2F7]/10 flex items-center gap-2 transition-colors cursor-pointer"
+                >
+                  <Settings2 className="w-3.5 h-3.5 shrink-0" />
+                  <span>Customize Target Exam...</span>
+                </button>
               </div>
             )}
           </div>
@@ -226,6 +245,12 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Edit Target Exam Modal */}
+      <EditExamTargetModal
+        isOpen={isEditExamModalOpen}
+        onClose={() => setIsEditExamModalOpen(false)}
+      />
     </header>
   );
 };

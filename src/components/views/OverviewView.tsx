@@ -34,6 +34,7 @@ interface OverviewViewProps {
 export const OverviewView: React.FC<OverviewViewProps> = ({
   onNavigate,
   onNavigateToSubject,
+  onOpenFocus,
 }) => {
   const {
     overallStats,
@@ -60,41 +61,112 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const examName = currentExam?.name || 'Target Exam';
   const examYear = currentExam?.targetYear || 2026;
 
-  // Greeting based on time of day
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'GOOD MORNING' : hour < 17 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
+  // Executive Greeting & Time Status
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const greetingPhase = hour < 12 ? 'Morning Focus' : hour < 17 ? 'Afternoon Momentum' : 'Evening Mastery';
+  const greetingIcon = hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
+  const formattedDate = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   const userName = user?.name || user?.email?.split('@')[0] || profile.name || 'Scholar';
 
   return (
     <div className="space-y-4 sm:space-y-5 pb-20">
       
-      {/* 1. PERSONALIZED GREETING HEADER */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <div className="min-w-0">
-          <h1 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center gap-2">
-            <img src="/dashboard_icon_3d.png" alt="Dashboard" className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0 drop-shadow-sm" />
-            <span>
-              {greeting}, <span className="text-[#596B35] dark:text-[#7AA2F7]">{userName}</span> 👋
-            </span>
-          </h1>
-          <p className="text-xs sm:text-[13px] text-[#65675F] dark:text-[#85877E] mt-0.5 font-medium">
-            {overallStats.completionPercentage > 0 
-              ? `You've mastered ${overallStats.completionPercentage}% of your syllabus. Keep pushing!`
-              : 'Start your preparation journey today!'}
-          </p>
-        </div>
+      {/* 1. EXECUTIVE VIP GREETING & COMMAND HERO CARD */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-gradient-to-br from-white/95 via-white/85 to-[#F4F6EC]/90 dark:from-[#181926]/90 dark:via-[#141522]/85 dark:to-[#0F1019]/95 backdrop-blur-xl border border-[#D8D8CF]/80 dark:border-[#272738]/80 shadow-elevated-card">
+        
+        {/* Ambient Glow Orbs */}
+        <div className="absolute -top-12 -right-12 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-gradient-to-br from-[#596B35]/15 to-[#86A83E]/10 dark:from-[#7AA2F7]/20 dark:to-[#8B5CF6]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-8 -left-8 w-36 sm:w-44 h-36 sm:h-44 rounded-full bg-amber-500/10 dark:bg-cyan-500/10 blur-2xl pointer-events-none" />
 
-        {/* Quick Stats Cluster */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {profile.currentStreak > 0 && (
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0">
-              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 tabular-nums font-mono">{profile.currentStreak}d</span>
+        <div className="relative z-10 space-y-3.5 sm:space-y-4">
+          {/* Top Row: Phase Pill + Live Date + Quick Metrics */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#596B35]/10 dark:bg-[#7AA2F7]/15 border border-[#596B35]/20 dark:border-[#7AA2F7]/30 text-[#596B35] dark:text-[#7AA2F7] text-[11px] font-black tracking-wide uppercase">
+                <span>{greetingIcon}</span>
+                <span>{greetingPhase}</span>
+              </div>
+              <span className="text-[11px] font-bold text-[#85877E] dark:text-[#71717A] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                {formattedDate}
+              </span>
             </div>
-          )}
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#596B35]/10 dark:bg-[#7AA2F7]/10 border border-[#596B35]/20 dark:border-[#7AA2F7]/20 shrink-0">
-            <TrendingUp className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
-            <span className="text-[11px] font-black text-[#596B35] dark:text-[#7AA2F7] font-mono">Lvl {profile.level}</span>
+
+            {/* Elite Stats Badges */}
+            <div className="flex items-center gap-1.5">
+              {profile.currentStreak > 0 && (
+                <div 
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-mono font-black tabular-nums shadow-xs"
+                  title={`${profile.currentStreak} Day Consistency Streak`}
+                >
+                  <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                  <span>{profile.currentStreak}d Streak</span>
+                </div>
+              )}
+              <div 
+                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#596B35]/10 dark:bg-[#7AA2F7]/15 border border-[#596B35]/20 dark:border-[#7AA2F7]/30 text-[#596B35] dark:text-[#7AA2F7] text-[11px] font-mono font-black tabular-nums shadow-xs"
+                title={`Level ${profile.level} - ${profile.xp} Total XP`}
+              >
+                <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+                <span>Lvl {profile.level}</span>
+              </div>
+              <div 
+                className="hidden xs:flex items-center gap-1 px-2.5 py-1 rounded-xl bg-purple-500/10 dark:bg-purple-500/15 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-[11px] font-bold shadow-xs"
+                title={`${overallStats.completionPercentage}% Syllabus Mastered`}
+              >
+                <span>🏆 {overallStats.completionPercentage}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Middle Row: Personalized Aspirant Name & Executive Mission Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0.5">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center gap-2 flex-wrap">
+                <span>{greeting},</span>
+                <span className="bg-gradient-to-r from-[#191A17] via-[#46542A] to-[#596B35] dark:from-white dark:via-[#93C5FD] dark:to-[#818CF8] bg-clip-text text-transparent">
+                  {userName}
+                </span>
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-400/20 text-amber-500 border border-amber-400/30 text-xs shadow-xs" title="Verified Aspirant">
+                  ✨
+                </span>
+              </h1>
+              <p className="text-xs sm:text-[13px] text-[#65675F] dark:text-[#9496A1] mt-1 font-medium leading-relaxed">
+                {overallStats.completionPercentage > 0
+                  ? `You have conquered ${overallStats.completionPercentage}% of ${examName}. Keep your streak alive and push for top ranks!`
+                  : `Your mission control for ${examName} is active. Master concepts, track revisions, and win your dream post!`}
+              </p>
+            </div>
+
+            {/* Quick Action Trigger Buttons */}
+            <div className="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
+              {onOpenFocus && (
+                <button
+                  onClick={() => {
+                    soundManager.playClick();
+                    onOpenFocus();
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#596B35] to-[#455328] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0A0B10] text-xs sm:text-[13px] font-extrabold shadow-md hover:opacity-95 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                  title="Launch Focus Chamber"
+                >
+                  <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                  <span>Focus Mode</span>
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  onNavigate('planner');
+                }}
+                className="px-3 py-2 rounded-xl bg-white dark:bg-[#20212F] border border-[#D8D8CF] dark:border-[#2E2F40] text-[#191A17] dark:text-[#E2E8F0] text-xs sm:text-[13px] font-bold shadow-xs hover:border-[#596B35] dark:hover:border-[#7AA2F7] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                title="View Today's Daily Planner"
+              >
+                <CalendarCheck className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
+                <span>Today ({completedTodayTasks.length}/{totalTasksToday})</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

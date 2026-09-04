@@ -1,15 +1,15 @@
-import { Exam, AchievementBadge, UserProgressProfile, DailyActivity } from '../types/syllabus';
+import { Exam, Subject, AchievementBadge, UserProgressProfile, DailyActivity } from '../types/syllabus';
 
 export const INITIAL_PROFILE: UserProgressProfile = {
-  name: 'Aspirant Rahul',
-  targetExamDate: '2026-09-15',
+  name: 'Sunny Rise',
+  targetExamDate: '2025-09-15',
   currentStreak: 18,
   longestStreak: 24,
   level: 4,
   levelTitle: 'Syllabus Specialist',
   xp: 1420,
   soundEnabled: true,
-  selectedExamId: 'exam_ssc_cgl_2026'
+  selectedExamId: 'exam_ssc_cgl_2025'
 };
 
 export const INITIAL_ACHIEVEMENTS: AchievementBadge[] = [
@@ -128,16 +128,9 @@ export const INITIAL_ACTIVITY_HISTORY: DailyActivity[] = (() => {
   return list;
 })();
 
-export const INITIAL_EXAMS: Exam[] = [
+const INITIAL_SSC_SUBJECTS: Subject[] = [
   {
-    id: 'exam_ssc_cgl_2026',
-    name: 'SSC CGL 2026',
-    code: 'SSC_CGL',
-    targetYear: 2026,
-    examDate: '2026-09-15',
-    subjects: [
-      {
-        id: 'subj_quant',
+    id: 'subj_quant',
         name: 'Quantitative Aptitude',
         icon: 'Calculator',
         color: '#596B35',
@@ -610,6 +603,23 @@ export const INITIAL_EXAMS: Exam[] = [
           }
         ]
       }
-    ]
+    ];
+
+export const INITIAL_EXAMS: Exam[] = [
+  {
+    id: 'exam_ssc_cgl_2025',
+    name: 'SSC CGL 2025',
+    code: 'SSC_CGL',
+    targetYear: 2025,
+    examDate: '2025-09-15',
+    subjects: INITIAL_SSC_SUBJECTS
+  },
+  {
+    id: 'exam_ssc_cgl_2026',
+    name: 'SSC CGL 2026',
+    code: 'SSC_CGL',
+    targetYear: 2026,
+    examDate: '2026-09-15',
+    subjects: JSON.parse(JSON.stringify(INITIAL_SSC_SUBJECTS))
   }
 ];
