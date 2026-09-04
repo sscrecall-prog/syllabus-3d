@@ -179,7 +179,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={`group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${
                   isActive
                     ? 'bg-white dark:bg-[#1E1F2A] text-[#11120F] dark:text-white border border-[#D8D8CF]/80 dark:border-[#333446] font-black shadow-xs'
-                    : 'text-[#65675F] dark:text-[#9A9CAE] hover:bg-white/70 dark:hover:bg-[#161720] hover:text-[#11120F] dark:hover:text-white'
+                    : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-white/70 dark:hover:bg-[#161720] hover:text-[#11120F] dark:hover:text-white'
                 }`}
               >
                 {/* Active Left Indicator */}
@@ -198,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     />
                   ) : (
                     <Icon className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
-                      isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E] group-hover:scale-110'
+                      isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
                     }`} />
                   )}
                   <span className="truncate text-[13px] font-semibold">{item.label}</span>
@@ -230,7 +230,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] block leading-tight group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] truncate">
                 Mock Tracker
               </span>
-              <span className="text-[11px] text-[#65675F] dark:text-[#85877E] block leading-none truncate">Score & Percentiles</span>
+              <span className="text-[11px] text-[#65675F] dark:text-[#CBD5E1] block leading-none truncate">Score & Percentiles</span>
             </div>
           </div>
           <ExternalLink className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
@@ -255,7 +255,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <h4 className="text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] truncate leading-tight">
                   {user?.name || profile.name}
                 </h4>
-                <p className="text-[11px] text-[#65675F] dark:text-[#85877E] leading-none">
+                <p className="text-[11px] text-[#65675F] dark:text-[#CBD5E1] leading-none">
                   {profile.levelTitle}
                 </p>
               </div>
