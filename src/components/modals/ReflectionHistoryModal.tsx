@@ -13,6 +13,7 @@ import {
 import { useSyllabus } from '../../context/SyllabusContext';
 import { DailyMood, DistractionCategory } from '../../types/syllabus';
 import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 
 interface ReflectionHistoryModalProps {
   isOpen: boolean;
@@ -65,13 +66,22 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md select-none animate-fade-in font-sans"
-      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md select-none animate-fade-in font-sans overflow-hidden"
+      onClick={() => {
+        soundManager.playClick();
+        haptics.light();
+        onClose();
+      }}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[88vh] bg-[#0F101A] border border-[#2B2E42] rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col text-white my-auto"
+        className="relative w-full max-w-2xl max-h-[88vh] bg-[#0F101A] border-t sm:border border-[#2B2E42] rounded-t-3xl sm:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col text-white overscroll-contain animate-slide-up sm:animate-none"
         onClick={e => e.stopPropagation()}
       >
+        {/* Mobile Pull-Down Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex items-center justify-center bg-[#1B1D30]">
+          <div className="w-12 h-1.5 rounded-full bg-slate-600 active:scale-95 transition-transform" />
+        </div>
+
         {/* Top Header - Compact & Clean */}
         <div className="p-4 sm:p-5 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] flex items-center justify-between gap-3 shrink-0 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -97,10 +107,14 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
 
           <button
             type="button"
-            onClick={onClose}
-            className="relative z-10 p-1.5 sm:p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer shrink-0"
+            onClick={() => {
+              soundManager.playClick();
+              haptics.light();
+              onClose();
+            }}
+            className="relative z-10 p-2 sm:p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
           >
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 

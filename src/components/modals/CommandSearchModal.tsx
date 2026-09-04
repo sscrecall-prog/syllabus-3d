@@ -5,6 +5,7 @@ import { Search, X, ArrowRight, Sparkles, BookOpen, Check } from 'lucide-react';
 import { StatusBadge } from '../common/StatusBadge';
 import { Topic } from '../../types/syllabus';
 import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 
 interface CommandSearchModalProps {
   isOpen: boolean;
@@ -102,17 +103,20 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center pt-14 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-fade-in select-none"
-      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-start justify-center pt-safe pt-10 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-fade-in select-none"
+      onClick={() => {
+        haptics.light();
+        onClose();
+      }}
     >
       <div
-        className="relative w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#28293D] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        className="relative w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#28293D] shadow-2xl overflow-hidden flex flex-col max-h-[80vh] overscroll-contain"
         onClick={e => e.stopPropagation()}
       >
         
         {/* Search Header Bar */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#D8D8CF] dark:border-[#28293D] bg-white dark:bg-[#161726]">
-          <Search className="w-5 h-5 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
+          <Search className="w-5 h-5 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -124,8 +128,11 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
           />
           {query && (
             <button
-              onClick={() => setQuery('')}
-              className="p-1 rounded-lg text-[#85877E] hover:text-[#11120F] dark:hover:text-white transition-colors cursor-pointer"
+              onClick={() => {
+                haptics.light();
+                setQuery('');
+              }}
+              className="p-1 rounded-lg text-[#85877E] hover:text-[#11120F] dark:hover:text-white transition-colors cursor-pointer tap-bounce"
             >
               <X className="w-4 h-4" />
             </button>
@@ -136,7 +143,7 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
         </div>
 
         {/* Results List */}
-        <div className="max-h-96 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+        <div className="max-h-96 overflow-y-auto p-2 space-y-1 custom-scrollbar overscroll-contain">
           {filteredTopics.length > 0 ? (
             filteredTopics.map((item, index) => (
               <div
@@ -144,12 +151,13 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
                 ref={el => itemRefs.current[index] = el}
                 onClick={() => {
                   soundManager.playClick();
+                  haptics.light();
                   onSelectTopic(item.topic, item.subjectName, item.chapterName);
                   onClose();
                 }}
-                className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
+                className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all tap-bounce ${
                   index === selectedIndex
-                    ? 'bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 border border-[#B8CE80] dark:border-[#7AA2F7]/40 shadow-xs'
+                    ? 'bg-[#2563EB]/15 dark:bg-[#7AA2F7]/20 border border-[#2563EB]/30 dark:border-[#7AA2F7]/40 shadow-xs'
                     : 'hover:bg-[#EEEEE8] dark:hover:bg-[#181926]'
                 }`}
               >

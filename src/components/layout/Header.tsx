@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   const examName = currentExam?.name || 'Syllabus Exam';
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 transition-colors">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe transition-colors select-none">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
         
         {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}
@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
                 haptics.light();
                 onGoBack();
               }}
-              className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] transition-all cursor-pointer flex items-center gap-1 shadow-sm active:scale-95 group shrink-0"
+              className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] transition-all cursor-pointer flex items-center gap-1 shadow-sm tap-bounce group shrink-0 min-h-[40px]"
               title="Navigate Back (Previous Step)"
             >
               <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4 group-hover:-translate-x-0.5 transition-transform" />
@@ -91,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
                 haptics.light();
                 onOpenMobileMenu?.();
               }}
-              className="md:hidden p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0"
+              className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
               title="Open Navigation Menu"
             >
               <Menu className="w-4 h-4" />

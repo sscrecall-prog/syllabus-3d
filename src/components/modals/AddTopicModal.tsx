@@ -15,6 +15,8 @@ import {
   Info
 } from 'lucide-react';
 import { DifficultyLevel } from '../../types/syllabus';
+import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
 
 interface AddTopicModalProps {
   isOpen: boolean;
@@ -177,14 +179,23 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto animate-fade-in select-none"
-      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md overflow-hidden animate-fade-in select-none"
+      onClick={() => {
+        soundManager.playClick();
+        haptics.light();
+        onClose();
+      }}
     >
       <div
-        className="relative w-full max-w-xl rounded-3xl bg-[#FAF9F5] dark:bg-[#121217] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-xl rounded-t-3xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#121217] border-t sm:border border-[#D8D8CF] dark:border-[#272730] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col overscroll-contain animate-slide-up sm:animate-none"
         onClick={e => e.stopPropagation()}
       >
         
+        {/* Mobile Pull-Down Drag Handle Pill */}
+        <div className="sm:hidden pt-3 pb-1 flex items-center justify-center bg-white dark:bg-[#18181D]">
+          <div className="w-12 h-1.5 rounded-full bg-[#CBD5E1] dark:bg-[#475569] active:scale-95 transition-transform" />
+        </div>
+
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-[#D8D8CF] dark:border-[#272730] flex items-center justify-between bg-white dark:bg-[#18181D] shrink-0">
           <div className="flex items-center gap-3">
@@ -202,10 +213,14 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
           </div>
 
           <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-[#65675F] hover:text-rose-500 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-colors cursor-pointer"
+            onClick={() => {
+              soundManager.playClick();
+              haptics.light();
+              onClose();
+            }}
+            className="p-2.5 rounded-xl text-[#65675F] hover:text-rose-500 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-colors cursor-pointer tap-bounce touch-target-min flex items-center justify-center"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -477,15 +492,20 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-colors"
+              onClick={() => {
+                soundManager.playClick();
+                haptics.light();
+                onClose();
+              }}
+              className="px-5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-colors tap-bounce min-h-[44px]"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black uppercase tracking-wider shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+              onClick={() => haptics.medium()}
+              className="px-6 py-2.5 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black uppercase tracking-wider shadow-xs tap-bounce transition-all cursor-pointer flex items-center gap-2 min-h-[44px]"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>

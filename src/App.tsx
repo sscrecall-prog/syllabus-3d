@@ -15,6 +15,7 @@ import { SignUpView } from './components/auth/SignUpView';
 import { ForgotPasswordView } from './components/auth/ForgotPasswordView';
 import { InitialAuthLoading } from './components/auth/InitialAuthLoading';
 import { soundManager } from './utils/soundEffects';
+import { haptics } from './utils/haptics';
 import { PWAInstallBanner } from './components/common/PWAInstallBanner';
 import { OfflineStatusIndicator } from './components/common/OfflineStatusIndicator';
 
@@ -261,6 +262,102 @@ export const App: React.FC = () => {
     );
   }
 
+  // 📱 Mobile Top-Level Horizontal View Swiping (Overview ⇄ Syllabus ⇄ Planner)
+  const viewSwipeStartX = useRef<number | null>(null);
+  const viewSwipeStartY = useRef<number | null>(null);
+  const viewSwipeStartTime = useRef<number>(0);
+  const isHorizontalViewSwipe = useRef<boolean | null>(null);
+
+  const isInteractiveSwipeTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof HTMLElement)) return false;
+    return Boolean(
+      target.closest(
+        'input, textarea, select, button, a, [contenteditable="true"], [role="slider"], .no-swipe, [data-no-swipe], audio, video, iframe, canvas, table, .overflow-x-auto, [data-canvas]'
+      )
+    );
+  };
+
+  const handleMainTouchStart = (e: React.TouchEvent) => {
+    if (
+      isMobileDrawerOpen ||
+      selectedTopic ||
+      isSearchOpen ||
+      isAddTopicOpen ||
+      isRevisionSessionOpen ||
+      isFullModalOpen
+    ) {
+      viewSwipeStartX.current = null;
+      return;
+    }
+
+    if (isInteractiveSwipeTarget(e.target)) {
+      viewSwipeStartX.current = null;
+      return;
+    }
+
+    viewSwipeStartX.current = e.touches[0].clientX;
+    viewSwipeStartY.current = e.touches[0].clientY;
+    viewSwipeStartTime.current = Date.now();
+    isHorizontalViewSwipe.current = null;
+  };
+
+  const handleMainTouchMove = (e: React.TouchEvent) => {
+    if (viewSwipeStartX.current === null || viewSwipeStartY.current === null) return;
+
+    const diffX = e.touches[0].clientX - viewSwipeStartX.current;
+    const diffY = e.touches[0].clientY - viewSwipeStartY.current;
+
+    if (isHorizontalViewSwipe.current === null) {
+      if (Math.abs(diffX) > 12 || Math.abs(diffY) > 12) {
+        if (Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+          isHorizontalViewSwipe.current = true;
+        } else {
+          isHorizontalViewSwipe.current = false;
+        }
+      }
+    }
+  };
+
+  const handleMainTouchEnd = (e: React.TouchEvent) => {
+    if (
+      isHorizontalViewSwipe.current === true &&
+      viewSwipeStartX.current !== null &&
+      e.changedTouches.length > 0
+    ) {
+      const diffX = e.changedTouches[0].clientX - viewSwipeStartX.current;
+      const duration = Date.now() - viewSwipeStartTime.current;
+
+      const isFastFlick = duration < 350 && Math.abs(diffX) > 40;
+      const isNormalSwipe = Math.abs(diffX) > 70;
+
+      if (isFastFlick || isNormalSwipe) {
+        if (diffX < 0) {
+          // Swiped Left -> Move forward
+          if (currentView === 'overview') {
+            haptics.light();
+            handleNavigate('syllabus');
+          } else if (currentView === 'syllabus') {
+            haptics.light();
+            handleNavigate('planner');
+          }
+        } else if (diffX > 0) {
+          // Swiped Right -> Move backward
+          if (currentView === 'planner') {
+            haptics.light();
+            handleNavigate('syllabus');
+          } else if (currentView === 'syllabus') {
+            haptics.light();
+            handleNavigate('overview');
+          }
+        }
+      }
+    }
+
+    viewSwipeStartX.current = null;
+    viewSwipeStartY.current = null;
+    isHorizontalViewSwipe.current = null;
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5] flex flex-col md:flex-row transition-colors duration-300">
       
@@ -320,7 +417,12 @@ export const App: React.FC = () => {
           onGoBack={handleBack}
         />
 
-        <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-28 md:pb-8">
+        <main
+          onTouchStart={handleMainTouchStart}
+          onTouchMove={handleMainTouchMove}
+          onTouchEnd={handleMainTouchEnd}
+          className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-28 md:pb-8 touch-pan-y overscroll-contain"
+        >
           <div key={currentView} className="animate-view-fade">
             {/* Initial Dashboard View (Instant, Non-Lazy) */}
             {currentView === 'overview' && (

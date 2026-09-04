@@ -166,6 +166,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const handleTouchEnd = () => {
     if (dragOffsetY > 85) {
       soundManager.playClick();
+      haptics.light();
       onClose();
     }
     setDragOffsetY(0);
@@ -445,8 +446,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchEnd={handleTouchEnd}
             className="sm:hidden pt-3 pb-1 flex items-center justify-center cursor-grab active:cursor-grabbing bg-white dark:bg-[#18181D]"
           >
-            <div className="w-12 h-1.5 rounded-full bg-[#D8D8CF] dark:bg-[#3B4261]" />
-          </div>          {/* Header */}
+            <div className="w-12 h-1.5 rounded-full bg-[#CBD5E1] dark:bg-[#475569] active:scale-95 transition-transform" />
+          </div>
+          {/* Header */}
           <div
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -731,7 +733,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+              <span className="text-[10px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 Swipe ‹ › to navigate
               </span>
               <div className="flex items-center gap-1">
@@ -746,8 +748,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     }}
                     className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                       activeTab === t
-                        ? 'w-4 bg-[#596B35] dark:bg-[#7AA2F7]'
-                        : 'w-1.5 bg-[#D8D8CF] dark:bg-[#383A52] hover:bg-[#85877E]'
+                        ? 'w-4 bg-[#2563EB] dark:bg-[#7AA2F7]'
+                        : 'w-1.5 bg-[#CBD5E1] dark:bg-[#383A52] hover:bg-[#94A3B8]'
                     }`}
                     title={`Switch to ${t}`}
                   />
@@ -782,7 +784,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleContentTouchStart}
             onTouchMove={handleContentTouchMove}
             onTouchEnd={handleContentTouchEnd}
-            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5"
+            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 overscroll-contain"
           >
             
             {/* OVERVIEW TAB */}
