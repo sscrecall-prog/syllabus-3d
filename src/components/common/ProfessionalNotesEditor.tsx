@@ -2814,12 +2814,6 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 + Rules & Traps Guide
               </button>
             </div>
-
-            <div className="flex items-center gap-2 text-[11px] text-purple-600 dark:text-purple-400 font-semibold font-mono">
-              <span>🖍️ Select text to highlight</span>
-              <span>•</span>
-              <span>📸 Ctrl+V Screenshot</span>
-            </div>
           </div>
         </div>
       )}
