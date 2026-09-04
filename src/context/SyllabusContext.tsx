@@ -41,6 +41,7 @@ import {
 import { soundManager } from '../utils/soundEffects';
 import { useAuth } from './AuthContext';
 import confetti from 'canvas-confetti';
+import { storageManager, StorageHealthMetrics, FullAppSnapshot } from '../services/storageManager';
 
 export interface CreateCustomTopicPayload {
   isNewSubject: boolean;
@@ -306,6 +307,8 @@ interface SyllabusContextType {
   clearAllDemoData: () => void;
   exportData: () => string;
   importData: (jsonData: string) => boolean;
+  restoreSafetySnapshot: () => Promise<boolean>;
+  getStorageMetrics: () => StorageHealthMetrics;
   lastSavedAt: string;
   isAutoSaving: boolean;
 }
@@ -395,29 +398,29 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [user]);
 
-  // Save to LocalStorage
+  // Debounced Batch Persistence & Quota Protection
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_exams', JSON.stringify(exams)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_exams', exams);
   }, [exams]);
 
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_profile', JSON.stringify(profile)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_profile', profile);
   }, [profile]);
 
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_achievements', JSON.stringify(achievements)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_achievements', achievements);
   }, [achievements]);
 
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_activity', JSON.stringify(activityHistory)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_activity', activityHistory);
   }, [activityHistory]);
 
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_revisions', JSON.stringify(revisions)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_revisions', revisions);
   }, [revisions]);
 
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_planner', plannerTasks);
   }, [plannerTasks]);
 
   const [platforms, setPlatforms] = useState<ExternalPlatform[]>(() => {
@@ -434,7 +437,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   useEffect(() => {
-    try { localStorage.setItem('syllabus3d_platforms', JSON.stringify(platforms)); } catch(e) { console.warn(e); }
+    storageManager.debouncedSave('syllabus3d_platforms', platforms);
   }, [platforms]);
 
   // ──── TOP 3 NON-NEGOTIABLE TARGETS & DAILY REFLECTION STATE ────
@@ -457,9 +460,34 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setTimeout(() => setIsAutoSaving(false), 900);
   };
 
+  // Wire debounced auto-save notification
   useEffect(() => {
-    triggerAutoSave();
-  }, [exams, profile, plannerTasks, revisions, top3Targets, reflectionsHistory, platforms]);
+    const unsub = storageManager.onAutoSave(() => {
+      triggerAutoSave();
+    });
+    return unsub;
+  }, []);
+
+  // Automated Rolling Safety Snapshot to IndexedDB (Idle 4.5s debounce)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      storageManager.createSafetySnapshot({
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        exams,
+        profile,
+        achievements,
+        activityHistory,
+        revisions,
+        plannerTasks,
+        platforms,
+        top3Targets,
+        reflectionsHistory
+      }).catch(() => {});
+    }, 4500);
+
+    return () => clearTimeout(timer);
+  }, [exams, profile, achievements, activityHistory, revisions, plannerTasks, platforms, top3Targets, reflectionsHistory]);
 
   const currentExam = useMemo(() => {
     if (exams.length === 0) return undefined;
@@ -1763,6 +1791,61 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const restoreSafetySnapshot = async (): Promise<boolean> => {
+    try {
+      const snapshot = await storageManager.getLatestSafetySnapshot();
+      if (!snapshot) return false;
+
+      if (Array.isArray(snapshot.exams) && snapshot.exams.length > 0) {
+        setExams(snapshot.exams);
+        storageManager.safeSetItem('syllabus3d_exams', snapshot.exams);
+      }
+      if (snapshot.profile) {
+        setProfile(snapshot.profile);
+        storageManager.safeSetItem('syllabus3d_profile', snapshot.profile);
+      }
+      if (Array.isArray(snapshot.achievements)) {
+        setAchievements(snapshot.achievements);
+        storageManager.safeSetItem('syllabus3d_achievements', snapshot.achievements);
+      }
+      if (Array.isArray(snapshot.activityHistory)) {
+        setActivityHistory(snapshot.activityHistory);
+        storageManager.safeSetItem('syllabus3d_activity', snapshot.activityHistory);
+      }
+      if (Array.isArray(snapshot.revisions)) {
+        setRevisions(snapshot.revisions);
+        storageManager.safeSetItem('syllabus3d_revisions', snapshot.revisions);
+      }
+      if (Array.isArray(snapshot.plannerTasks)) {
+        setPlannerTasks(snapshot.plannerTasks);
+        storageManager.safeSetItem('syllabus3d_planner', snapshot.plannerTasks);
+      }
+      if (Array.isArray(snapshot.platforms)) {
+        setPlatforms(snapshot.platforms);
+        storageManager.safeSetItem('syllabus3d_platforms', snapshot.platforms);
+      }
+      if (Array.isArray(snapshot.top3Targets)) {
+        setTop3Targets(snapshot.top3Targets);
+        saveStoredTop3Targets(snapshot.top3Targets);
+      }
+      if (Array.isArray(snapshot.reflectionsHistory)) {
+        setReflectionsHistory(snapshot.reflectionsHistory);
+        try {
+          localStorage.setItem('syllabus3d_daily_reflections', JSON.stringify(snapshot.reflectionsHistory));
+        } catch {}
+      }
+      triggerAutoSave();
+      return true;
+    } catch (err) {
+      console.error('Failed to restore safety snapshot', err);
+      return false;
+    }
+  };
+
+  const getStorageMetrics = (): StorageHealthMetrics => {
+    return storageManager.getStorageHealthMetrics();
+  };
+
   const contextValue = useMemo(() => ({
     exams,
     currentExam,
@@ -1833,6 +1916,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     clearAllDemoData,
     exportData,
     importData,
+    restoreSafetySnapshot,
+    getStorageMetrics,
     lastSavedAt,
     isAutoSaving
   }), [

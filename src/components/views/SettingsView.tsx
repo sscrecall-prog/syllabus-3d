@@ -35,7 +35,8 @@ import {
   FileCheck2,
   RefreshCw,
   BookOpen,
-  Zap
+  Zap,
+  ShieldCheck
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
@@ -53,6 +54,8 @@ export const SettingsView: React.FC = () => {
     overallStats,
     exportData,
     importData,
+    restoreSafetySnapshot,
+    getStorageMetrics,
     resetToDemo,
     clearAllDemoData,
     exams,
@@ -89,21 +92,44 @@ export const SettingsView: React.FC = () => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [testLaunched, setTestLaunched] = useState(false);
 
+  // Live Storage Health & Snapshot Telemetry
+  const [storageMetrics, setStorageMetrics] = useState(() => getStorageMetrics());
+  const [isRestoringSnapshot, setIsRestoringSnapshot] = useState(false);
+  const [snapshotStatus, setSnapshotStatus] = useState<'idle' | 'success' | 'empty' | 'error'>('idle');
+
+  useEffect(() => {
+    if (activeTab === 'data') {
+      setStorageMetrics(getStorageMetrics());
+    }
+  }, [activeTab, lastSavedAt, exams, profile, plannerTasks, revisions, top3Targets, reflectionsHistory]);
+
+  const handleRestoreSnapshot = async () => {
+    if (!window.confirm('Restore your latest automated safety snapshot from IndexedDB? This will restore your data to the last verified safe state.')) {
+      return;
+    }
+    setIsRestoringSnapshot(true);
+    setSnapshotStatus('idle');
+    try {
+      const ok = await restoreSafetySnapshot();
+      if (ok) {
+        setSnapshotStatus('success');
+        setStorageMetrics(getStorageMetrics());
+        haptics.success();
+        setTimeout(() => setSnapshotStatus('idle'), 4000);
+      } else {
+        setSnapshotStatus('empty');
+      }
+    } catch {
+      setSnapshotStatus('error');
+    } finally {
+      setIsRestoringSnapshot(false);
+    }
+  };
+
   // Approximate local storage usage in KB
   const storageUsageKb = useMemo(() => {
-    if (typeof window === 'undefined') return 0;
-    try {
-      let total = 0;
-      for (let x in localStorage) {
-        if (localStorage.hasOwnProperty(x)) {
-          total += (localStorage[x].length + x.length) * 2;
-        }
-      }
-      return Math.max(1, Math.round(total / 1024));
-    } catch {
-      return 12;
-    }
-  }, [exams, profile, plannerTasks, revisions, top3Targets, reflectionsHistory]);
+    return Math.max(1, Math.round(storageMetrics.usedBytes / 1024));
+  }, [storageMetrics]);
 
   // Sound & Motivation Audio state
   const [audioConfig, setAudioConfig] = useState<AudioSettings>(() => soundManager.getSettings());
@@ -1057,31 +1083,31 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: BACKUP, RESTORE & STORAGE */}
+      {/* TAB 4: BACKUP, RESTORE & STORAGE SAFETY */}
       {activeTab === 'data' && (
         <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-5 animate-fade-in">
           <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
             <div>
               <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
-                1-Click Backup & Local Auto-Save Sync
+                Storage Safety & Dual-Tier Data Engine
               </h3>
               <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
-                All your syllabus data is continuously auto-saved. You can also export a 1-click JSON backup file.
+                Real-time debounced persistence with dual-tier IndexedDB safety snapshots and quota protection.
               </p>
             </div>
           </div>
 
-          {/* Live Auto-Save Sync Telemetry Card */}
-          <div className="p-4 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-3">
+          {/* Live Auto-Save & Debounce Engine Card */}
+          <div className="p-4 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-3.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                 <div>
                   <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] block leading-tight">
-                    Continuous Local Auto-Save: Active
+                    Continuous Debounced Auto-Save: Active
                   </span>
                   <span className="text-[11px] text-[#85877E] dark:text-[#787C99]">
-                    Zero risk of progress loss — synced instantly on every note, target, or score edit.
+                    350ms batched writes prevent keystroke lag • Flushes instantly on tab switch or close
                   </span>
                 </div>
               </div>
@@ -1092,25 +1118,124 @@ export const SettingsView: React.FC = () => {
               </div>
             </div>
 
-            {/* Storage Metric Pills */}
+            {/* Visual Storage Health & Quota Bar */}
+            <div className="p-3 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] space-y-2">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-bold text-[#11120F] dark:text-[#C0CAF5] flex items-center gap-1.5">
+                  <HardDrive className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+                  Browser Local Storage Quota
+                </span>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className={`px-2 py-0.5 rounded-full font-bold uppercase text-[10px] ${
+                    storageMetrics.status === 'critical'
+                      ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
+                      : storageMetrics.status === 'moderate'
+                      ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                      : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                  }`}>
+                    {storageMetrics.status} ({storageMetrics.percentage}%)
+                  </span>
+                  <span className="text-[#85877E] dark:text-[#787C99]">
+                    {storageMetrics.usedFormatted} / {storageMetrics.totalFormatted}
+                  </span>
+                </div>
+              </div>
+
+              <div className="w-full h-2.5 rounded-full bg-[#EEEEE8] dark:bg-[#24283B] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    storageMetrics.status === 'critical'
+                      ? 'bg-rose-500'
+                      : storageMetrics.status === 'moderate'
+                      ? 'bg-amber-500'
+                      : 'bg-[#596B35] dark:bg-[#7AA2F7]'
+                  }`}
+                  style={{ width: `${Math.max(2, storageMetrics.percentage)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Storage Entity Breakdown Pills */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-[#D8D8CF]/50 dark:border-[#292E42]/50 text-center font-mono">
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Topics & Notes</span>
-                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">{overallStats.totalTopics} Topics</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Topics & Exams</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] tabular-nums">
+                  {overallStats.totalTopics} Topics (~{(storageMetrics.breakdown.exams / 1024).toFixed(1)} KB)
+                </span>
               </div>
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
                 <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">SRS Flashcards</span>
-                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">{revisions.length} Cards</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] tabular-nums">
+                  {revisions.length} Cards (~{(storageMetrics.breakdown.revisions / 1024).toFixed(1)} KB)
+                </span>
               </div>
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Targets & Reflections</span>
-                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">{top3Targets.length + reflectionsHistory.length} Entries</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Planner Tasks</span>
+                <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] tabular-nums">
+                  {plannerTasks.length} Tasks (~{(storageMetrics.breakdown.planner / 1024).toFixed(1)} KB)
+                </span>
               </div>
               <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
-                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Total Stored Data</span>
-                <span className="text-[13px] font-bold text-[#596B35] dark:text-[#7AA2F7]">~{storageUsageKb} KB</span>
+                <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Targets & Habits</span>
+                <span className="text-[13px] font-bold text-[#596B35] dark:text-[#7AA2F7] tabular-nums">
+                  {top3Targets.length + reflectionsHistory.length} Entries (~{((storageMetrics.breakdown.activity + storageMetrics.breakdown.other) / 1024).toFixed(1)} KB)
+                </span>
               </div>
             </div>
+          </div>
+
+          {/* Dual-Tier IndexedDB Safety Snapshot Card */}
+          <div className="p-4 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                  <h4 className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">
+                    IndexedDB Automated Safety Net (Quota Overflow Proof)
+                  </h4>
+                </div>
+                <p className="text-[11px] text-[#65675F] dark:text-[#A9B1D6]">
+                  Full rolling state snapshots are asynchronously safeguarded in browser IndexedDB (50MB+ capacity).
+                </p>
+                <div className="text-[10px] text-[#85877E] dark:text-[#787C99] font-mono">
+                  Latest Snapshot: {storageMetrics.lastSnapshotAt ? (
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">{storageMetrics.lastSnapshotAt}</span>
+                  ) : (
+                    <span>Auto-saves every few seconds of idle study time</span>
+                  )}
+                </div>
+              </div>
+
+              <button
+                onClick={handleRestoreSnapshot}
+                disabled={isRestoringSnapshot}
+                className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#16161E] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-[12px] font-bold transition-all cursor-pointer disabled:opacity-50 shrink-0"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] ${isRestoringSnapshot ? 'animate-spin' : ''}`} />
+                <span>{isRestoringSnapshot ? 'Restoring...' : 'Restore Safety Snapshot'}</span>
+              </button>
+            </div>
+
+            {snapshotStatus === 'success' && (
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[12px] font-bold animate-fade-in">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>✓ Verified IndexedDB safety snapshot restored successfully! All data and progress re-synced.</span>
+              </div>
+            )}
+
+            {snapshotStatus === 'empty' && (
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-[12px] font-bold animate-fade-in">
+                <FileCheck2 className="w-4 h-4 shrink-0" />
+                <span>No automated safety snapshot found in this browser yet. Continue using the app and it will snapshot automatically!</span>
+              </div>
+            )}
+
+            {snapshotStatus === 'error' && (
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-[12px] font-bold animate-fade-in">
+                <Trash2 className="w-4 h-4 shrink-0" />
+                <span>Failed to restore snapshot. Please try restoring via a manual JSON backup file below.</span>
+              </div>
+            )}
           </div>
 
           {/* Backup Action Buttons */}

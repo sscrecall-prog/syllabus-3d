@@ -28,7 +28,9 @@ import {
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
-import { PdfCanvasViewer, PdfFitMode, HighlightToolType } from './PdfCanvasViewer';
+import type { PdfFitMode, HighlightToolType } from './PdfCanvasViewer';
+
+const PdfCanvasViewer = React.lazy(() => import('./PdfCanvasViewer').then(m => ({ default: m.PdfCanvasViewer })));
 import {
   PdfHighlight,
   HighlightColor,
@@ -622,27 +624,39 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             </button>
           </div>
         ) : pdfBlobUrl ? (
-          <PdfCanvasViewer
-            pdfUrl={pdfBlobUrl}
-            docId={selectedAttachmentId}
-            scale={scale}
-            onScaleChange={setScale}
-            fitMode={fitMode}
-            onFitModeChange={setFitMode}
-            onLoadSuccess={(total) => setTotalPages(total)}
-            onPageChange={(page, total) => {
-              setCurrentPage(page);
-              setTotalPages(total);
-            }}
-            isHighlightMode={isHighlightMode}
-            highlightColor={highlightColor}
-            highlightTool={highlightTool}
-            highlights={highlights}
-            onAddHighlight={handleAddHighlight}
-            onDeleteHighlight={handleDeleteHighlight}
-            showInlineControls={false}
-            className="flex-1 min-h-0 w-full"
-          />
+          <React.Suspense
+            fallback={
+              <div className="m-auto flex flex-col items-center gap-3.5 text-center p-6">
+                <div className="w-10 h-10 rounded-full border-3 border-[#7AA2F7] border-t-transparent animate-spin" />
+                <div>
+                  <h4 className="text-sm font-bold text-white">Opening Full Screen PDF...</h4>
+                  <p className="text-xs text-[#A9B1D6] mt-1 font-mono">Initializing viewer engine</p>
+                </div>
+              </div>
+            }
+          >
+            <PdfCanvasViewer
+              pdfUrl={pdfBlobUrl}
+              docId={selectedAttachmentId}
+              scale={scale}
+              onScaleChange={setScale}
+              fitMode={fitMode}
+              onFitModeChange={setFitMode}
+              onLoadSuccess={(total) => setTotalPages(total)}
+              onPageChange={(page, total) => {
+                setCurrentPage(page);
+                setTotalPages(total);
+              }}
+              isHighlightMode={isHighlightMode}
+              highlightColor={highlightColor}
+              highlightTool={highlightTool}
+              highlights={highlights}
+              onAddHighlight={handleAddHighlight}
+              onDeleteHighlight={handleDeleteHighlight}
+              showInlineControls={false}
+              className="flex-1 min-h-0 w-full"
+            />
+          </React.Suspense>
         ) : (
           <div className="m-auto text-center p-6 space-y-2">
             <FileText className="w-10 h-10 text-[#383842] mx-auto" />

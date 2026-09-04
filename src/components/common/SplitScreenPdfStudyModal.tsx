@@ -33,7 +33,7 @@ import {
 import { TopicPdfAttachment, TopicImageAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
 import { soundManager } from '../../utils/soundEffects';
-import { PdfCanvasViewer, HighlightToolType } from './PdfCanvasViewer';
+import type { HighlightToolType } from './PdfCanvasViewer';
 import {
   PdfHighlight,
   HighlightColor,
@@ -42,6 +42,8 @@ import {
   savePdfHighlights,
   clearPdfHighlights
 } from '../../utils/pdfHighlightStorage';
+
+const PdfCanvasViewer = React.lazy(() => import('./PdfCanvasViewer').then(m => ({ default: m.PdfCanvasViewer })));
 
 interface SplitScreenPdfStudyModalProps {
   isOpen: boolean;
@@ -617,17 +619,26 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                 <span className="text-xs text-[#A1A1AA] font-mono">Loading PDF Notes...</span>
               </div>
             ) : pdfBlobUrl ? (
-              <PdfCanvasViewer
-                pdfUrl={pdfBlobUrl}
-                docId={selectedAttachmentId}
-                isHighlightMode={isHighlightMode}
-                highlightColor={highlightColor}
-                highlightTool={highlightTool}
-                highlights={highlights}
-                onAddHighlight={handleAddHighlight}
-                onDeleteHighlight={handleDeleteHighlight}
-                className="flex-1 min-h-0"
-              />
+              <React.Suspense
+                fallback={
+                  <div className="m-auto flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 rounded-full border-2 border-[#8B5CF6] border-t-transparent animate-spin" />
+                    <span className="text-xs text-[#A1A1AA] font-mono">Initializing PDF Engine...</span>
+                  </div>
+                }
+              >
+                <PdfCanvasViewer
+                  pdfUrl={pdfBlobUrl}
+                  docId={selectedAttachmentId}
+                  isHighlightMode={isHighlightMode}
+                  highlightColor={highlightColor}
+                  highlightTool={highlightTool}
+                  highlights={highlights}
+                  onAddHighlight={handleAddHighlight}
+                  onDeleteHighlight={handleDeleteHighlight}
+                  className="flex-1 min-h-0"
+                />
+              </React.Suspense>
             ) : (
               <div className="m-auto text-center p-6 space-y-2">
                 <FileText className="w-10 h-10 text-[#383842] mx-auto" />
