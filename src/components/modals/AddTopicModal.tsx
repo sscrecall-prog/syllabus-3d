@@ -187,7 +187,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
       }}
     >
       <div
-        className="relative w-full max-w-xl rounded-t-3xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#121217] border-t sm:border border-[#D8D8CF] dark:border-[#272730] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col overscroll-contain animate-slide-up sm:animate-none"
+        className="relative w-full max-w-xl rounded-t-3xl sm:rounded-3xl bg-white dark:bg-[#121217] border-t sm:border border-[#E2E8F0] dark:border-[#272730] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col overscroll-contain animate-slide-up sm:animate-none"
         onClick={e => e.stopPropagation()}
       >
         
@@ -197,7 +197,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
         </div>
 
         {/* Modal Header */}
-        <div className="p-4 sm:p-5 border-b border-[#D8D8CF] dark:border-[#272730] flex items-center justify-between bg-white dark:bg-[#18181D] shrink-0">
+        <div className="p-4 sm:p-5 border-b border-[#E2E8F0] dark:border-[#272730] flex items-center justify-between bg-white dark:bg-[#18181D] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0 shadow-xs">
               <ListPlus className="w-5 h-5" />
@@ -228,7 +228,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
           
           {/* STEP 1: Select or Create Subject */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-amber-500" />
@@ -255,7 +255,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                     value={newSubjectName}
                     onChange={(e) => setNewSubjectName(e.target.value)}
                     placeholder="e.g. General Knowledge / Computer / Physics"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500"
                     required={isNewSubject}
                   />
                 </div>
@@ -284,7 +284,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                 <select
                   value={selectedSubjectId}
                   onChange={(e) => setSelectedSubjectId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 cursor-pointer"
                 >
                   {currentExam.subjects.map((sub) => (
                     <option key={sub.id} value={sub.id}>
@@ -297,7 +297,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
           </div>
 
           {/* STEP 2: Select or Create Chapter */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5 text-amber-500" />
@@ -322,7 +322,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   value={newChapterName}
                   onChange={(e) => setNewChapterName(e.target.value)}
                   placeholder="e.g. Modern History / Algebra / Trigonometry"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -331,7 +331,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                 <select
                   value={selectedChapterId}
                   onChange={(e) => setSelectedChapterId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 cursor-pointer"
                 >
                   {subjectMatch?.chapters.map((ch) => (
                     <option key={ch.id} value={ch.id}>
@@ -344,14 +344,14 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
           </div>
 
           {/* STEP 3: TOPICS SECTION (Segmented Switch: Single vs Bulk Multi-Topic) */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
+          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#11120F] dark:text-[#F5F5F7]">
                 3. Topic Addition Mode
               </label>
 
               {/* Mode Toggle Pills */}
-              <div className="flex rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] p-1 border border-[#D8D8CF] dark:border-[#272730]">
+              <div className="flex rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] p-1 border border-[#E2E8F0] dark:border-[#272730]">
                 <button
                   type="button"
                   onClick={() => setCreationMode('bulk')}
@@ -396,7 +396,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   onChange={(e) => setBulkTextInput(e.target.value)}
                   placeholder={`Paste your topics list here (each topic on a new line):\nPercentage & Fraction Conversions\nProfit, Loss & Discount Formulas\nSimple & Compound Interest\nRatio & Proportion Tricks\nTime, Speed & Distance`}
                   rows={6}
-                  className="w-full p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-medium text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 font-mono leading-relaxed placeholder-[#85877E]"
+                  className="w-full p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-medium text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 font-mono leading-relaxed placeholder-[#85877E]"
                   required={creationMode === 'bulk'}
                 />
 
@@ -407,7 +407,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   <select
                     value={bulkDefaultDifficulty}
                     onChange={(e) => setBulkDefaultDifficulty(e.target.value as DifficultyLevel)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 cursor-pointer"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500 cursor-pointer"
                   >
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
@@ -432,7 +432,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                     value={singleTopicName}
                     onChange={(e) => setSingleTopicName(e.target.value)}
                     placeholder="e.g. Percentage & Fractional Conversions"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-amber-500"
                     required={creationMode === 'single'}
                   />
                 </div>
@@ -445,7 +445,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                     <select
                       value={singleDifficulty}
                       onChange={(e) => setSingleDifficulty(e.target.value as DifficultyLevel)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white cursor-pointer"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white cursor-pointer"
                     >
                       <option value="Easy">Easy</option>
                       <option value="Medium">Medium</option>
@@ -467,7 +467,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                       value={singleWeightage}
                       onChange={(e) => setSingleWeightage(e.target.value)}
                       placeholder="e.g. 4 (Optional)"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white"
                     />
                   </div>
                 </div>
@@ -481,7 +481,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                     value={singleSubtopicsText}
                     onChange={(e) => setSingleSubtopicsText(e.target.value)}
                     placeholder="e.g. Fractions, Percent Changes, Word Problems"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white"
                   />
                 </div>
               </div>
@@ -497,7 +497,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                 haptics.light();
                 onClose();
               }}
-              className="px-5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-colors tap-bounce min-h-[44px]"
+              className="px-5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-colors tap-bounce min-h-[44px]"
             >
               Cancel
             </button>

@@ -113,7 +113,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
   return (
     <>
-      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 relative overflow-hidden select-none">
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4 relative overflow-hidden select-none">
         
         {/* Subtle Ambient Background Gradient */}
         <div className="absolute -top-24 -right-24 w-80 h-80 bg-amber-500/[0.03] dark:bg-amber-500/[0.04] rounded-full blur-3xl pointer-events-none" />
@@ -149,7 +149,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsHistoryModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1E1F2A] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] text-[#65675F] dark:text-[#CBD5E1] border border-[#D8D8CF] dark:border-[#2E3044] text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E1F2A] hover:bg-[#F1F5F9] dark:hover:bg-[#282938] text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 tap-bounce"
               title="View past reflection journal"
             >
               <History className="w-3.5 h-3.5 text-purple-400" />
@@ -195,8 +195,8 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                   target.completed
                     ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] border-emerald-500/35 shadow-[0_2px_15px_rgba(16,185,129,0.1)]'
                     : hasText
-                    ? `bg-[#FAF9F5] dark:bg-[#1A1C28] border-[#D8D8CF] dark:border-[#2A2D40] shadow-xs ${meta.accentGlow}`
-                    : 'bg-[#FAF9F5]/50 dark:bg-[#151620] border-dashed border-[#D0D0C5] dark:border-[#282938] hover:border-amber-500/40'
+                    ? `bg-[#F8FAFC] dark:bg-[#1A1C28] border-[#E2E8F0] dark:border-[#2A2D40] shadow-xs ${meta.accentGlow}`
+                    : 'bg-[#F8FAFC]/50 dark:bg-[#151620] border-dashed border-[#E2E8F0] dark:border-[#282938] hover:border-amber-500/40'
                 }`}
               >
                 {/* Slot Header */}
@@ -287,10 +287,10 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                           {target.text}
                         </p>
                         {target.subjectName && (
-                          <div className="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-lg bg-[#FAF9F5] dark:bg-[#242533] border border-[#D8D8CF]/80 dark:border-[#323448] text-[11px] font-mono font-bold text-[#191A17] dark:text-[#CBD5E1]">
+                          <div className="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-lg bg-white dark:bg-[#242533] border border-[#E2E8F0] dark:border-[#323448] text-[11px] font-mono font-bold text-[#191A17] dark:text-[#CBD5E1]">
                             <span
                               className="w-2 h-2 rounded-full shrink-0"
-                              style={{ backgroundColor: target.subjectColor || '#596B35' }}
+                              style={{ backgroundColor: target.subjectColor || '#2563EB' }}
                             />
                             <span className="truncate max-w-[140px]">{target.subjectName}</span>
                           </div>
@@ -303,7 +303,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleStartEdit(target.id, '')}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-[#202130] hover:bg-[#FAF9F5] dark:hover:bg-[#27283A] text-[#11120F] dark:text-[#E2E4F0] border border-[#D8D8CF] dark:border-[#2C2E42] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-[#202130] hover:bg-[#F8FAFC] dark:hover:bg-[#27283A] text-[#11120F] dark:text-[#E2E4F0] border border-[#E2E8F0] dark:border-[#2C2E42] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>Custom Goal</span>
@@ -314,7 +314,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                             setIsPickerOpen(isPicker ? null : target.id);
                             setPickerSearch('');
                           }}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 tap-bounce"
                         >
                           <BookOpen className="w-3.5 h-3.5" />
                           <span>From Syllabus</span>
@@ -323,7 +323,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
                       {/* Dropdown Topic Picker */}
                       {isPicker && (
-                        <div className="p-3 rounded-2xl bg-white dark:bg-[#12131C] border border-[#D8D8CF] dark:border-[#28293D] shadow-2xl space-y-2 mt-1 z-30 animate-fade-in">
+                        <div className="p-3 rounded-2xl bg-white dark:bg-[#12131C] border border-[#E2E8F0] dark:border-[#28293D] shadow-2xl space-y-2 mt-1 z-30 animate-fade-in">
                           <div className="relative">
                             <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                             <input
@@ -331,7 +331,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                               placeholder="Search syllabus topics..."
                               value={pickerSearch}
                               onChange={e => setPickerSearch(e.target.value)}
-                              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#FAF9F5] dark:bg-[#1A1B28] border border-[#D8D8CF] dark:border-[#28293D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-amber-500"
+                              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1A1B28] border border-[#E2E8F0] dark:border-[#28293D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-amber-500"
                             />
                           </div>
                           <div className="max-h-44 overflow-y-auto space-y-1 custom-scrollbar">
@@ -389,12 +389,12 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
         </div>
 
         {/* Bottom Velocity Sprint Meter */}
-        <div className="p-4 rounded-2xl sm:rounded-3xl bg-[#FAF9F5] dark:bg-[#1A1B26] border border-[#D8D8CF] dark:border-[#272730] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="p-4 rounded-2xl sm:rounded-3xl bg-[#F8FAFC] dark:bg-[#1A1B26] border border-[#E2E8F0] dark:border-[#272730] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <span className="text-[11px] font-mono font-bold text-[#65675F] dark:text-[#A1A1B2] uppercase tracking-wider shrink-0">
               Sprint Velocity:
             </span>
-            <div className="flex-1 sm:w-44 h-2.5 rounded-full bg-[#EEEEE8] dark:bg-[#282A3A] overflow-hidden p-0.5 border border-[#D8D8CF]/50 dark:border-[#383A4E]/50">
+            <div className="flex-1 sm:w-44 h-2.5 rounded-full bg-[#E2E8F0] dark:bg-[#282A3A] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#383A4E]/50">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 rounded-full transition-all duration-500 shadow-sm"
                 style={{

@@ -60,7 +60,7 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
           p.y = height;
           p.x = Math.random() * width;
         }
-        ctx.fillStyle = `rgba(164, 184, 121, ${p.alpha})`;
+        ctx.fillStyle = `rgba(122, 162, 247, ${p.alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
@@ -87,9 +87,9 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
     >
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
-      {/* Volumetric Olive Ambient Glow */}
+      {/* Volumetric Sapphire Ambient Glow */}
       <div
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-[420px] h-80 sm:h-[420px] rounded-full bg-[#596B35]/25 blur-[80px] pointer-events-none transition-all duration-700 ${
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-[420px] h-80 sm:h-[420px] rounded-full bg-[#2563EB]/25 blur-[80px] pointer-events-none transition-all duration-700 ${
           phase >= 1 ? 'opacity-100 scale-110' : 'opacity-30 scale-90'
         }`}
       />
@@ -97,7 +97,7 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
       {/* Skip Button */}
       <button
         onClick={handleSkip}
-        className="absolute top-5 right-5 sm:top-6 sm:right-6 z-30 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-[#30342B] hover:border-[#596B35] text-[11px] font-bold text-[#A7AA9C] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+        className="absolute top-5 right-5 sm:top-6 sm:right-6 z-30 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-[#282C40] hover:border-[#2563EB] text-[11px] font-bold text-[#A7AA9C] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
       >
         <span>Skip</span>
         <ChevronRight className="w-3.5 h-3.5" />
@@ -106,13 +106,13 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
       {/* 3D LOGO CONTAINER */}
       <div className="relative z-10 flex flex-col items-center justify-center space-y-5">
         <div
-          className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-[#151713] border border-[#30342B] p-4 flex items-center justify-center shadow-2xl transition-all duration-700 ${
+          className={`relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-[#151713] border border-[#282C40] p-4 flex items-center justify-center shadow-2xl transition-all duration-700 ${
             phase >= 1 ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
           }`}
         >
-          {/* Olive Corona Ring */}
+          {/* Sapphire Corona Ring */}
           <div
-            className={`absolute inset-0 rounded-3xl bg-[#596B35]/30 blur-lg transition-opacity duration-700 ${
+            className={`absolute inset-0 rounded-3xl bg-[#2563EB]/30 blur-lg transition-opacity duration-700 ${
               phase >= 1 ? 'opacity-100' : 'opacity-0'
             }`}
           />
@@ -123,10 +123,10 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
             className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] relative z-10"
           />
 
-          {/* Olive Glossy Light Sweep */}
+          {/* Sapphire Glossy Light Sweep */}
           <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none z-20">
             <div
-              className={`w-[200%] h-full absolute -top-0 -left-[100%] bg-gradient-to-r from-transparent via-[#DCE8B7]/40 to-transparent transform -skew-x-[25deg] transition-all duration-1000 ease-in-out ${
+              className={`w-[200%] h-full absolute -top-0 -left-[100%] bg-gradient-to-r from-transparent via-[#93C5FD]/40 to-transparent transform -skew-x-[25deg] transition-all duration-1000 ease-in-out ${
                 phase >= 1 ? 'translate-x-[200%]' : 'translate-x-0'
               }`}
             />
@@ -142,7 +142,7 @@ export const AnimatedLogoIntro: React.FC<AnimatedLogoIntroProps> = ({ onComplete
           <h1 className="text-xl sm:text-2xl font-black tracking-[0.2em] uppercase text-[#F4F4ED] font-serif">
             SYLLABUS 3D
           </h1>
-          <p className="text-[11px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#A4B879] font-mono">
+          <p className="text-[11px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#7AA2F7] font-mono">
             Track • Complete • Master
           </p>
         </div>

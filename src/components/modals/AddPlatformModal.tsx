@@ -58,7 +58,7 @@ const COLOR_OPTIONS = [
   '#F59E0B', // Amber
   '#8B5CF6', // Violet
   '#EC4899', // Pink
-  '#596B35', // Academic Olive
+  '#2563EB', // Sapphire Blue
   '#08BD80', // Emerald
   '#FF0000', // Red
   '#11120F'  // Dark
@@ -283,11 +283,11 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl bg-white dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#272730] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+        className="relative w-full max-w-2xl bg-white dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#272730] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 sm:p-6 border-b border-[#EEEEE8] dark:border-[#242533] flex items-center justify-between bg-[#FAF9F5]/80 dark:bg-[#161722]/80 backdrop-blur-md">
+        <div className="p-5 sm:p-6 border-b border-[#E2E8F0] dark:border-[#242533] flex items-center justify-between bg-[#F8FAFC]/80 dark:bg-[#161722]/80 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md border border-white/20 transition-all duration-300 shrink-0"
@@ -300,7 +300,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
                   {editPlatformData ? 'Edit Study Platform' : 'Add Course / Test Platform'}
                 </h2>
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/25">
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/20 dark:border-[#7AA2F7]/25">
                   PRO
                 </span>
               </div>
@@ -339,7 +339,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <label className="text-xs font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wider font-mono">
                   Platform Category *
                 </label>
-                <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono font-bold">
+                <span className="text-[11px] text-[#2563EB] dark:text-[#7AA2F7] font-mono font-bold">
                   {category === 'custom' 
                     ? (customCategoryName ? `Custom: ${customCategoryName}` : 'Custom Category Mode') 
                     : `${category} Mode`}
@@ -364,7 +364,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-2 transition-all duration-150 cursor-pointer active:scale-95 ${
                         isSelected
                           ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-md'
-                          : 'bg-[#FAF9F5] dark:bg-[#181926] text-[#65675F] dark:text-[#A1A1B2] border-[#D8D8CF] dark:border-[#27283C] hover:border-[#596B35] dark:hover:border-[#7AA2F7] hover:text-[#11120F] dark:hover:text-white'
+                          : 'bg-[#F8FAFC] dark:bg-[#181926] text-[#65675F] dark:text-[#A1A1B2] border-[#E2E8F0] dark:border-[#27283C] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] hover:text-[#11120F] dark:hover:text-white'
                       }`}
                     >
                       <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
@@ -382,9 +382,9 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
               {/* Saved Custom Categories (Clean Bento Box) */}
               {savedCustomCategories.length > 0 && (
-                <div className="p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] space-y-2">
+                <div className="p-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] space-y-2">
                   <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#65675F] dark:text-[#94A3B8]">
-                    <Clock className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+                    <Clock className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
                     <span>Quick Category Shortcuts:</span>
                   </div>
                   
@@ -400,7 +400,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                           className={`px-3 py-1 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
                             isCurrentCat
                               ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs'
-                              : 'bg-white dark:bg-[#12131D] text-[#33352E] dark:text-[#CBD5E1] border-[#D8D8CF] dark:border-[#2A2C40] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                              : 'bg-white dark:bg-[#12131D] text-[#33352E] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#2A2C40] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                           }`}
                         >
                           {isCurrentCat && <Check className="w-3 h-3 stroke-[3]" />}
@@ -414,11 +414,11 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
               {/* Custom Category Input & Suggestions (Visible when Custom is Selected) */}
               {category === 'custom' && (
-                <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] space-y-3 animate-scale-up">
+                <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] space-y-3 animate-scale-up">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                       <span>Type Custom Category Name *</span>
-                      <span className="text-[11px] text-[#596B35] dark:text-[#7AA2F7] font-mono">e.g. Current Affairs, PYQ Vault...</span>
+                      <span className="text-[11px] text-[#2563EB] dark:text-[#7AA2F7] font-mono">e.g. Current Affairs, PYQ Vault...</span>
                     </label>
                     <input
                       ref={customCatInputRef}
@@ -426,7 +426,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       value={customCategoryName}
                       onChange={(e) => setCustomCategoryName(stripEmojis(e.target.value))}
                       placeholder="e.g. Current Affairs, Maths Special, PYQ Practice, Telegram..."
-                      className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#12131D] border border-[#D8D8CF] dark:border-[#2A2C40] text-xs font-medium focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                      className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#12131D] border border-[#E2E8F0] dark:border-[#2A2C40] text-xs font-medium focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                     />
                   </div>
 
@@ -444,8 +444,8 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                           }}
                           className={`px-2 py-0.5 rounded-lg text-[11px] font-bold font-mono transition-all cursor-pointer border ${
                             customCategoryName.trim().toLowerCase() === catSug.toLowerCase()
-                              ? 'bg-[#596B35] text-white border-transparent'
-                              : 'bg-white dark:bg-[#12131D] text-[#65675F] dark:text-[#A1A1AA] border-[#D8D8CF] dark:border-[#2A2C40] hover:border-[#596B35]'
+                              ? 'bg-[#2563EB] text-white border-transparent'
+                              : 'bg-white dark:bg-[#12131D] text-[#65675F] dark:text-[#A1A1AA] border-[#E2E8F0] dark:border-[#2A2C40] hover:border-[#2563EB]'
                           }`}
                         >
                           +{catSug}
@@ -462,7 +462,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>{getNameLabel()}</span>
-                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7]">Required</span>
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7]">Required</span>
                 </label>
                 <div className="relative">
                   <FileText className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
@@ -476,7 +476,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       if (error) setError(null);
                     }}
                     placeholder={getNamePlaceholder()}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
                   />
                 </div>
               </div>
@@ -484,7 +484,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center justify-between">
                   <span>Website / Batch Link *</span>
-                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7]">Required</span>
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7]">Required</span>
                 </label>
                 <div className="relative">
                   <Globe className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85877E] pointer-events-none" />
@@ -497,7 +497,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       if (error) setError(null);
                     }}
                     placeholder={getUrlPlaceholder()}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-mono font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] text-xs font-mono font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
                   />
                 </div>
               </div>
@@ -517,7 +517,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                     value={loginHint}
                     onChange={(e) => setLoginHint(e.target.value)}
                     placeholder="e.g. 9876543210 or student@email.com"
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-2xs transition-all"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] shadow-2xs transition-all"
                   />
                 </div>
               </div>
@@ -531,7 +531,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                   <select
                     value={associatedSubjectId}
                     onChange={(e) => setAssociatedSubjectId(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-2xs transition-all cursor-pointer"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] shadow-2xs transition-all cursor-pointer"
                   >
                     <option value="">General (All Subjects / Full Mock)</option>
                     {currentExam?.subjects.map(s => (
@@ -554,7 +554,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. Math Special Batch by Gagan Pratap Sir, Tier 1 Mock analysis..."
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] shadow-2xs transition-all"
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] shadow-2xs transition-all"
               />
             </div>
 
@@ -564,7 +564,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
                   Platform Icon
                 </label>
-                <div className="flex flex-wrap gap-1.5 p-2 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C]">
+                <div className="flex flex-wrap gap-1.5 p-2 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C]">
                   {EMOJI_OPTIONS.map(em => (
                     <button
                       key={em}
@@ -572,7 +572,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                       onClick={() => setIcon(em)}
                       className={`w-8 h-8 rounded-xl text-base flex items-center justify-center transition-all cursor-pointer active:scale-90 ${
                         icon === em
-                          ? 'bg-white dark:bg-[#252636] shadow-sm scale-110 ring-2 ring-[#596B35] dark:ring-[#7AA2F7]'
+                          ? 'bg-white dark:bg-[#252636] shadow-sm scale-110 ring-2 ring-[#2563EB] dark:ring-[#7AA2F7]'
                           : 'hover:bg-white/60 dark:hover:bg-white/5 opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -586,14 +586,14 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
                 <label className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7]">
                   Theme Color Accent
                 </label>
-                <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C]">
+                <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C]">
                   {COLOR_OPTIONS.map(c => (
                     <button
                       key={c}
                       type="button"
                       onClick={() => setColor(c)}
                       className={`w-6 h-6 rounded-full transition-all cursor-pointer shadow-xs active:scale-90 ${
-                        color === c ? 'scale-125 ring-2 ring-offset-2 ring-[#596B35] dark:ring-[#7AA2F7]' : 'hover:scale-110'
+                        color === c ? 'scale-125 ring-2 ring-offset-2 ring-[#2563EB] dark:ring-[#7AA2F7]' : 'hover:scale-110'
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -604,12 +604,12 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
             {/* Pin to Top Checkbox */}
             <div className="pt-2">
-              <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#181926] border border-[#D8D8CF] dark:border-[#27283C] hover:border-[#596B35] dark:hover:border-[#7AA2F7] cursor-pointer select-none transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#181926] border border-[#E2E8F0] dark:border-[#27283C] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] cursor-pointer select-none transition-all">
                 <input
                   type="checkbox"
                   checked={pinned}
                   onChange={(e) => setPinned(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#596B35] focus:ring-0 cursor-pointer"
+                  className="w-4 h-4 rounded text-[#2563EB] focus:ring-0 cursor-pointer"
                 />
                 <span className="text-xs font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
                   <Bookmark className="w-4 h-4 text-[#F59E0B]" />
@@ -621,7 +621,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 sm:p-5 border-t border-[#EEEEE8] dark:border-[#242533] bg-[#FAF9F5]/80 dark:bg-[#161722]/80 flex items-center justify-end gap-3">
+        <div className="p-4 sm:p-5 border-t border-[#EEEEE8] dark:border-[#242533] bg-[#F8FAFC]/80 dark:bg-[#161722]/80 flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
@@ -632,7 +632,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
           <button
             form="add-platform-form"
             type="submit"
-            className="px-6 py-2.5 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#CBD5E1] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+            className="px-6 py-2.5 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#CBD5E1] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>{editPlatformData ? 'Save Changes' : 'Add Platform'}</span>

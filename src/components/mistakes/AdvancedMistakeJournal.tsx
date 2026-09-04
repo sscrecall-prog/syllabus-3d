@@ -278,7 +278,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
     <div className="space-y-4 font-sans select-none">
       
       {/* 1. Header & KPI Metrics Container */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#181A28] border border-[#D8D8CF] dark:border-[#2F3146] shadow-subtle-depth space-y-4 relative overflow-hidden">
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] shadow-subtle-depth space-y-4 relative overflow-hidden">
         {/* Glowing Top Ambient Accent */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-rose-500/60 to-transparent" />
 
@@ -314,7 +314,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   setIsRevealed(false);
                   setIsFlashcardOpen(true);
                 }}
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#1E2032] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#D8D8CF] dark:border-[#33364D] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs active:scale-95"
+                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2032] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#33364D] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Flashcard Review</span>
@@ -335,7 +335,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
         {/* 3 Executive Bento Stat Cards */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
           {/* Total Logged */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-[#FAF9F5] dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] shadow-2xs space-y-1 transition-all hover:border-[#596B35] dark:hover:border-[#7AA2F7]">
+          <div className="p-3 sm:p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] shadow-2xs space-y-1 transition-all hover:border-[#2563EB] dark:hover:border-[#7AA2F7]">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-[#65675F] dark:text-[#CBD5E1]">
                 Total Logged
@@ -394,7 +394,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search traps, golden rules, examiner tricks, mock source..."
-            className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white dark:bg-[#181A28] border border-[#D8D8CF] dark:border-[#2F3146] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-500/15 shadow-2xs transition-all"
+            className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-500/15 shadow-2xs transition-all"
           />
           {searchTerm && (
             <button
@@ -422,7 +422,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
                   isSelected
                     ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                    : 'bg-white dark:bg-[#181A28] text-[#45474E] dark:text-[#E2E8F0] border-[#D8D8CF] dark:border-[#2F3146] hover:border-rose-400 dark:hover:border-rose-400'
+                    : 'bg-white dark:bg-[#181A28] text-[#45474E] dark:text-[#E2E8F0] border-[#E2E8F0] dark:border-[#2F3146] hover:border-rose-400 dark:hover:border-rose-400'
                 }`}
               >
                 <ChipIcon className="w-3.5 h-3.5" />
@@ -443,7 +443,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       {/* 3. Mistakes List / Empty State */}
       <div className="space-y-3">
         {filteredMistakes.length === 0 ? (
-          <div className="py-10 px-4 sm:px-6 rounded-3xl bg-white dark:bg-[#181A28] border border-dashed border-[#D8D8CF] dark:border-[#2F3146] text-center space-y-4 flex flex-col items-center justify-center">
+          <div className="py-10 px-4 sm:px-6 rounded-3xl bg-white dark:bg-[#181A28] border border-dashed border-[#E2E8F0] dark:border-[#2F3146] text-center space-y-4 flex flex-col items-center justify-center">
             {/* 3D Radiant Emblem */}
             <div className="relative">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500/20 via-amber-500/10 to-indigo-500/10 border border-rose-500/30 flex items-center justify-center text-rose-500 dark:text-rose-400 shadow-[0_0_25px_rgba(244,63,94,0.15)]">
@@ -472,7 +472,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   setSearchTerm('');
                   setFilterType('all');
                 }}
-                className="px-4 py-2 rounded-xl bg-white dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-xs font-bold text-[#11120F] dark:text-white hover:border-rose-400 cursor-pointer transition-all shadow-2xs"
+                className="px-4 py-2 rounded-xl bg-white dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-xs font-bold text-[#11120F] dark:text-white hover:border-rose-400 cursor-pointer transition-all shadow-2xs"
               >
                 Clear Search & Filters
               </button>
@@ -496,28 +496,28 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleApplyTemplate('unit')}
-                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-rose-400 hover:text-rose-500 transition-all cursor-pointer shadow-2xs"
+                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-rose-400 hover:text-rose-500 transition-all cursor-pointer shadow-2xs"
                     >
                       📐 Unit Mismatch
                     </button>
                     <button
                       type="button"
                       onClick={() => handleApplyTemplate('percent_base')}
-                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-amber-400 hover:text-amber-500 transition-all cursor-pointer shadow-2xs"
+                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-amber-400 hover:text-amber-500 transition-all cursor-pointer shadow-2xs"
                     >
                       📊 Base Shift Trap
                     </button>
                     <button
                       type="button"
                       onClick={() => handleApplyTemplate('negative_wording')}
-                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-purple-400 hover:text-purple-500 transition-all cursor-pointer shadow-2xs"
+                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-purple-400 hover:text-purple-500 transition-all cursor-pointer shadow-2xs"
                     >
                       🔍 "NOT Correct" Stem
                     </button>
                     <button
                       type="button"
                       onClick={() => handleApplyTemplate('formula_sign')}
-                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-sky-400 hover:text-sky-500 transition-all cursor-pointer shadow-2xs"
+                      className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-[11px] font-bold text-[#11120F] dark:text-[#E2E8F0] hover:border-sky-400 hover:text-sky-500 transition-all cursor-pointer shadow-2xs"
                     >
                       ➕ Sign Inversion
                     </button>
@@ -537,8 +537,8 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 key={m.id}
                 className={`group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-subtle-depth space-y-3.5 overflow-hidden ${
                   m.resolved
-                    ? 'bg-[#FAF9F5] dark:bg-[#181A28]/80 border-emerald-500/40 opacity-90'
-                    : 'bg-white dark:bg-[#181A28] border-[#D8D8CF] dark:border-[#2F3146] hover:border-rose-500/50 shadow-xs hover:shadow-lg'
+                    ? 'bg-[#F8FAFC] dark:bg-[#181A28]/80 border-emerald-500/40 opacity-90'
+                    : 'bg-white dark:bg-[#181A28] border-[#E2E8F0] dark:border-[#2F3146] hover:border-rose-500/50 shadow-xs hover:shadow-lg'
                 }`}
               >
                 {/* Subtle Top Glow Accent */}
@@ -570,7 +570,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     )}
 
                     {m.mockSource && (
-                      <span className="text-[10px] font-bold text-[#65675F] dark:text-[#CBD5E1] bg-[#FAF9F5] dark:bg-[#1E2032] border border-[#D8D8CF]/70 dark:border-[#33364D] px-2 py-0.5 rounded-md font-mono">
+                      <span className="text-[10px] font-bold text-[#65675F] dark:text-[#CBD5E1] bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] px-2 py-0.5 rounded-md font-mono">
                         {m.mockSource}
                       </span>
                     )}
@@ -655,7 +655,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-2xs ${
                       m.resolved
                         ? 'bg-emerald-600 text-white shadow-sm font-black'
-                        : 'bg-[#FAF9F5] dark:bg-[#1E2032] text-[#191A17] dark:text-[#E2E8F0] border border-[#D8D8CF] dark:border-[#33364D] hover:border-emerald-500 dark:hover:border-emerald-500'
+                        : 'bg-[#F8FAFC] dark:bg-[#1E2032] text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#33364D] hover:border-emerald-500 dark:hover:border-emerald-500'
                     }`}
                   >
                     {m.resolved ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -693,7 +693,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       {/* ---------------------------------------------------------------- */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-lg max-h-[90vh] rounded-3xl bg-white dark:bg-[#181A28] border border-[#D8D8CF] dark:border-[#2F3146] shadow-2xl p-5 sm:p-6 flex flex-col justify-between overflow-y-auto space-y-4 animate-scale-up">
+          <div className="w-full max-w-lg max-h-[90vh] rounded-3xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] shadow-2xl p-5 sm:p-6 flex flex-col justify-between overflow-y-auto space-y-4 animate-scale-up">
             
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#26283D]">
               <div className="flex items-center gap-2.5">
@@ -743,7 +743,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                         className={`p-2.5 rounded-xl text-xs font-bold text-center border cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
                           mistakeType === t.id
                             ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                            : 'bg-[#FAF9F5] dark:bg-[#1E2032] text-[#65675F] dark:text-[#CBD5E1] border-[#D8D8CF] dark:border-[#33364D] hover:border-rose-400'
+                            : 'bg-[#F8FAFC] dark:bg-[#1E2032] text-[#65675F] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#33364D] hover:border-rose-400'
                         }`}
                       >
                         <TIcon className="w-3.5 h-3.5" />
@@ -773,7 +773,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                               : sev === 'medium'
                               ? 'bg-amber-600 text-white border-transparent font-black shadow-xs'
                               : 'bg-emerald-600 text-white border-transparent font-black shadow-xs'
-                            : 'bg-[#FAF9F5] dark:bg-[#1E2032] border-[#D8D8CF] dark:border-[#33364D] text-[#65675F] dark:text-[#CBD5E1]'
+                            : 'bg-[#F8FAFC] dark:bg-[#1E2032] border-[#E2E8F0] dark:border-[#33364D] text-[#65675F] dark:text-[#CBD5E1]'
                         }`}
                       >
                         {sev} Risk
@@ -791,7 +791,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     value={mockSource}
                     onChange={e => setMockSource(e.target.value)}
                     placeholder="e.g. Testbook Mock #05 Q.24"
-                    className="w-full px-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500"
                   />
                 </div>
               </div>
@@ -807,7 +807,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   placeholder="Describe the exact question, equation, or wording where the mistake occurred..."
                   rows={2}
                   required
-                  className="w-full p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500"
+                  className="w-full p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -869,7 +869,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   value={goldenRule}
                   onChange={e => setGoldenRule(e.target.value)}
                   placeholder="e.g. Always convert km/hr to m/s by 5/18 before applying distance formulas!"
-                  className="w-full px-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] text-xs font-black text-[#11120F] dark:text-amber-300 placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-amber-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] text-xs font-black text-[#11120F] dark:text-amber-300 placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-amber-500"
                 />
               </div>
 
@@ -900,7 +900,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       {/* ---------------------------------------------------------------- */}
       {isFlashcardOpen && mistakes.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#181A28] border border-[#D8D8CF] dark:border-[#2F3146] shadow-2xl p-5 sm:p-6 space-y-4 animate-scale-up">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] shadow-2xl p-5 sm:p-6 space-y-4 animate-scale-up">
             
             <div className="flex items-center justify-between pb-2.5 border-b border-[#EEEEE8] dark:border-[#26283D]">
               <div className="flex items-center gap-2">
@@ -920,7 +920,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             </div>
 
             {/* Flashcard Content */}
-            <div className="min-h-[240px] p-5 rounded-2xl bg-[#FAF9F5] dark:bg-[#1E2032] border border-[#D8D8CF] dark:border-[#33364D] flex flex-col justify-between space-y-3.5 shadow-2xs">
+            <div className="min-h-[240px] p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] flex flex-col justify-between space-y-3.5 shadow-2xs">
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 font-mono uppercase tracking-wider">

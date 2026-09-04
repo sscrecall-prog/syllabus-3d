@@ -304,7 +304,7 @@ export const SettingsView: React.FC = () => {
         }}
         className="sr-only peer"
       />
-      <div className="w-10 h-5 bg-[#D8D8CF] dark:bg-[#292E42] rounded-full peer peer-checked:bg-[#596B35] dark:peer-checked:bg-[#7AA2F7] peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-[#0B0B0D] after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-xs transition-colors" />
+      <div className="w-10 h-5 bg-[#E2E8F0] dark:bg-[#292E42] rounded-full peer peer-checked:bg-[#2563EB] dark:peer-checked:bg-[#7AA2F7] peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-[#0B0B0D] after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-xs transition-colors" />
     </label>
   );
 
@@ -314,9 +314,9 @@ export const SettingsView: React.FC = () => {
       {/* ═══════════════════════════════════════════════════
           1. EXECUTIVE PROFILE & LEVEL STRIP
           ═══════════════════════════════════════════════════ */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
         {/* Top ambient accent glow */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#596B35] dark:via-[#7AA2F7] to-transparent opacity-60" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#2563EB] dark:via-[#7AA2F7] to-transparent opacity-60" />
 
         {/* Hidden File Input for Avatar Photo */}
         <input
@@ -334,7 +334,7 @@ export const SettingsView: React.FC = () => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#2E371B] dark:from-[#7AA2F7] dark:to-[#3D5BA9] text-white dark:text-[#0B0B0D] flex items-center justify-center text-xl sm:text-2xl font-black shadow-md cursor-pointer overflow-hidden relative border-2 border-white dark:border-[#272730] active:scale-95 transition-transform"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#3D5BA9] text-white dark:text-[#0B0B0D] flex items-center justify-center text-xl sm:text-2xl font-black shadow-md cursor-pointer overflow-hidden relative border-2 border-white dark:border-[#272730] active:scale-95 transition-transform"
               title="Click to Upload Profile Photo"
             >
               {(profile.avatarUrl || user?.avatarUrl) ? (
@@ -372,7 +372,7 @@ export const SettingsView: React.FC = () => {
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="px-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                   autoFocus
                 />
                 <button
@@ -389,7 +389,7 @@ export const SettingsView: React.FC = () => {
                 </h2>
                 <button
                   onClick={() => setIsEditingName(true)}
-                  className="p-1 rounded-lg hover:bg-[#FAF9F5] dark:hover:bg-[#242533] text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer transition-colors"
+                  className="p-1 rounded-lg hover:bg-[#F8FAFC] dark:hover:bg-[#242533] text-[#85877E] hover:text-[#11120F] dark:hover:text-white cursor-pointer transition-colors"
                   title="Edit Name"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -445,7 +445,7 @@ export const SettingsView: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] cursor-pointer"
               >
                 Cancel
               </button>
@@ -453,7 +453,7 @@ export const SettingsView: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A1A1AA] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-rose-500/15 hover:text-rose-500 dark:hover:bg-rose-500/20 text-[#65675F] dark:text-[#A1A1AA] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold transition-all cursor-pointer active:scale-95"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -465,7 +465,7 @@ export const SettingsView: React.FC = () => {
       {/* ═══════════════════════════════════════════════════
           2. SEGMENTED CATEGORY NAVIGATION TABS
           ═══════════════════════════════════════════════════ */}
-      <div className="p-1.5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <div className="p-1.5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex items-center gap-1.5 overflow-x-auto no-scrollbar">
         {[
           { id: 'exam' as SettingsTab, label: 'Exam Target', icon: Target },
           { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
@@ -485,7 +485,7 @@ export const SettingsView: React.FC = () => {
               className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
                 isActive
                   ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
-                  : 'text-[#65675F] dark:text-[#94A3B8] hover:bg-[#FAF9F5] dark:hover:bg-[#20212E] hover:text-[#11120F] dark:hover:text-white'
+                  : 'text-[#65675F] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#20212E] hover:text-[#11120F] dark:hover:text-white'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -501,7 +501,7 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 1: EXAM TARGET & COUNTDOWN CONFIG */}
       {activeTab === 'exam' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 animate-fade-in relative overflow-hidden">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4 animate-fade-in relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/25 flex items-center justify-center shrink-0">
@@ -547,7 +547,7 @@ export const SettingsView: React.FC = () => {
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border active:scale-95 ${
                       isSelected
                         ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                        : 'bg-[#FAF9F5] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                        : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                     }`}
                   >
                     {p.label}
@@ -569,7 +569,7 @@ export const SettingsView: React.FC = () => {
                   value={examName}
                   onChange={e => setExamName(e.target.value)}
                   placeholder="e.g. SSC CGL 2026"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                 />
               </div>
 
@@ -583,7 +583,7 @@ export const SettingsView: React.FC = () => {
                   onChange={e => setTargetYear(Number(e.target.value))}
                   min={2025}
                   max={2035}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                 />
               </div>
             </div>
@@ -598,7 +598,7 @@ export const SettingsView: React.FC = () => {
                   type="date"
                   value={examDate}
                   onChange={e => setExamDate(e.target.value)}
-                  className="px-4 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] cursor-pointer"
                 />
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {[{ label: '+30d', days: 30 }, { label: '+60d', days: 60 }, { label: '+90d', days: 90 }, { label: '+180d', days: 180 }].map(b => (
@@ -606,7 +606,7 @@ export const SettingsView: React.FC = () => {
                       type="button"
                       key={b.label}
                       onClick={() => handleAddDays(b.days)}
-                      className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-[#FAF9F5] dark:bg-[#14151F] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#65675F] dark:text-[#94A3B8] border border-[#D8D8CF] dark:border-[#272730] transition-colors cursor-pointer active:scale-95"
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-[#F8FAFC] dark:bg-[#14151F] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#65675F] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#272730] transition-colors cursor-pointer active:scale-95"
                     >
                       {b.label}
                     </button>
@@ -636,7 +636,7 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 2: APPEARANCE & THEME */}
       {activeTab === 'appearance' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4 animate-fade-in">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4 animate-fade-in">
           <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#242533] pb-3">
             <div>
               <h3 className="text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide">
@@ -662,7 +662,7 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'dark'
                   ? 'bg-[#1F2335] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/30 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
+                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -691,7 +691,7 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'oled'
                   ? 'bg-[#0A0B10] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/40 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
+                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -749,7 +749,7 @@ export const SettingsView: React.FC = () => {
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'sepia'
                   ? 'bg-[#FBF7F0] border-[#8B6914] ring-2 ring-[#8B6914]/30 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
+                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -773,12 +773,12 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB: SOUND & MOTIVATION AUDIO */}
       {activeTab === 'sound' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-5 animate-fade-in">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-5 animate-fade-in">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-3.5">
             <div>
               <h3 className="text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide flex items-center gap-2">
-                <Volume2 className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <Volume2 className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
                 <span>Audio & Motivation Effects</span>
               </h3>
               <p className="text-[11px] text-[#65675F] dark:text-[#94A3B8]">
@@ -812,13 +812,13 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Master Volume Slider */}
-          <div className="p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#10111A] border border-[#D8D8CF] dark:border-[#24283B] space-y-2.5">
+          <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#10111A] border border-[#E2E8F0] dark:border-[#24283B] space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-[13px] font-bold text-[#11120F] dark:text-white">
-                <Sliders className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                <Sliders className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
                 <span>Master Volume</span>
               </div>
-              <span className="text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+              <span className="text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 {Math.round(audioConfig.masterVolume * 100)}%
               </span>
             </div>
@@ -830,7 +830,7 @@ export const SettingsView: React.FC = () => {
               disabled={!audioConfig.masterEnabled}
               value={audioConfig.masterVolume}
               onChange={e => handleUpdateAudio({ masterVolume: parseFloat(e.target.value) })}
-              className="w-full accent-[#596B35] dark:accent-[#7AA2F7] cursor-pointer disabled:opacity-40"
+              className="w-full accent-[#2563EB] dark:accent-[#7AA2F7] cursor-pointer disabled:opacity-40"
             />
           </div>
 
@@ -841,9 +841,9 @@ export const SettingsView: React.FC = () => {
             </h4>
 
             {/* Channel 1: UI Clicks */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-[#596B35] dark:text-[#7AA2F7] shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] dark:bg-[#16161E] border border-[#DBEAFE] dark:border-[#292E42] flex items-center justify-center text-[#2563EB] dark:text-[#7AA2F7] shrink-0">
                   <Sliders className="w-4 h-4" />
                 </div>
                 <div>
@@ -859,7 +859,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playClick()}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -871,9 +871,9 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Channel 2: Pomodoro Bell */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-amber-500 shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#292E42] flex items-center justify-center text-amber-500 shrink-0">
                   <Bell className="w-4 h-4" />
                 </div>
                 <div>
@@ -889,7 +889,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playPomodoroBell()}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -901,9 +901,9 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Channel 3: Target Completion Chime */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-emerald-500 shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#292E42] flex items-center justify-center text-emerald-500 shrink-0">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
@@ -919,7 +919,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playCompleteChime()}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -931,9 +931,9 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Channel 4: Level Up / Streak Milestone */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-purple-500 shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#292E42] flex items-center justify-center text-purple-500 shrink-0">
                   <Award className="w-4 h-4" />
                 </div>
                 <div>
@@ -949,7 +949,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => soundManager.playLevelUp()}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -961,9 +961,9 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Channel 5: Mobile Haptic Feedback */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#292E42] flex items-center justify-center text-[#596B35] dark:text-[#7AA2F7] shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] dark:bg-[#16161E] border border-[#DBEAFE] dark:border-[#292E42] flex items-center justify-center text-[#2563EB] dark:text-[#7AA2F7] shrink-0">
                   <Smartphone className="w-4 h-4" />
                 </div>
                 <div>
@@ -979,7 +979,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => haptics.success()}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold bg-white dark:bg-[#16161E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#0B0B0D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] transition-colors cursor-pointer"
                 >
                   ▶ Test
                 </button>
@@ -995,8 +995,8 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 3: FOCUS CHAMBER & FLOATING TIMER */}
       {activeTab === 'timer' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B] shadow-subtle-depth space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#242533] pb-3">
             <div>
               <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
                 Floating Timer & Picture-in-Picture
@@ -1012,7 +1012,7 @@ export const SettingsView: React.FC = () => {
                 setTestLaunched(true);
                 setTimeout(() => setTestLaunched(false), 2500);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[13px] font-bold transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[13px] font-bold transition-all cursor-pointer active:scale-95"
             >
               <Play className="w-3 h-3 fill-current" />
               <span>{testLaunched ? 'Visible!' : 'Preview Pill'}</span>
@@ -1026,7 +1026,7 @@ export const SettingsView: React.FC = () => {
               { label: 'Quick Pause / Resume Controls', desc: '1-tap control button directly on the floating pill', checked: settings.showPauseButton, key: 'showPauseButton' as const },
               { label: 'Remember Draggable Position', desc: 'Keep the floating timer at the exact spot you placed it', checked: settings.rememberPosition, key: 'rememberPosition' as const }
             ].map(item => (
-              <div key={item.key} className="flex items-center justify-between p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42]">
+              <div key={item.key} className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42]">
                 <div className="pr-3">
                   <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] block">{item.label}</span>
                   <span className="text-[11px] text-[#85877E] dark:text-[#787C99]">{item.desc}</span>
@@ -1039,7 +1039,7 @@ export const SettingsView: React.FC = () => {
             ))}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-1.5">
+              <div className="p-3 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] space-y-1.5">
                 <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] block">Widget Width</span>
                 <div className="flex gap-2">
                   {(['standard', 'compact'] as const).map(s => (
@@ -1052,8 +1052,8 @@ export const SettingsView: React.FC = () => {
                       }}
                       className={`flex-1 py-1.5 rounded-xl text-[13px] font-bold transition-all cursor-pointer ${
                         settings.size === s
-                          ? 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
-                          : 'bg-white dark:bg-[#16161E] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42]'
+                          ? 'bg-[#2563EB] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] shadow-xs'
+                          : 'bg-white dark:bg-[#16161E] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42]'
                       }`}
                     >
                       {s === 'standard' ? 'Standard (360px)' : 'Compact (320px)'}
@@ -1062,10 +1062,10 @@ export const SettingsView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-1.5">
+              <div className="p-3 rounded-2xl bg-white dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">Opacity</span>
-                  <span className="text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+                  <span className="text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                     {Math.round((settings.opacity || 0.95) * 100)}%
                   </span>
                 </div>
@@ -1075,7 +1075,7 @@ export const SettingsView: React.FC = () => {
                   max="100"
                   value={Math.round((settings.opacity || 0.95) * 100)}
                   onChange={e => updateSettings({ opacity: Number(e.target.value) / 100 })}
-                  className="w-full accent-[#596B35] dark:accent-[#7AA2F7] cursor-pointer"
+                  className="w-full accent-[#2563EB] dark:accent-[#7AA2F7] cursor-pointer"
                 />
               </div>
             </div>
@@ -1085,8 +1085,8 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 4: BACKUP, RESTORE & STORAGE SAFETY */}
       {activeTab === 'data' && (
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] shadow-subtle-depth space-y-5 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#24283B] pb-3">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B] shadow-subtle-depth space-y-5 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#242533] pb-3">
             <div>
               <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] font-serif uppercase tracking-wide">
                 Storage Safety & Dual-Tier Data Engine
@@ -1098,7 +1098,7 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Live Auto-Save & Debounce Engine Card */}
-          <div className="p-4 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-3.5">
+          <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] space-y-3.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -1119,10 +1119,10 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Visual Storage Health & Quota Bar */}
-            <div className="p-3 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B] space-y-2">
+            <div className="p-3 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B] space-y-2">
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-bold text-[#11120F] dark:text-[#C0CAF5] flex items-center gap-1.5">
-                  <HardDrive className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+                  <HardDrive className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
                   Browser Local Storage Quota
                 </span>
                 <div className="flex items-center gap-2 font-mono">
@@ -1148,7 +1148,7 @@ export const SettingsView: React.FC = () => {
                       ? 'bg-rose-500'
                       : storageMetrics.status === 'moderate'
                       ? 'bg-amber-500'
-                      : 'bg-[#596B35] dark:bg-[#7AA2F7]'
+                      : 'bg-[#2563EB] dark:bg-[#7AA2F7]'
                   }`}
                   style={{ width: `${Math.max(2, storageMetrics.percentage)}%` }}
                 />
@@ -1156,28 +1156,28 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Storage Entity Breakdown Pills */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-[#D8D8CF]/50 dark:border-[#292E42]/50 text-center font-mono">
-              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-[#E2E8F0] dark:border-[#292E42]/50 text-center font-mono">
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B]">
                 <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Topics & Exams</span>
                 <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] tabular-nums">
                   {overallStats.totalTopics} Topics (~{(storageMetrics.breakdown.exams / 1024).toFixed(1)} KB)
                 </span>
               </div>
-              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B]">
                 <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">SRS Flashcards</span>
                 <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] tabular-nums">
                   {revisions.length} Cards (~{(storageMetrics.breakdown.revisions / 1024).toFixed(1)} KB)
                 </span>
               </div>
-              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B]">
                 <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Planner Tasks</span>
                 <span className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5] tabular-nums">
                   {plannerTasks.length} Tasks (~{(storageMetrics.breakdown.planner / 1024).toFixed(1)} KB)
                 </span>
               </div>
-              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#D8D8CF] dark:border-[#24283B]">
+              <div className="p-2 rounded-xl bg-white dark:bg-[#16161E] border border-[#E2E8F0] dark:border-[#24283B]">
                 <span className="text-[11px] text-[#85877E] dark:text-[#787C99] block font-sans font-bold">Targets & Habits</span>
-                <span className="text-[13px] font-bold text-[#596B35] dark:text-[#7AA2F7] tabular-nums">
+                <span className="text-[13px] font-bold text-[#2563EB] dark:text-[#7AA2F7] tabular-nums">
                   {top3Targets.length + reflectionsHistory.length} Entries (~{((storageMetrics.breakdown.activity + storageMetrics.breakdown.other) / 1024).toFixed(1)} KB)
                 </span>
               </div>
@@ -1185,11 +1185,11 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Dual-Tier IndexedDB Safety Snapshot Card */}
-          <div className="p-4 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] space-y-3">
+          <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                  <ShieldCheck className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
                   <h4 className="text-[13px] font-bold text-[#11120F] dark:text-[#C0CAF5]">
                     IndexedDB Automated Safety Net (Quota Overflow Proof)
                   </h4>
@@ -1209,9 +1209,9 @@ export const SettingsView: React.FC = () => {
               <button
                 onClick={handleRestoreSnapshot}
                 disabled={isRestoringSnapshot}
-                className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#16161E] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] border border-[#D8D8CF] dark:border-[#292E42] text-[12px] font-bold transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#16161E] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] border border-[#E2E8F0] dark:border-[#292E42] text-[12px] font-bold transition-all cursor-pointer disabled:opacity-50 shrink-0"
               >
-                <RefreshCw className={`w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] ${isRestoringSnapshot ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] ${isRestoringSnapshot ? 'animate-spin' : ''}`} />
                 <span>{isRestoringSnapshot ? 'Restoring...' : 'Restore Safety Snapshot'}</span>
               </button>
             </div>
@@ -1242,23 +1242,23 @@ export const SettingsView: React.FC = () => {
           <div className="flex flex-wrap gap-2.5 pt-1">
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#596B35] hover:bg-[#47572a] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[13px] font-bold shadow-xs transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[13px] font-bold shadow-xs transition-all cursor-pointer active:scale-95"
             >
               <Download className="w-4 h-4" />
               <span>Export Full Backup (.json)</span>
             </button>
 
-            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-[13px] font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95">
-              <Upload className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+            <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-[#1F2335] hover:bg-[#F8FAFC] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#292E42] transition-all cursor-pointer active:scale-95">
+              <Upload className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
               <span>Restore Backup File</span>
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             </label>
 
             <button
               onClick={() => setShowPwaModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-[#EEEEE8] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-[13px] font-bold border border-[#D8D8CF] dark:border-[#292E42] transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-[#1F2335] hover:bg-[#F8FAFC] dark:hover:bg-[#24283B] text-[#11120F] dark:text-[#C0CAF5] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#292E42] transition-all cursor-pointer active:scale-95"
             >
-              <Smartphone className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+              <Smartphone className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
               <span>{isInstalled ? 'App Installed ✓' : 'Install PWA App 📲'}</span>
             </button>
           </div>
@@ -1282,7 +1282,7 @@ export const SettingsView: React.FC = () => {
           )}
 
           {/* Danger Zone */}
-          <div className="pt-3 border-t border-[#EEEEE8] dark:border-[#24283B] space-y-2">
+          <div className="pt-3 border-t border-[#EEEEE8] dark:border-[#242533] space-y-2">
             <span className="text-[11px] font-bold text-rose-500 uppercase tracking-wider block font-mono">
               ⚠ Danger Zone
             </span>
@@ -1300,7 +1300,7 @@ export const SettingsView: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setShowResetConfirm(false)}
-                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1308,7 +1308,7 @@ export const SettingsView: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setShowResetConfirm(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] text-[13px] font-bold transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset Demo Data</span>
@@ -1328,7 +1328,7 @@ export const SettingsView: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setShowClearConfirm(false)}
-                    className="px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1F2335] text-[13px] font-bold text-[#65675F] dark:text-[#A9B1D6] cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1336,7 +1336,7 @@ export const SettingsView: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setShowClearConfirm(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#292E42] text-[13px] font-bold transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#1F2335] hover:bg-rose-500/15 hover:text-rose-500 text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#292E42] text-[13px] font-bold transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Start Fresh (Blank Canvas)</span>

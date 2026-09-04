@@ -296,7 +296,7 @@ export const PlatformsView: React.FC = () => {
       </div>
 
       {/* 2. ADVANCED TOOLBAR: PROMINENT SEARCH & SEGMENTED CATEGORY TRACK */}
-      <div className="p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3 select-none">
+      <div className="p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 select-none">
         
         {/* Row 1: Search Bar + Live Portals Count */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -308,7 +308,7 @@ export const PlatformsView: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by platform name, subject, batch, or URL..."
-              className="w-full pl-9 pr-9 py-2 sm:py-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] text-xs sm:text-[13px] font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#596B35]/10 dark:focus:ring-[#7AA2F7]/15 shadow-2xs transition-all"
+              className="w-full pl-9 pr-9 py-2 sm:py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E] text-xs sm:text-[13px] font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/10 dark:focus:ring-[#7AA2F7]/15 shadow-2xs transition-all"
             />
             {searchQuery && (
               <button
@@ -323,7 +323,7 @@ export const PlatformsView: React.FC = () => {
 
           {/* Quick Metrics & Reset Filter */}
           <div className="flex items-center justify-between sm:justify-end gap-2.5 shrink-0">
-            <span className="text-xs font-mono font-bold text-[#65675F] dark:text-[#A1A1B2] bg-[#FAF9F5] dark:bg-[#1B1C28] px-3 py-1.5 rounded-xl border border-[#D8D8CF] dark:border-[#2A2C3E]">
+            <span className="text-xs font-mono font-bold text-[#65675F] dark:text-[#A1A1B2] bg-[#F8FAFC] dark:bg-[#1B1C28] px-3 py-1.5 rounded-xl border border-[#E2E8F0] dark:border-[#2A2C3E]">
               <strong className="text-[#11120F] dark:text-white font-black">{filteredPlatforms.length}</strong>
               <span className="text-[#85877E]"> of {platforms.length} Portals</span>
             </span>
@@ -334,7 +334,7 @@ export const PlatformsView: React.FC = () => {
                   setSelectedCategory('all');
                   soundManager.playClick();
                 }}
-                className="text-xs font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline cursor-pointer px-2"
+                className="text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] hover:underline cursor-pointer px-2"
               >
                 Reset Filter
               </button>
@@ -366,8 +366,8 @@ export const PlatformsView: React.FC = () => {
                 }}
                 className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer whitespace-nowrap active:scale-95 flex items-center gap-1.5 shrink-0 ${
                   isSelected
-                    ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-sm font-black'
-                    : 'bg-[#FAF9F5] dark:bg-[#1B1C28] text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#D8D8CF] dark:border-[#2A2C3E] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                    ? 'bg-[#0F172A] dark:bg-white text-white dark:text-black shadow-sm font-black'
+                    : 'bg-[#F8FAFC] dark:bg-[#1B1C28] text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2A2C3E] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                 }`}
               >
                 <span>{tab.label}</span>
@@ -389,33 +389,39 @@ export const PlatformsView: React.FC = () => {
 
       {/* 3. PLATFORM CARDS GRID (Sleek SaaS Cards) */}
       {filteredPlatforms.length === 0 ? (
-        <div className="p-12 sm:p-16 rounded-3xl bg-white dark:bg-[#161722] border border-[#D8D8CF] dark:border-[#272838] text-center space-y-4 shadow-sm">
-          <div className="w-14 h-14 rounded-2xl bg-[#F7F6F0] dark:bg-[#20212F] flex items-center justify-center text-2xl mx-auto border border-[#D8D8CF] dark:border-[#333]">
-            🌐
+        <div className="p-10 sm:p-14 rounded-3xl bg-white dark:bg-[#161722] border border-[#E2E8F0] dark:border-[#272838] text-center space-y-4 shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500/15 via-[#2563EB]/15 to-purple-500/10 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/20 flex items-center justify-center mx-auto shadow-sm">
+            <Globe className="w-8 h-8 stroke-[1.8]" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-[#11120F] dark:text-white font-sans">
-              No study platforms found
+            <h3 className="text-base sm:text-lg font-bold text-[#11120F] dark:text-white font-sans">
+              {searchQuery.trim() || selectedCategory !== 'all' ? 'No study platforms found' : 'No Study Platforms Linked'}
             </h3>
-            <p className="text-xs text-[#85877E] max-w-sm mx-auto">
-              {searchQuery ? `No results matching "${searchQuery}".` : 'Add your coaching batches, mock portals, or AI study tools.'}
+            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] max-w-sm mx-auto font-medium">
+              {searchQuery.trim() || selectedCategory !== 'all'
+                ? `No portals match "${searchQuery || selectedCategory}". Try resetting your filter.`
+                : 'Link your coaching batches, mock test series, and study portals for 1-click launch.'}
             </p>
           </div>
           <div className="flex items-center justify-center gap-2 pt-1">
-            {searchQuery && (
+            {(searchQuery.trim() || selectedCategory !== 'all') && (
               <button
-                onClick={() => setSearchQuery('')}
-                className="px-4 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#232435] border border-[#D8D8CF] dark:border-[#333] text-xs font-bold text-[#65675F] dark:text-white hover:bg-[#EEEEE8] cursor-pointer"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                  soundManager.playClick();
+                }}
+                className="px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#232435] border border-[#E2E8F0] dark:border-[#333] text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] hover:bg-[#EFF6FF] cursor-pointer active:scale-95 tap-bounce"
               >
-                Clear Search
+                Clear Search & Filter
               </button>
             )}
             <button
               onClick={handleOpenAdd}
-              className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-sm cursor-pointer inline-flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all"
+              className="px-4 py-2 rounded-xl bg-[#0F172A] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-sm cursor-pointer inline-flex items-center gap-1.5 hover:bg-[#2563EB] active:scale-95 transition-all tap-bounce"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Platform</span>
+              <span>Add Platform / Batch</span>
             </button>
           </div>
         </div>
@@ -440,7 +446,7 @@ export const PlatformsView: React.FC = () => {
               <div
                 key={platform.id}
                 onClick={() => handleDirectLaunch(platform.url)}
-                className="group relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#171822] border border-[#D8D8CF] dark:border-[#272838] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-sm hover:shadow-md transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between space-y-3.5 cursor-pointer active:scale-[0.99] overflow-hidden"
+                className="group relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#171822] border border-[#E2E8F0] dark:border-[#272838] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-sm hover:shadow-md transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between space-y-3.5 cursor-pointer active:scale-[0.99] overflow-hidden"
               >
                 {/* Brand Color Top Glow Accent */}
                 <div
@@ -470,7 +476,7 @@ export const PlatformsView: React.FC = () => {
                           <span className="truncate max-w-[120px] sm:max-w-[150px]">{categoryBadgeLabel}</span>
                         </span>
                         
-                        <h3 className="text-[15px] sm:text-base font-bold text-[#11120F] dark:text-white font-sans tracking-tight truncate group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors">
+                        <h3 className="text-[15px] sm:text-base font-bold text-[#11120F] dark:text-white font-sans tracking-tight truncate group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors">
                           {platform.name}
                         </h3>
                       </div>
@@ -510,7 +516,7 @@ export const PlatformsView: React.FC = () => {
                       </button>
 
                       {/* Smooth Launch Squircle */}
-                      <div className="w-7 h-7 rounded-lg bg-[#F7F6F0] dark:bg-[#232435] group-hover:bg-[#596B35] dark:group-hover:bg-[#7AA2F7] text-[#85877E] group-hover:text-white dark:group-hover:text-black flex items-center justify-center transition-all duration-200 shadow-xs ml-1">
+                      <div className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#232435] group-hover:bg-[#2563EB] dark:group-hover:bg-[#7AA2F7] text-[#85877E] group-hover:text-white dark:group-hover:text-black flex items-center justify-center transition-all duration-200 shadow-xs ml-1">
                         <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                       </div>
                     </div>
@@ -526,8 +532,8 @@ export const PlatformsView: React.FC = () => {
                 <div className="pt-2.5 border-t border-[#EEEEE8] dark:border-[#242535] flex items-center justify-between gap-2">
                   
                   {/* Clean Domain Tag */}
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F7F6F0] dark:bg-[#202130] border border-[#E5E5DC] dark:border-[#2D2E40] text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">
-                    <Globe className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#202130] border border-[#E2E8F0] dark:border-[#2D2E40] text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">
+                    <Globe className="w-3 h-3 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
                     <span className="truncate">{cleanDomain}</span>
                   </div>
 
@@ -536,7 +542,7 @@ export const PlatformsView: React.FC = () => {
                     <button
                       type="button"
                       onClick={(e) => handleCopyHint(e, platform.id, platform.loginHint!)}
-                      className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F7F6F0] dark:bg-[#202130] hover:bg-[#DCE8B7] dark:hover:bg-[#2D2E40] border border-[#E5E5DC] dark:border-[#2D2E40] text-[10px] font-mono font-bold text-[#11120F] dark:text-white transition-all cursor-pointer active:scale-95 shrink-0"
+                      className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#202130] hover:bg-[#EFF6FF] dark:hover:bg-[#2D2E40] border border-[#E2E8F0] dark:border-[#2D2E40] text-[10px] font-mono font-bold text-[#11120F] dark:text-white transition-all cursor-pointer active:scale-95 shrink-0"
                       title={`Click to copy: ${platform.loginHint}`}
                     >
                       <KeyRound className="w-3 h-3 text-[#85877E]" />
@@ -544,7 +550,7 @@ export const PlatformsView: React.FC = () => {
                       {isCopied ? <Check className="w-3 h-3 text-emerald-500 stroke-[3]" /> : <Copy className="w-3 h-3 text-[#85877E]" />}
                     </button>
                   ) : (
-                    <span className="text-[11px] font-bold font-mono text-[#596B35] dark:text-[#7AA2F7] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <span className="text-[11px] font-bold font-mono text-[#2563EB] dark:text-[#7AA2F7] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       <span>Launch</span>
                       <ExternalLink className="w-3 h-3" />
                     </span>

@@ -73,8 +73,8 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
     <div
       className={`group relative p-4 sm:p-5 rounded-3xl border transition-all duration-300 flex flex-col justify-between h-full overflow-hidden select-none ${
         badge.unlocked
-          ? `bg-white dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth ${tierMeta.glow} hover:-translate-y-1`
-          : 'bg-[#FAF9F5]/60 dark:bg-[#13141C] border-[#D8D8CF]/60 dark:border-[#20212C] opacity-65 hover:opacity-85'
+          ? `bg-white dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth ${tierMeta.glow} hover:-translate-y-1`
+          : 'bg-[#F8FAFC]/60 dark:bg-[#13141C] border-[#E2E8F0]/60 dark:border-[#20212C] opacity-65 hover:opacity-85'
       }`}
     >
       {/* Top Ambient Glow Line */}
@@ -116,7 +116,7 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
             className={`relative w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105 border ${
               badge.unlocked
                 ? `bg-gradient-to-br ${tierMeta.gradient} ${tierMeta.iconBorder} ${tierMeta.iconColor}`
-                : 'bg-[#EEEEE8] dark:bg-[#1E1F2A] border-[#D8D8CF] dark:border-[#2C2E3E] text-[#85877E]'
+                : 'bg-[#F1F5F9] dark:bg-[#1E1F2A] border-[#E2E8F0] dark:border-[#2C2E3E] text-[#85877E]'
             }`}
           >
             {badge.unlocked ? (
@@ -136,14 +136,14 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
       </div>
 
       {/* Progress Track & Subtext */}
-      <div className="space-y-1.5 pt-3 border-t border-[#EEEEE8] dark:border-[#242533]">
+      <div className="space-y-1.5 pt-3 border-t border-[#E2E8F0] dark:border-[#242533]">
         <div className="flex justify-between text-[10px] font-mono font-bold text-[#85877E] dark:text-[#94A3B8]">
           <span>Progress</span>
           <span className="tabular-nums text-[#11120F] dark:text-white">
             {badge.progress} / {badge.maxProgress}
           </span>
         </div>
-        <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#20212E] overflow-hidden p-0.5 border border-[#D8D8CF]/50 dark:border-[#2D2F3F]/50">
+        <div className="w-full h-2 rounded-full bg-[#F1F5F9] dark:bg-[#20212E] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#2D2F3F]/50">
           <div
             className="h-full rounded-full transition-all duration-500 shadow-sm"
             style={{

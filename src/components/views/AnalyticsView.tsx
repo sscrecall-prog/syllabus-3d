@@ -54,7 +54,7 @@ export const AnalyticsView: React.FC = () => {
     <div className="space-y-5 sm:space-y-6 pb-24 sm:pb-20 max-w-5xl mx-auto select-none font-sans animate-fade-in">
       
       {/* 1. EXECUTIVE HERO HEADER */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth">
+      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-gradient-to-br from-[#451a03] via-[#78350f] to-[#1c0b02] border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.25)] shrink-0">
@@ -62,7 +62,7 @@ export const AnalyticsView: React.FC = () => {
             </div>
 
             <div className="min-w-0 space-y-0.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 <span>Preparation Telemetry</span>
                 <span>•</span>
                 <span>Active Retention Index</span>
@@ -86,7 +86,7 @@ export const AnalyticsView: React.FC = () => {
       </div>
 
       {/* 2. EXECUTIVE LEVEL & XP BENTO BANNER */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5 relative overflow-hidden">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-60" />
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -112,7 +112,7 @@ export const AnalyticsView: React.FC = () => {
         </div>
 
         <div className="space-y-1">
-          <div className="w-full h-3 rounded-full bg-[#EEEEE8] dark:bg-[#13141C] overflow-hidden p-0.5 border border-[#D8D8CF]/50 dark:border-[#252736]/50">
+          <div className="w-full h-3 rounded-full bg-[#E2E8F0] dark:bg-[#13141C] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#252736]/50">
             <div
               className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 rounded-full transition-all duration-500 shadow-sm"
               style={{
@@ -132,7 +132,7 @@ export const AnalyticsView: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         
         {/* Readiness Score Card */}
-        <div className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-cyan-500/50 shadow-subtle-depth space-y-3 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-cyan-500/50 shadow-subtle-depth space-y-3 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 group-hover:opacity-100" />
           
           <div className="flex items-center justify-between">
@@ -165,7 +165,7 @@ export const AnalyticsView: React.FC = () => {
         </div>
 
         {/* Practice Accuracy Card */}
-        <div className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-emerald-500/50 shadow-subtle-depth space-y-3 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-emerald-500/50 shadow-subtle-depth space-y-3 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60 group-hover:opacity-100" />
           
           <div className="flex items-center justify-between">
@@ -192,7 +192,7 @@ export const AnalyticsView: React.FC = () => {
         </div>
 
         {/* Badges Unlocked Card */}
-        <div className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-purple-500/50 shadow-subtle-depth space-y-3 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-purple-500/50 shadow-subtle-depth space-y-3 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60 group-hover:opacity-100" />
           
           <div className="flex items-center justify-between">
@@ -222,7 +222,7 @@ export const AnalyticsView: React.FC = () => {
 
       {/* 4. SUBJECT PREPAREDNESS BREAKDOWN */}
       {currentExam && currentExam.subjects.length > 0 && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#65675F] dark:text-[#A1A1AA] uppercase tracking-wider">
               <Layers className="w-3.5 h-3.5 text-cyan-400" />
@@ -243,7 +243,7 @@ export const AnalyticsView: React.FC = () => {
               return (
                 <div
                   key={s.id}
-                  className="p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#242533] space-y-2"
+                  className="p-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#242533] space-y-2"
                 >
                   <div className="flex items-center justify-between gap-1.5">
                     <div className="flex items-center gap-1.5 min-w-0">
@@ -257,7 +257,7 @@ export const AnalyticsView: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="w-full h-1.5 rounded-full bg-[#EEEEE8] dark:bg-[#20212E] overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-[#E2E8F0] dark:bg-[#20212E] overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${percent}%`, backgroundColor: color }}
@@ -287,7 +287,7 @@ export const AnalyticsView: React.FC = () => {
             </div>
           </div>
 
-          <span className="px-3 py-1 rounded-xl bg-[#FAF9F5] dark:bg-[#1E1F2A] border border-[#D8D8CF] dark:border-[#2C2E3E] text-xs font-mono font-black text-amber-600 dark:text-amber-400 tabular-nums shrink-0">
+          <span className="px-3 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E1F2A] border border-[#E2E8F0] dark:border-[#2C2E3E] text-xs font-mono font-black text-amber-600 dark:text-amber-400 tabular-nums shrink-0">
             {unLockedBadges.length} of {achievements.length} Unlocked
           </span>
         </div>

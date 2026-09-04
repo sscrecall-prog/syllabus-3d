@@ -84,14 +84,14 @@ export const PWAInstallBanner: React.FC = () => {
     <>
       {/* Floating Mobile/Desktop PWA Banner */}
       <div className="fixed bottom-20 md:bottom-5 left-3 right-3 sm:left-auto sm:right-5 sm:max-w-sm z-40 animate-slide-up select-none pointer-events-none">
-        <div className="pointer-events-auto p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-[#151724]/95 backdrop-blur-md border border-[#596B35]/30 dark:border-[#7AA2F7]/30 shadow-2xl flex items-center justify-between gap-3 text-[#11120F] dark:text-white relative overflow-hidden">
+        <div className="pointer-events-auto p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-[#151724]/95 backdrop-blur-md border border-[#2563EB]/30 dark:border-[#7AA2F7]/30 shadow-2xl flex items-center justify-between gap-3 text-[#11120F] dark:text-white relative overflow-hidden">
           
           {/* Subtle Ambient Glow */}
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-[#596B35]/20 to-[#7AA2F7]/20 rounded-full blur-xl pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-[#2563EB]/20 to-[#7AA2F7]/20 rounded-full blur-xl pointer-events-none" />
 
           {/* App Icon + Text */}
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#596B35] to-[#7FA04B] dark:from-[#7AA2F7] dark:to-[#5B82D7] p-0.5 shadow-sm shrink-0 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2563EB] to-[#3B82F6] dark:from-[#7AA2F7] dark:to-[#5B82D7] p-0.5 shadow-sm shrink-0 flex items-center justify-center">
               <img
                 src="/logo.png"
                 alt="Syllabus 3D"
@@ -122,7 +122,7 @@ export const PWAInstallBanner: React.FC = () => {
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={handleInstallClick}
-              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#596B35] to-[#455328] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Install</span>
@@ -146,12 +146,12 @@ export const PWAInstallBanner: React.FC = () => {
           onClick={() => setShowIOSGuide(false)}
         >
           <div
-            className="w-full max-w-sm rounded-3xl bg-white dark:bg-[#181A28] border border-[#D8D8CF] dark:border-[#282C40] p-5 space-y-4 shadow-2xl animate-scale-up text-[#11120F] dark:text-[#F8FAFC]"
+            className="w-full max-w-sm rounded-3xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#282C40] p-5 space-y-4 shadow-2xl animate-scale-up text-[#11120F] dark:text-[#F8FAFC]"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#E5E5DC] dark:border-[#222638] pb-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#222638] pb-3">
               <div className="flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-[#596B35] dark:text-[#7AA2F7]" />
+                <Smartphone className="w-5 h-5 text-[#2563EB] dark:text-[#7AA2F7]" />
                 <h3 className="text-sm font-black">Install on iPhone / iPad</h3>
               </div>
               <button
@@ -163,7 +163,7 @@ export const PWAInstallBanner: React.FC = () => {
             </div>
 
             <div className="space-y-3 text-xs text-[#65675F] dark:text-[#94A3B8]">
-              <div className="flex items-start gap-2.5 p-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#12141F] border border-[#D8D8CF] dark:border-[#282C40]">
+              <div className="flex items-start gap-2.5 p-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#12141F] border border-[#E2E8F0] dark:border-[#282C40]">
                 <div className="w-6 h-6 rounded-lg bg-blue-500/15 text-blue-500 flex items-center justify-center shrink-0 font-bold font-mono">
                   1
                 </div>
@@ -173,7 +173,7 @@ export const PWAInstallBanner: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#12141F] border border-[#D8D8CF] dark:border-[#282C40]">
+              <div className="flex items-start gap-2.5 p-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#12141F] border border-[#E2E8F0] dark:border-[#282C40]">
                 <div className="w-6 h-6 rounded-lg bg-blue-500/15 text-blue-500 flex items-center justify-center shrink-0 font-bold font-mono">
                   2
                 </div>
@@ -183,7 +183,7 @@ export const PWAInstallBanner: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-2.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#12141F] border border-[#D8D8CF] dark:border-[#282C40]">
+              <div className="flex items-start gap-2.5 p-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#12141F] border border-[#E2E8F0] dark:border-[#282C40]">
                 <div className="w-6 h-6 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 font-bold font-mono">
                   3
                 </div>
@@ -196,7 +196,7 @@ export const PWAInstallBanner: React.FC = () => {
 
             <button
               onClick={() => setShowIOSGuide(false)}
-              className="w-full py-2.5 rounded-2xl bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] font-black text-xs shadow-sm cursor-pointer active:scale-95 transition-all"
+              className="w-full py-2.5 rounded-2xl bg-[#2563EB] dark:bg-[#7AA2F7] hover:bg-[#1D4ED8] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] font-black text-xs shadow-sm cursor-pointer active:scale-95 transition-all"
             >
               Got it
             </button>

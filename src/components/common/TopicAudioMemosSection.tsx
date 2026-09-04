@@ -326,7 +326,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
     <div className="space-y-4">
       
       {/* 1. HEADER & RECORD BUTTON */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
             <Mic className="w-5 h-5 stroke-[2.2]" />
@@ -432,8 +432,8 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
 
       {/* 3. RECORDED AUDIO PREVIEW & SAVE FORM */}
       {!isRecording && recordedBlob && (
-        <div className="p-5 sm:p-6 rounded-2xl bg-[#FAF8F5] dark:bg-[#1C1C22] border-2 border-purple-500/40 shadow-xl space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between pb-2 border-b border-[#D8D8CF] dark:border-[#272730]">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#F8FAFC] dark:bg-[#1C1C22] border-2 border-purple-500/40 shadow-xl space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E2E8F0] dark:border-[#272730]">
             <div className="flex items-center gap-2 text-xs font-bold text-[#191A17] dark:text-[#F5F5F7]">
               <Sparkles className="w-4 h-4 text-purple-500" />
               <span>Review Voice Note ({formatTime(recordingSeconds)})</span>
@@ -449,7 +449,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
 
           {/* Audio Player Preview */}
           {previewAudioUrl && (
-            <div className="p-3 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730]">
+            <div className="p-3 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730]">
               <audio controls src={previewAudioUrl} className="w-full h-9" />
             </div>
           )}
@@ -464,7 +464,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
               value={recordingTitle}
               onChange={e => setRecordingTitle(e.target.value)}
               placeholder="e.g. Important Theorem Shortcut / Exceptions"
-              className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-purple-500"
+              className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-semibold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-purple-500"
             />
           </div>
 
@@ -478,17 +478,17 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                 value={recordingTranscript}
                 onChange={e => setRecordingTranscript(e.target.value)}
                 rows={2}
-                className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-purple-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-purple-500"
               />
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D8D8CF] dark:border-[#272730]">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#272730]">
             <button
               type="button"
               onClick={handleDiscardRecording}
-              className="px-4 py-2 rounded-xl bg-white dark:bg-[#23232A] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-white dark:bg-[#23232A] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
             >
               Discard
             </button>
@@ -516,7 +516,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                 className={`p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#18181D] border transition-all shadow-subtle-depth flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 ${
                   isPlaying
                     ? 'border-purple-500 dark:border-purple-500 ring-1 ring-purple-500/30'
-                    : 'border-[#D8D8CF] dark:border-[#272730] hover:border-purple-500/50'
+                    : 'border-[#E2E8F0] dark:border-[#272730] hover:border-purple-500/50'
                 }`}
               >
                 {/* Left: Play/Pause Button & Memo Title */}
@@ -545,7 +545,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                       <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-mono">
                         🎙️ Voice Memo #{index + 1}
                       </span>
-                      <span className="text-[11px] font-bold font-mono text-[#596B35] dark:text-[#8B5CF6]">
+                      <span className="text-[11px] font-bold font-mono text-[#2563EB] dark:text-[#8B5CF6]">
                         {formatTime(memo.durationSeconds)}
                       </span>
                     </div>
@@ -570,7 +570,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                 </div>
 
                 {/* Right: Actions & Tools */}
-                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#D8D8CF]/60 dark:border-[#272730] justify-end">
+                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#E2E8F0] dark:border-[#272730] justify-end">
                   
                   {/* Playback Speed Controller */}
                   {isPlaying && (
@@ -587,7 +587,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                   {memo.transcript && onInsertTranscriptToNotes && (
                     <button
                       onClick={() => onInsertTranscriptToNotes(`\n> 🎙️ **Voice Memo (${memo.title})**:\n> ${memo.transcript}\n`)}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#DCE8B7] dark:hover:bg-purple-500/20 text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold transition-colors cursor-pointer"
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#23232A] hover:bg-purple-500/15 dark:hover:bg-purple-500/20 text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white border border-[#E2E8F0] dark:border-[#272730] text-xs font-semibold transition-colors cursor-pointer"
                       title="Insert Transcript into Topic Notes"
                     >
                       <FileText className="w-3.5 h-3.5" />
@@ -598,7 +598,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                   {/* Download Audio */}
                   <button
                     onClick={(e) => handleDownloadMemo(e, memo)}
-                    className="p-2 rounded-xl bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#EEEEE8] dark:hover:bg-[#2D2D35] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#23232A] hover:bg-[#EEEEE8] dark:hover:bg-[#2D2D35] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-colors cursor-pointer"
                     title="Download Audio (.webm)"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -636,7 +636,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
         ) : (
           /* Empty State */
           !isRecording && !recordedBlob && (
-            <div className="py-10 sm:py-12 px-4 text-center rounded-2xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+            <div className="py-10 sm:py-12 px-4 text-center rounded-2xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 mx-auto shadow-sm">
                 <Mic className="w-6 h-6" />
               </div>

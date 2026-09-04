@@ -81,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Study Planner',
       icon: CalendarCheck,
       badge: plannerTasks.filter(t => t.status === 'today').length || null,
-      badgeColor: 'bg-[#596B35] text-white shadow-[0_0_8px_rgba(89,107,53,0.5)]'
+      badgeColor: 'bg-[#2563EB] text-white shadow-[0_0_8px_rgba(37,99,235,0.4)]'
     },
     {
       id: 'revision' as AppView,
@@ -119,14 +119,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Compact App Branding */}
         <div className="flex items-center gap-2.5 px-1.5 py-1 group cursor-pointer">
-          <div className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] border border-[#D8D8CF] dark:border-[#333446] shadow-xs flex items-center justify-center p-1.5 shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] border border-[#E2E8F0] dark:border-[#333446] shadow-xs flex items-center justify-center p-1.5 shrink-0 group-hover:scale-105 transition-transform">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors leading-none">
+            <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none">
               SYLLABUS 3D
             </h1>
-            <p className="text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7] mt-0.5">
+            <p className="text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] mt-0.5">
               Syllabus Mastery System
             </p>
           </div>
@@ -137,7 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
-              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] text-white dark:text-[#F5F5F7] dark:hover:text-black font-bold text-[13px] shadow-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent dark:border-[#2F3042]"
+              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-[#F5F5F7] dark:hover:text-black font-bold text-[13px] shadow-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent dark:border-[#2F3042] tap-bounce"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Add Custom Topic</span>
@@ -150,14 +150,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 soundManager.playClick();
                 onOpenFocus();
               }}
-              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#DCE8B7] dark:bg-[#7AA2F7]/15 hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] text-[#354126] dark:text-[#7AA2F7] dark:hover:text-black border border-[#596B35]/30 dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EFF6FF] dark:bg-[#7AA2F7]/15 hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] text-[#1D4ED8] dark:text-[#7AA2F7] dark:hover:text-black border border-[#BFDBFE] dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-xs transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
             >
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] group-hover:bg-white animate-pulse" />
-                <Timer className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] group-hover:text-white dark:group-hover:text-black" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] group-hover:bg-white animate-pulse" />
+                <Timer className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] group-hover:text-white dark:group-hover:text-black" />
                 <span>3D Focus Chamber</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-black/30 text-[#354126] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white dark:group-hover:text-black">
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-black/30 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white dark:group-hover:text-black">
                 Timer
               </span>
             </button>
@@ -165,7 +165,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Compact Navigation List */}
-        <nav className="space-y-0.5 relative pt-1 border-t border-[#D8D8CF]/60 dark:border-[#232430]">
+        <nav className="space-y-0.5 relative pt-1 border-t border-[#E2E8F0] dark:border-[#232430]">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = activeView === item.id;
@@ -178,13 +178,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 className={`group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${
                   isActive
-                    ? 'bg-white dark:bg-[#1E1F2A] text-[#11120F] dark:text-white border border-[#D8D8CF]/80 dark:border-[#333446] font-black shadow-xs'
+                    ? 'bg-white dark:bg-[#1E1F2A] text-[#11120F] dark:text-white border border-[#E2E8F0] dark:border-[#333446] font-black shadow-xs'
                     : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-white/70 dark:hover:bg-[#161720] hover:text-[#11120F] dark:hover:text-white'
                 }`}
               >
                 {/* Active Left Indicator */}
                 {isActive && (
-                  <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-[#596B35] dark:bg-[#7AA2F7] shadow-[0_0_6px_rgba(89,107,53,0.8)] dark:shadow-[0_0_8px_rgba(122,162,247,0.8)]" />
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-[#2563EB] dark:bg-[#7AA2F7] shadow-[0_0_6px_rgba(37,99,235,0.6)] dark:shadow-[0_0_8px_rgba(122,162,247,0.8)]" />
                 )}
 
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -198,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     />
                   ) : (
                     <Icon className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
-                      isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
+                      isActive ? 'text-[#2563EB] dark:text-[#7AA2F7]' : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
                     }`} />
                   )}
                   <span className="truncate text-[13px] font-semibold">{item.label}</span>
@@ -217,30 +217,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Compact Bottom Cards */}
-      <div className="space-y-2 pt-2 border-t border-[#D8D8CF]/60 dark:border-[#232430]">
+      <div className="space-y-2 pt-2 border-t border-[#E2E8F0] dark:border-[#232430]">
         <a
           href="https://mock-percentile-tracker.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="group w-full flex items-center justify-between p-2 px-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#D8D8CF] dark:border-[#272732] hover:border-[#596B35] dark:hover:border-[#7AA2F7] transition-all shadow-2xs active:scale-98"
+          className="group w-full flex items-center justify-between p-2 px-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shadow-2xs active:scale-98"
         >
           <div className="flex items-center gap-2 min-w-0">
             <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-5 h-5 shrink-0 object-contain rounded-md" />
             <div className="min-w-0">
-              <span className="text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] block leading-tight group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] truncate">
+              <span className="text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] block leading-tight group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] truncate">
                 Mock Tracker
               </span>
               <span className="text-[11px] text-[#65675F] dark:text-[#CBD5E1] block leading-none truncate">Score & Percentiles</span>
             </div>
           </div>
-          <ExternalLink className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
+          <ExternalLink className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
         </a>
 
         {/* Compact User Level Card */}
-        <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#D8D8CF] dark:border-[#272732] space-y-1.5 shadow-2xs">
+        <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#596B35] to-[#45532A] dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[13px] shrink-0 shadow-2xs overflow-hidden">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[13px] shrink-0 shadow-2xs overflow-hidden">
                 {(profile.avatarUrl || user?.avatarUrl) ? (
                   <img
                     src={profile.avatarUrl || user?.avatarUrl}
@@ -261,14 +261,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
-            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-md bg-[#DCE8B7] dark:bg-[#7AA2F7]/20 text-[#354126] dark:text-[#7AA2F7] font-mono border border-[#596B35]/20 dark:border-[#7AA2F7]/30">
+            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-md bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] font-mono border border-[#BFDBFE] dark:border-[#7AA2F7]/30">
               Lvl {profile.level}
             </span>
           </div>
 
-          <div className="w-full h-1 rounded-full bg-[#EEEEE8] dark:bg-[#232430] overflow-hidden">
+          <div className="w-full h-1 rounded-full bg-[#E2E8F0] dark:bg-[#232430] overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#596B35] to-[#789047] dark:from-[#7AA2F7] dark:to-[#8B5CF6] rounded-full"
+              className="h-full bg-gradient-to-r from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#8B5CF6] rounded-full"
               style={{ width: `${Math.min(100, Math.max(5, (profile.xp % 300) / 3))}%` }}
             />
           </div>

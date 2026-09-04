@@ -190,7 +190,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
     <div className="space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
       
       {/* 1. EXECUTIVE HEADER & CONTROLS */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#D8D8CF] dark:border-[#262738] shadow-subtle-depth space-y-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           
           {/* Left Title Capsule */}
@@ -200,7 +200,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
             </div>
 
             <div className="min-w-0 space-y-0.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#596B35] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 <span>{currentExam.name}</span>
                 <span>•</span>
                 <span>Neural Concept Graph</span>
@@ -225,7 +225,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Filter concept nodes..."
-                className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
               />
               {searchQuery && (
                 <button
@@ -238,7 +238,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
             </div>
 
             {/* Layout Switcher */}
-            <div className="flex items-center p-1 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] shadow-2xs">
+            <div className="flex items-center p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
               <button
                 onClick={() => {
                   setViewLayout('radial');
@@ -270,7 +270,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
             </div>
 
             {/* Zoom Controls */}
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#FAF9F5] dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] shadow-2xs">
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
               <button
                 onClick={() => handleZoom(-0.15)}
                 className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
@@ -309,10 +309,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 setSelectedSubjectId('all');
                 soundManager.playClick();
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border shrink-0 active:scale-95 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border shrink-0 active:scale-95 tap-bounce ${
                 selectedSubjectId === 'all'
                   ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                  : 'bg-[#FAF9F5] dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                  : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -337,10 +337,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     setSelectedSubjectId(s.id);
                     soundManager.playClick();
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0 active:scale-95 ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0 active:scale-95 tap-bounce ${
                     isSel
                       ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                      : 'bg-[#FAF9F5] dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                      : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                   }`}
                 >
                   <SubjIcon className="w-3.5 h-3.5" style={{ color: isSel ? undefined : meta.color }} />

@@ -436,7 +436,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             transform: dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
             transition: dragOffsetY === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
           }}
-          className="w-screen max-w-2xl bg-[#F7F6F0] dark:bg-[#0B0B0D] border-l border-[#D8D8CF] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none"
+          className="w-screen max-w-2xl bg-white dark:bg-[#0B0B0D] border-l border-[#E2E8F0] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none"
         >
           
           {/* Mobile Pull-Down Drag Handle */}
@@ -453,10 +453,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="p-4 sm:p-6 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4 relative overflow-hidden"
+            className="p-4 sm:p-6 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4 relative overflow-hidden"
           >
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 <span>{subjectName || 'Subject'}</span>
                 <span>•</span>
                 <span className="truncate">{chapterName || 'Chapter'}</span>
@@ -478,7 +478,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center active:scale-95 ${
                   isEditing
                     ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs'
-                    : 'bg-[#FAF9F5] dark:bg-[#20212E] border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                    : 'bg-[#F8FAFC] dark:bg-[#20212E] border-[#E2E8F0] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                 }`}
                 title={isEditing ? 'Close Edit Form' : 'Edit Topic Parameters'}
               >
@@ -490,7 +490,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   soundManager.playClick();
                   onClose();
                 }}
-                className="p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-rose-500 hover:border-rose-500/30 hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] hover:text-rose-500 hover:border-rose-500/30 hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                 title="Close Drawer"
               >
                 <X className="w-4 h-4" />
@@ -500,9 +500,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
           {/* EDIT TOPIC FORM PANEL (Appears directly beneath header when pencil is clicked) */}
           {isEditing && (
-            <div className="p-4 sm:p-6 bg-white dark:bg-[#18181D] border-b-2 border-[#596B35] dark:border-[#7AA2F7] shadow-md animate-fade-in">
-              <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#D8D8CF] dark:border-[#272730]">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#596B35] dark:text-[#7AA2F7]">
+            <div className="p-4 sm:p-6 bg-white dark:bg-[#18181D] border-b-2 border-[#2563EB] dark:border-[#7AA2F7] shadow-md animate-fade-in">
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#E2E8F0] dark:border-[#272730]">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                   <Edit3 className="w-4 h-4" />
                   <span>Edit Topic Parameters</span>
                 </div>
@@ -525,7 +525,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     type="text"
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs sm:text-sm font-bold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                     placeholder="Topic Name"
                     required
                   />
@@ -540,7 +540,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     <select
                       value={editDifficulty}
                       onChange={e => setEditDifficulty(e.target.value as DifficultyLevel)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                     >
                       <option value="Easy">Easy</option>
                       <option value="Medium">Medium</option>
@@ -560,7 +560,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       value={editWeightage !== undefined ? editWeightage : ''}
                       onChange={e => setEditWeightage(e.target.value === '' ? undefined : Number(e.target.value))}
                       placeholder="e.g. 4 (optional)"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                     />
                   </div>
                 </div>
@@ -577,7 +577,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       {liveTopic.subtopics.map((st, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs"
+                          className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs"
                         >
                           <span className="truncate text-[#191A17] dark:text-[#F5F5F7] font-semibold">{st}</span>
                           <button
@@ -606,23 +606,23 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                         }
                       }}
                       placeholder="Add subtopic (or comma-separated values)..."
-                      className="flex-1 px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                      className="flex-1 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                     />
                     <button
                       type="button"
                       onClick={handleAddSubtopicSubmit}
-                      className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] text-xs font-bold transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-xs font-bold transition-colors cursor-pointer"
                     >
                       + Add
                     </button>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D8D8CF] dark:border-[#272730]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#272730]">
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -648,7 +648,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           {/* Tab Navigation */}
           <div
             ref={tabBarRef}
-            className="flex items-center px-4 sm:px-6 pt-2 pb-0 border-b border-[#D8D8CF] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar"
+            className="flex items-center px-4 sm:px-6 pt-2 pb-0 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar"
           >
             {[
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
@@ -710,7 +710,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           </div>
 
           {/* Mobile Swipe Navigation Indicator Bar */}
-          <div className="sm:hidden flex items-center justify-between px-4 py-1.5 bg-[#FAF9F5] dark:bg-[#12131F] border-b border-[#D8D8CF]/60 dark:border-[#272730]/60 text-[11px] font-mono text-[#65675F] dark:text-[#94A3B8] select-none">
+          <div className="sm:hidden flex items-center justify-between px-4 py-1.5 bg-[#F8FAFC] dark:bg-[#12131F] border-b border-[#E2E8F0]/60 dark:border-[#272730]/60 text-[11px] font-mono text-[#65675F] dark:text-[#94A3B8] select-none">
             <button
               type="button"
               disabled={activeTab === 'overview'}
@@ -725,7 +725,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-lg border transition-all ${
                 activeTab === 'overview'
                   ? 'opacity-30 border-transparent cursor-not-allowed'
-                  : 'hover:bg-black/5 dark:hover:bg-white/5 border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] cursor-pointer active:scale-95'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] cursor-pointer active:scale-95'
               }`}
               title="Previous Tab (Swipe Right)"
             >
@@ -771,7 +771,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-lg border transition-all ${
                 activeTab === 'mistakes'
                   ? 'opacity-30 border-transparent cursor-not-allowed'
-                  : 'hover:bg-black/5 dark:hover:bg-white/5 border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] cursor-pointer active:scale-95'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] cursor-pointer active:scale-95'
               }`}
               title="Next Tab (Swipe Left)"
             >
@@ -794,7 +794,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 {/* 1. TOPIC STATS HERO TILES (ACCURACY % & STUDY TIME) */}
                 <div className="grid grid-cols-2 gap-3">
                   {/* Accuracy Tile */}
-                  <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-2 relative overflow-hidden group">
+                  <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-2 relative overflow-hidden group">
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60" />
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] flex items-center gap-1.5">
@@ -819,7 +819,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   </div>
 
                   {/* Study Time Tile */}
-                  <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-2 relative overflow-hidden group">
+                  <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-2 relative overflow-hidden group">
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-60" />
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] flex items-center gap-1.5">
@@ -839,7 +839,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 </div>
 
                 {/* 2. ACCURACY CONTROLLER (SLIDER & PRESET CHIPS) */}
-                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/25 flex items-center justify-center shrink-0">
@@ -863,7 +863,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   </div>
 
                   {/* Accuracy Slider */}
-                  <div className="space-y-1.5 p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#242533]">
+                  <div className="space-y-1.5 p-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#242533]">
                     <div className="flex justify-between text-xs font-mono font-bold text-[#65675F] dark:text-[#A1A1AA]">
                       <span>0%</span>
                       <span className="text-sm font-mono font-black text-cyan-600 dark:text-cyan-400 tabular-nums px-2 py-0.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
@@ -902,7 +902,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                         className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer border active:scale-95 ${
                           liveTopic.accuracy === chip.val
                             ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                            : 'bg-[#FAF9F5] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#272730] hover:border-cyan-500'
+                            : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#272730] hover:border-cyan-500'
                         }`}
                       >
                         {chip.label}
@@ -912,7 +912,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 </div>
 
                 {/* 3. STUDY TIME LOGGER (+15M, +30M, STOPWATCH) */}
-                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25 flex items-center justify-center shrink-0">
@@ -946,7 +946,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           key={mins}
                           type="button"
                           onClick={() => handleAddStudyMinutes(mins)}
-                          className="py-2.5 px-1 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-bold text-[#191A17] dark:text-[#F5F5F7] transition-all cursor-pointer active:scale-95 text-center shadow-2xs"
+                          className="py-2.5 px-1 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black border border-[#E2E8F0] dark:border-[#272730] text-xs font-mono font-bold text-[#191A17] dark:text-[#F5F5F7] transition-all cursor-pointer active:scale-95 text-center shadow-2xs"
                         >
                           +{mins}m
                         </button>
@@ -955,7 +955,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   </div>
 
                   {/* Live Topic Stopwatch */}
-                  <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] flex items-center justify-between">
+                  <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] block">
                         Live Stopwatch
@@ -1001,7 +1001,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 </div>
 
                 {/* 4. PREPARATION STATUS SELECTOR */}
-                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3">
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3">
                   <span className="text-[10px] font-mono font-bold text-[#85877E] uppercase tracking-wider block">
                     Preparation Status
                   </span>
@@ -1031,7 +1031,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border flex items-center justify-center gap-1.5 active:scale-95 ${
                             isSelected
                               ? st.activeClasses
-                              : 'bg-[#FAF9F5] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                              : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                           }`}
                         >
                           <StatusIcon className="w-3.5 h-3.5 shrink-0" />
@@ -1043,19 +1043,19 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 </div>
 
                 {/* 5. Subtopics Checklist */}
-                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2">
                       <span className="text-xs sm:text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-tight">
                         Subtopics & Concept Checklist
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/20 dark:border-[#7AA2F7]/30">
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/20 dark:border-[#7AA2F7]/30">
                         {liveTopic.subtopics ? liveTopic.subtopics.length : 0}
                       </span>
                     </div>
 
                     {/* Mode Toggle Switch (Single vs Bulk Multi-Subtopic) */}
-                    <div className="flex items-center rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] p-1 border border-[#D8D8CF] dark:border-[#272730]">
+                    <div className="flex items-center rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] p-1 border border-[#E2E8F0] dark:border-[#272730]">
                       <button
                         type="button"
                         onClick={() => {
@@ -1094,10 +1094,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       liveTopic.subtopics.map((sub, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35]/40 dark:hover:border-[#7AA2F7]/40 transition-colors"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB]/40 dark:hover:border-[#7AA2F7]/40 transition-colors"
                         >
                           <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#596B35] dark:bg-[#7AA2F7] shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] shrink-0" />
                             <span className="text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] truncate">{sub}</span>
                           </div>
                           <button
@@ -1124,11 +1124,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           value={newSubtopicInput}
                           onChange={(e) => setNewSubtopicInput(e.target.value)}
                           placeholder="Add subtopic (or comma-separated like: Intro, PYQs, Mock)..."
-                          className="flex-1 px-3.5 py-2 rounded-xl bg-[#FAF9F5] dark:bg-[#14151F] border border-[#D8D8CF] dark:border-[#272730] text-xs font-semibold focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7] text-[#11120F] dark:text-white placeholder-[#85877E]"
+                          className="flex-1 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs font-semibold focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] text-[#11120F] dark:text-white placeholder-[#85877E]"
                         />
                         <button
                           type="submit"
-                          className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] text-xs font-black uppercase tracking-wider cursor-pointer transition-all active:scale-95 shrink-0"
+                          className="px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-xs font-black uppercase tracking-wider cursor-pointer transition-all active:scale-95 shrink-0"
                         >
                           + Add
                         </button>
@@ -1136,7 +1136,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                     </div>
                   ) : (
                     /* BULK MULTI-SUBTOPIC MODE */
-                    <div className="p-4 rounded-2xl bg-[#FAF9F5] dark:bg-[#14151F] border border-amber-500/30 space-y-3 pt-3 animate-fade-in">
+                    <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#14151F] border border-amber-500/30 space-y-3 pt-3 animate-fade-in">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
@@ -1154,7 +1154,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                         onChange={(e) => setBulkSubtopicsInput(e.target.value)}
                         placeholder={`Paste multiple subtopics here:\nBasic Concepts & Formulas\nShortcut Techniques\nPYQ Solved Examples\nMock Test Practice\nRevision Formula Sheet`}
                         rows={4}
-                        className="w-full p-3 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-mono font-medium text-[#171717] dark:text-white focus:ring-2 focus:ring-amber-500 leading-relaxed placeholder-[#85877E]"
+                        className="w-full p-3 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-mono font-medium text-[#171717] dark:text-white focus:ring-2 focus:ring-amber-500 leading-relaxed placeholder-[#85877E]"
                       />
 
                       <div className="flex items-center justify-between gap-2 pt-1">
@@ -1164,7 +1164,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                             setSubtopicMode('single');
                             setBulkSubtopicsInput('');
                           }}
-                          className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] dark:hover:text-white cursor-pointer"
                         >
                           Switch to Single Mode
                         </button>
@@ -1176,7 +1176,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                           className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs active:scale-95 cursor-pointer ${
                             parsedBulkSubtopics.length > 0
                               ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white'
-                              : 'bg-[#EEEEE8] dark:bg-[#282833] text-[#85877E] cursor-not-allowed opacity-60'
+                              : 'bg-[#F1F5F9] dark:bg-[#282833] text-[#85877E] cursor-not-allowed opacity-60'
                           }`}
                         >
                           <Sparkles className="w-3.5 h-3.5" />
@@ -1188,7 +1188,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 </div>
 
                 {/* Danger Zone */}
-                <div className="pt-4 border-t border-[#D8D8CF] dark:border-[#272730] flex justify-between items-center">
+                <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#272730] flex justify-between items-center">
                   {showDeleteConfirm ? (
                     <div className="flex items-center gap-2">
                       <button

@@ -133,7 +133,7 @@ const INITIAL_SSC_SUBJECTS: Subject[] = [
     id: 'subj_quant',
         name: 'Quantitative Aptitude',
         icon: 'Calculator',
-        color: '#596B35',
+        color: '#2563EB',
         totalChapters: 4,
         chapters: [
           {
@@ -314,7 +314,7 @@ const INITIAL_SSC_SUBJECTS: Subject[] = [
         id: 'subj_reasoning',
         name: 'General Intelligence & Reasoning',
         icon: 'BrainCircuit',
-        color: '#3A3F33',
+        color: '#6366F1',
         totalChapters: 3,
         chapters: [
           {
@@ -432,7 +432,7 @@ const INITIAL_SSC_SUBJECTS: Subject[] = [
         id: 'subj_english',
         name: 'English Comprehension',
         icon: 'BookOpen',
-        color: '#708250',
+        color: '#8B5CF6',
         totalChapters: 3,
         chapters: [
           {
@@ -533,7 +533,7 @@ const INITIAL_SSC_SUBJECTS: Subject[] = [
         id: 'subj_ga',
         name: 'General Awareness & GK',
         icon: 'Globe',
-        color: '#4A582F',
+        color: '#0D9488',
         totalChapters: 3,
         chapters: [
           {

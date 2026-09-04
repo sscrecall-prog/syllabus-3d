@@ -42,17 +42,17 @@ const FloatingTimerPermissionModal = lazy(() => import('./components/modals/Floa
 const ViewLoadingFallback: React.FC = () => (
   <div className="w-full space-y-5 animate-view-fade select-none pb-12">
     {/* Banner Skeleton */}
-    <div className="w-full h-44 sm:h-56 rounded-3xl skeleton-shimmer border border-[#D8D8CF]/40 dark:border-[#28293D]/40 shadow-xs" />
+    <div className="w-full h-44 sm:h-56 rounded-3xl skeleton-shimmer border border-[#E2E8F0]/40 dark:border-[#28293D]/40 shadow-xs" />
 
     {/* Bento Cards 3-Grid Skeleton */}
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
-      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
-      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
+      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#E2E8F0]/30 dark:border-[#28293D]/30" />
+      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#E2E8F0]/30 dark:border-[#28293D]/30" />
+      <div className="h-32 rounded-2xl skeleton-shimmer border border-[#E2E8F0]/30 dark:border-[#28293D]/30" />
     </div>
 
     {/* Content Table/List Skeleton */}
-    <div className="w-full h-64 rounded-2xl skeleton-shimmer border border-[#D8D8CF]/30 dark:border-[#28293D]/30" />
+    <div className="w-full h-64 rounded-2xl skeleton-shimmer border border-[#E2E8F0]/30 dark:border-[#28293D]/30" />
   </div>
 );
 

@@ -15,7 +15,9 @@ import {
   Database,
   EyeOff,
   Sparkles,
-  Award
+  Award,
+  HelpCircle,
+  Compass
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -80,7 +82,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
 
   return (
     <>
-      <footer className="mt-12 pt-8 pb-6 border-t border-[#D8D8CF] dark:border-[#272732] select-none">
+      <footer className="mt-12 pt-8 pb-6 border-t border-[#E2E8F0] dark:border-[#272732] select-none">
         <div className="space-y-8">
           
           {/* TOP ROW: Brand identity + Key Quick Actions */}
@@ -93,7 +95,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                 <div>
                   <h3 className="text-base font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight flex items-center gap-2">
                     <span>SYLLABUS 3D</span>
-                    <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/25 dark:border-[#7AA2F7]/25">
+                    <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/25 dark:border-[#7AA2F7]/25">
                       v2.4 PRO
                     </span>
                   </h3>
@@ -116,10 +118,10 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   soundManager.playClick();
                   handleNativeShare();
                 }}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#1C1D28] hover:bg-[#FAF9F5] dark:hover:bg-[#232534] text-[#11120F] dark:text-[#F5F5F7] border border-[#D8D8CF] dark:border-[#2E3044] hover:border-[#596B35] dark:hover:border-[#7AA2F7] text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer group"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#1C1D28] hover:bg-[#F8FAFC] dark:hover:bg-[#232534] text-[#11120F] dark:text-[#F5F5F7] border border-[#E2E8F0] dark:border-[#2E3044] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer group"
                 title="Share Syllabus 3D with fellow aspirants"
               >
-                <div className="w-6 h-6 rounded-lg bg-[#596B35]/10 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 rounded-lg bg-[#2563EB]/10 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Share2 className="w-3.5 h-3.5" />
                 </div>
                 <span>Share App</span>
@@ -131,60 +133,75 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   soundManager.playClick();
                   setIsPrivacyModalOpen(true);
                 }}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#1C1D28] hover:bg-[#FAF9F5] dark:hover:bg-[#232534] text-[#11120F] dark:text-[#F5F5F7] border border-[#D8D8CF] dark:border-[#2E3044] hover:border-emerald-500 dark:hover:border-emerald-400 text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer group"
-                title="Review our student privacy & zero-tracking policy"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#1C1D28] hover:bg-[#F8FAFC] dark:hover:bg-[#232534] text-[#11120F] dark:text-[#F5F5F7] border border-[#E2E8F0] dark:border-[#2E3044] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer group"
+                title="View Privacy & Offline Architecture Policy"
               >
                 <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <ShieldCheck className="w-3.5 h-3.5" />
                 </div>
-                <span>Privacy Policy</span>
+                <span>Privacy & Data</span>
               </button>
 
-              {/* Contact Us Button */}
+              {/* Feedback / Contact Us Button */}
               <button
                 onClick={() => {
                   soundManager.playClick();
                   setIsContactModalOpen(true);
                 }}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#1C1D28] hover:bg-[#FAF9F5] dark:hover:bg-[#232534] text-[#11120F] dark:text-[#F5F5F7] border border-[#D8D8CF] dark:border-[#2E3044] hover:border-indigo-500 dark:hover:border-indigo-400 text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer group"
-                title="Send feedback, bug reports or contact the team"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white dark:bg-[#1C1D28] hover:bg-[#F8FAFC] dark:hover:bg-[#232534] text-[#11120F] dark:text-[#F5F5F7] border border-[#E2E8F0] dark:border-[#2E3044] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer group"
+                title="Send developer feedback or request exam syllabus"
               >
-                <div className="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Mail className="w-3.5 h-3.5" />
+                <div className="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <HelpCircle className="w-3.5 h-3.5" />
                 </div>
-                <span>Contact Us</span>
+                <span>Suggest Syllabus</span>
               </button>
             </div>
           </div>
 
-          {/* MIDDLE ROW: 3 Pillar Bento Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-            {/* Column 1: Core Navigation */}
+          {/* MIDDLE SECTION: 3 Navigation & Info Columns */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-y border-[#EEEEE8] dark:border-[#232432] text-xs">
+            
+            {/* Column 1: Core Architecture Highlights */}
             <div className="space-y-2.5">
               <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Productivity Architecture</span>
+                <span>Architecture Highlights</span>
               </h4>
               <ul className="space-y-1.5 text-[#65675F] dark:text-[#94A3B8]">
-                <li>• <strong>Spaced Revision:</strong> Automated Fibonacci intervals (1d, 3d, 7d, 14d, 30d)</li>
-                <li>• <strong>3D Focus Chamber:</strong> Ambient timer with bilateral sound generator</li>
-                <li>• <strong>Diagnostic Traps:</strong> Log repeated mistakes & syllabus traps</li>
-                <li>• <strong>Split-Screen Study:</strong> Simultaneous YouTube lectures & rich notes</li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7]" />
+                  <span>3D Interactive Syllabus Mind Map & Visualizer</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span>Ebbinghaus 1-3-7-15-30 Spaced Repetition Engine</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+                  <span>Weak Topic Diagnostic Scanner & Accuracy Calibrator</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  <span>Dedicated PYQ Mistake Vault & Flashcard Trainer</span>
+                </li>
               </ul>
             </div>
 
-            {/* Column 2: Data Sovereignty */}
+            {/* Column 2: Supported Target Exams */}
             <div className="space-y-2.5">
               <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#11120F] dark:text-[#F5F5F7] flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Zero Tracking Guarantee</span>
+                <Compass className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Exam Blueprints Included</span>
               </h4>
-              <ul className="space-y-1.5 text-[#65675F] dark:text-[#94A3B8]">
-                <li>• <strong>Client-Side Only:</strong> Data stored in your local browser sandbox</li>
-                <li>• <strong>Zero Third-Party Ads:</strong> No cookies, ad SDKs or trackers</li>
-                <li>• <strong>Full Data Export:</strong> 1-Click JSON backup & restore anytime</li>
-                <li>• <strong>End-to-End Privacy:</strong> Your study hours & scores stay strictly yours</li>
-              </ul>
+              <div className="grid grid-cols-2 gap-1.5 text-[11px] font-mono font-bold text-[#454740] dark:text-[#CBD5E1]">
+                <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2A2C3E]">SSC CGL / CHSL</span>
+                <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2A2C3E]">UPSC CSE GS</span>
+                <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2A2C3E]">JEE Main & Adv</span>
+                <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2A2C3E]">NEET UG Med</span>
+                <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2A2C3E]">GATE CS / IT</span>
+                <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2A2C3E]">IBPS PO / Clerk</span>
+              </div>
             </div>
 
             {/* Column 3: Community & Direct Support */}
@@ -198,9 +215,9 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                 <div className="flex items-center gap-2 pt-1">
                   <a
                     href="mailto:support@syllabus3d.app"
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F5] dark:bg-[#1F202E] border border-[#D8D8CF] dark:border-[#2F3144] hover:border-[#596B35] dark:hover:border-[#7AA2F7] text-[11px] font-bold text-[#11120F] dark:text-[#F5F5F7] transition-all"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1F202E] border border-[#E2E8F0] dark:border-[#2F3144] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-[11px] font-bold text-[#11120F] dark:text-[#F5F5F7] transition-all"
                   >
-                    <Mail className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7]" />
+                    <Mail className="w-3 h-3 text-[#2563EB] dark:text-[#7AA2F7]" />
                     <span>support@syllabus3d.app</span>
                   </a>
                 </div>
@@ -220,7 +237,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
               <span className="font-mono text-[11px]">All Rights Reserved</span>
               <button
                 onClick={handleScrollToTop}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F5] dark:bg-[#1E1F2A] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] text-[#11120F] dark:text-[#CBD5E1] border border-[#D8D8CF] dark:border-[#2E3044] text-[11px] font-bold transition-all cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E1F2A] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] text-[#11120F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] text-[11px] font-bold transition-all cursor-pointer"
                 title="Scroll back to top"
               >
                 <span>Top</span>
@@ -235,11 +252,11 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
       {/* 1. SHARE APP MODAL */}
       {isShareModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-md p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl space-y-5">
+          <div className="relative w-full max-w-md p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl space-y-5">
             {/* Modal Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#596B35]/15 dark:bg-[#7AA2F7]/15 text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-xl bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] flex items-center justify-center font-bold">
                   <Share2 className="w-4.5 h-4.5" />
                 </div>
                 <div>
@@ -298,7 +315,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
               <label className="text-[11px] font-bold text-[#65675F] dark:text-[#A1A1AA] uppercase tracking-wider block">
                 Copy App Link
               </label>
-              <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E]">
+              <div className="flex items-center gap-2 p-1.5 pl-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E]">
                 <span className="text-xs font-mono text-[#11120F] dark:text-[#F5F5F7] truncate flex-1">
                   {appUrl}
                 </span>
@@ -307,7 +324,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer active:scale-95 ${
                     hasCopied
                       ? 'bg-emerald-500 text-white shadow-xs'
-                      : 'bg-[#596B35] dark:bg-[#7AA2F7] text-white dark:text-black hover:opacity-90'
+                      : 'bg-[#2563EB] dark:bg-[#7AA2F7] text-white dark:text-black hover:opacity-90'
                   }`}
                 >
                   {hasCopied ? (
@@ -331,7 +348,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
       {/* 2. PRIVACY POLICY MODAL */}
       {isPrivacyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="relative w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
               <div className="flex items-center gap-2.5">
@@ -353,9 +370,9 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
 
             {/* Privacy Commitments */}
             <div className="space-y-4 text-xs leading-relaxed text-[#353733] dark:text-[#CBD5E1]">
-              <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] space-y-1.5">
+              <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E] space-y-1.5">
                 <div className="flex items-center gap-2 font-bold text-[#11120F] dark:text-white">
-                  <Database className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+                  <Database className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
                   <span>1. Local-First Client Storage</span>
                 </div>
                 <p className="text-[#65675F] dark:text-[#94A3B8]">
@@ -363,7 +380,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] space-y-1.5">
+              <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E] space-y-1.5">
                 <div className="flex items-center gap-2 font-bold text-[#11120F] dark:text-white">
                   <EyeOff className="w-4 h-4 text-emerald-500" />
                   <span>2. Zero Third-Party Advertising</span>
@@ -373,7 +390,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] space-y-1.5">
+              <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E] space-y-1.5">
                 <div className="flex items-center gap-2 font-bold text-[#11120F] dark:text-white">
                   <Lock className="w-4 h-4 text-amber-500" />
                   <span>3. Complete Data Ownership & Portability</span>
@@ -399,7 +416,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
       {/* 3. CONTACT US / FEEDBACK MODAL */}
       {isContactModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151620] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="relative w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
               <div className="flex items-center gap-2.5">
@@ -447,8 +464,8 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                         onClick={() => setFeedbackCategory(cat.id as any)}
                         className={`p-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                           feedbackCategory === cat.id
-                            ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border-[#596B35]/30 dark:border-[#7AA2F7]/40 shadow-xs'
-                            : 'bg-[#FAF9F5] dark:bg-[#1B1C28] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#2A2C3E]'
+                            ? 'bg-[#2563EB]/15 dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] border-[#2563EB]/30 dark:border-[#7AA2F7]/40 shadow-xs'
+                            : 'bg-[#F8FAFC] dark:bg-[#1B1C28] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#2A2C3E]'
                         }`}
                       >
                         {cat.label}
@@ -468,16 +485,16 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                     value={feedbackMessage}
                     onChange={e => setFeedbackMessage(e.target.value)}
                     placeholder="Share your suggestion, requested topic, or report an issue..."
-                    className="w-full p-3 rounded-2xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35] dark:focus:border-[#7AA2F7]"
+                    className="w-full p-3 rounded-2xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
                   />
                 </div>
 
                 {/* Email Direct Fallback */}
-                <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#1B1C28] border border-[#D8D8CF] dark:border-[#2A2C3E] flex items-center justify-between text-xs">
+                <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1B1C28] border border-[#E2E8F0] dark:border-[#2A2C3E] flex items-center justify-between text-xs">
                   <span className="text-[#85877E]">Direct Email:</span>
                   <a
                     href="mailto:support@syllabus3d.app?subject=Syllabus%203D%20Inquiry"
-                    className="font-bold text-[#596B35] dark:text-[#7AA2F7] hover:underline flex items-center gap-1"
+                    className="font-bold text-[#2563EB] dark:text-[#7AA2F7] hover:underline flex items-center gap-1"
                   >
                     <span>support@syllabus3d.app</span>
                     <ExternalLink className="w-3 h-3" />
@@ -495,7 +512,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#596B35] dark:hover:bg-[#A4B879] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+                    className="px-5 py-2 rounded-xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#6090F5] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Send Message</span>

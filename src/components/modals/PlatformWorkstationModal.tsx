@@ -202,7 +202,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
 
         {/* Center: Live Session Stopwatch & Study Logger */}
         <div className="hidden md:flex items-center gap-2 bg-[#18181D] px-3 py-1.5 rounded-2xl border border-[#272730]">
-          <Clock className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+          <Clock className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
           <span className="text-xs font-mono font-extrabold text-white">
             {formatTimer(stopwatchSeconds)}
           </span>
@@ -218,7 +218,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
             <button
               type="button"
               onClick={handleSaveStopwatchTime}
-              className="ml-1 px-2 py-0.5 rounded-lg bg-[#596B35] hover:bg-[#4a5a2b] text-[11px] font-bold text-white transition-all cursor-pointer"
+              className="ml-1 px-2 py-0.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-[11px] font-bold text-white transition-all cursor-pointer"
             >
               Log Time
             </button>
@@ -270,7 +270,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
           <button
             type="button"
             onClick={handleDirectLaunchCompanion}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#596B35] dark:bg-[#7AA2F7] hover:bg-[#47572a] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] dark:bg-[#7AA2F7] hover:bg-[#1D4ED8] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
             title="Launch in Dedicated Companion Window (Supports All Logins)"
           >
             <ExternalLink className="w-3.5 h-3.5" />
@@ -322,7 +322,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
                     key={mins}
                     type="button"
                     onClick={() => handleLogStudyMinutes(mins)}
-                    className="flex-1 py-1.5 rounded-lg bg-[#23232A] hover:bg-[#596B35] dark:hover:bg-[#7AA2F7] hover:text-white dark:hover:text-black text-[11px] font-mono font-bold text-[#A1A1AA] transition-all cursor-pointer active:scale-95 text-center border border-[#333]"
+                    className="flex-1 py-1.5 rounded-lg bg-[#23232A] hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] hover:text-white dark:hover:text-black text-[11px] font-mono font-bold text-[#A1A1AA] transition-all cursor-pointer active:scale-95 text-center border border-[#333]"
                   >
                     +{mins}m
                   </button>
@@ -431,7 +431,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
                 <button
                   type="button"
                   onClick={handleDirectLaunchCompanion}
-                  className="px-6 py-3 rounded-2xl bg-white text-black font-extrabold text-xs sm:text-sm shadow-xl hover:bg-[#DCE8B7] transition-all cursor-pointer active:scale-95 flex items-center gap-2"
+                  className="px-6 py-3 rounded-2xl bg-white text-black font-extrabold text-xs sm:text-sm shadow-xl hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-all cursor-pointer active:scale-95 flex items-center gap-2"
                 >
                   <ExternalLink className="w-4 h-4 stroke-[2.5]" />
                   <span>Launch Dedicated Companion Window</span>
@@ -450,7 +450,7 @@ export const PlatformWorkstationModal: React.FC<PlatformWorkstationModalProps> =
               </div>
 
               <div className="mt-8 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#18181D] border border-[#272730] text-[11px] font-mono text-[#85877E]">
-                <Lock className="w-3.5 h-3.5 text-[#596B35]" />
+                <Lock className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
                 <span>Zero Distraction • Real-time Stopwatch • Mistake Auto-Logger</span>
               </div>
             </div>

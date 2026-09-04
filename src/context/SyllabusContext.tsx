@@ -1719,7 +1719,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           particleCount: 70,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#FACC15', '#596B35', '#7AA2F7', '#EF4444']
+          colors: ['#FACC15', '#2563EB', '#7AA2F7', '#EF4444']
         });
         setProfile(p => ({ ...p, xp: p.xp + 50 }));
       }

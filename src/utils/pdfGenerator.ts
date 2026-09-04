@@ -298,7 +298,7 @@ export function generateAndOpenNotesPdf(options: GeneratePdfOptions): void {
     .hierarchy-path {
       font-size: 12px;
       font-weight: 700;
-      color: #596B35;
+      color: #2563EB;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 4px;
@@ -335,7 +335,7 @@ export function generateAndOpenNotesPdf(options: GeneratePdfOptions): void {
     .note-h3 {
       font-size: 13px;
       font-weight: 700;
-      color: #596B35;
+      color: #2563EB;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-top: 14px;
@@ -456,7 +456,7 @@ export function generateAndOpenNotesPdf(options: GeneratePdfOptions): void {
     }
 
     .bullet-item .bullet {
-      color: #596B35;
+      color: #2563EB;
       font-weight: bold;
     }
 

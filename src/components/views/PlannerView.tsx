@@ -34,6 +34,8 @@ import {
   Moon,
   ShieldCheck,
   Award,
+  ListPlus,
+  Trophy,
   Calculator,
   BrainCircuit,
   Globe
@@ -206,7 +208,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         particleCount: 40,
         spread: 60,
         origin: { y: 0.7 },
-        colors: ['#596B35', '#7AA2F7', '#10B981', '#FACC15'],
+        colors: ['#2563EB', '#7AA2F7', '#10B981', '#FACC15'],
         scalar: 0.8,
         gravity: 1.2,
         ticks: 120
@@ -254,7 +256,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       addPlannerTask({
         topicName: customTitle.trim(),
         subjectName: 'Daily Goal',
-        subjectColor: '#596B35',
+        subjectColor: '#2563EB',
         status: targetColumn,
         scheduledDate: targetDate || getTodayDateString(),
         estimatedMinutes: estimatedMins,
@@ -331,7 +333,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         
         {/* Subtle Ambient Glow Orbs */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#596B35]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#2563EB]/10 dark:bg-[#7AA2F7]/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row */}
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -462,7 +464,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
         
         {/* Kanban vs Calendar Switcher */}
-        <div className="flex items-center p-1 rounded-xl bg-white dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] shadow-2xs shrink-0 self-start">
+        <div className="flex items-center p-1 rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs shrink-0 self-start">
           <button
             onClick={() => {
               soundManager.playClick();
@@ -501,7 +503,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               soundManager.playClick();
               clearCompletedPlannerTasks();
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#151622] border border-[#D8D8CF] dark:border-[#262738] text-xs font-bold text-[#65675F] hover:text-rose-500 dark:text-[#94A3B8] hover:border-rose-500/30 transition-all cursor-pointer self-end sm:self-auto active:scale-95 shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-bold text-[#65675F] hover:text-rose-500 dark:text-[#94A3B8] hover:border-rose-500/30 transition-all cursor-pointer self-end sm:self-auto active:scale-95 shadow-2xs"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Clear Done ({completedTasks.length})</span>
@@ -520,13 +522,13 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
               selectedSubjectFilter === 'all'
                 ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
             <span>All Tasks</span>
             <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
-              selectedSubjectFilter === 'all' ? 'bg-white/20 dark:bg-black/20' : 'bg-[#EEEEE8] dark:bg-[#222332] text-[#85877E]'
+              selectedSubjectFilter === 'all' ? 'bg-white/20 dark:bg-black/20' : 'bg-[#F1F5F9] dark:bg-[#222332] text-[#64748B]'
             }`}>
               {plannerTasks.length}
             </span>
@@ -545,13 +547,13 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
                   isSelected
                     ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                    : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#94A3B8] border-[#D8D8CF] dark:border-[#262738] hover:border-[#596B35] dark:hover:border-[#7AA2F7]'
+                    : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                 }`}
               >
                 <SubjIcon className="w-3.5 h-3.5" style={{ color: isSelected ? undefined : s.color }} />
                 <span>{s.name}</span>
                 <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
-                  isSelected ? 'bg-white/20 dark:bg-black/20' : 'bg-[#EEEEE8] dark:bg-[#222332] text-[#85877E]'
+                  isSelected ? 'bg-white/20 dark:bg-black/20' : 'bg-[#F1F5F9] dark:bg-[#222332] text-[#64748B]'
                 }`}>
                   {count}
                 </span>
@@ -569,7 +571,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
             return (
               <div
                 key={col.id}
-                className="flex flex-col rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth p-3.5 space-y-3 min-h-[380px]"
+                className="flex flex-col rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth p-3.5 space-y-3 min-h-[380px]"
               >
                 {/* Column Header */}
                 <div className="flex items-center justify-between pb-2.5 border-b border-[#EEEEE8] dark:border-[#24283B]">
@@ -589,10 +591,40 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 {/* Task Cards */}
                 <div className="flex-1 space-y-2 overflow-y-auto max-h-[500px] no-scrollbar">
                   {col.tasks.length === 0 ? (
-                    <div className="h-28 flex flex-col items-center justify-center text-center p-3 border border-dashed border-[#D8D8CF] dark:border-[#24283B] rounded-2xl">
-                      <p className="text-[11px] text-[#85877E] font-medium">
-                        {col.id === 'completed' ? 'Finish targets to conquer' : 'No tasks queued'}
-                      </p>
+                    <div className="py-7 px-3 flex flex-col items-center justify-center text-center border border-dashed border-[#E2E8F0] dark:border-[#24283B] rounded-2xl bg-[#F8FAFC]/60 dark:bg-[#141520]/50 space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center text-[#85877E] dark:text-[#7AA2F7] shadow-2xs">
+                        {col.id === 'upcoming' && <ListPlus className="w-5 h-5 text-indigo-500" />}
+                        {col.id === 'today' && <Target className="w-5 h-5 text-amber-500" />}
+                        {col.id === 'in_progress' && <Zap className="w-5 h-5 text-sky-500 fill-current" />}
+                        {col.id === 'completed' && <Trophy className="w-5 h-5 text-emerald-500" />}
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="text-xs font-black text-[#11120F] dark:text-[#C0CAF5]">
+                          {col.id === 'upcoming' && 'Queue Clear'}
+                          {col.id === 'today' && 'Runway Open'}
+                          {col.id === 'in_progress' && 'Ready For Sprint'}
+                          {col.id === 'completed' && 'Awaiting Conquests'}
+                        </p>
+                        <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] max-w-[160px] leading-tight mx-auto">
+                          {col.id === 'upcoming' && 'Schedule targets for upcoming days.'}
+                          {col.id === 'today' && "Ready for today's high-yield targets."}
+                          {col.id === 'in_progress' && 'Start a focus sprint on any target.'}
+                          {col.id === 'completed' && 'Finished tasks will celebrate here.'}
+                        </p>
+                      </div>
+                      {(col.id === 'upcoming' || col.id === 'today') && (
+                        <button
+                          onClick={() => {
+                            soundManager.playClick();
+                            setTargetColumn(col.id as any);
+                            setTargetDate(getTodayDateString());
+                            setShowAddModal(true);
+                          }}
+                          className="mt-0.5 px-3 py-1 rounded-lg bg-white dark:bg-[#1E2030] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                        >
+                          + Add Target
+                        </button>
+                      )}
                     </div>
                   ) : (
                     col.tasks.map(task => {
@@ -605,7 +637,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                           className={`p-3 rounded-2xl border transition-all space-y-2 group ${
                             isDone
                               ? 'bg-emerald-500/5 border-emerald-500/20 opacity-75'
-                              : 'bg-[#F7F6F0] dark:bg-[#12141A] border-[#D8D8CF] dark:border-[#24283B] hover:border-[#596B35] dark:hover:border-[#7AA2F7] shadow-xs'
+                              : 'bg-[#F8FAFC] dark:bg-[#12141A] border-[#E2E8F0] dark:border-[#24283B] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs'
                           }`}
                         >
                           {/* Title & Checkbox */}
@@ -642,7 +674,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
                           {/* Subject & Priority Chips */}
                           <div className="flex items-center justify-between gap-1 text-[11px]">
-                            <span className="px-2 py-0.5 rounded-md font-bold truncate max-w-[110px] bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A9B1D6] border border-[#D8D8CF] dark:border-[#24283B]">
+                            <span className="px-2 py-0.5 rounded-md font-bold truncate max-w-[110px] bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#24283B]">
                               {task.subjectName}
                             </span>
                             <span className={`px-1.5 py-0.5 rounded-md font-mono font-bold border ${pBadge.classes}`}>
@@ -661,7 +693,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                                   soundManager.playClick();
                                   onOpenFocusChamber(task.topicId);
                                 }}
-                                className="px-2.5 py-1 rounded-lg bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[11px] tabular-nums font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                className="px-2.5 py-1 rounded-lg bg-[#0F172A] hover:bg-[#2563EB] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[11px] tabular-nums font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95 tap-bounce"
                               >
                                 <Zap className="w-3 h-3 fill-current" />
                                 <span>Focus</span>
@@ -708,11 +740,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         /* ═══════════════ 5. WEEKLY CALENDAR VIEW ═══════════════ */
         <div className="space-y-3">
           {/* Week Navigation */}
-          <div className="p-3.5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex items-center justify-between gap-3">
+          <div className="p-3.5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex items-center justify-between gap-3">
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => { soundManager.playClick(); setWeekOffset(w => w - 1); }}
-                className="p-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] transition-all cursor-pointer"
+                className="p-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] transition-all cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -721,21 +753,21 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                 className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   weekOffset === 0
                     ? 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D]'
-                    : 'bg-[#F7F6F0] dark:bg-[#12141A] text-[#65675F] dark:text-[#A9B1D6]'
+                    : 'bg-[#F8FAFC] dark:bg-[#12141A] text-[#65675F] dark:text-[#A9B1D6]'
                 }`}
               >
                 Current Week
               </button>
               <button
                 onClick={() => { soundManager.playClick(); setWeekOffset(w => w + 1); }}
-                className="p-1.5 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] transition-all cursor-pointer"
+                className="p-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] transition-all cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             <div className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] font-mono flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#596B35] dark:text-[#7AA2F7]" />
+              <Calendar className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
               <span>{weekDays[0]?.monthName} {weekDays[0]?.dayNum} – {weekDays[6]?.monthName} {weekDays[6]?.dayNum}</span>
             </div>
           </div>
@@ -755,14 +787,14 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   data-today={day.isToday}
                   className={`p-3 rounded-2xl border transition-all space-y-2 ${
                     day.isToday
-                      ? 'bg-white dark:bg-[#18181D] border-[#596B35] dark:border-[#7AA2F7] shadow-sm'
-                      : 'bg-[#F7F6F0] dark:bg-[#12141A] border-[#D8D8CF] dark:border-[#24283B]'
+                      ? 'bg-white dark:bg-[#18181D] border-[#2563EB] dark:border-[#7AA2F7] shadow-sm'
+                      : 'bg-[#F8FAFC] dark:bg-[#12141A] border-[#E2E8F0] dark:border-[#24283B]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <span className={`text-[11px] tabular-nums font-bold uppercase font-mono block ${
-                        day.isToday ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#85877E]'
+                        day.isToday ? 'text-[#2563EB] dark:text-[#7AA2F7]' : 'text-[#85877E]'
                       }`}>
                         {day.dayName}
                       </span>
@@ -777,7 +809,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                         setTargetDate(day.dateStr);
                         setShowAddModal(true);
                       }}
-                      className="w-6 h-6 rounded-lg bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#24283B] flex items-center justify-center text-[#85877E] hover:text-[#11120F] cursor-pointer"
+                      className="w-6 h-6 rounded-lg bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#24283B] flex items-center justify-center text-[#85877E] hover:text-[#11120F] cursor-pointer"
                       title="Add task on this date"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -792,7 +824,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                         className={`p-2 rounded-xl border text-[11px] tabular-nums font-bold cursor-pointer transition-all ${
                           t.status === 'completed'
                             ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 line-through'
-                            : 'bg-white dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#24283B] text-[#11120F] dark:text-[#C0CAF5]'
+                            : 'bg-white dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#24283B] text-[#11120F] dark:text-[#C0CAF5]'
                         }`}
                       >
                         <p className="line-clamp-1">{t.topicName}</p>
@@ -809,11 +841,11 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       {/* ═══════════════ 6. STREAMLINED ADD TARGET MODAL ═══════════════ */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-fade-in font-sans">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-2xl p-5 space-y-4 animate-scale-in">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-5 space-y-4 animate-scale-in">
             
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#24283B]">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#596B35]/15 text-[#596B35] dark:text-[#7AA2F7] flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#2563EB]/10 text-[#2563EB] dark:text-[#7AA2F7] flex items-center justify-center font-bold">
                   <Plus className="w-4 h-4 stroke-[3]" />
                 </div>
                 <h3 className="text-sm font-black text-[#11120F] dark:text-[#C0CAF5] uppercase font-serif tracking-wide">
@@ -822,7 +854,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="w-7 h-7 rounded-full bg-[#F7F6F0] dark:bg-[#12141A] flex items-center justify-center text-[#85877E] hover:text-[#11120F] cursor-pointer"
+                className="w-7 h-7 rounded-full bg-[#F8FAFC] dark:bg-[#12141A] flex items-center justify-center text-[#85877E] hover:text-[#11120F] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -842,12 +874,12 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     placeholder="Search topics or chapters..."
                     value={topicSearchQuery}
                     onChange={e => setTopicSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35]"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB]"
                   />
                 </div>
 
                 {topicSearchQuery.trim() && (
-                  <div className="max-h-36 overflow-y-auto rounded-xl border border-[#D8D8CF] dark:border-[#24283B] bg-[#F7F6F0] dark:bg-[#12141A] divide-y divide-[#EEEEE8] dark:divide-[#24283B]">
+                  <div className="max-h-36 overflow-y-auto rounded-xl border border-[#E2E8F0] dark:border-[#24283B] bg-[#F8FAFC] dark:bg-[#12141A] divide-y divide-[#EEEEE8] dark:divide-[#24283B]">
                     {filteredTopicsForModal.slice(0, 6).map(t => (
                       <div
                         key={t.topic.id}
@@ -879,7 +911,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     setCustomTitle(e.target.value);
                     if (selectedSyllabusTopicId) setSelectedSyllabusTopicId('');
                   }}
-                  className="w-full px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#596B35]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB]"
                 />
               </div>
 
@@ -892,7 +924,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   <select
                     value={priority}
                     onChange={e => setPriority(e.target.value as TaskPriority)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none"
                   >
                     <option value="high">🔥 High Priority</option>
                     <option value="medium">⚡ Medium Priority</option>
@@ -911,7 +943,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     step={5}
                     value={estimatedMins}
                     onChange={e => setEstimatedMins(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#F7F6F0] dark:bg-[#12141A] border border-[#D8D8CF] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none"
                   />
                 </div>
               </div>
@@ -920,7 +952,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               <button
                 type="submit"
                 disabled={!customTitle.trim() && !selectedSyllabusTopicId}
-                className="w-full py-2.5 rounded-2xl bg-[#11120F] hover:bg-[#596B35] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 rounded-2xl bg-[#0F172A] hover:bg-[#2563EB] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50 tap-bounce"
               >
                 Schedule Target
               </button>

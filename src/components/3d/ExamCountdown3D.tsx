@@ -55,11 +55,11 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
   })();
 
   return (
-    <div className="relative rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth p-4 sm:p-5 overflow-hidden space-y-3.5 select-none font-sans">
+    <div className="relative rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth p-4 sm:p-5 overflow-hidden space-y-3.5 select-none font-sans">
       
       {/* Clean Meta Header */}
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#3B4723] dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center shrink-0 shadow-sm">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center shrink-0 shadow-sm">
           <Target className="w-5 h-5 stroke-[2.5]" />
         </div>
         <div className="min-w-0">
@@ -67,7 +67,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
             {currentExam.name} COUNTDOWN
           </h3>
           <p className="text-[11px] font-medium text-[#65675F] dark:text-[#A9B1D6] flex items-center gap-1.5 mt-0.5">
-            <Calendar className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+            <Calendar className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
             <span>Exam Date: {formattedDate}</span>
           </p>
         </div>
@@ -78,7 +78,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
         {cards.map(c => (
           <div
             key={c.label}
-            className="relative py-2.5 sm:py-4 px-2 rounded-2xl bg-[#F7F6F0] dark:bg-[#1F2335] border border-[#D8D8CF] dark:border-[#292E42] text-center shadow-xs flex flex-col items-center justify-center transition-all hover:border-[#596B35] dark:hover:border-[#7AA2F7]"
+            className="relative py-2.5 sm:py-4 px-2 rounded-2xl bg-[#F8FAFC] dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] text-center shadow-xs flex flex-col items-center justify-center transition-all hover:border-[#2563EB] dark:hover:border-[#7AA2F7]"
           >
             {/* Split Horizontal Line */}
             <div className="absolute inset-x-0 top-1/2 h-px bg-black/5 dark:bg-white/5 pointer-events-none" />

@@ -204,12 +204,12 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           transform: drawerDragX < 0 ? `translateX(${drawerDragX}px)` : undefined,
           transition: drawerDragX === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
         }}
-        className="relative w-[88%] max-w-[335px] bg-[#FAF9F5] dark:bg-[#0E0F17] border-r border-[#D8D8CF] dark:border-[#222436] flex flex-col justify-between z-10 shadow-[0_0_60px_rgba(0,0,0,0.6)] animate-slide-right overflow-y-auto custom-scrollbar"
+        className="relative w-[88%] max-w-[335px] bg-white dark:bg-[#0E0F17] border-r border-[#E2E8F0] dark:border-[#222436] flex flex-col justify-between z-10 shadow-[0_0_60px_rgba(0,0,0,0.6)] animate-slide-right overflow-y-auto custom-scrollbar"
       >
         <div className="p-4 sm:p-5 space-y-4">
           
           {/* 1. BRANDING & EXAM TARGET HEADER */}
-          <div className="flex items-center justify-between pb-3.5 border-b border-[#D8D8CF]/80 dark:border-[#222436]">
+          <div className="flex items-center justify-between pb-3.5 border-b border-[#E2E8F0] dark:border-[#222436]">
             <div className="flex items-center gap-3 min-w-0">
               {/* 3D App Icon with Metallic Rim */}
               <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#181926] via-[#23263B] to-[#0A0B12] p-2 flex items-center justify-center border border-white/20 shadow-md shrink-0">
@@ -220,12 +220,12 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                   <h2 className="text-sm font-black text-[#11120F] dark:text-white uppercase tracking-wider font-serif leading-none">
                     SYLLABUS 3D
                   </h2>
-                  <span className="text-[9px] font-mono font-black uppercase px-1.5 py-0.2 rounded-md bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] border border-[#596B35]/25 dark:border-[#7AA2F7]/30">
+                  <span className="text-[9px] font-mono font-black uppercase px-1.5 py-0.2 rounded-md bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] border border-[#BFDBFE] dark:border-[#7AA2F7]/30">
                     PRO
                   </span>
                 </div>
                 <div className="flex items-center gap-1 mt-0.5 text-[10px] font-mono text-[#85877E] dark:text-[#A1A1B2] truncate">
-                  <GraduationCap className="w-3 h-3 text-[#596B35] dark:text-[#7AA2F7] shrink-0" />
+                  <GraduationCap className="w-3 h-3 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
                   <span className="truncate">{currentExam?.name || 'SSC CGL 2026'}</span>
                 </div>
               </div>
@@ -237,7 +237,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 haptics.light();
                 onClose();
               }}
-              className="w-8 h-8 rounded-xl text-[#85877E] hover:text-[#11120F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent hover:border-[#D8D8CF] dark:hover:border-[#2E3048] flex items-center justify-center transition-all cursor-pointer active:scale-90 shrink-0"
+              className="w-8 h-8 rounded-xl text-[#85877E] hover:text-[#11120F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#2E3048] flex items-center justify-center transition-all cursor-pointer active:scale-90 shrink-0"
               title="Close Navigation Drawer"
             >
               <X className="w-4 h-4" />
@@ -245,14 +245,14 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           </div>
 
           {/* 2. EXECUTIVE VIP USER GAMIFICATION CARD */}
-          <div className="p-3.5 rounded-2xl bg-white dark:bg-[#161724] border border-[#D8D8CF] dark:border-[#24263A] shadow-xs space-y-3 relative overflow-hidden group">
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-[#161724] border border-[#E2E8F0] dark:border-[#24263A] shadow-xs space-y-3 relative overflow-hidden group">
             {/* Top Subtle Ambient Glow Line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#596B35] dark:via-[#7AA2F7] to-transparent opacity-70" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#2563EB] dark:via-[#7AA2F7] to-transparent opacity-70" />
 
             {/* User Profile Info Row */}
             <div className="flex items-center justify-between gap-2.5">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#596B35] to-[#7FA04B] dark:from-[#7AA2F7] dark:to-[#8B5CF6] text-white dark:text-[#0B0B0D] font-black text-xs flex items-center justify-center shadow-md shrink-0 ring-2 ring-white dark:ring-[#202235] ring-offset-2 ring-offset-[#596B35]/20">
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#8B5CF6] text-white dark:text-[#0B0B0D] font-black text-xs flex items-center justify-center shadow-md shrink-0 ring-2 ring-white dark:ring-[#202235] ring-offset-2 ring-offset-[#2563EB]/20">
                   {user?.email?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <div className="min-w-0">
@@ -260,7 +260,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                     <span>{user?.email?.split('@')[0] || 'Scholar'}</span>
                     <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
                   </h4>
-                  <span className="text-[10px] font-mono font-bold text-[#596B35] dark:text-[#7AA2F7] block truncate">
+                  <span className="text-[10px] font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7] block truncate">
                     Lvl {profile.level} • {profile.levelTitle}
                   </span>
                 </div>
@@ -278,14 +278,14 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             <div className="space-y-1.5 pt-0.5">
               <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#65675F] dark:text-[#A1A1B2]">
                 <span>EXP: {profile.xp} XP</span>
-                <span className="flex items-center gap-1 text-[#596B35] dark:text-[#7AA2F7]">
+                <span className="flex items-center gap-1 text-[#2563EB] dark:text-[#7AA2F7]">
                   <Trophy className="w-3 h-3" />
                   <span>{examMasteryPercent}% Done</span>
                 </span>
               </div>
-              <div className="w-full h-2 rounded-full bg-[#EEEEE8] dark:bg-[#202235] overflow-hidden p-0.5 border border-[#D8D8CF]/60 dark:border-[#2E3048]/60">
+              <div className="w-full h-2 rounded-full bg-[#E2E8F0] dark:bg-[#202235] overflow-hidden p-0.5 border border-[#E2E8F0]/60 dark:border-[#2E3048]/60">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#596B35] to-[#8FA35F] dark:from-[#7AA2F7] dark:to-[#A78BFA] transition-all duration-500 shadow-[0_0_8px_rgba(122,162,247,0.4)]"
+                  className="h-full rounded-full bg-gradient-to-r from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#A78BFA] transition-all duration-500 shadow-[0_0_8px_rgba(122,162,247,0.4)]"
                   style={{ width: `${Math.min(100, Math.max(10, (profile.xp % 1000) / 10))}%` }}
                 />
               </div>
@@ -302,7 +302,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                   onClose();
                   onOpenAddTopic();
                 }}
-                className="py-2.5 px-3 rounded-2xl bg-gradient-to-r from-[#596B35] to-[#455328] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] font-black text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer border border-white/10"
+                className="py-2.5 px-3 rounded-2xl bg-gradient-to-r from-[#2563EB] to-blue-700 dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] font-black text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer border border-white/10 tap-bounce"
               >
                 <Plus className="w-4 h-4 stroke-[3]" />
                 <span>Add Target</span>
@@ -317,7 +317,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                   onClose();
                   onOpenFocus();
                 }}
-                className="py-2.5 px-3 rounded-2xl bg-white dark:bg-[#161724] hover:bg-[#FAF9F5] dark:hover:bg-[#1C1E2F] text-[#11120F] dark:text-[#F5F5F7] font-black text-xs flex items-center justify-center gap-1.5 shadow-xs border border-[#D8D8CF] dark:border-[#26283D] active:scale-95 transition-all cursor-pointer"
+                className="py-2.5 px-3 rounded-2xl bg-white dark:bg-[#161724] hover:bg-[#F8FAFC] dark:hover:bg-[#1C1E2F] text-[#11120F] dark:text-[#F5F5F7] font-black text-xs flex items-center justify-center gap-1.5 shadow-xs border border-[#E2E8F0] dark:border-[#26283D] active:scale-95 transition-all cursor-pointer tap-bounce"
               >
                 <Timer className="w-4 h-4 text-[#C49A3A]" />
                 <span>Focus Mode</span>
@@ -349,10 +349,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                           onSelectView(item.id);
                           onClose();
                         }}
-                        className={`w-full min-h-[46px] flex items-center justify-between px-2.5 py-2 rounded-2xl text-xs transition-all active:scale-[0.98] cursor-pointer group ${
+                        className={`w-full min-h-[46px] flex items-center justify-between px-2.5 py-2 rounded-2xl text-xs transition-all active:scale-[0.98] cursor-pointer group tap-bounce ${
                           isActive
-                            ? 'bg-[#596B35]/15 dark:bg-[#7AA2F7]/20 text-[#596B35] dark:text-[#7AA2F7] font-black border border-[#596B35]/30 dark:border-[#7AA2F7]/40 shadow-xs'
-                            : 'text-[#45474E] dark:text-[#C2C5D6] hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-[#D8D8CF]/60 dark:hover:border-[#26283D]'
+                            ? 'bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] font-black border border-[#BFDBFE] dark:border-[#7AA2F7]/40 shadow-xs'
+                            : 'text-[#45474E] dark:text-[#C2C5D6] hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-[#E2E8F0]/60 dark:hover:border-[#26283D]'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-1.5">
@@ -374,7 +374,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                           {/* Title & Micro Subtitle */}
                           <div className="text-left min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="font-extrabold text-[13px] tracking-tight truncate text-[#11120F] dark:text-white group-hover:text-[#596B35] dark:group-hover:text-[#7AA2F7] transition-colors">
+                              <span className="font-extrabold text-[13px] tracking-tight truncate text-[#11120F] dark:text-white group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors">
                                 {item.label}
                               </span>
                             </div>
@@ -395,7 +395,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                           ) : (
                             <ChevronRight
                               className={`w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 ${
-                                isActive ? 'text-[#596B35] dark:text-[#7AA2F7]' : 'text-[#A1A1AA] dark:text-[#5A5C75]'
+                                isActive ? 'text-[#2563EB] dark:text-[#7AA2F7]' : 'text-[#A1A1AA] dark:text-[#5A5C75]'
                               }`}
                             />
                           )}
@@ -409,7 +409,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           </div>
 
           {/* 5. QUICK DRAWER UTILITIES STRIP (THEME TOGGLE & QUICK SEARCH) */}
-          <div className="pt-2 border-t border-[#D8D8CF]/80 dark:border-[#222436] flex items-center justify-between gap-2">
+          <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#222436] flex items-center justify-between gap-2">
             {onOpenSearch && (
               <button
                 onClick={() => {
@@ -418,9 +418,9 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                   onClose();
                   onOpenSearch();
                 }}
-                className="flex-1 py-2 px-3 rounded-xl bg-white dark:bg-[#161724] border border-[#D8D8CF] dark:border-[#26283D] text-[#65675F] dark:text-[#A1A1B2] hover:text-[#11120F] dark:hover:text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer"
+                className="flex-1 py-2 px-3 rounded-xl bg-white dark:bg-[#161724] border border-[#E2E8F0] dark:border-[#26283D] text-[#65675F] dark:text-[#A1A1B2] hover:text-[#11120F] dark:hover:text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer tap-bounce"
               >
-                <Search className="w-3.5 h-3.5 text-[#596B35] dark:text-[#7AA2F7]" />
+                <Search className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
                 <span>Search (⌘K)</span>
               </button>
             )}
@@ -431,7 +431,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 haptics.light();
                 toggleTheme();
               }}
-              className="py-2 px-3 rounded-xl bg-white dark:bg-[#161724] border border-[#D8D8CF] dark:border-[#26283D] text-[#65675F] hover:text-[#11120F] dark:text-[#A1A1B2] dark:hover:text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer"
+              className="py-2 px-3 rounded-xl bg-white dark:bg-[#161724] border border-[#E2E8F0] dark:border-[#26283D] text-[#65675F] hover:text-[#11120F] dark:text-[#A1A1B2] dark:hover:text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer tap-bounce"
               title="Toggle Theme"
             >
               {isOled ? (
@@ -446,7 +446,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 </>
               ) : (
                 <>
-                  <Moon className="w-3.5 h-3.5 text-[#596B35]" />
+                  <Moon className="w-3.5 h-3.5 text-[#2563EB]" />
                   <span>Dark</span>
                 </>
               )}
@@ -455,7 +455,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
         </div>
 
         {/* 6. EXECUTIVE FOOTER WITH LIVE CLOUD RADAR */}
-        <div className="p-3.5 border-t border-[#D8D8CF]/80 dark:border-[#222436] bg-white/50 dark:bg-[#0A0B12]/60 flex items-center justify-between text-[10px] font-mono text-[#85877E] dark:text-[#7A7C93] select-none">
+        <div className="p-3.5 border-t border-[#E2E8F0] dark:border-[#222436] bg-white/50 dark:bg-[#0A0B12]/60 flex items-center justify-between text-[10px] font-mono text-[#85877E] dark:text-[#7A7C93] select-none">
           <span className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

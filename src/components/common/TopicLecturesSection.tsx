@@ -134,7 +134,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
     <div className="space-y-4">
       
       {/* 1. HEADER & ADD BUTTON */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/25 shadow-xs">
             <YoutubeIcon className="w-5 h-5 fill-current" />
@@ -144,7 +144,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
               <h3 className="text-xs sm:text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide">
                 Video Lectures & Classes
               </h3>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] dark:text-[#94A3B8] tabular-nums">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#94A3B8] tabular-nums">
                 {lectures.length} {lectures.length === 1 ? 'Lecture' : 'Lectures'}
               </span>
             </div>
@@ -169,9 +169,9 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
       {isAdding && (
         <form
           onSubmit={handleSaveLecture}
-          className="p-4 sm:p-5 rounded-3xl bg-[#FAF9F5] dark:bg-[#14151F] border-2 border-red-500/30 dark:border-red-500/40 shadow-elevated-card space-y-4 animate-fade-in relative overflow-hidden"
+          className="p-4 sm:p-5 rounded-3xl bg-[#F8FAFC] dark:bg-[#14151F] border-2 border-red-500/30 dark:border-red-500/40 shadow-elevated-card space-y-4 animate-fade-in relative overflow-hidden"
         >
-          <div className="flex items-center justify-between pb-2 border-b border-[#D8D8CF] dark:border-[#272730]">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E2E8F0] dark:border-[#272730]">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#191A17] dark:text-[#F5F5F7]">
               <YoutubeIcon className="w-4 h-4 text-red-500 fill-current" />
               <span>Link New YouTube Lecture</span>
@@ -203,7 +203,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                   className={`w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-white dark:bg-[#18181D] border text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none transition-all ${
                     urlError
                       ? 'border-red-500 focus:ring-1 focus:ring-red-500'
-                      : 'border-[#D8D8CF] dark:border-[#272730] focus:border-red-500'
+                      : 'border-[#E2E8F0] dark:border-[#272730] focus:border-red-500'
                   }`}
                   autoFocus
                 />
@@ -254,7 +254,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. Complete One-Shot & High Weightage PYQs"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-red-500 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-red-500 transition-all"
               />
             </div>
 
@@ -269,7 +269,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                   value={duration}
                   onChange={e => setDuration(e.target.value)}
                   placeholder="e.g. 1 hr 15m or One-Shot"
-                  className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-red-500"
                 />
               </div>
 
@@ -282,18 +282,18 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="e.g. Gagan Pratap Sir / Aditya Ranjan Sir"
-                  className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-red-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D8D8CF] dark:border-[#272730]">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#272730]">
             <button
               type="button"
               onClick={handleCancelAdd}
-              className="px-4 py-2 rounded-xl bg-white dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-colors"
+              className="px-4 py-2 rounded-xl bg-white dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white cursor-pointer transition-colors"
             >
               Cancel
             </button>
@@ -319,7 +319,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
               <div
                 key={lecture.id}
                 onClick={() => handleCardClick(lecture)}
-                className="group relative p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-red-500/60 dark:hover:border-red-500/60 shadow-subtle-depth hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 select-none overflow-hidden"
+                className="group relative p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-red-500/60 dark:hover:border-red-500/60 shadow-subtle-depth hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 select-none overflow-hidden"
               >
                 {/* Top Subtle Red Ambient Glow Line */}
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -328,7 +328,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                 <div className="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
                   
                   {/* Thumbnail */}
-                  <div className="relative w-32 sm:w-44 h-20 sm:h-24 rounded-2xl overflow-hidden bg-black shrink-0 shadow-xs border border-[#D8D8CF]/60 dark:border-[#272730] group-hover:scale-[1.02] transition-transform">
+                  <div className="relative w-32 sm:w-44 h-20 sm:h-24 rounded-2xl overflow-hidden bg-black shrink-0 shadow-xs border border-[#E2E8F0]/60 dark:border-[#272730] group-hover:scale-[1.02] transition-transform">
                     {thumbnail ? (
                       <img
                         src={thumbnail}
@@ -403,7 +403,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                                 openYouTubeLectureInNewTab(lecture.youtubeUrl, ts.timeSeconds);
                               }
                             }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F5] dark:bg-[#20212E] hover:bg-red-600 text-red-500 hover:text-white border border-[#D8D8CF] dark:border-[#272730] hover:border-red-500 text-[10px] font-mono font-bold transition-colors cursor-pointer active:scale-95"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-red-600 text-red-500 hover:text-white border border-[#E2E8F0] dark:border-[#272730] hover:border-red-500 text-[10px] font-mono font-bold transition-colors cursor-pointer active:scale-95"
                             title={`Jump to ${ts.title} (${ts.timeLabel})`}
                           >
                             <Play className="w-2 h-2 fill-current" />
@@ -421,7 +421,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                 </div>
 
                 {/* Right Side Action Buttons */}
-                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#D8D8CF]/60 dark:border-[#272730] justify-end flex-wrap">
+                <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-[#E2E8F0] dark:border-[#272730] justify-end flex-wrap">
                   
                   {/* Split Study with Synced Notes Button */}
                   {onOpenSplitStudy && (
@@ -443,7 +443,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
                   <button
                     onClick={(e) => handlePlayEmbedded(e, lecture)}
                     title="Watch In-App Player"
-                    className="p-2 rounded-xl bg-[#FAF9F5] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2D2D35] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2D2D35] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-colors cursor-pointer"
                   >
                     <Maximize2 className="w-4 h-4" />
                   </button>
@@ -499,7 +499,7 @@ export const TopicLecturesSection: React.FC<TopicLecturesSectionProps> = ({
         ) : (
           /* Empty State */
           !isAdding && (
-            <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] shadow-subtle-depth space-y-4">
+            <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4">
               <div className="w-16 h-16 rounded-3xl bg-red-500/15 border border-red-500/25 flex items-center justify-center text-red-600 dark:text-red-400 mx-auto shadow-xs">
                 <YoutubeIcon className="w-8 h-8 fill-current" />
               </div>
