@@ -95,7 +95,103 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
   const [inputTimestampTitle, setInputTimestampTitle] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Live YouTube Player tracking
+  const playerRef = useRef<any>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const currentVideoTimeRef = useRef<number>(initialSeekSeconds || 0);
+  const [currentVideoTime, setCurrentVideoTime] = useState<number>(initialSeekSeconds || 0);
+
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load YouTube IFrame API script once
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!(window as any).YT) {
+      const existing = document.querySelector('script[src*="youtube.com/iframe_api"]');
+      if (!existing) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.body.appendChild(tag);
+      }
+    }
+  }, []);
+
+  // Listen for YouTube infoDelivery postMessage events
+  useEffect(() => {
+    const handleWindowMessage = (event: MessageEvent) => {
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (data && data.event === 'infoDelivery' && data.info) {
+          if (typeof data.info.currentTime === 'number') {
+            const t = Math.floor(data.info.currentTime);
+            currentVideoTimeRef.current = t;
+            setCurrentVideoTime(t);
+          }
+        }
+      } catch {}
+    };
+
+    window.addEventListener('message', handleWindowMessage);
+    return () => window.removeEventListener('message', handleWindowMessage);
+  }, []);
+
+  // Poll current time when modal is open and video is active
+  useEffect(() => {
+    if (!isOpen) return;
+    const interval = setInterval(() => {
+      if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+        try {
+          const t = playerRef.current.getCurrentTime();
+          if (typeof t === 'number' && !isNaN(t) && t >= 0) {
+            const floored = Math.floor(t);
+            currentVideoTimeRef.current = floored;
+            setCurrentVideoTime(floored);
+          }
+        } catch {}
+      } else if (iframeRef.current && iframeRef.current.contentWindow) {
+        try {
+          iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: 'listening' }), '*');
+        } catch {}
+      }
+    }, 400);
+
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
+  const handleIframeLoaded = () => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: 'listening' }), '*');
+      } catch {}
+    }
+    const winAny = window as any;
+    if (winAny.YT && winAny.YT.Player && iframeRef.current) {
+      try {
+        playerRef.current = new winAny.YT.Player(iframeRef.current, {
+          events: {
+            onReady: (e: any) => {
+              playerRef.current = e.target;
+            }
+          }
+        });
+      } catch {}
+    }
+  };
+
+  const getCurrentTimeSeconds = (): number => {
+    if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+      try {
+        const t = playerRef.current.getCurrentTime();
+        if (typeof t === 'number' && !isNaN(t) && t >= 0) {
+          return Math.floor(t);
+        }
+      } catch {}
+    }
+    if (currentVideoTimeRef.current > 0) {
+      return currentVideoTimeRef.current;
+    }
+    return Math.floor(seekSeconds || 0);
+  };
 
   // Resize listener to detect mobile vs desktop
   useEffect(() => {
@@ -115,6 +211,8 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
     }
     if (initialSeekSeconds !== undefined) {
       setSeekSeconds(initialSeekSeconds);
+      currentVideoTimeRef.current = initialSeekSeconds;
+      setCurrentVideoTime(initialSeekSeconds);
     }
   }, [initialLectureId, initialSeekSeconds, lectures]);
 
@@ -206,6 +304,22 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
   const handleSeekTo = (seconds: number) => {
     soundManager.playClick();
     setSeekSeconds(seconds);
+    currentVideoTimeRef.current = seconds;
+    setCurrentVideoTime(seconds);
+
+    if (playerRef.current && typeof playerRef.current.seekTo === 'function') {
+      try {
+        playerRef.current.seekTo(seconds, true);
+      } catch {}
+    } else if (iframeRef.current && iframeRef.current.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: 'command', func: 'seekTo', args: [seconds, true] }),
+          '*'
+        );
+      } catch {}
+    }
+
     const formatted = formatSecondsToTimestamp(seconds);
     showToast(`Jumped to lecture timestamp ⏱️ [${formatted}]`);
   };
@@ -252,6 +366,57 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
     setInputHours(newH.toString().padStart(2, '0'));
     setInputMinutes(newM.toString().padStart(2, '0'));
     setInputSeconds(newS.toString().padStart(2, '0'));
+  };
+
+  // Sync form inputs to current playing video time
+  const handleSyncToCurrentVideoTime = () => {
+    soundManager.playClick();
+    const curSeconds = getCurrentTimeSeconds();
+    const h = Math.floor(curSeconds / 3600);
+    const m = Math.floor((curSeconds % 3600) / 60);
+    const s = curSeconds % 60;
+
+    setInputHours(h.toString().padStart(2, '0'));
+    setInputMinutes(m.toString().padStart(2, '0'));
+    setInputSeconds(s.toString().padStart(2, '0'));
+    showToast(`Synced to current video time [${formatSecondsToTimestamp(curSeconds)}] ⏱️`);
+  };
+
+  // Open custom add timestamp form prefilled with current video time
+  const handleOpenAddTimestampForm = () => {
+    soundManager.playClick();
+    const curSeconds = getCurrentTimeSeconds();
+    const h = Math.floor(curSeconds / 3600);
+    const m = Math.floor((curSeconds % 3600) / 60);
+    const s = curSeconds % 60;
+
+    setInputHours(h.toString().padStart(2, '0'));
+    setInputMinutes(m.toString().padStart(2, '0'));
+    setInputSeconds(s.toString().padStart(2, '0'));
+    setShowAddTimestampForm(true);
+  };
+
+  // One-click instant bookmark at current playback time (No typing required!)
+  const handleQuickTagCurrentTime = () => {
+    soundManager.playClick();
+    if (!currentLecture) return;
+
+    const totalSeconds = getCurrentTimeSeconds();
+    const timeLabel = formatSecondsToTimestamp(totalSeconds);
+    const title = `Key Concept at ${timeLabel}`;
+
+    if (onAddTimestamp) {
+      onAddTimestamp(currentLecture.id, {
+        timeSeconds: totalSeconds,
+        timeLabel,
+        title
+      });
+    }
+
+    // Insert into notes
+    handleInsertTimestampToNotes(timeLabel, title);
+    soundManager.playCompleteChime();
+    showToast(`✓ Tagged current video timestamp [${timeLabel}] into notes! ⏱️`);
   };
 
   const handleAddCustomTimestamp = (e: React.FormEvent) => {
@@ -487,12 +652,15 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
           <div className="relative w-full pb-[56.25%] bg-black shrink-0 shadow-lg">
             {currentLecture && getYouTubeEmbedUrl(currentLecture.youtubeUrl, seekSeconds) ? (
               <iframe
-                key={`${currentLecture.id}_${seekSeconds}`}
+                id="lecture-split-iframe"
+                ref={iframeRef}
+                key={currentLecture.id}
                 src={getYouTubeEmbedUrl(currentLecture.youtubeUrl, seekSeconds)!}
                 title={currentLecture.title}
                 className="absolute inset-0 w-full h-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
+                onLoad={handleIframeLoaded}
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-white text-center space-y-2">
@@ -514,17 +682,27 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {/* 1-Click Instant Tag at Current Video Time (No Manual Input Required!) */}
               <button
                 type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  setShowAddTimestampForm(!showAddTimestampForm);
-                }}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
+                onClick={handleQuickTagCurrentTime}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black uppercase tracking-wider shadow-sm active:scale-95 transition-all cursor-pointer"
+                title="Instantly bookmark and tag current video playback time into notes"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Tag Current [{formatSecondsToTimestamp(currentVideoTime || seekSeconds || 0)}]</span>
+              </button>
+
+              {/* Custom Tag with Form (Current Time Already Pre-filled) */}
+              <button
+                type="button"
+                onClick={handleOpenAddTimestampForm}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#24283B] hover:bg-red-500/20 border border-[#292E42] hover:border-red-500/40 text-red-400 text-xs font-bold transition-all cursor-pointer"
+                title="Add custom title bookmark at current video time"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Tag Bookmark</span>
+                <span>+ Custom Title</span>
               </button>
             </div>
           </div>
@@ -536,10 +714,21 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
               className="p-3.5 bg-[#24283B] border-b border-[#292E42] space-y-3 animate-fade-in shadow-inner"
             >
               <div className="flex items-center justify-between text-xs font-bold text-white">
-                <span className="flex items-center gap-1.5 text-red-400">
-                  <Bookmark className="w-3.5 h-3.5" />
-                  <span>Add Timestamp Bookmark (HH:MM:SS)</span>
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1.5 text-red-400">
+                    <Bookmark className="w-3.5 h-3.5" />
+                    <span>Add Timestamp Bookmark (HH:MM:SS)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleSyncToCurrentVideoTime}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-300 text-[10px] font-mono font-bold border border-red-500/30 cursor-pointer transition-colors"
+                    title="Re-sync inputs with current video time"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Sync Live Video Time</span>
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowAddTimestampForm(false)}
@@ -767,12 +956,16 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
               <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => handleInsertTimestampToNotes('00:00:00', 'Important Point')}
-                  className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all"
-                  title="Insert clickable timestamp bookmark into notes"
+                  onClick={() => {
+                    const cur = getCurrentTimeSeconds();
+                    const label = formatSecondsToTimestamp(cur);
+                    handleInsertTimestampToNotes(label, 'Key Concept');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                  title="Insert current video playback timestamp into notes"
                 >
                   <Clock className="w-3 h-3" />
-                  <span>+ [Timestamp]</span>
+                  <span>+ [{formatSecondsToTimestamp(currentVideoTime || seekSeconds || 0)}]</span>
                 </button>
 
                 <button
