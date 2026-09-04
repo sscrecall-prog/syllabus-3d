@@ -248,20 +248,6 @@ export const App: React.FC = () => {
     openFullModal();
   };
 
-  if (isLoading) {
-    return <InitialAuthLoading />;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <AuthLayout>
-        {authView === 'login' && <LoginView />}
-        {authView === 'signup' && <SignUpView />}
-        {authView === 'forgot_password' && <ForgotPasswordView />}
-      </AuthLayout>
-    );
-  }
-
   // 📱 Mobile Top-Level Horizontal View Swiping (Overview ⇄ Syllabus ⇄ Planner)
   const viewSwipeStartX = useRef<number | null>(null);
   const viewSwipeStartY = useRef<number | null>(null);
@@ -357,6 +343,20 @@ export const App: React.FC = () => {
     viewSwipeStartY.current = null;
     isHorizontalViewSwipe.current = null;
   };
+
+  if (isLoading) {
+    return <InitialAuthLoading />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <AuthLayout>
+        {authView === 'login' && <LoginView />}
+        {authView === 'signup' && <SignUpView />}
+        {authView === 'forgot_password' && <ForgotPasswordView />}
+      </AuthLayout>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5] flex flex-col md:flex-row transition-colors duration-300">
