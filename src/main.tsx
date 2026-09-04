@@ -14,17 +14,61 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// Register PWA Service Worker for Offline Reliability
+// Auto-clean any legacy stale service worker caches on startup
+if (typeof window !== 'undefined' && 'caches' in window) {
+  caches.keys().then((keys) => {
+    keys.forEach((key) => {
+      if (key.startsWith('syllabus-3d') && !key.includes('v2.3')) {
+        caches.delete(key);
+      }
+    });
+  }).catch(() => {});
+}
+
+// Register PWA Service Worker with Instant Auto-Update Engine
 if ('serviceWorker' in navigator && (import.meta.env.PROD || window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        if (import.meta.env.DEV) { console.log('[PWA] ServiceWorker active with scope:', registration.scope); }
+        // Force check for updates on load
+        registration.update().catch(() => {});
+
+        // Listen for new updates
+        registration.addEventListener('updatefound', () => {
+          const installingWorker = registration.installing;
+          if (installingWorker) {
+            installingWorker.addEventListener('statechange', () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New update installed! Tell it to take over immediately
+                installingWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            });
+          }
+        });
+
+        // Check for updates whenever user returns to tab
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            registration.update().catch(() => {});
+          }
+        });
+        window.addEventListener('focus', () => {
+          registration.update().catch(() => {});
+        });
       })
       .catch((err) => {
         console.warn('[PWA] ServiceWorker registration warning:', err);
       });
+
+    // When the new Service Worker activates and claims clients, reload page seamlessly
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
   });
 }
 
