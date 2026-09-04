@@ -68,18 +68,11 @@ export const Header: React.FC<HeaderProps> = ({
         
         {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <button
-            onClick={onOpenMobileMenu}
-            className="md:hidden p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0"
-            title="Open Navigation Menu"
-          >
-            <Menu className="w-4 h-4" />
-          </button>
-
-          {canGoBack && onGoBack && (
+          {canGoBack && onGoBack ? (
             <button
               onClick={() => {
                 soundManager.playClick();
+                haptics.light();
                 onGoBack();
               }}
               className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#596B35] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] transition-all cursor-pointer flex items-center gap-1 shadow-sm active:scale-95 group shrink-0"
@@ -88,17 +81,29 @@ export const Header: React.FC<HeaderProps> = ({
               <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span className="text-xs sm:text-[13px] font-extrabold">Back</span>
             </button>
+          ) : (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                haptics.light();
+                onOpenMobileMenu?.();
+              }}
+              className="md:hidden p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#EEEEE8] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0"
+              title="Open Navigation Menu"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
           )}
 
           {/* Responsive Exam Selector (Mobile & Desktop) */}
-          <div className="relative">
+          <div className="relative min-w-0">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth whitespace-nowrap shrink-0"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] hover:border-[#596B35] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth max-w-[130px] xs:max-w-[170px] sm:max-w-none shrink-0"
               title="Switch Exam Target"
             >
               <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#596B35] dark:text-[#8B5CF6] shrink-0" />
-              <span className="whitespace-nowrap">{examName}</span>
+              <span className="truncate max-w-[75px] xs:max-w-[115px] sm:max-w-none">{examName}</span>
               <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] shrink-0" />
             </button>
 
