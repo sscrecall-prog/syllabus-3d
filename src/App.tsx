@@ -297,6 +297,14 @@ export const App: React.FC = () => {
           setIsAddTopicOpen(true);
           window.history.pushState({ modal: 'add_topic' }, '');
         }}
+        onOpenFocus={() => {
+          setIsMobileDrawerOpen(false);
+          handleLaunchFocus(undefined);
+        }}
+        onOpenSearch={() => {
+          setIsMobileDrawerOpen(false);
+          setIsSearchOpen(true);
+        }}
       />
 
       {/* Main Workspace Frame */}
