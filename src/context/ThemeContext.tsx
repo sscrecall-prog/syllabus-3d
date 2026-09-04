@@ -45,9 +45,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const toggleTheme = () => {
     setThemeState(prev => {
-      if (prev === 'light') return 'sepia';
-      if (prev === 'sepia') return 'dark';
+      if (prev === 'light') return 'dark';
       if (prev === 'dark') return 'oled';
+      if (prev === 'oled') return 'light';
       return 'light';
     });
   };

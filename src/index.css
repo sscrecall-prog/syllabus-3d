@@ -11,20 +11,20 @@
 
 @layer base {
   :root {
-    --color-background: #F7F6F0;
-    --color-primary: #11120F;
-    --color-primary-accent: #596B35;
-    --color-accent-light: #DCE8B7;
-    --color-secondary-accent: #8FA35F;
+    --color-background: #FFFFFF;
+    --color-primary: #0F172A;
+    --color-primary-accent: #2563EB;
+    --color-accent-light: #EFF6FF;
+    --color-secondary-accent: #3B82F6;
     --color-surface: #FFFFFF;
-    --color-surface-soft: #EEEEE8;
-    --color-border: #D0D0C5;
-    --color-text-primary: #11120F;
-    --color-text-secondary: #3D4039;
-    --color-text-muted: #55594E;
-    --color-success: #2E6822;
-    --color-warning: #B38622;
-    --color-error: #B94A48;
+    --color-surface-soft: #F1F5F9;
+    --color-border: #E2E8F0;
+    --color-text-primary: #0F172A;
+    --color-text-secondary: #475569;
+    --color-text-muted: #64748B;
+    --color-success: #16A34A;
+    --color-warning: #D97706;
+    --color-error: #DC2626;
   }
 
   .dark {
@@ -160,13 +160,116 @@
 /*  HIGH-CONTRAST READABILITY NORMALIZERS (Outdoor Sunlight Friendly)*/
 /* ================================================================= */
 
-/* Light Mode Contrast Boosters */
-.text-\[\#65675F\] {
-  color: #3F423B !important;
+/* ================================================================= */
+/*  EXECUTIVE PURE WHITE LIGHT THEME NORMALIZERS                    */
+/* ================================================================= */
+
+html:not(.dark):not(.sepia) body {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
-.text-\[\#85877E\] {
-  color: #55594E !important;
+/* Canvas & Backgrounds */
+html:not(.dark):not(.sepia) .bg-\[\#F7F6F0\],
+html:not(.dark):not(.sepia) [class*="bg-[#F7F6F0]"] {
+  background-color: #F8FAFC !important;
+}
+
+html:not(.dark):not(.sepia) .bg-\[\#FAF9F5\],
+html:not(.dark):not(.sepia) .bg-\[\#FAF8F5\],
+html:not(.dark):not(.sepia) .bg-\[\#F4F6EE\],
+html:not(.dark):not(.sepia) .bg-\[\#F4F6EC\] {
+  background-color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia) .bg-\[\#EEEEE8\] {
+  background-color: #F1F5F9 !important;
+}
+
+/* Crisp Neutral Borders */
+html:not(.dark):not(.sepia) .border-\[\#D8D8CF\],
+html:not(.dark):not(.sepia) .border-\[\#D0D0C5\],
+html:not(.dark):not(.sepia) [class*="border-[#D8D8CF]"] {
+  border-color: #E2E8F0 !important;
+}
+
+html:not(.dark):not(.sepia) .border-\[\#EEEEE8\] {
+  border-color: #F1F5F9 !important;
+}
+
+/* High-Contrast Obsidian / Slate Typography */
+html:not(.dark):not(.sepia) .text-\[\#11120F\],
+html:not(.dark):not(.sepia) .text-\[\#191A17\] {
+  color: #0F172A !important;
+}
+
+html:not(.dark):not(.sepia) .text-\[\#65675F\],
+html:not(.dark):not(.sepia) .text-\[\#3D4039\],
+html:not(.dark):not(.sepia) .text-\[\#3F423B\] {
+  color: #475569 !important;
+}
+
+html:not(.dark):not(.sepia) .text-\[\#85877E\],
+html:not(.dark):not(.sepia) .text-\[\#55594E\] {
+  color: #64748B !important;
+}
+
+/* Professional Tech Sapphire / Royal Blue Accents */
+html:not(.dark):not(.sepia) .text-\[\#596B35\],
+html:not(.dark):not(.sepia) .text-\[\#354126\],
+html:not(.dark):not(.sepia) .text-\[\#4A5A2B\] {
+  color: #2563EB !important;
+}
+
+html:not(.dark):not(.sepia) .bg-\[\#596B35\] {
+  background-color: #2563EB !important;
+}
+
+html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/10,
+html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/12 {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+}
+
+html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/15,
+html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/20 {
+  background-color: rgba(37, 99, 235, 0.12) !important;
+}
+
+html:not(.dark):not(.sepia) .border-\[\#596B35\] {
+  border-color: #2563EB !important;
+}
+
+html:not(.dark):not(.sepia) .border-\[\#596B35\]\/20,
+html:not(.dark):not(.sepia) .border-\[\#596B35\]\/30 {
+  border-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+html:not(.dark):not(.sepia) .bg-\[\#DCE8B7\] {
+  background-color: #EFF6FF !important;
+  color: #1D4ED8 !important;
+  border-color: #BFDBFE !important;
+}
+
+/* Interactive Hover & Focus */
+html:not(.dark):not(.sepia) .hover\:bg-\[\#EEEEE8\]:hover {
+  background-color: #F1F5F9 !important;
+}
+
+html:not(.dark):not(.sepia) .hover\:bg-\[\#FAF9F5\]:hover {
+  background-color: #F8FAFC !important;
+}
+
+html:not(.dark):not(.sepia) .hover\:border-\[\#596B35\]:hover {
+  border-color: #3B82F6 !important;
+}
+
+html:not(.dark):not(.sepia) .hover\:text-\[\#596B35\]:hover {
+  color: #2563EB !important;
+}
+
+html:not(.dark):not(.sepia) .hover\:bg-\[\#596B35\]:hover {
+  background-color: #1D4ED8 !important;
+  color: #FFFFFF !important;
 }
 
 /* Dark Mode Palette Normalizers */

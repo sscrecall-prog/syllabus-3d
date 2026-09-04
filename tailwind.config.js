@@ -8,27 +8,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Academic Olive & Moss System (Light Mode)
+        // Executive Pure White System (Light Mode)
         academic: {
-          bg: '#F7F6F0',
-          primary: '#11120F',
-          accent: '#596B35',
-          'accent-light': '#DCE8B7',
-          'accent-secondary': '#8FA35F',
+          bg: '#F8FAFC',
+          primary: '#0F172A',
+          accent: '#2563EB',
+          'accent-light': '#EFF6FF',
+          'accent-secondary': '#3B82F6',
           surface: '#FFFFFF',
-          'surface-soft': '#EEEEE8',
-          border: '#D8D8CF',
-          'text-primary': '#191A17',
-          'text-secondary': '#65675F',
-          'text-muted': '#85877E',
-          success: '#4F7A45',
-          warning: '#C49A3A',
-          error: '#B94A48',
+          'surface-soft': '#F1F5F9',
+          border: '#E2E8F0',
+          'text-primary': '#0F172A',
+          'text-secondary': '#475569',
+          'text-muted': '#64748B',
+          success: '#16A34A',
+          warning: '#D97706',
+          error: '#DC2626',
         },
         brand: {
-          400: '#6B7F3A',
-          500: '#596B35',
-          600: '#4A5A2B',
+          400: '#3B82F6',
+          500: '#2563EB',
+          600: '#1D4ED8',
         },
         // Dark Mode System: Background #1A1B26, Foreground #C0CAF5, Accent #7AA2F7
         dark: {

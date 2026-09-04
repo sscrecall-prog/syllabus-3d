@@ -28,7 +28,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 }) => {
   return (
     <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[env(safe-area-inset-bottom)] pointer-events-none">
-      <div className="pointer-events-auto flex items-center justify-between px-2 py-1 rounded-3xl bg-[#FAF9F5]/96 dark:bg-[#12131F]/96 backdrop-blur-md border border-[#D8D8CF]/90 dark:border-[#272A3D] shadow-xl">
+      <div className="pointer-events-auto flex items-center justify-between px-2 py-1 rounded-3xl bg-white/95 dark:bg-[#12131F]/96 backdrop-blur-md border border-[#E2E8F0] dark:border-[#272A3D] shadow-xl">
         
         {/* Item 1: Home Dashboard */}
         <button

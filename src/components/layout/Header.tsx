@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   const examName = currentExam?.name || 'Syllabus Exam';
 
   return (
-    <header className="sticky top-0 z-30 bg-[#F7F6F0]/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#D8D8CF] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 transition-colors">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 transition-colors">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
         
         {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}
@@ -215,15 +215,15 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Theme Toggle (Light / Dark / OLED) */}
           <button
             onClick={toggleTheme}
-            className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#D8D8CF] dark:border-[#272730] text-[#65675F] hover:text-[#191A17] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0"
-            title={isOled ? "Current: OLED Pure Black (Click for Light)" : isDark ? "Current: Tokyo Night (Click for OLED)" : "Current: Light (Click for Dark)"}
+            className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0"
+            title={isOled ? "Current: OLED Pure Black (Click for Pure White)" : isDark ? "Current: Tokyo Night (Click for OLED)" : "Current: Pure White (Click for Dark)"}
           >
             {isOled ? (
               <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>
             ) : isDark ? (
-              <Sun className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#C49A3A]" />
+              <Sun className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#F59E0B]" />
             ) : (
-              <Moon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#596B35]" />
+              <Moon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB]" />
             )}
           </button>
 

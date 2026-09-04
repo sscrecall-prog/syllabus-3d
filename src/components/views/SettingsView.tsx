@@ -617,11 +617,11 @@ export const SettingsView: React.FC = () => {
                 Color Theme & Palette
               </h3>
               <p className="text-[11px] text-[#65675F] dark:text-[#94A3B8]">
-                Switch between high-contrast Tokyo Night Dark, Pure OLED, Sepia, and Paper Light mode.
+                Switch between high-contrast Tokyo Night Dark, Pure OLED, Sepia, and Pure White Pro.
               </p>
             </div>
-            <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-[#FAF9F5] dark:bg-[#20212E] border border-[#D8D8CF] dark:border-[#272730] text-[#11120F] dark:text-[#F5F5F7] capitalize">
-              {theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : 'Paper Light'}
+            <span className="px-3 py-1 rounded-xl text-xs font-bold font-mono bg-white dark:bg-[#20212E] border border-slate-200 dark:border-[#272730] text-slate-900 dark:text-[#F5F5F7] capitalize">
+              {theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : 'Pure White Pro'}
             </span>
           </div>
 
@@ -684,7 +684,7 @@ export const SettingsView: React.FC = () => {
               </div>
             </button>
 
-            {/* Classic Paper Light */}
+            {/* Pure White Pro */}
             <button
               type="button"
               onClick={() => {
@@ -693,22 +693,22 @@ export const SettingsView: React.FC = () => {
               }}
               className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'light'
-                  ? 'bg-[#FAF8F5] border-[#596B35] ring-2 ring-[#596B35]/30 shadow-sm'
-                  : 'bg-[#F7F6F0] dark:bg-[#18181D] border-[#D8D8CF] dark:border-[#272730] opacity-70 hover:opacity-100'
+                  ? 'bg-white border-[#2563EB] ring-2 ring-[#2563EB]/30 shadow-md'
+                  : 'bg-white dark:bg-[#18181D] border-slate-200 dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <div className="w-10 h-10 rounded-xl bg-white border border-[#D8D8CF] flex items-center justify-center text-[#596B35] shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-[#2563EB] shrink-0">
                   <Sun className="w-5 h-5" />
                 </div>
-                {theme === 'light' && <Check className="w-4 h-4 text-[#596B35]" />}
+                {theme === 'light' && <Check className="w-4 h-4 text-[#2563EB]" />}
               </div>
               <div>
-                <span className="text-[13px] font-extrabold text-[#11120F] dark:text-white block">
-                  Classic Paper Light
+                <span className="text-[13px] font-extrabold text-slate-900 dark:text-white block">
+                  Pure White Pro
                 </span>
-                <span className="text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5">
-                  Warm academic paper tones for daylight reading
+                <span className="text-[11px] text-slate-500 dark:text-[#94A3B8] block mt-0.5">
+                  Crisp, high-contrast modern white workspace for maximum daylight clarity
                 </span>
               </div>
             </button>

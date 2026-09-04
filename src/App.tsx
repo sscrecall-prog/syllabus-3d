@@ -262,7 +262,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F6F0] dark:bg-[#12141A] text-[#11120F] dark:text-[#C0CAF5] flex flex-col md:flex-row transition-colors duration-300">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5] flex flex-col md:flex-row transition-colors duration-300">
       
       {/* 3D Animated Startup Intro */}
       {showIntro && (
