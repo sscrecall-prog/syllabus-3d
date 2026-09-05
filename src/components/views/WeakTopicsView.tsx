@@ -118,6 +118,9 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
             alt="Weak Areas & Examiner Traps Diagnostics 3D"
             className="h-full w-auto max-w-none object-contain object-right opacity-80 sm:opacity-95 select-none"
             loading="eager"
+            decoding="async"
+            width={600}
+            height={320}
           />
         </div>
 

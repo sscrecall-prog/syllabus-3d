@@ -98,12 +98,20 @@ class StorageManager {
 
   /**
    * Safely writes to localStorage, catching QuotaExceededError without crashing.
+   * On quota limit, automatically triggers auto-healing storage to free space and retries.
    */
   public safeSetItem(key: string, value: any): boolean {
     if (typeof window === 'undefined') return false;
 
+    let serialized: string;
     try {
-      const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+      serialized = typeof value === 'string' ? value : JSON.stringify(value);
+    } catch (serErr) {
+      console.warn(`[StorageManager] Serialization failed for key: ${key}`, serErr);
+      return false;
+    }
+
+    try {
       localStorage.setItem(key, serialized);
       this.isQuotaExceeded = false;
       return true;
@@ -116,13 +124,27 @@ class StorageManager {
           err.code === 1014);
 
       if (isQuota) {
-        console.warn(`[StorageManager] LocalStorage Quota Exceeded for key: ${key}. Routing to IndexedDB backup.`);
+        console.warn(`[StorageManager] LocalStorage Quota Exceeded for key: ${key}. Auto-healing storage cache...`);
+        // 🛡️ Auto-heal: Purge disposable caches and compact non-critical history
+        const healResult = this.autoHealStorage();
+
+        if (healResult.healed) {
+          try {
+            localStorage.setItem(key, serialized);
+            this.isQuotaExceeded = false;
+            console.log(`[StorageManager] Successfully saved ${key} after auto-healing (${healResult.freedBytes} bytes freed).`);
+            return true;
+          } catch {
+            // Still full after prune, route to IndexedDB
+          }
+        }
+
         this.isQuotaExceeded = true;
       } else {
         console.warn(`[StorageManager] Failed to write to localStorage for key: ${key}`, err);
       }
 
-      // Automatically fallback-write to IndexedDB
+      // Indestructible fallback: mirror safely to IndexedDB
       try {
         appDB.set('app_state', key, value).catch(() => {});
       } catch {}
@@ -272,6 +294,197 @@ class StorageManager {
       return null;
     }
   }
+
+  /**
+   * 🛡️ AUTO-HEALING STORAGE ENGINE
+   * Safely reclaims storage space when quota is nearing limit without touching
+   * student syllabus notes, revisions, or mistake logs.
+   */
+  public autoHealStorage(): { healed: boolean; freedBytes: number; prunedKeys: string[] } {
+    if (typeof window === 'undefined') {
+      return { healed: false, freedBytes: 0, prunedKeys: [] };
+    }
+
+    let freedBytes = 0;
+    const prunedKeys: string[] = [];
+
+    // Keys that are strictly PROTECTED from eviction
+    const PROTECTED_PREFIXES = [
+      'syllabus3d_exams',
+      'syllabus3d_revisions',
+      'syllabus3d_planner',
+      'syllabus3d_profile',
+      'syllabus3d_auth',
+      'syllabus3d_users',
+      'syllabus3d_platforms',
+      'syllabus3d_pdf_highlights',
+      'syllabus3d_top3',
+      'syllabus3d_audio_settings',
+      'syllabus3d_theme'
+    ];
+
+    const isProtected = (k: string) => PROTECTED_PREFIXES.some(prefix => k.startsWith(prefix));
+
+    try {
+      // 1. Evict known disposable / ephemeral keys
+      const DISPOSABLE_EXACT_KEYS = [
+        'syllabus3d_pwa_dismissed_until',
+        'syllabus3d_intro_seen',
+        'syllabus_split_study_width_percent',
+        'syllabus_split_lecture_width_percent',
+        'syllabus3d_notes_font',
+        'syllabus3d_notes_theme'
+      ];
+
+      for (const key of DISPOSABLE_EXACT_KEYS) {
+        const val = localStorage.getItem(key);
+        if (val !== null) {
+          freedBytes += (key.length + val.length) * 2;
+          localStorage.removeItem(key);
+          prunedKeys.push(key);
+        }
+      }
+
+      // 2. Evict transient / scratch / preview cache keys
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && !isProtected(key)) {
+          if (
+            key.startsWith('temp_') ||
+            key.startsWith('cache_') ||
+            key.startsWith('scratch_') ||
+            key.startsWith('pdf_preview_') ||
+            key.startsWith('pdf_canvas_')
+          ) {
+            keysToRemove.push(key);
+          }
+        }
+      }
+
+      for (const key of keysToRemove) {
+        const val = localStorage.getItem(key) || '';
+        freedBytes += (key.length + val.length) * 2;
+        localStorage.removeItem(key);
+        prunedKeys.push(key);
+      }
+
+      // 3. Compact historical activity logs (keep latest 40 entries)
+      const activityKey = 'syllabus3d_activity';
+      const rawActivity = localStorage.getItem(activityKey);
+      if (rawActivity) {
+        try {
+          const acts = JSON.parse(rawActivity);
+          if (Array.isArray(acts) && acts.length > 40) {
+            const trimmed = acts.slice(-40);
+            const serializedTrimmed = JSON.stringify(trimmed);
+            const saved = (rawActivity.length - serializedTrimmed.length) * 2;
+            if (saved > 0) {
+              localStorage.setItem(activityKey, serializedTrimmed);
+              freedBytes += saved;
+              prunedKeys.push(`${activityKey} (compacted from ${acts.length} to 40)`);
+            }
+          }
+        } catch {}
+      }
+
+      // 4. Compact daily reflections history (keep latest 60 days)
+      const reflectionsKey = 'syllabus3d_daily_reflections';
+      const rawReflections = localStorage.getItem(reflectionsKey);
+      if (rawReflections) {
+        try {
+          const refs = JSON.parse(rawReflections);
+          if (Array.isArray(refs) && refs.length > 60) {
+            const trimmed = refs.slice(-60);
+            const serializedTrimmed = JSON.stringify(trimmed);
+            const saved = (rawReflections.length - serializedTrimmed.length) * 2;
+            if (saved > 0) {
+              localStorage.setItem(reflectionsKey, serializedTrimmed);
+              freedBytes += saved;
+              prunedKeys.push(`${reflectionsKey} (compacted from ${refs.length} to 60)`);
+            }
+          }
+        } catch {}
+      }
+
+      console.info(`[StorageManager] Auto-heal finished. Reclaimed ${this.formatBytes(freedBytes)}.`, prunedKeys);
+      return { healed: freedBytes > 0 || prunedKeys.length > 0, freedBytes, prunedKeys };
+    } catch (err) {
+      console.warn('[StorageManager] Auto-healing encountered an error:', err);
+      return { healed: false, freedBytes, prunedKeys };
+    }
+  }
+
+  /**
+   * 🩹 REPAIRS CORRUPT OR MALFORMED STATE
+   * Called when a view error boundary catches an unexpected crash.
+   * Clears volatile temporary draft state that may have caused unparseable renders.
+   */
+  public healCorruptState(sectionHint?: string): { repaired: boolean; message: string } {
+    if (typeof window === 'undefined') return { repaired: false, message: 'SSR' };
+
+    try {
+      // 1. Clear volatile session storage keys that could store corrupt navigation / modal state
+      sessionStorage.removeItem('syllabus3d_intro_seen');
+      sessionStorage.removeItem('syllabus3d_last_active_subtab');
+      sessionStorage.removeItem('syllabus3d_transient_query');
+
+      // 2. Remove any draft scratchpad or corrupt edit keys in localStorage
+      const draftKeys: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('draft_note_') || k.startsWith('temp_lecture_'))) {
+          draftKeys.push(k);
+        }
+      }
+      draftKeys.forEach(k => localStorage.removeItem(k));
+
+      return {
+        repaired: true,
+        message: `Section "${sectionHint || 'General'}" state sanitized and repaired successfully.`
+      };
+    } catch (err: any) {
+      return { repaired: false, message: err?.message || 'Repair attempt failed' };
+    }
+  }
+
+  /**
+   * Proactive quota monitor: Checks storage quota via StorageManager API
+   * and auto-heals if usage exceeds 85%.
+   */
+  public async checkStorageHealthAndAutoHeal(): Promise<void> {
+    if (typeof navigator === 'undefined' || !navigator.storage?.estimate) return;
+
+    try {
+      const estimate = await navigator.storage.estimate();
+      if (estimate.quota && estimate.usage) {
+        const ratio = estimate.usage / estimate.quota;
+        if (ratio > 0.85) {
+          console.warn(`[StorageManager] Proactive storage warning: ${(ratio * 100).toFixed(1)}% full. Initiating auto-heal.`);
+          this.autoHealStorage();
+        }
+      }
+    } catch {}
+  }
 }
 
 export const storageManager = new StorageManager();
+
+/**
+ * Sanitizes a topic object to guarantee no missing arrays or undefined fields
+ * that could cause runtime crashes during rendering.
+ */
+export function sanitizeTopicData(topic: any): any {
+  if (!topic || typeof topic !== 'object') return topic;
+  return {
+    ...topic,
+    lectures: Array.isArray(topic.lectures) ? topic.lectures : [],
+    noteItems: Array.isArray(topic.noteItems) ? topic.noteItems : [],
+    audioMemos: Array.isArray(topic.audioMemos) ? topic.audioMemos : [],
+    pdfAttachments: Array.isArray(topic.pdfAttachments) ? topic.pdfAttachments : [],
+    subtopics: Array.isArray(topic.subtopics) ? topic.subtopics : [],
+    status: topic.status || 'not_started',
+    rating: typeof topic.rating === 'number' ? topic.rating : 0,
+    confidence: typeof topic.confidence === 'number' ? topic.confidence : 1
+  };
+}

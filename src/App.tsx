@@ -18,6 +18,8 @@ import { soundManager } from './utils/soundEffects';
 import { haptics } from './utils/haptics';
 import { PWAInstallBanner } from './components/common/PWAInstallBanner';
 import { OfflineStatusIndicator } from './components/common/OfflineStatusIndicator';
+import { ViewErrorBoundary } from './components/common/ViewErrorBoundary';
+import { storageManager } from './services/storageManager';
 
 // ⚡ Lazy Loaded Secondary Views (Code Splitting for Lightning-Fast Initial Load)
 const SyllabusView = lazy(() => import('./components/views/SyllabusView').then(m => ({ default: m.SyllabusView })));
@@ -85,6 +87,11 @@ export const App: React.FC = () => {
   } | null>(null);
 
   const syllabusBackHandlerRef = useRef<(() => boolean) | null>(null);
+
+  // 🛡️ Proactive Storage Health Check & Auto-Healing on Startup
+  useEffect(() => {
+    storageManager.checkStorageHealthAndAutoHeal();
+  }, []);
 
   // Navigate with History Push
   const handleNavigate = useCallback((newView: AppView) => {
@@ -426,79 +433,109 @@ export const App: React.FC = () => {
           <div key={currentView} className="animate-view-fade">
             {/* Initial Dashboard View (Instant, Non-Lazy) */}
             {currentView === 'overview' && (
-              <OverviewView
-                onNavigate={handleNavigate}
-                onNavigateToSubject={handleNavigateToSubject}
-                onOpenTopicDrawer={handleOpenTopicDrawer}
-                onOpenRevisionSession={() => {
-                  setIsRevisionSessionOpen(true);
-                  window.history.pushState({ modal: 'revision' }, '');
-                }}
-                onOpenAddTopic={() => {
-                  setIsAddTopicOpen(true);
-                  window.history.pushState({ modal: 'add_topic' }, '');
-                }}
-                onOpenFocus={() => handleLaunchFocus(undefined)}
-              />
-            )}
-
-            {/* Lazy-Loaded Secondary Views with Suspense Fallback */}
-            <Suspense fallback={<ViewLoadingFallback />}>
-              {currentView === 'planner' && (
-                <PlannerView
-                  onOpenFocusChamber={handleLaunchFocus}
+              <ViewErrorBoundary sectionName="Overview Dashboard" onNavigateHome={() => handleNavigate('overview')}>
+                <OverviewView
+                  onNavigate={handleNavigate}
+                  onNavigateToSubject={handleNavigateToSubject}
                   onOpenTopicDrawer={handleOpenTopicDrawer}
-                />
-              )}
-
-              {currentView === 'mindmap' && (
-                <MindMapView onOpenTopicDrawer={handleOpenTopicDrawer} />
-              )}
-
-              {currentView === 'syllabus' && (
-                <SyllabusView
-                  onOpenTopicDrawer={handleOpenTopicDrawer}
+                  onOpenRevisionSession={() => {
+                    setIsRevisionSessionOpen(true);
+                    window.history.pushState({ modal: 'revision' }, '');
+                  }}
                   onOpenAddTopic={() => {
                     setIsAddTopicOpen(true);
                     window.history.pushState({ modal: 'add_topic' }, '');
                   }}
-                  initialSubjectId={targetSubjectId}
-                  onSelectSubjectId={setTargetSubjectId}
-                  onBackToDashboard={() => handleNavigate('overview')}
-                  onRegisterBackHandler={(handler) => {
-                    syllabusBackHandlerRef.current = handler;
-                  }}
+                  onOpenFocus={() => handleLaunchFocus(undefined)}
                 />
+              </ViewErrorBoundary>
+            )}
+
+            {/* Lazy-Loaded Secondary Views with Suspense Fallback & Per-View Crash Protection */}
+            <Suspense fallback={<ViewLoadingFallback />}>
+              {currentView === 'planner' && (
+                <ViewErrorBoundary sectionName="Study Planner" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <PlannerView
+                    onOpenFocusChamber={handleLaunchFocus}
+                    onOpenTopicDrawer={handleOpenTopicDrawer}
+                  />
+                </ViewErrorBoundary>
+              )}
+
+              {currentView === 'mindmap' && (
+                <ViewErrorBoundary sectionName="Interactive Mind Map" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <MindMapView onOpenTopicDrawer={handleOpenTopicDrawer} />
+                </ViewErrorBoundary>
+              )}
+
+              {currentView === 'syllabus' && (
+                <ViewErrorBoundary sectionName="Syllabus Browser" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <SyllabusView
+                    onOpenTopicDrawer={handleOpenTopicDrawer}
+                    onOpenAddTopic={() => {
+                      setIsAddTopicOpen(true);
+                      window.history.pushState({ modal: 'add_topic' }, '');
+                    }}
+                    initialSubjectId={targetSubjectId}
+                    onSelectSubjectId={setTargetSubjectId}
+                    onBackToDashboard={() => handleNavigate('overview')}
+                    onRegisterBackHandler={(handler) => {
+                      syllabusBackHandlerRef.current = handler;
+                    }}
+                  />
+                </ViewErrorBoundary>
               )}
 
               {currentView === 'subjects' && (
-                <SubjectsView
-                  onNavigate={handleNavigate}
-                  onOpenTopicDrawer={handleOpenTopicDrawer}
-                />
+                <ViewErrorBoundary sectionName="Subjects Directory" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <SubjectsView
+                    onNavigate={handleNavigate}
+                    onOpenTopicDrawer={handleOpenTopicDrawer}
+                  />
+                </ViewErrorBoundary>
               )}
 
               {currentView === 'revision' && (
-                <RevisionView onOpenRevisionSession={() => {
-                  setIsRevisionSessionOpen(true);
-                  window.history.pushState({ modal: 'revision' }, '');
-                }} />
+                <ViewErrorBoundary sectionName="Revision Hub" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <RevisionView onOpenRevisionSession={() => {
+                    setIsRevisionSessionOpen(true);
+                    window.history.pushState({ modal: 'revision' }, '');
+                  }} />
+                </ViewErrorBoundary>
               )}
 
               {currentView === 'weak' && (
-                <WeakTopicsView
-                  onOpenTopicDrawer={handleOpenTopicDrawer}
-                  onOpenFocus={handleLaunchFocus}
-                />
+                <ViewErrorBoundary sectionName="Weak Traps Diagnostic" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <WeakTopicsView
+                    onOpenTopicDrawer={handleOpenTopicDrawer}
+                    onOpenFocus={handleLaunchFocus}
+                  />
+                </ViewErrorBoundary>
               )}
 
-              {currentView === 'analytics' && <AnalyticsView />}
+              {currentView === 'analytics' && (
+                <ViewErrorBoundary sectionName="Study Analytics" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <AnalyticsView />
+                </ViewErrorBoundary>
+              )}
 
-              {currentView === 'heatmap' && <HeatmapView />}
+              {currentView === 'heatmap' && (
+                <ViewErrorBoundary sectionName="Consistency Heatmap" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <HeatmapView />
+                </ViewErrorBoundary>
+              )}
 
-              {currentView === 'platforms' && <PlatformsView />}
+              {currentView === 'platforms' && (
+                <ViewErrorBoundary sectionName="Learning Resources" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <PlatformsView />
+                </ViewErrorBoundary>
+              )}
 
-              {currentView === 'settings' && <SettingsView />}
+              {currentView === 'settings' && (
+                <ViewErrorBoundary sectionName="App Settings" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <SettingsView />
+                </ViewErrorBoundary>
+              )}
             </Suspense>
           </div>
         </main>
@@ -525,47 +562,57 @@ export const App: React.FC = () => {
       {/* Floating Background Timer Overlay */}
       <FloatingTimerOverlay />
 
-      {/* Lazy Loaded Heavy Modals & Drawers */}
+      {/* Lazy Loaded Heavy Modals & Drawers with Crash Isolation */}
       <Suspense fallback={null}>
         <FloatingTimerPermissionModal />
 
         {isFullModalOpen && (
-          <PomodoroFocusModal
-            isOpen={isFullModalOpen}
-            onClose={closeFullModal}
-            defaultTopicId={focusTopicId || selectedTopic?.topic.id}
-          />
+          <ViewErrorBoundary sectionName="Pomodoro Focus Chamber" onReset={closeFullModal}>
+            <PomodoroFocusModal
+              isOpen={isFullModalOpen}
+              onClose={closeFullModal}
+              defaultTopicId={focusTopicId || selectedTopic?.topic.id}
+            />
+          </ViewErrorBoundary>
         )}
 
         {selectedTopic && (
-          <TopicDetailDrawer
-            topic={selectedTopic.topic}
-            subjectName={selectedTopic.subjectName}
-            chapterName={selectedTopic.chapterName}
-            onClose={handleCloseTopicDrawer}
-          />
+          <ViewErrorBoundary sectionName="Topic Details Drawer" onReset={handleCloseTopicDrawer}>
+            <TopicDetailDrawer
+              topic={selectedTopic.topic}
+              subjectName={selectedTopic.subjectName}
+              chapterName={selectedTopic.chapterName}
+              onClose={handleCloseTopicDrawer}
+            />
+          </ViewErrorBoundary>
         )}
 
         {isSearchOpen && (
-          <CommandSearchModal
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            onSelectTopic={(topic, subjectName, chapterName) => handleOpenTopicDrawer(topic, subjectName || '', chapterName || '')}
-          />
+          <ViewErrorBoundary sectionName="Search Palette" onReset={() => setIsSearchOpen(false)}>
+            <CommandSearchModal
+              isOpen={isSearchOpen}
+              onClose={() => setIsSearchOpen(false)}
+              onSelectTopic={(topic, subjectName, chapterName) => handleOpenTopicDrawer(topic, subjectName || '', chapterName || '')}
+            />
+          </ViewErrorBoundary>
         )}
 
         {isAddTopicOpen && (
-          <AddTopicModal
-            isOpen={isAddTopicOpen}
-            onClose={() => setIsAddTopicOpen(false)}
-          />
+          <ViewErrorBoundary sectionName="Add Topic Modal" onReset={() => setIsAddTopicOpen(false)}>
+            <AddTopicModal
+              isOpen={isAddTopicOpen}
+              onClose={() => setIsAddTopicOpen(false)}
+            />
+          </ViewErrorBoundary>
         )}
 
         {isRevisionSessionOpen && (
-          <RevisionSessionModal
-            isOpen={isRevisionSessionOpen}
-            onClose={() => setIsRevisionSessionOpen(false)}
-          />
+          <ViewErrorBoundary sectionName="Revision Session Modal" onReset={() => setIsRevisionSessionOpen(false)}>
+            <RevisionSessionModal
+              isOpen={isRevisionSessionOpen}
+              onClose={() => setIsRevisionSessionOpen(false)}
+            />
+          </ViewErrorBoundary>
         )}
       </Suspense>
     </div>

@@ -33,6 +33,15 @@ class SoundEffectManager {
         this.settings = DEFAULT_SETTINGS;
       }
     }
+
+    // 🔋 Background Audio Suspender: Suspend AudioContext on tab blur/lock to save phone battery
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && this.ctx && this.ctx.state === 'running') {
+          this.ctx.suspend().catch(() => {});
+        }
+      });
+    }
   }
 
   public getSettings(): AudioSettings {

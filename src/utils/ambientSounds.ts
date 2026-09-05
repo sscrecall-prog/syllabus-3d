@@ -7,6 +7,24 @@ class AmbientSoundEngine {
   private activeNodes: (AudioNode | number)[] = [];
   private volume: number = 0.5;
 
+  constructor() {
+    // 🔋 Background Audio Suspender: Suspend AudioContext on tab blur/lock to save phone battery
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (this.ctx && this.ctx.state === 'running') {
+            this.ctx.suspend().catch(() => {});
+          }
+        } else {
+          // If ambient sound was active before switching tabs, resume smoothly
+          if (this.currentType !== 'none' && this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+        }
+      });
+    }
+  }
+
   private initCtx() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;

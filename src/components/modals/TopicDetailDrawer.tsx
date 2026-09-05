@@ -31,6 +31,7 @@ import { TopicAudioMemosSection } from '../common/TopicAudioMemosSection';
 import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
 import { SplitScreenLectureStudyModal } from '../common/SplitScreenLectureStudyModal';
 import { StatusBadge } from '../common/StatusBadge';
+import { ViewErrorBoundary } from '../common/ViewErrorBoundary';
 import { soundManager } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
 
@@ -1223,127 +1224,137 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             {/* LECTURES TAB */}
             {activeTab === 'lectures' && (
               <div key="lectures" className="space-y-5 animate-fade-in">
-                <TopicLecturesSection
-                  topicId={liveTopic.id}
-                  topicName={liveTopic.name}
-                  lectures={liveTopic.lectures || []}
-                  onAddLecture={(lecture) => {
-                    if (addTopicLecture) {
-                      addTopicLecture(liveTopic.id, lecture);
-                    }
-                  }}
-                  onDeleteLecture={(lectureId) => {
-                    if (deleteTopicLecture) {
-                      deleteTopicLecture(liveTopic.id, lectureId);
-                    }
-                  }}
-                  onOpenSplitStudy={(lectureId, seekSeconds) => {
-                    setSplitLectureId(lectureId);
-                    setSplitLectureSeekSeconds(seekSeconds || 0);
-                    setIsSplitLectureOpen(true);
-                  }}
-                  onAddTimestamp={(lectureId, ts) => {
-                    if (addLectureTimestamp) {
-                      addLectureTimestamp(liveTopic.id, lectureId, ts);
-                    }
-                  }}
-                  onDeleteTimestamp={(lectureId, tsId) => {
-                    if (deleteLectureTimestamp) {
-                      deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
-                    }
-                  }}
-                />
+                <ViewErrorBoundary compact sectionName="Video Lectures">
+                  <TopicLecturesSection
+                    topicId={liveTopic.id}
+                    topicName={liveTopic.name}
+                    lectures={liveTopic.lectures || []}
+                    onAddLecture={(lecture) => {
+                      if (addTopicLecture) {
+                        addTopicLecture(liveTopic.id, lecture);
+                      }
+                    }}
+                    onDeleteLecture={(lectureId) => {
+                      if (deleteTopicLecture) {
+                        deleteTopicLecture(liveTopic.id, lectureId);
+                      }
+                    }}
+                    onOpenSplitStudy={(lectureId, seekSeconds) => {
+                      setSplitLectureId(lectureId);
+                      setSplitLectureSeekSeconds(seekSeconds || 0);
+                      setIsSplitLectureOpen(true);
+                    }}
+                    onAddTimestamp={(lectureId, ts) => {
+                      if (addLectureTimestamp) {
+                        addLectureTimestamp(liveTopic.id, lectureId, ts);
+                      }
+                    }}
+                    onDeleteTimestamp={(lectureId, tsId) => {
+                      if (deleteLectureTimestamp) {
+                        deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
+                      }
+                    }}
+                  />
+                </ViewErrorBoundary>
               </div>
             )}
 
             {/* NOTES TAB */}
             {activeTab === 'notes' && (
               <div key="notes" className="space-y-5 animate-fade-in">
-                <ProfessionalNotesEditor
-                  initialContent={notes}
-                  initialNoteItems={liveTopic.noteItems}
-                  onSave={handleSaveNotes}
-                  topicName={liveTopic.name}
-                  subjectName={subjectName}
-                  chapterName={chapterName}
-                  examName={currentExam?.name}
-                  onOpenSplitPdf={() => {
-                    setSplitPdfAttachmentId(undefined);
-                    setIsSplitPdfOpen(true);
-                  }}
-                  hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
-                  lectures={liveTopic.lectures || []}
-                  onOpenSplitLecture={(lectureId, seekSeconds) => {
-                    setSplitLectureId(lectureId || liveTopic.lectures?.[0]?.id);
-                    setSplitLectureSeekSeconds(seekSeconds || 0);
-                    setIsSplitLectureOpen(true);
-                  }}
-                  images={liveTopic.images || []}
-                  onAddImage={(img) => {
-                    if (addTopicImageAttachment) {
-                      addTopicImageAttachment(liveTopic.id, img);
-                    }
-                  }}
-                  onDeleteImage={(imgId) => {
-                    if (deleteTopicImageAttachment) {
-                      deleteTopicImageAttachment(liveTopic.id, imgId);
-                    }
-                  }}
-                />
+                <ViewErrorBoundary compact sectionName="Topic Notes Editor">
+                  <ProfessionalNotesEditor
+                    initialContent={notes}
+                    initialNoteItems={liveTopic.noteItems}
+                    onSave={handleSaveNotes}
+                    topicName={liveTopic.name}
+                    subjectName={subjectName}
+                    chapterName={chapterName}
+                    examName={currentExam?.name}
+                    onOpenSplitPdf={() => {
+                      setSplitPdfAttachmentId(undefined);
+                      setIsSplitPdfOpen(true);
+                    }}
+                    hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
+                    lectures={liveTopic.lectures || []}
+                    onOpenSplitLecture={(lectureId, seekSeconds) => {
+                      setSplitLectureId(lectureId || liveTopic.lectures?.[0]?.id);
+                      setSplitLectureSeekSeconds(seekSeconds || 0);
+                      setIsSplitLectureOpen(true);
+                    }}
+                    images={liveTopic.images || []}
+                    onAddImage={(img) => {
+                      if (addTopicImageAttachment) {
+                        addTopicImageAttachment(liveTopic.id, img);
+                      }
+                    }}
+                    onDeleteImage={(imgId) => {
+                      if (deleteTopicImageAttachment) {
+                        deleteTopicImageAttachment(liveTopic.id, imgId);
+                      }
+                    }}
+                  />
+                </ViewErrorBoundary>
 
-                <TopicAudioMemosSection
-                  topicId={liveTopic.id}
-                  topicName={liveTopic.name}
-                  audioMemos={liveTopic.audioMemos || []}
-                  onAddAudioMemo={(memo) => {
-                    if (addTopicAudioMemo) {
-                      addTopicAudioMemo(liveTopic.id, memo);
-                    }
-                  }}
-                  onDeleteAudioMemo={(memoId) => {
-                    if (deleteTopicAudioMemo) {
-                      deleteTopicAudioMemo(liveTopic.id, memoId);
-                    }
-                  }}
-                  onInsertTranscriptToNotes={(text) => {
-                    const updated = notes ? notes + '\n' + text : text;
-                    setNotes(updated);
-                    handleSaveNotes(updated);
-                  }}
-                />
+                <ViewErrorBoundary compact sectionName="Audio Memos">
+                  <TopicAudioMemosSection
+                    topicId={liveTopic.id}
+                    topicName={liveTopic.name}
+                    audioMemos={liveTopic.audioMemos || []}
+                    onAddAudioMemo={(memo) => {
+                      if (addTopicAudioMemo) {
+                        addTopicAudioMemo(liveTopic.id, memo);
+                      }
+                    }}
+                    onDeleteAudioMemo={(memoId) => {
+                      if (deleteTopicAudioMemo) {
+                        deleteTopicAudioMemo(liveTopic.id, memoId);
+                      }
+                    }}
+                    onInsertTranscriptToNotes={(text) => {
+                      const updated = notes ? notes + '\n' + text : text;
+                      setNotes(updated);
+                      handleSaveNotes(updated);
+                    }}
+                  />
+                </ViewErrorBoundary>
 
-                <TopicPdfAttachmentsSection
-                  topicId={liveTopic.id}
-                  topicName={liveTopic.name}
-                  subjectName={subjectName}
-                  chapterName={chapterName}
-                  attachments={liveTopic.pdfAttachments || []}
-                  onAddAttachment={(newAttachment) => {
-                    if (addTopicPdfAttachment) {
-                      addTopicPdfAttachment(liveTopic.id, newAttachment);
-                    }
-                  }}
-                  onDeleteAttachment={(attachmentId) => {
-                    if (deleteTopicPdfAttachment) {
-                      deleteTopicPdfAttachment(liveTopic.id, attachmentId);
-                    }
-                  }}
-                  onOpenSplitStudy={(attachmentId) => {
-                    setSplitPdfAttachmentId(attachmentId);
-                    setIsSplitPdfOpen(true);
-                  }}
-                />
+                <ViewErrorBoundary compact sectionName="PDF Attachments">
+                  <TopicPdfAttachmentsSection
+                    topicId={liveTopic.id}
+                    topicName={liveTopic.name}
+                    subjectName={subjectName}
+                    chapterName={chapterName}
+                    attachments={liveTopic.pdfAttachments || []}
+                    onAddAttachment={(newAttachment) => {
+                      if (addTopicPdfAttachment) {
+                        addTopicPdfAttachment(liveTopic.id, newAttachment);
+                      }
+                    }}
+                    onDeleteAttachment={(attachmentId) => {
+                      if (deleteTopicPdfAttachment) {
+                        deleteTopicPdfAttachment(liveTopic.id, attachmentId);
+                      }
+                    }}
+                    onOpenSplitStudy={(attachmentId) => {
+                      setSplitPdfAttachmentId(attachmentId);
+                      setIsSplitPdfOpen(true);
+                    }}
+                  />
+                </ViewErrorBoundary>
               </div>
             )}
 
             {/* ADVANCED MISTAKES & TRAPS TAB */}
             {activeTab === 'mistakes' && (
               <div key="mistakes" className="animate-fade-in">
-                <AdvancedMistakeJournal
-                  topic={liveTopic}
-                  subjectName={subjectName}
-                  chapterName={chapterName}
-                />
+                <ViewErrorBoundary compact sectionName="Mistakes & Traps Journal">
+                  <AdvancedMistakeJournal
+                    topic={liveTopic}
+                    subjectName={subjectName}
+                    chapterName={chapterName}
+                  />
+                </ViewErrorBoundary>
               </div>
             )}
 

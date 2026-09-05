@@ -179,6 +179,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             alt="Focus Plan Achieve - Syllabus 3D Mastery"
             className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-[1.01]"
             loading="eager"
+            decoding="async"
+            width={1200}
+            height={514}
           />
           {/* Subtle gradient vignette to blend seamlessly */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
