@@ -278,7 +278,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
               <div key={sec.title} className="space-y-1.5">
                 <div className="flex items-center gap-2 px-2">
                   <h5 className="text-[10px] font-mono font-extrabold tracking-widest text-[#85877E] dark:text-[#787A91] uppercase">
-                    // {sec.title}
+                    {sec.title}
                   </h5>
                   <div className="flex-1 h-[1px] bg-[#EEEEE8] dark:bg-[#1F2133]" />
                 </div>
