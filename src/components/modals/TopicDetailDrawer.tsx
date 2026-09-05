@@ -22,8 +22,13 @@ import {
   AlertTriangle,
   CheckCircle2,
   Zap,
-  Printer
+  Printer,
+  RotateCw,
+  BrainCircuit,
+  Calendar
 } from 'lucide-react';
+import { getTodayDateString, formatDateReadable } from '../../utils/dateUtils';
+import { calculateAdaptiveIntervals } from '../../utils/spacedRepetition';
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
 import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
@@ -70,7 +75,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     deleteTopicAudioMemo,
     addTopicImageAttachment,
     deleteTopicImageAttachment,
-    currentExam
+    currentExam,
+    revisions,
+    resyncAllRevisions
   } = useSyllabus();
 
   // Find live reactive topic from SyllabusContext exams state
@@ -86,6 +93,27 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     }
     return topic;
   }, [exams, topic]);
+
+  // Reactive Spaced Repetition metadata for this topic
+  const topicRevisions = useMemo(() => {
+    if (!liveTopic) return [];
+    return revisions.filter(r => r.topicId === liveTopic.id);
+  }, [revisions, liveTopic?.id]);
+
+  const activeRevisionCard = useMemo(() => {
+    return topicRevisions.find(r => !r.completedDate) || topicRevisions[topicRevisions.length - 1] || null;
+  }, [topicRevisions]);
+
+  const todayStr = getTodayDateString();
+
+  const adaptiveIntervals = useMemo(() => {
+    if (!liveTopic) return [1, 3, 7, 21];
+    return calculateAdaptiveIntervals(
+      liveTopic.difficulty || 'Medium',
+      liveTopic.accuracy,
+      liveTopic.isWeak || liveTopic.status === 'weak'
+    );
+  }, [liveTopic?.difficulty, liveTopic?.accuracy, liveTopic?.isWeak, liveTopic?.status]);
 
   const [notes, setNotes] = useState('');
   const [accuracyInput, setAccuracyInput] = useState<number>(0);
@@ -1186,7 +1214,126 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   </div>
                 </div>
 
-                {/* 5. Subtopics Checklist */}
+                {/* 5. SPACED REPETITION INTELLIGENCE & SYNC TILE */}
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 relative overflow-hidden">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 flex items-center justify-center shrink-0">
+                        <RotateCw className="w-4 h-4 stroke-[2.2]" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs sm:text-[13px] font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-tight">
+                            Spaced Repetition & Retention
+                          </span>
+                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            SM-2 Adaptive
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-[#85877E] font-mono block">
+                          Optimal recall curve: [{adaptiveIntervals.map(i => `${i}d`).join(' → ')}]
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Live Badge */}
+                    <div className="shrink-0">
+                      {liveTopic.status === 'completed' && activeRevisionCard?.completedDate ? (
+                        <span className="px-2.5 py-1 text-[10px] font-mono font-black rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                          ✓ Retained
+                        </span>
+                      ) : activeRevisionCard ? (
+                        <span className="px-2.5 py-1 text-[10px] font-mono font-black rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+                          Stage {activeRevisionCard.stage} of 4
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-1 text-[10px] font-mono font-bold rounded-lg bg-[#F8FAFC] dark:bg-[#14151F] text-[#85877E] border border-[#E2E8F0] dark:border-[#272730]">
+                          Unscheduled
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 4-Stage Adaptive Interval Progression Visualizer */}
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {adaptiveIntervals.map((intervalDays, idx) => {
+                      const stageNum = idx + 1;
+                      const isPassed = activeRevisionCard ? (activeRevisionCard.stage > stageNum || Boolean(activeRevisionCard.completedDate)) : false;
+                      const isCurrent = activeRevisionCard ? activeRevisionCard.stage === stageNum && !activeRevisionCard.completedDate : false;
+
+                      return (
+                        <div
+                          key={stageNum}
+                          className={`p-2 rounded-xl border text-center transition-all ${
+                            isPassed
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                              : isCurrent
+                              ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
+                              : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#85877E] dark:text-[#71717A] border-[#E2E8F0] dark:border-[#272730]'
+                          }`}
+                        >
+                          <div className="text-[9px] font-mono font-bold uppercase">Stage {stageNum}</div>
+                          <div className="text-xs font-mono font-black tabular-nums">{intervalDays}d</div>
+                          <div className="text-[9px] mt-0.5">
+                            {isPassed ? '✓ Passed' : isCurrent ? '● Active' : 'Upcoming'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Schedule Details & 1-Click Action */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
+                    <div className="text-xs font-mono text-[#65675F] dark:text-[#A1A1AA] flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
+                      <span>
+                        {activeRevisionCard ? (
+                          activeRevisionCard.scheduledDate <= todayStr
+                            ? 'Scheduled for review today'
+                            : `Next review due on ${formatDateReadable(activeRevisionCard.scheduledDate)}`
+                        ) : (
+                          'Complete topic to automatically queue active recall'
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {liveTopic.status !== 'completed' && !activeRevisionCard ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateTopicStatus(liveTopic.id, 'completed', Math.max(85, liveTopic.accuracy || 85));
+                            soundManager.playCompleteChime();
+                            haptics.success();
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Mark Mastered & Queue</span>
+                        </button>
+                      ) : activeRevisionCard && activeRevisionCard.scheduledDate > todayStr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateTopicStatus(liveTopic.id, 'revision_due');
+                            soundManager.playCompleteChime();
+                            haptics.medium();
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all tap-bounce"
+                        >
+                          <Zap className="w-3.5 h-3.5 text-amber-400" />
+                          <span>⚡ Revise Today</span>
+                        </button>
+                      ) : (
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                          ✓ Ready in Today's Queue
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Subtopics Checklist */}
                 <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2">

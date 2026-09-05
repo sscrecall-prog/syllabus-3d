@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Exam,
   Subject,
@@ -30,7 +30,15 @@ import {
   DailyReflection
 } from '../types/syllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
-import { calculateInitialRevisions, gradeRevision, getTodayDateString } from '../utils/spacedRepetition';
+import {
+  calculateInitialRevisions,
+  gradeRevision,
+  getTodayDateString,
+  generateAdaptiveRevisionRecords,
+  syncAllRevisionsWithSyllabus,
+  calculateAdaptiveIntervals,
+  addDays
+} from '../utils/spacedRepetition';
 import {
   loadStoredTop3Targets,
   saveStoredTop3Targets,
@@ -243,6 +251,7 @@ interface SyllabusContextType {
   weakTopics: Array<{ subjectName: string; subjectColor: string; chapterName: string; topic: Topic }>;
   revisions: RevisionRecord[];
   dueRevisions: RevisionRecord[];
+  resyncAllRevisions: () => void;
 
   // Planner
   plannerTasks: PlannerTask[];
@@ -733,38 +742,130 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const updateTopicStatus = (topicId: string, status: TopicStatus, accuracy?: number) => {
     const today = getTodayDateString();
-    let topicRef: Topic | null = null;
-    let subjectRef: Subject | null = null;
-    let chapterRef: Chapter | null = null;
 
-    setExams(prevExams => {
-      return prevExams.map(exam => ({
-        ...exam,
-        subjects: exam.subjects.map(subj => ({
-          ...subj,
-          chapters: subj.chapters.map(chap => ({
-            ...chap,
-            topics: chap.topics.map(top => {
-              if (top.id === topicId) {
-                topicRef = top;
-                subjectRef = subj;
-                chapterRef = chap;
-                return {
-                  ...top,
-                  status,
-                  completionPercentage: status === 'completed' || status === 'revision_due' ? 100 : status === 'in_progress' ? 50 : 0,
-                  lastStudied: today,
-                  accuracy: accuracy !== undefined ? accuracy : top.accuracy,
-                  isWeak: status === 'weak' || (accuracy !== undefined && accuracy < 60)
-                };
-              }
-              return top;
-            })
-          }))
+    // 1. Synchronously locate topic, subject, and chapter from current exams state
+    let foundTopic: Topic | null = null;
+    let foundSubject: Subject | null = null;
+    let foundChapter: Chapter | null = null;
+
+    for (const exam of exams) {
+      for (const subj of exam.subjects) {
+        for (const chap of subj.chapters) {
+          const top = chap.topics.find(t => t.id === topicId);
+          if (top) {
+            foundTopic = top;
+            foundSubject = subj;
+            foundChapter = chap;
+            break;
+          }
+        }
+        if (foundTopic) break;
+      }
+      if (foundTopic) break;
+    }
+
+    const effectiveAcc = accuracy !== undefined ? accuracy : (foundTopic?.accuracy || 0);
+    const isTopicWeak = status === 'weak' || (effectiveAcc > 0 && effectiveAcc < 60);
+
+    let nextRevisionDate: string | null = null;
+
+    // 2. Reactively manage Spaced Revision records based on the new status
+    if (foundTopic && foundSubject && foundChapter) {
+      if (status === 'completed') {
+        const newRevs = generateAdaptiveRevisionRecords({
+          topicId: foundTopic.id,
+          topicName: foundTopic.name,
+          subjectId: foundSubject.id,
+          subjectName: foundSubject.name,
+          chapterId: foundChapter.id,
+          chapterName: foundChapter.name,
+          difficulty: foundTopic.difficulty,
+          accuracy: effectiveAcc,
+          isWeak: isTopicWeak,
+          completionDate: today
+        });
+        nextRevisionDate = newRevs[0]?.scheduledDate || addDays(today, 1);
+
+        // Replace any uncompleted/pending revisions for this topic with the fresh adaptive schedule
+        setRevisions(prev => [
+          ...prev.filter(r => r.topicId !== topicId || r.completedDate !== null),
+          ...newRevs
+        ]);
+      } else if (status === 'revision_due') {
+        const newRevs = generateAdaptiveRevisionRecords({
+          topicId: foundTopic.id,
+          topicName: foundTopic.name,
+          subjectId: foundSubject.id,
+          subjectName: foundSubject.name,
+          chapterId: foundChapter.id,
+          chapterName: foundChapter.name,
+          difficulty: foundTopic.difficulty,
+          accuracy: effectiveAcc,
+          isWeak: isTopicWeak,
+          completionDate: today
+        });
+        // Immediately schedule Stage 1 for Today
+        if (newRevs[0]) newRevs[0].scheduledDate = today;
+        nextRevisionDate = today;
+
+        setRevisions(prev => [
+          ...prev.filter(r => r.topicId !== topicId || r.completedDate !== null),
+          ...newRevs
+        ]);
+      } else if (status === 'weak') {
+        // High-priority retention curve for weak topics
+        const newRevs = generateAdaptiveRevisionRecords({
+          topicId: foundTopic.id,
+          topicName: foundTopic.name,
+          subjectId: foundSubject.id,
+          subjectName: foundSubject.name,
+          chapterId: foundChapter.id,
+          chapterName: foundChapter.name,
+          difficulty: 'Hard',
+          accuracy: effectiveAcc > 0 ? Math.min(50, effectiveAcc) : 45,
+          isWeak: true,
+          completionDate: today
+        });
+        if (newRevs[0]) newRevs[0].scheduledDate = today;
+        nextRevisionDate = today;
+
+        setRevisions(prev => [
+          ...prev.filter(r => r.topicId !== topicId || r.completedDate !== null),
+          ...newRevs
+        ]);
+      } else {
+        // Status is 'not_started' or 'in_progress': Prune uncompleted/pending revisions to prevent ghost cards
+        setRevisions(prev => prev.filter(r => r.topicId !== topicId || r.completedDate !== null));
+        nextRevisionDate = null;
+      }
+    }
+
+    // 3. Update exams tree
+    setExams(prevExams => prevExams.map(exam => ({
+      ...exam,
+      subjects: exam.subjects.map(subj => ({
+        ...subj,
+        chapters: subj.chapters.map(chap => ({
+          ...chap,
+          topics: chap.topics.map(top => {
+            if (top.id === topicId) {
+              return {
+                ...top,
+                status,
+                completionPercentage: status === 'completed' || status === 'revision_due' ? 100 : status === 'in_progress' ? 50 : 0,
+                lastStudied: status === 'not_started' ? null : today,
+                nextRevision: nextRevisionDate,
+                accuracy: effectiveAcc,
+                isWeak: isTopicWeak
+              };
+            }
+            return top;
+          })
         }))
-      }));
-    });
+      }))
+    })));
 
+    // 4. Rewards, Audio & Haptic Feedback
     if (status === 'completed') {
       soundManager.playCompleteChime();
       haptics.success();
@@ -777,19 +878,6 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
         return { ...prev, xp: newXp, level: newLevel };
       });
-
-      if (topicRef && subjectRef && chapterRef) {
-        const newRevs = calculateInitialRevisions(
-          (topicRef as Topic).id,
-          (topicRef as Topic).name,
-          (subjectRef as Subject).id,
-          (subjectRef as Subject).name,
-          (chapterRef as Chapter).id,
-          (chapterRef as Chapter).name,
-          today
-        );
-        setRevisions(prev => [...prev, ...newRevs]);
-      }
     } else {
       soundManager.playClick();
     }
@@ -912,19 +1000,69 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const completeRevisionCard = (revisionId: string, grade: 'again' | 'hard' | 'good' | 'easy') => {
     const today = getTodayDateString();
+    let updatedTopicId: string | null = null;
+    let nextDate: string | null = null;
+
     setRevisions(prev => prev.map(rev => {
       if (rev.id !== revisionId) return rev;
+      updatedTopicId = rev.topicId;
       const { nextRevisionDate, nextStage } = gradeRevision(rev, grade);
+      nextDate = nextRevisionDate;
+
+      const isPermanentlyMastered = nextStage >= 4 && grade !== 'again';
       return {
         ...rev,
-        completedDate: today,
-        status: 'completed',
+        completedDate: isPermanentlyMastered ? today : null,
         scheduledDate: nextRevisionDate,
         stage: nextStage,
-        history: [...rev.history, { date: today, grade, nextIntervalDays: nextStage }]
+        history: [
+          ...(rev.history || []),
+          { date: today, grade, nextIntervalDays: nextStage }
+        ]
       };
     }));
+
+    // Update corresponding topic in exams tree
+    if (updatedTopicId && nextDate) {
+      setExams(prevExams => prevExams.map(exam => ({
+        ...exam,
+        subjects: exam.subjects.map(subj => ({
+          ...subj,
+          chapters: subj.chapters.map(chap => ({
+            ...chap,
+            topics: chap.topics.map(top => {
+              if (top.id === updatedTopicId) {
+                return {
+                  ...top,
+                  lastStudied: today,
+                  nextRevision: nextDate,
+                  status: (top.status === 'revision_due' ? 'completed' : top.status) as TopicStatus
+                };
+              }
+              return top;
+            })
+          }))
+        }))
+      })));
+    }
+
+    // Record revision in activityHistory for today
+    setActivityHistory(prev => {
+      const existingToday = prev.find(a => a.date === today);
+      if (existingToday) {
+        return prev.map(a =>
+          a.date === today
+            ? { ...a, revisionsCompleted: (a.revisionsCompleted || 0) + 1, studyMinutes: a.studyMinutes + 10 }
+            : a
+        );
+      }
+      return [...prev, { date: today, studyMinutes: 15, topicsCompleted: 0, revisionsCompleted: 1 }];
+    });
+
+    // Reward XP
+    setProfile(prev => ({ ...prev, xp: prev.xp + 25 }));
     soundManager.playCompleteChime();
+    haptics.success();
   };
 
   const addTopic = (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => {
@@ -1083,6 +1221,10 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         };
       })
     })));
+    if (updates.name) {
+      const newName = updates.name.trim();
+      setRevisions(prev => prev.map(r => r.subjectId === subjectId ? { ...r, subjectName: newName } : r));
+    }
     soundManager.playClick();
   };
 
@@ -1113,6 +1255,10 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         };
       })
     })));
+    if (updates.name) {
+      const newName = updates.name.trim();
+      setRevisions(prev => prev.map(r => r.chapterId === chapterId ? { ...r, chapterName: newName } : r));
+    }
     soundManager.playClick();
   };
 
@@ -1157,7 +1303,30 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }))
       }))
     })));
-    setRevisions(prev => prev.map(r => r.topicId === topicId ? { ...r, topicName: updates.name?.trim() || r.topicName } : r));
+
+    // Instantly sync with revision records
+    setRevisions(prev => prev.map(r => {
+      if (r.topicId !== topicId) return r;
+      const newTopicName = updates.name !== undefined ? updates.name.trim() : r.topicName;
+      let newInterval = r.intervalDays;
+
+      // If difficulty or accuracy changed on an active pending card, adapt the interval
+      if ((updates.difficulty || updates.accuracy !== undefined) && !r.completedDate) {
+        const adaptiveIntervals = calculateAdaptiveIntervals(
+          updates.difficulty || 'Medium',
+          updates.accuracy,
+          false
+        );
+        newInterval = adaptiveIntervals[r.stage - 1] || r.intervalDays;
+      }
+
+      return {
+        ...r,
+        topicName: newTopicName,
+        intervalDays: newInterval
+      };
+    }));
+
     soundManager.playClick();
   };
 
@@ -1848,6 +2017,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return storageManager.getStorageHealthMetrics();
   };
 
+  const resyncAllRevisions = useCallback(() => {
+    setRevisions(prev => syncAllRevisionsWithSyllabus(exams, prev));
+    soundManager.playCompleteChime();
+    haptics.success();
+  }, [exams]);
+
   const contextValue = useMemo(() => ({
     exams,
     currentExam,
@@ -1864,6 +2039,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     weakTopics,
     revisions,
     dueRevisions,
+    resyncAllRevisions,
     plannerTasks,
     addPlannerTask,
     togglePlannerTask,
@@ -1934,6 +2110,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     weakTopics,
     revisions,
     dueRevisions,
+    resyncAllRevisions,
     plannerTasks,
     platforms,
     top3Targets,

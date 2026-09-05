@@ -21,7 +21,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Flame,
-  FileText
+  FileText,
+  AlertTriangle
 } from 'lucide-react';
 import { getTodayDateString, formatDateReadable, isDatePastOrToday } from '../../utils/dateUtils';
 import { RevisionRecord, Topic } from '../../types/syllabus';
@@ -35,9 +36,11 @@ interface RevisionViewProps {
 
 export const RevisionView: React.FC<RevisionViewProps> = ({
   onOpenRevisionSession,
-  onOpenTopicDrawer
+  onOpenTopicDrawer,
+  onOpenFocus
 }) => {
-  const { revisions, dueRevisions, allTopics, currentExam } = useSyllabus();
+  const { revisions, dueRevisions, allTopics, currentExam, resyncAllRevisions } = useSyllabus();
+  const [justSynced, setJustSynced] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'history'>('today');
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState<string>('all');
@@ -199,32 +202,59 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               <h2 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Spaced Repetition & Revision
               </h2>
-              <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
-                Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
+                  Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
+                </p>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live Reactive Sync
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* High-Impact Action Button */}
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              onOpenRevisionSession();
-            }}
-            disabled={dueRevisions.length === 0}
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 border tap-bounce ${
-              dueRevisions.length > 0
-                ? 'bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#E2E4F0] border-transparent shadow-[0_4px_15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                : 'bg-[#F8FAFC] dark:bg-[#1E1F2A] text-[#85877E] dark:text-[#71717A] border-[#E2E8F0] dark:border-[#2E3044] cursor-not-allowed opacity-75'
-            }`}
-          >
-            <Play className={`w-3.5 h-3.5 ${dueRevisions.length > 0 ? 'fill-current' : ''}`} />
-            <span>
-              {dueRevisions.length > 0
-                ? `Start Due Revision (${dueRevisions.length})`
-                : 'All Revisions Cleared ✓'}
-            </span>
-          </button>
+          {/* Right Action Cluster: Live Sync + Start Session */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                resyncAllRevisions();
+                setJustSynced(true);
+                setTimeout(() => setJustSynced(false), 2200);
+              }}
+              title="Instantly re-verify and align spaced revision intervals with your syllabus topics"
+              className={`flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-mono font-bold transition-all border cursor-pointer active:scale-95 ${
+                justSynced
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black shadow-xs'
+                  : 'bg-[#F8FAFC] dark:bg-[#20212E] text-[#65675F] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#2E3044] hover:border-emerald-500/50'
+              }`}
+            >
+              <Zap className={`w-3.5 h-3.5 ${justSynced ? 'text-emerald-500 fill-emerald-500 animate-pulse' : 'text-amber-500'}`} />
+              <span>{justSynced ? '✓ Synced with Topics!' : '⚡ Live Resync'}</span>
+            </button>
+
+            {/* High-Impact Action Button */}
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onOpenRevisionSession();
+              }}
+              disabled={dueRevisions.length === 0}
+              className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 border tap-bounce ${
+                dueRevisions.length > 0
+                  ? 'bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#E2E4F0] border-transparent shadow-[0_4px_15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                  : 'bg-[#F8FAFC] dark:bg-[#1E1F2A] text-[#85877E] dark:text-[#71717A] border-[#E2E8F0] dark:border-[#2E3044] cursor-not-allowed opacity-75'
+              }`}
+            >
+              <Play className={`w-3.5 h-3.5 ${dueRevisions.length > 0 ? 'fill-current' : ''}`} />
+              <span>
+                {dueRevisions.length > 0
+                  ? `Start Due Revision (${dueRevisions.length})`
+                  : 'All Revisions Cleared ✓'}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -432,6 +462,10 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               const meta = getSubjectMeta(rev.subjectName);
               const SubjIcon = meta.icon;
               const stageMeta = getStageMeta(rev.stage);
+              const difficulty = topicObj?.topic.difficulty || 'Medium';
+              const isWeak = topicObj?.topic.isWeak || topicObj?.topic.status === 'weak';
+              const accuracy = topicObj?.topic.accuracy;
+              const isOverdue = rev.scheduledDate < today;
 
               return (
                 <div
@@ -454,11 +488,47 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     </div>
 
                     <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap text-xs">
+                      <div className="flex items-center gap-1.5 flex-wrap text-xs">
                         <span className={`px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg border ${stageMeta.badgeClass}`}>
                           {stageMeta.label}
                         </span>
-                        <span className="text-[11px] font-mono font-bold text-[#65675F] dark:text-[#A1A1AA] truncate">
+
+                        {/* Difficulty Badge */}
+                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg border ${
+                          difficulty.toLowerCase() === 'hard'
+                            ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/25'
+                            : difficulty.toLowerCase() === 'easy'
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/25'
+                            : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/25'
+                        }`}>
+                          {difficulty}
+                        </span>
+
+                        {/* Weak Area Pill */}
+                        {isWeak && (
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            <span>Weak</span>
+                          </span>
+                        )}
+
+                        {/* Accuracy Pill */}
+                        {accuracy !== undefined && accuracy > 0 && (
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 tabular-nums">
+                            🎯 {accuracy}%
+                          </span>
+                        )}
+
+                        {/* Due/Overdue Tag */}
+                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg border ${
+                          isOverdue
+                            ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                        }`}>
+                          {isOverdue ? `Overdue (${formatDateReadable(rev.scheduledDate)})` : 'Due Today'}
+                        </span>
+
+                        <span className="text-[11px] font-mono font-medium text-[#65675F] dark:text-[#A1A1AA] truncate">
                           {rev.subjectName} • {rev.chapterName}
                         </span>
                       </div>
@@ -529,14 +599,18 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
         {activeTab === 'upcoming' && (
           displayedUpcoming.length > 0 ? (
             displayedUpcoming.map(rev => {
+              const topicObj = allTopics.find(t => t.topic.id === rev.topicId);
               const meta = getSubjectMeta(rev.subjectName);
               const SubjIcon = meta.icon;
               const stageMeta = getStageMeta(rev.stage);
+              const difficulty = topicObj?.topic.difficulty || 'Medium';
+              const isWeak = topicObj?.topic.isWeak || topicObj?.topic.status === 'weak';
+              const accuracy = topicObj?.topic.accuracy;
 
               return (
                 <div
                   key={rev.id}
-                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex items-center justify-between gap-4 group"
+                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-[#2563EB]/40 transition-all"
                 >
                   <div className="flex items-center gap-3.5 min-w-0 flex-1">
                     <div
@@ -546,22 +620,60 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     </div>
 
                     <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap text-xs">
                         <span className={`px-2 py-0.5 text-[11px] font-mono font-black rounded-lg border ${stageMeta.badgeClass}`}>
                           {stageMeta.label}
                         </span>
+
+                        {/* Difficulty Badge */}
+                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg border ${
+                          difficulty.toLowerCase() === 'hard'
+                            ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/25'
+                            : difficulty.toLowerCase() === 'easy'
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/25'
+                            : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/25'
+                        }`}>
+                          {difficulty}
+                        </span>
+
+                        {/* Weak Area Pill */}
+                        {isWeak && (
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            <span>Weak</span>
+                          </span>
+                        )}
+
+                        {/* Accuracy Pill */}
+                        {accuracy !== undefined && accuracy > 0 && (
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 tabular-nums">
+                            🎯 {accuracy}%
+                          </span>
+                        )}
+
                         <span className="text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">
                           {rev.subjectName} • {rev.chapterName}
                         </span>
                       </div>
+
                       <h4 className="text-sm font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
                         {rev.topicName}
                       </h4>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="px-3 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] font-mono flex items-center gap-1.5">
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+                    {onOpenTopicDrawer && topicObj && (
+                      <button
+                        onClick={() => onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName)}
+                        className="px-3.5 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2B3D] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] transition-all cursor-pointer active:scale-95 shrink-0"
+                        title="View Topic Details"
+                      >
+                        Inspect
+                      </button>
+                    )}
+
+                    <span className="px-3 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] font-mono flex items-center gap-1.5 shrink-0">
                       <Calendar className="w-3.5 h-3.5" />
                       <span>{formatDateReadable(rev.scheduledDate)}</span>
                     </span>
