@@ -408,8 +408,31 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     return (
       <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
+        {/* 🖨️ PRINT-ONLY CHAPTER REVISION CHEATSHEET HEADER */}
+        <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-widest text-gray-700 block">
+                {activeSubject.name} • CHAPTER REVISION CHECKLIST
+              </span>
+              <h1 className="text-2xl font-black uppercase tracking-tight text-black mt-1">
+                📖 {activeChapter.name}
+              </h1>
+              <div className="flex items-center gap-3 text-xs font-mono text-gray-700 mt-2">
+                <span>Progress: <strong>{chapterPercent}% ({completedInActiveChapter}/{totalInActiveChapter} Topics Mastered)</strong></span>
+                <span>• Total Topics: <strong>{totalInActiveChapter}</strong></span>
+              </div>
+            </div>
+            <div className="text-right text-xs font-mono">
+              <div className="font-bold text-black uppercase">Study Desk Revision Sheet</div>
+              <div className="text-gray-600 mt-1">Printed: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+              <div className="text-[10px] text-gray-500 mt-0.5">Syllabus 3D Precision Desk Tracker</div>
+            </div>
+          </div>
+        </div>
+
         {/* 1. TOP CHAPTER HERO BANNER */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
           <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3.5 min-w-0">
               
@@ -436,7 +459,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
 
             {/* Quick Actions (Back, Switcher & Mastery) */}
-            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto no-print">
               <button
                 onClick={handleBackToChapters}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
@@ -516,10 +539,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 2. TOPICS CONTENT CONTAINER */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
           
           {/* Header Bar: Tab, Search & Add Topic */}
-          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738]">
+          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div>
                 <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
@@ -562,7 +585,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           </div>
 
           {/* Status Filter Pills (Clean Pure Text with Icons, Zero Emojis) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 no-print">
             {[
               { id: 'all', label: 'All', count: statusCounts.all, icon: Layers },
               { id: 'completed', label: 'Mastered', count: statusCounts.completed, icon: CheckCircle2 },
@@ -653,7 +676,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={topic.id}
                     onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden"
+                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -666,24 +689,25 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     {/* Top Row: Squircle Thumbnail + Topic Title + Right Action */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
                       <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-                        {/* 3D Squircle Thumbnail Badge (No raw emojis) */}
-                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${design.boxClass}`}>
+                        {/* 3D Squircle Thumbnail Badge (No raw emojis - Hidden in print) */}
+                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden print:hidden ${design.boxClass}`}>
                           <BadgeIcon className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
                           <span className="text-[9px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none">
                             {design.badgeNum}
                           </span>
                         </div>
 
-                        {/* Title & Subtitle */}
+                        {/* Title & Subtitle with Desk Checkbox in Print */}
                         <div className="min-w-0 flex-1">
                           <h4 className={`text-sm sm:text-base font-black ${design.titleColor} group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug break-words line-clamp-2`}>
+                            <span className={`hidden print:inline-block desk-checkbox ${topic.status === 'completed' ? 'is-checked' : ''}`} />
                             {topic.name}
                           </h4>
                         </div>
                       </div>
 
-                      {/* Right: Status Pill & Action Chevron */}
-                      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                      {/* Right: Status Pill & Action Chevron (Hidden in print) */}
+                      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 no-print">
                         <div
                           onClick={(e) => {
                             e.stopPropagation();
@@ -759,8 +783,31 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     return (
       <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
+        {/* 🖨️ PRINT-ONLY SUBJECT REVISION CHEATSHEET HEADER */}
+        <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-widest text-gray-700 block">
+                {currentExam.name} • SUBJECT CHAPTER DIRECTORY
+              </span>
+              <h1 className="text-2xl font-black uppercase tracking-tight text-black mt-1">
+                📚 {activeSubject.name} REVISION PLAN
+              </h1>
+              <div className="flex items-center gap-3 text-xs font-mono text-gray-700 mt-2">
+                <span>Progress: <strong>{subjectPercent}% ({completedSubjectTopics}/{totalSubjectTopics} Topics Mastered)</strong></span>
+                <span>• Chapters: <strong>{activeSubject.chapters.length}</strong></span>
+              </div>
+            </div>
+            <div className="text-right text-xs font-mono">
+              <div className="font-bold text-black uppercase">Study Desk Revision Sheet</div>
+              <div className="text-gray-600 mt-1">Printed: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+              <div className="text-[10px] text-gray-500 mt-0.5">Syllabus 3D Precision Desk Tracker</div>
+            </div>
+          </div>
+        </div>
+
         {/* 1. TOP SUBJECT HERO BANNER */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
           <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3.5 min-w-0">
               
@@ -787,7 +834,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
 
             {/* Quick Actions (Back, Mastery Pill & Edit) */}
-            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto no-print">
               <button
                 onClick={handleBackToSubjects}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#262738] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
@@ -846,10 +893,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 2. CHAPTERS CONTENT CONTAINER */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
           
           {/* Executive Header & Search Toolbar */}
-          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738]">
+          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div>
                 <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
@@ -925,7 +972,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={chapter.id}
                     onClick={() => handleSelectChapter(chapter.id)}
-                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden"
+                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -1044,9 +1091,33 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   return (
     <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
       
+      {/* 🖨️ PRINT-ONLY CLEAN DESK REVISION CHEATSHEET HEADER */}
+      <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
+        <div className="flex justify-between items-start">
+          <div>
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-gray-700 block">
+              STUDY DESK REVISION CHEATSHEET
+            </span>
+            <h1 className="text-2xl font-black uppercase tracking-tight text-black mt-1">
+              🎯 {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL'} SYLLABUS TRACKER
+            </h1>
+            <div className="flex items-center gap-3 text-xs font-mono text-gray-700 mt-2">
+              <span>Exam Date: <strong>{formattedExamDate}</strong></span>
+              {daysRemaining > 0 && <span>• Days Left: <strong>{daysRemaining}d</strong></span>}
+              <span>• Progress: <strong>{overallPercentage}% ({completedTopicsCount}/{totalTopicsCount} Topics Mastered)</strong></span>
+            </div>
+          </div>
+          <div className="text-right text-xs font-mono">
+            <div className="font-bold text-black uppercase">Desk Wall Planner</div>
+            <div className="text-gray-600 mt-1">Printed: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+            <div className="text-[10px] text-gray-500 mt-0.5">Syllabus 3D Precision Study System</div>
+          </div>
+        </div>
+      </div>
+
       {/* 1. TOP BATCH HERO BANNER WITH NIGHT STUDY DESK BACKGROUND */}
-      {/* 1. TOP EXAM HERO BANNER */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-[#262738] shadow-2xl relative overflow-hidden text-white">
+      {/* 1. TOP EXAM HERO BANNER (Hidden in Print) */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-[#262738] shadow-2xl relative overflow-hidden text-white print:hidden">
         
         {/* Study Desk Background Image with Warm Lamp Glow */}
         <div 
@@ -1104,10 +1175,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       </div>
 
       {/* 2. PORTAL CONTENT CONTAINER */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
         
         {/* Executive Header & Search Toolbar */}
-        <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738]">
+        <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div>
               <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">

@@ -2333,7 +2333,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     <div className="space-y-3" onPaste={handlePaste} onMouseUp={handleMouseUpSelection} onTouchEnd={handleMouseUpSelection}>
       
       {/* 🌟 UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
-      <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#E2E8F0]/60 dark:divide-[#272730]">
+      <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#E2E8F0]/60 dark:divide-[#272730] no-print">
         
         {/* Tier 1: Modern Multi-Note Tabs Track */}
         <div className="p-2 px-3 bg-[#F8FAFC]/80 dark:bg-[#12131C]/60 flex items-center justify-between gap-3">
@@ -2890,8 +2890,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
       {/* 3. MAIN CONTENT BODY ACCORDING TO VIEW MODE */}
       {viewMode === 'edit' && (
-        /* Full Editor Mode */
-        <div className="space-y-2" onPaste={handlePaste}>
+        /* Full Editor Mode (Hidden in Print) */
+        <div className="space-y-2 print:hidden" onPaste={handlePaste}>
           <textarea
             ref={textareaRef}
             value={content}
@@ -2905,8 +2905,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       )}
 
       {viewMode === 'split' && (
-        /* Split Live View (Side-by-Side Editor & Live Render) */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3" onPaste={handlePaste}>
+        /* Split Live View (Side-by-Side Editor & Live Render - Hidden in Print) */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 print:hidden" onPaste={handlePaste}>
           <div className="flex flex-col space-y-1.5">
             <div className="text-[11px] font-bold text-[#85877E] uppercase font-mono flex items-center justify-between px-1">
               <span>Markdown Source Editor</span>
@@ -2934,15 +2934,24 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         </div>
       )}
 
+      {/* Print-Only: Always render clean formatted study notes even if user was editing on screen */}
+      {viewMode !== 'study' && (
+        <div className="hidden print:block space-y-4">
+          <div className="p-0 select-text">
+            {renderFormattedNotes()}
+          </div>
+        </div>
+      )}
+
       {viewMode === 'study' && (
         /* Study Mode (Clean, magazine-quality visual notes with Freefall & Box Overlay) */
         <div className="space-y-4">
           <div className="relative" ref={notesContainerRef}>
-            <div className={`p-4 sm:p-7 rounded-3xl ${getThemeContainerClass()} min-h-[220px] select-text cursor-text relative z-10`}>
+            <div className={`p-4 sm:p-7 rounded-3xl ${getThemeContainerClass()} min-h-[220px] select-text cursor-text relative z-10 print:p-0 print:border-none print:shadow-none`}>
               {renderFormattedNotes()}
             </div>
 
-            {/* Freefall Canvas Overlay */}
+            {/* Freefall Canvas Overlay (Hidden in print) */}
             <canvas
               ref={canvasRef}
               onMouseDown={startDrawing}
@@ -2952,7 +2961,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               onTouchStart={startDrawing}
               onTouchMove={drawMove}
               onTouchEnd={endDrawing}
-              className={`absolute inset-0 z-20 rounded-3xl ${
+              className={`absolute inset-0 z-20 rounded-3xl print:hidden ${
                 highlighterMode === 'freefall' && isHighlighterActive
                   ? 'pointer-events-auto cursor-crosshair'
                   : 'pointer-events-none'

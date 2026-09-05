@@ -386,7 +386,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
       </div>
 
       {/* 2. Search & Filter Bar */}
-      <div className="space-y-2.5">
+      <div className="space-y-2.5 no-print">
         <div className="relative w-full">
           <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -535,7 +535,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             return (
               <div
                 key={m.id}
-                className={`group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-subtle-depth space-y-3.5 overflow-hidden ${
+                className={`group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-subtle-depth space-y-3.5 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg ${
                   m.resolved
                     ? 'bg-[#F8FAFC] dark:bg-[#181A28]/80 border-emerald-500/40 opacity-90'
                     : 'bg-white dark:bg-[#181A28] border-[#E2E8F0] dark:border-[#2F3146] hover:border-rose-500/50 shadow-xs hover:shadow-lg'
@@ -648,7 +648,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 </div>
 
                 {/* Footer Action Bar */}
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center justify-between pt-1 no-print">
                   <button
                     type="button"
                     onClick={() => handleToggleResolve(m)}

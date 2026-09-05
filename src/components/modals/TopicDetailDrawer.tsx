@@ -21,7 +21,8 @@ import {
   Circle,
   AlertTriangle,
   CheckCircle2,
-  Zap
+  Zap,
+  Printer
 } from 'lucide-react';
 import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
 import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
@@ -146,6 +147,14 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     setIsEditing(false);
     setShowDeleteConfirm(false);
   }, [topic?.id]);
+
+  // Mark body for isolated print mode when Topic Drawer is open
+  useEffect(() => {
+    document.body.classList.add('has-topic-drawer-open');
+    return () => {
+      document.body.classList.remove('has-topic-drawer-open');
+    };
+  }, []);
 
   // Mobile Swipe-Down to Dismiss Touch Gesture State
   const touchStartY = useRef<number | null>(null);
@@ -428,10 +437,10 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] overflow-hidden flex justify-end">
+    <div className="fixed inset-0 z-[100] overflow-hidden flex justify-end topic-drawer-portal">
       {/* Explicit Dark Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-fade-in pointer-events-auto transition-opacity"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-fade-in pointer-events-auto transition-opacity topic-drawer-backdrop no-print"
         onClick={onClose}
       />
 
@@ -443,7 +452,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             transform: dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
             transition: dragOffsetY === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
           }}
-          className="w-screen max-w-2xl bg-white dark:bg-[#0B0B0D] border-l border-[#E2E8F0] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none"
+          className="w-screen max-w-2xl bg-white dark:bg-[#0B0B0D] border-l border-[#E2E8F0] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none topic-drawer-container"
         >
           
           {/* Mobile Pull-Down Drag Handle with Safe-Area Notch Clearance */}
@@ -451,16 +460,42 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="sm:hidden pt-[max(0.75rem,env(safe-area-inset-top,0px))] pb-1 flex items-center justify-center cursor-grab active:cursor-grabbing bg-white dark:bg-[#18181D] select-none"
+            className="sm:hidden pt-[max(0.75rem,env(safe-area-inset-top,0px))] pb-1 flex items-center justify-center cursor-grab active:cursor-grabbing bg-white dark:bg-[#18181D] select-none no-print"
           >
             <div className="w-12 h-1.5 rounded-full bg-[#CBD5E1] dark:bg-[#475569] active:scale-95 transition-transform" />
           </div>
-          {/* Header */}
+
+          {/* Print-Only Desk Revision Cheatsheet Header */}
+          <div className="hidden print:block p-6 pb-4 border-b-2 border-black">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="text-xs font-mono font-bold uppercase tracking-widest text-gray-700 block">
+                  {subjectName || 'Subject'} › {chapterName || 'Chapter'}
+                </span>
+                <h1 className="text-2xl font-black uppercase tracking-tight text-black mt-1">
+                  📝 {liveTopic.name} • REVISION CHEATSHEET
+                </h1>
+                <div className="flex items-center gap-3 text-xs font-mono text-gray-700 mt-2">
+                  <span>Status: <strong>{(liveTopic.status || 'not_started').toUpperCase()}</strong></span>
+                  {liveTopic.difficulty && <span>• Difficulty: <strong>{liveTopic.difficulty.toUpperCase()}</strong></span>}
+                  {liveTopic.weightage !== undefined && <span>• Weightage: <strong>{liveTopic.weightage} Marks</strong></span>}
+                  {liveTopic.accuracy !== undefined && <span>• Mock Accuracy: <strong>{liveTopic.accuracy}%</strong></span>}
+                </div>
+              </div>
+              <div className="text-right text-xs font-mono">
+                <div className="font-bold text-black uppercase">Study Desk Revision Sheet</div>
+                <div className="text-gray-600 mt-1">Printed: {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">Syllabus 3D Precision Desk Tracker</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Screen Header */}
           <div
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="p-4 sm:p-6 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4 relative overflow-hidden"
+            className="p-4 sm:p-6 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-4 relative overflow-hidden print:hidden"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
@@ -477,6 +512,19 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  window.print();
+                }}
+                className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] hover:text-[#2563EB] dark:hover:text-[#7AA2F7] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-colors cursor-pointer flex items-center justify-center active:scale-95 no-print"
+                title="Print Revision Cheatsheet (Ctrl + P)"
+                aria-label="Print Revision Cheatsheet"
+              >
+                <Printer className="w-4 h-4" />
+              </button>
+
               <button
                 onClick={() => {
                   soundManager.playClick();
@@ -507,7 +555,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
           {/* EDIT TOPIC FORM PANEL (Appears directly beneath header when pencil is clicked) */}
           {isEditing && (
-            <div className="p-4 sm:p-6 bg-white dark:bg-[#18181D] border-b-2 border-[#2563EB] dark:border-[#7AA2F7] shadow-md animate-fade-in">
+            <div className="p-4 sm:p-6 bg-white dark:bg-[#18181D] border-b-2 border-[#2563EB] dark:border-[#7AA2F7] shadow-md animate-fade-in no-print">
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#E2E8F0] dark:border-[#272730]">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                   <Edit3 className="w-4 h-4" />
@@ -655,7 +703,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           {/* Tab Navigation */}
           <div
             ref={tabBarRef}
-            className="flex items-center px-4 sm:px-6 pt-2 pb-0 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar"
+            className="flex items-center px-4 sm:px-6 pt-2 pb-0 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar no-print"
           >
             {[
               { id: 'overview', label: 'Overview & Metrics', icon: BookOpen },
@@ -713,7 +761,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           </div>
 
           {/* Mobile Swipe Navigation Indicator Bar */}
-          <div className="sm:hidden flex items-center justify-between px-4 py-1.5 bg-[#F8FAFC] dark:bg-[#12131F] border-b border-[#E2E8F0]/60 dark:border-[#272730]/60 text-[11px] font-mono text-[#65675F] dark:text-[#94A3B8] select-none">
+          <div className="sm:hidden flex items-center justify-between px-4 py-1.5 bg-[#F8FAFC] dark:bg-[#12131F] border-b border-[#E2E8F0]/60 dark:border-[#272730]/60 text-[11px] font-mono text-[#65675F] dark:text-[#94A3B8] select-none no-print">
             <button
               type="button"
               disabled={activeTab === 'overview'}
@@ -779,8 +827,45 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleContentTouchStart}
             onTouchMove={handleContentTouchMove}
             onTouchEnd={handleContentTouchEnd}
-            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 overscroll-contain pb-[max(2.5rem,env(safe-area-inset-bottom,0px))]"
+            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 overscroll-contain pb-[max(2.5rem,env(safe-area-inset-bottom,0px))] topic-drawer-content"
           >
+            {/* Print-Only Concept Checkpoints with Physical Pen Checkboxes */}
+            {liveTopic.subtopics && liveTopic.subtopics.length > 0 && (
+              <div className="hidden print:block p-4 border border-black rounded-lg mb-4 print-avoid-break">
+                <div className="flex justify-between items-center border-b border-gray-300 pb-1.5 mb-2.5">
+                  <h3 className="text-xs font-mono font-black uppercase tracking-wider text-black">
+                    Concept Checkpoints ({liveTopic.subtopics.length})
+                  </h3>
+                  <span className="text-[10px] font-mono text-gray-600">Tick with pen on desk [✓]</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  {liveTopic.subtopics.map((st, idx) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <span className="desk-checkbox" />
+                      <span className="text-black font-medium leading-snug">{st}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* If in Overview tab during print, also display Study Notes so the student gets a complete cheatsheet */}
+            {activeTab === 'overview' && liveTopic.notes && liveTopic.notes.trim().length > 0 && (
+              <div className="hidden print:block border-t-2 border-black pt-4 mt-6 print-avoid-break">
+                <h3 className="text-xs font-mono font-black uppercase tracking-wider text-black mb-3 border-b border-gray-300 pb-1">
+                  Master Study Notes
+                </h3>
+                <ProfessionalNotesEditor
+                  initialContent={liveTopic.notes}
+                  initialNoteItems={liveTopic.noteItems}
+                  topicName={liveTopic.name}
+                  subjectName={subjectName}
+                  chapterName={chapterName}
+                  examName="SSC CGL"
+                  onSave={() => {}}
+                />
+              </div>
+            )}
             
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (

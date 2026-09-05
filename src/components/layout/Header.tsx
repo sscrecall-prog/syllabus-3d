@@ -16,7 +16,8 @@ import {
   WifiOff,
   Check,
   Download,
-  Settings2
+  Settings2,
+  Printer
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { EditExamTargetModal } from '../modals/EditExamTargetModal';
@@ -211,6 +212,20 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden md:inline">Install App</span>
             </button>
           )}
+
+          {/* Clean Desk Revision Print Mode Trigger */}
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              haptics.selection();
+              window.print();
+            }}
+            className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#2563EB] dark:text-[#A1A1AA] dark:hover:text-[#7AA2F7] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 no-print"
+            title="Print Desk Revision Cheatsheet (Ctrl + P)"
+            aria-label="Print Desk Revision Cheatsheet"
+          >
+            <Printer className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+          </button>
 
           {/* Theme Toggle (Light / Dark / OLED) */}
           <button

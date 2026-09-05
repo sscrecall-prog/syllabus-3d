@@ -630,3 +630,188 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .sepia ::-webkit-scrollbar-track { background: #EDE6D6; }
 .sepia ::-webkit-scrollbar-thumb { background: #C4B896; }
 .sepia ::-webkit-scrollbar-thumb:hover { background: #A89A78; }
+
+/* ═══════════════════════════════════════════════════════════════
+   🖨️ CLEAN DESK REVISION PRINT MODE (Ctrl + P)
+   Zero-ink-waste, pure white background, razor-sharp typography,
+   no sidebars/buttons/overlays, multi-page unclipped layout.
+   ═══════════════════════════════════════════════════════════════ */
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm 12mm 10mm;
+  }
+
+  /* Universal zero-ink reset */
+  *,
+  *::before,
+  *::after {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #111111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+
+  html,
+  body,
+  #root,
+  #root > div {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #111111 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Reset main workspace wrapper */
+  div.md\:pl-64 {
+    padding-left: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* De-clutter non-print web chrome, sidebars, toolbars & floating overlays */
+  aside,
+  nav,
+  header button,
+  .no-print,
+  [data-no-print="true"],
+  button:not(.print-keep),
+  input:not([type="checkbox"]),
+  textarea,
+  select,
+  iframe,
+  audio,
+  video,
+  div[role="region"][aria-label*="Focus"],
+  div[role="region"][aria-label*="Timer"],
+  .offline-status-pill,
+  .pwa-banner,
+  .topic-drawer-backdrop {
+    display: none !important;
+  }
+
+  /* Allow print-only utility classes */
+  .print\:block {
+    display: block !important;
+  }
+  .print\:flex {
+    display: flex !important;
+  }
+  .print\:inline-block {
+    display: inline-block !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Unclip all scrollable containers so long notes/syllabus flow across pages */
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .overflow-hidden {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Topic Detail Drawer in Print Mode: Full-page cheatsheet */
+  .topic-drawer-portal {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #FFFFFF !important;
+    z-index: auto !important;
+  }
+
+  .topic-drawer-container {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    transform: none !important;
+    padding: 0 !important;
+  }
+
+  .topic-drawer-content {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+  }
+
+  /* If topic drawer is open when printing, hide the background view */
+  body.has-topic-drawer-open #root > div > div.flex-1 {
+    display: none !important;
+  }
+
+  /* Page break rules for clean desk sheets */
+  article,
+  section,
+  .print-avoid-break,
+  .break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Crisp borders for tables, boxes and cards */
+  .print-border {
+    border: 1px solid #94A3B8 !important;
+  }
+  .print-border-b {
+    border-bottom: 1px solid #94A3B8 !important;
+  }
+
+  /* Physical Pen Checkbox Squares [ ] for desk tick-off */
+  .desk-checkbox {
+    display: inline-block !important;
+    width: 13px !important;
+    height: 13px !important;
+    border: 1.5px solid #111111 !important;
+    border-radius: 2.5px !important;
+    margin-right: 6px !important;
+    vertical-align: middle !important;
+    flex-shrink: 0 !important;
+    background: #FFFFFF !important;
+  }
+  .desk-checkbox.is-checked {
+    background: #111111 !important;
+    position: relative !important;
+  }
+  .desk-checkbox.is-checked::after {
+    content: '✓';
+    color: #FFFFFF !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 12px !important;
+  }
+
+  /* Suppress URLs on hyperlinks */
+  a[href]::after {
+    content: none !important;
+  }
+}
