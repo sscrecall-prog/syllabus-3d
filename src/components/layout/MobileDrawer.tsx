@@ -421,7 +421,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 className="flex-1 py-2 px-3 rounded-xl bg-white dark:bg-[#161724] border border-[#E2E8F0] dark:border-[#26283D] text-[#65675F] dark:text-[#A1A1B2] hover:text-[#11120F] dark:hover:text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer tap-bounce"
               >
                 <Search className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
-                <span>Search (⌘K)</span>
+                <span>Search</span>
               </button>
             )}
 

@@ -87,7 +87,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || (typeof window !== 'undefined' && window.innerWidth < 768)) return null;
 
   const shortcuts: ShortcutItem[] = [
     // 🧭 Quick View Navigation
@@ -327,7 +327,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md animate-fade-in select-none"
+      className="hidden md:flex fixed inset-0 z-[110] items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md animate-fade-in select-none"
       onClick={() => {
         haptics.light();
         onClose();

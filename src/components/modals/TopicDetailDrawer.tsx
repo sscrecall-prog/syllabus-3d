@@ -816,7 +816,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       {tab.badge}
                     </span>
                   )}
-                  <kbd className="hidden sm:inline-block ml-0.5 px-1.5 py-0.2 text-[9px] font-mono font-bold rounded bg-black/5 dark:bg-white/10 text-[#85877E] dark:text-[#94A3B8] border border-black/10 dark:border-white/10">
+                  <kbd className="hidden md:inline-block ml-0.5 px-1.5 py-0.2 text-[9px] font-mono font-bold rounded bg-black/5 dark:bg-white/10 text-[#85877E] dark:text-[#94A3B8] border border-black/10 dark:border-white/10">
                     {tabIdx + 1}
                   </kbd>
                 </button>

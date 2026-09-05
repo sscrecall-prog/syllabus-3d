@@ -314,8 +314,8 @@ export const App: React.FC = () => {
 
       if (isTyping) return;
 
-      // ? or Shift + / -> Toggle Keyboard Shortcuts Modal
-      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+      // ? or Shift + / -> Toggle Keyboard Shortcuts Modal (Web / Desktop Only)
+      if ((e.key === '?' || (e.shiftKey && e.key === '/')) && window.innerWidth >= 768) {
         e.preventDefault();
         setIsShortcutsOpen(prev => !prev);
         return;
@@ -605,7 +605,6 @@ export const App: React.FC = () => {
             window.history.pushState({ modal: 'search' }, '');
           }}
           onOpenSettings={() => handleNavigate('settings')}
-          onOpenShortcuts={() => setIsShortcutsOpen(true)}
           onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
           canGoBack={currentView !== 'overview'}
           onGoBack={handleBack}
@@ -832,12 +831,12 @@ export const App: React.FC = () => {
         )}
       </Suspense>
 
-      {/* ⚡ Power User Keyboard Shortcut Toast Banner */}
+      {/* ⚡ Power User Keyboard Shortcut Toast Banner (Web / Desktop Only) */}
       {shortcutToast && (
         <div
           role="status"
           aria-live="polite"
-          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[120] px-4 py-2 rounded-2xl bg-[#0F172A]/90 dark:bg-[#1E1F2E]/95 text-white border border-[#334155]/60 dark:border-[#383A52] shadow-2xl backdrop-blur-md flex items-center gap-2.5 animate-fade-in pointer-events-none select-none"
+          className="hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] px-4 py-2 rounded-2xl bg-[#0F172A]/90 dark:bg-[#1E1F2E]/95 text-white border border-[#334155]/60 dark:border-[#383A52] shadow-2xl backdrop-blur-md items-center gap-2.5 animate-fade-in pointer-events-none select-none"
         >
           <div className="w-5 h-5 rounded-lg bg-[#2563EB]/25 dark:bg-[#7AA2F7]/25 text-[#60A5FA] dark:text-[#7AA2F7] flex items-center justify-center font-bold text-xs">
             ⌨️

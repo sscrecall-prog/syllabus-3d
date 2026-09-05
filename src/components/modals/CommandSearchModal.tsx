@@ -137,7 +137,7 @@ export const CommandSearchModal: React.FC<CommandSearchModalProps> = ({
               <X className="w-4 h-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono font-bold bg-[#EEEEE8] dark:bg-[#232438] text-[#85877E] rounded-md border border-[#E2E8F0] dark:border-[#2E3048]">
+          <kbd className="hidden md:inline-block px-2 py-0.5 text-[11px] font-mono font-bold bg-[#EEEEE8] dark:bg-[#232438] text-[#85877E] rounded-md border border-[#E2E8F0] dark:border-[#2E3048]">
             ESC
           </kbd>
         </div>
