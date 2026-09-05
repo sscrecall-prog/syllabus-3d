@@ -306,6 +306,66 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
+  // ⌨️ Power User Keyboard Shortcuts for Topic Detail Drawer
+  useEffect(() => {
+    const handleDrawerKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isTyping = Boolean(
+        activeEl && (
+          activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.tagName === 'SELECT' ||
+          activeEl.getAttribute('contenteditable') === 'true'
+        )
+      );
+
+      // Ctrl + S / Cmd + S: Instant Quick Save
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        soundManager.playCompleteChime();
+        haptics.success();
+        if (liveTopic) {
+          updateTopicNotes(liveTopic.id, notes);
+          setEditSavedNotice(true);
+          setTimeout(() => setEditSavedNotice(false), 2200);
+        }
+        return;
+      }
+
+      // If user is currently typing in an input or textarea, don't hijack single keys
+      if (isTyping) return;
+
+      if (e.key === '1') {
+        e.preventDefault();
+        switchTab('overview');
+      } else if (e.key === '2') {
+        e.preventDefault();
+        switchTab('lectures');
+      } else if (e.key === '3') {
+        e.preventDefault();
+        switchTab('notes');
+      } else if (e.key === '4') {
+        e.preventDefault();
+        switchTab('mistakes');
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const currentIdx = DRAWER_TABS.indexOf(activeTab);
+        if (currentIdx > 0) {
+          switchTab(DRAWER_TABS[currentIdx - 1]);
+        }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        const currentIdx = DRAWER_TABS.indexOf(activeTab);
+        if (currentIdx < DRAWER_TABS.length - 1) {
+          switchTab(DRAWER_TABS[currentIdx + 1]);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleDrawerKeyDown);
+    return () => window.removeEventListener('keydown', handleDrawerKeyDown);
+  }, [activeTab, DRAWER_TABS, liveTopic, notes, switchTab, updateTopicNotes]);
+
   if (!liveTopic) return null;
 
   // Accuracy updater
@@ -734,7 +794,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 badge: activeMistakesCount > 0 ? `${activeMistakesCount} active` : null,
                 badgeColor: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
               }
-            ].map(tab => {
+            ].map((tab, tabIdx) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
@@ -747,6 +807,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       ? 'border-[#11120F] dark:border-white text-[#11120F] dark:text-white font-black'
                       : 'border-transparent text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
                   }`}
+                  title={`${tab.label} (Press ${tabIdx + 1})`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
@@ -755,6 +816,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                       {tab.badge}
                     </span>
                   )}
+                  <kbd className="hidden sm:inline-block ml-0.5 px-1.5 py-0.2 text-[9px] font-mono font-bold rounded bg-black/5 dark:bg-white/10 text-[#85877E] dark:text-[#94A3B8] border border-black/10 dark:border-white/10">
+                    {tabIdx + 1}
+                  </kbd>
                 </button>
               );
             })}

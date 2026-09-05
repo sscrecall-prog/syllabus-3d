@@ -20,6 +20,7 @@ import { PWAInstallBanner } from './components/common/PWAInstallBanner';
 import { OfflineStatusIndicator } from './components/common/OfflineStatusIndicator';
 import { ViewErrorBoundary } from './components/common/ViewErrorBoundary';
 import { storageManager } from './services/storageManager';
+import { useTheme } from './context/ThemeContext';
 
 // ⚡ Lazy Loaded Secondary Views (Code Splitting for Lightning-Fast Initial Load)
 const SyllabusView = lazy(() => import('./components/views/SyllabusView').then(m => ({ default: m.SyllabusView })));
@@ -40,6 +41,7 @@ const PomodoroFocusModal = lazy(() => import('./components/focus/PomodoroFocusMo
 const CommandSearchModal = lazy(() => import('./components/modals/CommandSearchModal').then(m => ({ default: m.CommandSearchModal })));
 const AddTopicModal = lazy(() => import('./components/modals/AddTopicModal').then(m => ({ default: m.AddTopicModal })));
 const FloatingTimerPermissionModal = lazy(() => import('./components/modals/FloatingTimerPermissionModal').then(m => ({ default: m.FloatingTimerPermissionModal })));
+const KeyboardShortcutsModal = lazy(() => import('./components/modals/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })));
 
 const ViewLoadingFallback: React.FC = () => (
   <div className="w-full space-y-5 animate-view-fade select-none pb-12">
@@ -77,7 +79,20 @@ export const App: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
   const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [shortcutToast, setShortcutToast] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
+
+  const { toggleTheme } = useTheme();
+
+  const showShortcutToast = useCallback((msg: string) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setShortcutToast(msg);
+    toastTimeoutRef.current = setTimeout(() => {
+      setShortcutToast(null);
+    }, 1800);
+  }, []);
 
   // Topic Drawer
   const [selectedTopic, setSelectedTopic] = useState<{
@@ -216,25 +231,6 @@ export const App: React.FC = () => {
     closeFullModal
   ]);
 
-  // Keyboard Shortcuts (Ctrl+K for Search, Escape to Close Modals)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        setIsSearchOpen(prev => !prev);
-      }
-      if (e.key === 'Escape') {
-        if (isSearchOpen) setIsSearchOpen(false);
-        if (isAddTopicOpen) setIsAddTopicOpen(false);
-        if (isRevisionSessionOpen) setIsRevisionSessionOpen(false);
-        if (selectedTopic) setSelectedTopic(null);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSearchOpen, isAddTopicOpen, isRevisionSessionOpen, selectedTopic]);
-
   const handleOpenTopicDrawer = (topic: Topic, subjectName: string, chapterName: string) => {
     haptics.medium();
     setSelectedTopic({ topic, subjectName, chapterName });
@@ -257,6 +253,187 @@ export const App: React.FC = () => {
     }
     openFullModal();
   };
+
+  // ♿ Power User Keyboard Shortcuts & Quick Navigation Engine
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command Search Palette: Ctrl+K or Cmd+K (allowed everywhere)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+        return;
+      }
+
+      // Allow native browser print: Ctrl+P / Cmd+P
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        return;
+      }
+
+      // Hierarchical Escape Handler
+      if (e.key === 'Escape') {
+        if (isShortcutsOpen) {
+          setIsShortcutsOpen(false);
+          return;
+        }
+        if (isSearchOpen) {
+          setIsSearchOpen(false);
+          return;
+        }
+        if (isAddTopicOpen) {
+          setIsAddTopicOpen(false);
+          return;
+        }
+        if (isRevisionSessionOpen) {
+          setIsRevisionSessionOpen(false);
+          return;
+        }
+        if (selectedTopic) {
+          setSelectedTopic(null);
+          return;
+        }
+        if (isFullModalOpen) {
+          closeFullModal();
+          return;
+        }
+        if (isMobileDrawerOpen) {
+          setIsMobileDrawerOpen(false);
+          return;
+        }
+      }
+
+      // Check if user is actively typing in an input, textarea, or contenteditable
+      const activeEl = document.activeElement;
+      const isTyping = Boolean(
+        activeEl && (
+          activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.tagName === 'SELECT' ||
+          activeEl.getAttribute('contenteditable') === 'true'
+        )
+      );
+
+      if (isTyping) return;
+
+      // ? or Shift + / -> Toggle Keyboard Shortcuts Modal
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setIsShortcutsOpen(prev => !prev);
+        return;
+      }
+
+      // / -> Open Command Search Palette
+      if (e.key === '/') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+        return;
+      }
+
+      // Single-Key Direct View Navigation:
+      if (e.key === '1') {
+        e.preventDefault();
+        handleNavigate('overview');
+        showShortcutToast('Jumped to Dashboard [1]');
+        return;
+      }
+      if (e.key === '2') {
+        e.preventDefault();
+        handleNavigate('syllabus');
+        showShortcutToast('Jumped to Syllabus Explorer [2]');
+        return;
+      }
+      if (e.key === '3') {
+        e.preventDefault();
+        handleNavigate('planner');
+        showShortcutToast('Jumped to Study Planner [3]');
+        return;
+      }
+      if (e.key === '4') {
+        e.preventDefault();
+        handleNavigate('revision');
+        showShortcutToast('Jumped to Spaced Revision [4]');
+        return;
+      }
+      if (e.key === '5') {
+        e.preventDefault();
+        handleNavigate('weak');
+        showShortcutToast('Jumped to Weak Topics & Traps [5]');
+        return;
+      }
+      if (e.key === '6') {
+        e.preventDefault();
+        handleNavigate('mindmap');
+        showShortcutToast('Jumped to Concept Mind Map [6]');
+        return;
+      }
+      if (e.key === '7') {
+        e.preventDefault();
+        handleNavigate('analytics');
+        showShortcutToast('Jumped to Analytics & Heatmap [7]');
+        return;
+      }
+      if (e.key === '8') {
+        e.preventDefault();
+        handleNavigate('platforms');
+        showShortcutToast('Jumped to Study Station & Hub [8]');
+        return;
+      }
+      if (e.key === '9') {
+        e.preventDefault();
+        handleNavigate('settings');
+        showShortcutToast('Jumped to App Settings [9]');
+        return;
+      }
+
+      // Single-Key Action Shortcuts:
+      // F -> 3D Focus Chamber
+      if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        handleLaunchFocus(undefined);
+        showShortcutToast('Opened 3D Focus Chamber [F]');
+        return;
+      }
+
+      // N -> Add Custom Topic
+      if (e.key.toLowerCase() === 'n' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        setIsAddTopicOpen(true);
+        showShortcutToast('Opened Add Custom Topic [N]');
+        return;
+      }
+
+      // D -> Toggle Dark / Light Theme
+      if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        toggleTheme();
+        showShortcutToast('Theme Toggled [D]');
+        return;
+      }
+
+      // P -> Clean Desk Print Mode
+      if (e.key.toLowerCase() === 'p' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        soundManager.playClick();
+        haptics.selection();
+        window.print();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    isShortcutsOpen,
+    isSearchOpen,
+    isAddTopicOpen,
+    isRevisionSessionOpen,
+    selectedTopic,
+    isFullModalOpen,
+    isMobileDrawerOpen,
+    handleNavigate,
+    showShortcutToast,
+    toggleTheme,
+    closeFullModal
+  ]);
 
   // 📱 Mobile Top-Level Horizontal View Swiping (Overview ⇄ Syllabus ⇄ Planner)
   const viewSwipeStartX = useRef<number | null>(null);
@@ -371,6 +548,11 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5] flex flex-col md:flex-row transition-colors duration-300">
       
+      {/* ♿ Skip to Main Content Link for Keyboard & Screen Reader Users */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content (Press Enter)
+      </a>
+
       {/* 3D Animated Startup Intro */}
       {showIntro && (
         <AnimatedLogoIntro onComplete={() => {
@@ -388,6 +570,7 @@ export const App: React.FC = () => {
           window.history.pushState({ modal: 'add_topic' }, '');
         }}
         onOpenFocus={() => handleLaunchFocus(undefined)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       {/* Mobile Drawer (Left Hamburger Sheet) */}
@@ -422,16 +605,19 @@ export const App: React.FC = () => {
             window.history.pushState({ modal: 'search' }, '');
           }}
           onOpenSettings={() => handleNavigate('settings')}
+          onOpenShortcuts={() => setIsShortcutsOpen(true)}
           onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
           canGoBack={currentView !== 'overview'}
           onGoBack={handleBack}
         />
 
         <main
+          id="main-content"
+          tabIndex={-1}
           onTouchStart={handleMainTouchStart}
           onTouchMove={handleMainTouchMove}
           onTouchEnd={handleMainTouchEnd}
-          className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-28 md:pb-8 touch-pan-y overscroll-contain"
+          className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-28 md:pb-8 touch-pan-y overscroll-contain focus:outline-none"
         >
           <div key={currentView} className="animate-view-fade">
             {/* Initial Dashboard View (Instant, Non-Lazy) */}
@@ -617,7 +803,50 @@ export const App: React.FC = () => {
             />
           </ViewErrorBoundary>
         )}
+
+        {isShortcutsOpen && (
+          <ViewErrorBoundary sectionName="Keyboard Shortcuts Modal" onReset={() => setIsShortcutsOpen(false)}>
+            <KeyboardShortcutsModal
+              isOpen={isShortcutsOpen}
+              onClose={() => setIsShortcutsOpen(false)}
+              onNavigate={handleNavigate}
+              onOpenSearch={() => {
+                setIsShortcutsOpen(false);
+                setTimeout(() => setIsSearchOpen(true), 50);
+              }}
+              onOpenAddTopic={() => {
+                setIsShortcutsOpen(false);
+                setTimeout(() => setIsAddTopicOpen(true), 50);
+              }}
+              onOpenFocus={() => {
+                setIsShortcutsOpen(false);
+                setTimeout(() => handleLaunchFocus(undefined), 50);
+              }}
+              onToggleTheme={toggleTheme}
+              onTriggerPrint={() => {
+                setIsShortcutsOpen(false);
+                setTimeout(() => window.print(), 100);
+              }}
+            />
+          </ViewErrorBoundary>
+        )}
       </Suspense>
+
+      {/* ⚡ Power User Keyboard Shortcut Toast Banner */}
+      {shortcutToast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[120] px-4 py-2 rounded-2xl bg-[#0F172A]/90 dark:bg-[#1E1F2E]/95 text-white border border-[#334155]/60 dark:border-[#383A52] shadow-2xl backdrop-blur-md flex items-center gap-2.5 animate-fade-in pointer-events-none select-none"
+        >
+          <div className="w-5 h-5 rounded-lg bg-[#2563EB]/25 dark:bg-[#7AA2F7]/25 text-[#60A5FA] dark:text-[#7AA2F7] flex items-center justify-center font-bold text-xs">
+            ⌨️
+          </div>
+          <span className="text-xs sm:text-[13px] font-bold tracking-tight">
+            {shortcutToast}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
