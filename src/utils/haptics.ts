@@ -33,32 +33,32 @@ class HapticsEngine {
   }
 
   /**
-   * Subtle micro-pulse (8ms) - Tab switches, chips, pill clicks
+   * Subtle micro-pulse (10ms) - Button clicks, chips, pill clicks
    */
   public light() {
     if (!this.isEnabled()) return;
     try {
-      navigator.vibrate(8);
+      navigator.vibrate(10);
     } catch {}
   }
 
   /**
-   * Firm pulse (16ms) - Play/pause, modal open/close, toggles
+   * Firm pulse (18ms) - Modal open/close, drawer presentation, toggles
    */
   public medium() {
     if (!this.isEnabled()) return;
     try {
-      navigator.vibrate(16);
+      navigator.vibrate(18);
     } catch {}
   }
 
   /**
-   * Celebratory pattern ([15ms, 40ms, 25ms]) - Completed topic, loop done, reward unlocked
+   * Celebratory pattern ([18ms, 45ms, 25ms]) - Completed task, topic mastered, reward unlocked
    */
   public success() {
     if (!this.isEnabled()) return;
     try {
-      navigator.vibrate([15, 40, 25]);
+      navigator.vibrate([18, 45, 25]);
     } catch {}
   }
 
@@ -73,12 +73,12 @@ class HapticsEngine {
   }
 
   /**
-   * Ultra-light tap (5ms) - Sliders, rapid scrolling steps
+   * Ultra-light tactile click (6ms) - Tab swipe switch, drag steps, segmented controls
    */
   public selection() {
     if (!this.isEnabled()) return;
     try {
-      navigator.vibrate(5);
+      navigator.vibrate(6);
     } catch {}
   }
 }

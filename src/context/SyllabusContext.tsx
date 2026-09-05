@@ -39,6 +39,7 @@ import {
   deleteStoredReflection
 } from '../utils/dailyProductivityStorage';
 import { soundManager } from '../utils/soundEffects';
+import { haptics } from '../utils/haptics';
 import { useAuth } from './AuthContext';
 import confetti from 'canvas-confetti';
 import { storageManager, StorageHealthMetrics, FullAppSnapshot } from '../services/storageManager';
@@ -766,6 +767,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     if (status === 'completed') {
       soundManager.playCompleteChime();
+      haptics.success();
       confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
       setProfile(prev => {
         const newXp = prev.xp + 40;

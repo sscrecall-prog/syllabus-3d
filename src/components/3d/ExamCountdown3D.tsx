@@ -83,7 +83,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
             {/* Split Horizontal Line */}
             <div className="absolute inset-x-0 top-1/2 h-px bg-black/5 dark:bg-white/5 pointer-events-none" />
 
-            <span className={`text-2xl sm:text-3xl md:text-4xl font-black font-mono tracking-tight block ${c.color} drop-shadow-xs`}>
+            <span className={`text-2xl sm:text-3xl md:text-4xl font-black font-mono tabular-nums tracking-tight block ${c.color} drop-shadow-xs`}>
               {String(c.value).padStart(2, '0')}
             </span>
             <span className="text-[11px] sm:text-[11px] font-black text-[#65675F] dark:text-[#A9B1D6] uppercase tracking-widest block font-mono mt-1">

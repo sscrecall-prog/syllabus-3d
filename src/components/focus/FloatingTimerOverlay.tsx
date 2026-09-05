@@ -240,7 +240,7 @@ export const FloatingTimerOverlay: React.FC = () => {
                 : 'bg-emerald-400 animate-pulse'
             }`}
           />
-          <span className="text-sm sm:text-base font-black font-mono tracking-tight text-white drop-shadow-xs">
+          <span className="text-sm sm:text-base font-black font-mono tracking-tight text-white drop-shadow-xs tabular-nums">
             {timeStr}
           </span>
         </div>

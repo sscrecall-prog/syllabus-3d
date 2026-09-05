@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   const examName = currentExam?.name || 'Syllabus Exam';
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe transition-colors select-none">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors select-none">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
         
         {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}

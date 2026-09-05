@@ -1398,7 +1398,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <div key={i} className="flex items-start gap-3 my-2 pl-1 leading-relaxed">
             <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-2.5 shrink-0" />
-            <div className={`${fontSize} ${fontFam} font-medium text-slate-800 dark:text-slate-200`}>
+            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] max-w-[68ch] leading-relaxed`}>
               {parseInlineMarkdown(rawBullet, `bullet-${i}`)}
             </div>
           </div>
@@ -1415,7 +1415,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <span className="px-1.5 py-0.2 rounded-md bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] text-[11px] font-mono font-black mt-0.5 shrink-0">
               {num}.
             </span>
-            <div className={`${fontSize} ${fontFam} font-medium text-slate-800 dark:text-slate-200`}>
+            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] max-w-[68ch] leading-relaxed`}>
               {parseInlineMarkdown(numText, `num-${i}`)}
             </div>
           </div>
@@ -1472,10 +1472,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </div>
         );
       }
-      // 11. Regular Paragraph with inline formatting
+      // 11. Regular Paragraph with inline formatting & optimal reading ergonomics
       else {
         elements.push(
-          <p key={i} className={`${fontSize} ${fontFam} text-slate-800 dark:text-slate-200 my-3 leading-relaxed`}>
+          <p key={i} className={`${fontSize} ${fontFam} text-[#334155] dark:text-[#CBD5E1] my-3 leading-relaxed reading-column max-w-[68ch]`}>
             {parseInlineMarkdown(line, `p-${i}`)}
           </p>
         );

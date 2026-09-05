@@ -236,16 +236,19 @@ export const App: React.FC = () => {
   }, [isSearchOpen, isAddTopicOpen, isRevisionSessionOpen, selectedTopic]);
 
   const handleOpenTopicDrawer = (topic: Topic, subjectName: string, chapterName: string) => {
+    haptics.medium();
     setSelectedTopic({ topic, subjectName, chapterName });
     window.history.pushState({ modal: 'topic_drawer', topicId: topic.id }, '');
   };
 
   const handleCloseTopicDrawer = () => {
+    haptics.light();
     setSelectedTopic(null);
   };
 
   // Launch Focus Chamber for a specific topic
   const handleLaunchFocus = (topicId?: string) => {
+    haptics.medium();
     if (topicId) {
       setFocusTopicId(topicId);
       setSessionTopic(topicId);

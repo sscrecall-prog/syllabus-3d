@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PlannerTask, PlannerColumnStatus } from '../types/syllabus';
 import { getTodayDateString } from '../utils/spacedRepetition';
 import { soundManager } from '../utils/soundEffects';
+import { haptics } from '../utils/haptics';
 import confetti from 'canvas-confetti';
 
 const STORAGE_KEY_PLANNER = 'syllabus3d_planner_tasks_v1';
@@ -105,9 +106,11 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const nextStatus: PlannerColumnStatus = isComp ? 'today' : 'completed';
       if (!isComp) {
         soundManager.playCompleteChime();
+        haptics.success();
         confetti({ particleCount: 35, spread: 50, origin: { y: 0.8 } });
       } else {
         soundManager.playClick();
+        haptics.light();
       }
       return {
         ...t,
@@ -123,9 +126,11 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (t.id !== taskId) return t;
       if (newStatus === 'completed') {
         soundManager.playCompleteChime();
+        haptics.success();
         confetti({ particleCount: 30, spread: 45, origin: { y: 0.8 } });
       } else {
         soundManager.playClick();
+        haptics.light();
       }
       return {
         ...t,

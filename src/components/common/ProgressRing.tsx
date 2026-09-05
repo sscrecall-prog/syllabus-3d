@@ -47,7 +47,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
         />
       </svg>
       {showText && (
-        <span className="absolute text-xs font-bold text-slate-800 dark:text-slate-100">
+        <span className="absolute text-xs font-bold font-mono tabular-nums text-slate-800 dark:text-slate-100">
           {Math.round(progress)}%
         </span>
       )}

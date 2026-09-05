@@ -206,7 +206,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
         }}
         className="relative w-[88%] max-w-[335px] bg-white dark:bg-[#0E0F17] border-r border-[#E2E8F0] dark:border-[#222436] flex flex-col justify-between z-10 shadow-[0_0_60px_rgba(0,0,0,0.6)] animate-slide-right overflow-y-auto custom-scrollbar"
       >
-        <div className="p-4 sm:p-5 space-y-4">
+        <div className="p-4 sm:p-5 space-y-4 pt-[max(1rem,env(safe-area-inset-top,0px))] pl-[max(1rem,env(safe-area-inset-left,0px))]">
           
           {/* 1. BRANDING & EXAM TARGET HEADER */}
           <div className="flex items-center justify-between pb-3.5 border-b border-[#E2E8F0] dark:border-[#222436]">
@@ -455,7 +455,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
         </div>
 
         {/* 6. EXECUTIVE FOOTER WITH LIVE CLOUD RADAR */}
-        <div className="p-3.5 border-t border-[#E2E8F0] dark:border-[#222436] bg-white/50 dark:bg-[#0A0B12]/60 flex items-center justify-between text-[10px] font-mono text-[#85877E] dark:text-[#7A7C93] select-none">
+        <div className="p-3.5 pb-[max(1rem,env(safe-area-inset-bottom,0px))] border-t border-[#E2E8F0] dark:border-[#222436] bg-white/50 dark:bg-[#0A0B12]/60 flex items-center justify-between text-[10px] font-mono text-[#85877E] dark:text-[#7A7C93] select-none">
           <span className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

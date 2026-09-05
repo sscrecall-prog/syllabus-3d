@@ -486,12 +486,73 @@ input, textarea, [contenteditable="true"], .selectable-text {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Safe Area Inset Helpers */
+/* ═══════════════════════════════════════════════════════════════
+   APPLE DYNAMIC ISLAND, NOTCH & ANDROID PUNCH-HOLE SAFE AREAS
+   ═══════════════════════════════════════════════════════════════ */
 .pt-safe {
-  padding-top: max(0.75rem, env(safe-area-inset-top));
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+.pt-safe-top {
+  padding-top: max(1.25rem, env(safe-area-inset-top, 0px));
+}
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
 }
 .pb-safe-nav {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.65rem);
+}
+.pb-safe-bottom {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+.pl-safe {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+}
+.pr-safe {
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+.px-safe {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OPTIMAL READING TYPOGRAPHY (68-CHARACTER COGNITIVE COMFORT)
+   ═══════════════════════════════════════════════════════════════ */
+.reading-column {
+  max-width: 68ch;
+  line-height: 1.75;
+  letter-spacing: -0.011em;
+}
+
+/* Tab Slide Keyframe Animations (Instagram/Twitter Native Pager feel) */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ═══════════════════════════════════════════════════════════════

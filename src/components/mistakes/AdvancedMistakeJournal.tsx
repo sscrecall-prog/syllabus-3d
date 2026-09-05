@@ -586,7 +586,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   <span className="text-[10px] font-bold text-[#85877E] dark:text-[#94A3B8] uppercase tracking-wider font-mono flex items-center gap-1">
                     <span>Question / Problem Statement</span>
                   </span>
-                  <p className="text-xs sm:text-sm font-black text-[#11120F] dark:text-white leading-relaxed">
+                  <p className="text-xs sm:text-sm font-black text-[#11120F] dark:text-white leading-relaxed max-w-[68ch]">
                     {m.questionDescription}
                   </p>
                 </div>
@@ -600,7 +600,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                           <XCircle className="w-3.5 h-3.5" />
                           <span>My Wrong Logic (Fallacy)</span>
                         </span>
-                        <p className="text-xs font-medium text-[#191A17] dark:text-[#E2E8F0] leading-relaxed">
+                        <p className="text-xs font-medium text-[#334155] dark:text-[#CBD5E1] leading-relaxed max-w-[68ch]">
                           {m.wrongLogic}
                         </p>
                       </div>
@@ -612,7 +612,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                           <AlertTriangle className="w-3.5 h-3.5" />
                           <span>Examiner's Trap Mechanism</span>
                         </span>
-                        <p className="text-xs font-medium text-[#191A17] dark:text-[#E2E8F0] leading-relaxed">
+                        <p className="text-xs font-medium text-[#334155] dark:text-[#CBD5E1] leading-relaxed max-w-[68ch]">
                           {m.examinerTrap}
                         </p>
                       </div>
@@ -627,7 +627,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                       <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
                       <span>Correct Approach & Solution</span>
                     </span>
-                    <p className="text-xs sm:text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] whitespace-pre-line leading-relaxed">
+                    <p className="text-xs sm:text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] whitespace-pre-line leading-relaxed max-w-[68ch]">
                       {m.correctApproach}
                     </p>
                   </div>
@@ -639,7 +639,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                         <span className="font-bold text-amber-600 dark:text-amber-400 font-mono text-[11px] uppercase tracking-wider">
                           Golden Rule:
                         </span>{' '}
-                        <span className="font-black text-[#11120F] dark:text-white">
+                        <span className="font-black text-[#11120F] dark:text-white leading-relaxed max-w-[68ch]">
                           {m.goldenRule}
                         </span>
                       </div>

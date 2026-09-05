@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment, TopicNoteItem } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -183,6 +183,18 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     []
   );
 
+  const [slideDirection, setSlideDirection] = useState<'forward' | 'backward'>('forward');
+
+  const switchTab = useCallback((targetTab: 'overview' | 'lectures' | 'notes' | 'mistakes') => {
+    if (targetTab === activeTab) return;
+    const currentIdx = DRAWER_TABS.indexOf(activeTab);
+    const targetIdx = DRAWER_TABS.indexOf(targetTab);
+    setSlideDirection(targetIdx > currentIdx ? 'forward' : 'backward');
+    soundManager.playClick();
+    haptics.selection();
+    setActiveTab(targetTab);
+  }, [activeTab, DRAWER_TABS]);
+
   const swipeStartX = useRef<number | null>(null);
   const swipeStartY = useRef<number | null>(null);
   const swipeStartTime = useRef<number>(0);
@@ -240,8 +252,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
       const diffX = e.changedTouches[0].clientX - swipeStartX.current;
       const duration = Date.now() - swipeStartTime.current;
 
-      const isFastFlick = duration < 350 && Math.abs(diffX) > 35;
-      const isNormalSwipe = Math.abs(diffX) > 55;
+      const isFastFlick = duration < 350 && Math.abs(diffX) > 30;
+      const isNormalSwipe = Math.abs(diffX) > 45;
 
       if (isFastFlick || isNormalSwipe) {
         const currentIdx = DRAWER_TABS.indexOf(activeTab);
@@ -249,18 +261,12 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
         if (diffX < 0) {
           // Swiped Left -> Go to Next Tab (e.g. Overview -> Lectures)
           if (currentIdx < DRAWER_TABS.length - 1) {
-            const nextTab = DRAWER_TABS[currentIdx + 1];
-            soundManager.playClick();
-            haptics.light();
-            setActiveTab(nextTab);
+            switchTab(DRAWER_TABS[currentIdx + 1]);
           }
         } else if (diffX > 0) {
           // Swiped Right -> Go to Previous Tab (e.g. Lectures -> Overview)
           if (currentIdx > 0) {
-            const prevTab = DRAWER_TABS[currentIdx - 1];
-            soundManager.playClick();
-            haptics.light();
-            setActiveTab(prevTab);
+            switchTab(DRAWER_TABS[currentIdx - 1]);
           }
         }
       }
@@ -440,12 +446,12 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           className="w-screen max-w-2xl bg-white dark:bg-[#0B0B0D] border-l border-[#E2E8F0] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none"
         >
           
-          {/* Mobile Pull-Down Drag Handle */}
+          {/* Mobile Pull-Down Drag Handle with Safe-Area Notch Clearance */}
           <div
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="sm:hidden pt-3 pb-1 flex items-center justify-center cursor-grab active:cursor-grabbing bg-white dark:bg-[#18181D]"
+            className="sm:hidden pt-[max(0.75rem,env(safe-area-inset-top,0px))] pb-1 flex items-center justify-center cursor-grab active:cursor-grabbing bg-white dark:bg-[#18181D] select-none"
           >
             <div className="w-12 h-1.5 rounded-full bg-[#CBD5E1] dark:bg-[#475569] active:scale-95 transition-transform" />
           </div>
@@ -687,11 +693,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <button
                   key={tab.id}
                   data-tab-id={tab.id}
-                  onClick={() => {
-                    soundManager.playClick();
-                    haptics.light();
-                    setActiveTab(tab.id as any);
-                  }}
+                  onClick={() => switchTab(tab.id as any)}
                   className={`flex items-center gap-2 px-3.5 sm:px-4 py-3 border-b-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'border-[#11120F] dark:border-white text-[#11120F] dark:text-white font-black'
@@ -718,9 +720,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               onClick={() => {
                 const idx = DRAWER_TABS.indexOf(activeTab);
                 if (idx > 0) {
-                  soundManager.playClick();
-                  haptics.light();
-                  setActiveTab(DRAWER_TABS[idx - 1]);
+                  switchTab(DRAWER_TABS[idx - 1]);
                 }
               }}
               className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-lg border transition-all ${
@@ -742,11 +742,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                   <button
                     type="button"
                     key={t}
-                    onClick={() => {
-                      soundManager.playClick();
-                      haptics.light();
-                      setActiveTab(t);
-                    }}
+                    onClick={() => switchTab(t)}
                     className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                       activeTab === t
                         ? 'w-4 bg-[#2563EB] dark:bg-[#7AA2F7]'
@@ -764,9 +760,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               onClick={() => {
                 const idx = DRAWER_TABS.indexOf(activeTab);
                 if (idx < DRAWER_TABS.length - 1) {
-                  soundManager.playClick();
-                  haptics.light();
-                  setActiveTab(DRAWER_TABS[idx + 1]);
+                  switchTab(DRAWER_TABS[idx + 1]);
                 }
               }}
               className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-lg border transition-all ${
@@ -785,12 +779,12 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleContentTouchStart}
             onTouchMove={handleContentTouchMove}
             onTouchEnd={handleContentTouchEnd}
-            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 overscroll-contain"
+            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 overscroll-contain pb-[max(2.5rem,env(safe-area-inset-bottom,0px))]"
           >
             
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (
-              <div key="overview" className="space-y-4 sm:space-y-5 animate-fade-in">
+              <div key="overview" className={`space-y-4 sm:space-y-5 ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 
                 {/* 1. TOPIC STATS HERO TILES (ACCURACY % & STUDY TIME) */}
                 <div className="grid grid-cols-2 gap-3">
@@ -1223,7 +1217,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* LECTURES TAB */}
             {activeTab === 'lectures' && (
-              <div key="lectures" className="space-y-5 animate-fade-in">
+              <div key="lectures" className={`space-y-5 ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 <ViewErrorBoundary compact sectionName="Video Lectures">
                   <TopicLecturesSection
                     topicId={liveTopic.id}
@@ -1261,7 +1255,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* NOTES TAB */}
             {activeTab === 'notes' && (
-              <div key="notes" className="space-y-5 animate-fade-in">
+              <div key="notes" className={`space-y-5 ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 <ViewErrorBoundary compact sectionName="Topic Notes Editor">
                   <ProfessionalNotesEditor
                     initialContent={notes}
@@ -1347,7 +1341,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
             {/* ADVANCED MISTAKES & TRAPS TAB */}
             {activeTab === 'mistakes' && (
-              <div key="mistakes" className="animate-fade-in">
+              <div key="mistakes" className={`animate-fade-in ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 <ViewErrorBoundary compact sectionName="Mistakes & Traps Journal">
                   <AdvancedMistakeJournal
                     topic={liveTopic}
