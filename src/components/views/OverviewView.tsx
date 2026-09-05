@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -18,7 +18,9 @@ import {
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
 import { ExamCountdown3D } from '../3d/ExamCountdown3D';
+import { SyllabusPacingCard } from '../dashboard/SyllabusPacingCard';
 import { Top3TargetsWidget } from '../dashboard/Top3TargetsWidget';
+import { EditExamTargetModal } from '../modals/EditExamTargetModal';
 import { AppFooter } from '../common/AppFooter';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -45,6 +47,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     platforms
   } = useSyllabus();
   const { user } = useAuth();
+  const [isEditExamModalOpen, setIsEditExamModalOpen] = useState<boolean>(false);
 
   const todayPlannerTasks = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress');
   const completedTodayTasks = plannerTasks.filter(t => t.status === 'completed');
@@ -225,10 +228,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* 3. Clean Target Countdown Flip Clock */}
+      {/* 3. SMART SYLLABUS PACING & FINISH-LINE FORECAST */}
+      <SyllabusPacingCard
+        onOpenEditExamTarget={() => setIsEditExamModalOpen(true)}
+        onNavigateToSyllabus={() => onNavigate('syllabus')}
+      />
+
+      {/* 4. Clean Target Countdown Flip Clock */}
       <ExamCountdown3D />
 
-      {/* 4. TOP 3 NON-NEGOTIABLES & NIGHT REFLECTION WIDGET */}
+      {/* 5. TOP 3 NON-NEGOTIABLES & NIGHT REFLECTION WIDGET */}
       <Top3TargetsWidget />
 
       {/* 5. MASTERY ENGINE + DAILY PLANNER — Bento Grid */}
@@ -675,6 +684,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
       {/* 8. PROFESSIONAL & ADVANCED HOMEPAGE FOOTER */}
       <AppFooter onNavigate={onNavigate} />
+
+      {/* Target Exam Date Customizer Modal */}
+      <EditExamTargetModal
+        isOpen={isEditExamModalOpen}
+        onClose={() => setIsEditExamModalOpen(false)}
+      />
     </div>
   );
 };

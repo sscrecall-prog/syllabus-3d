@@ -31,6 +31,7 @@ import {
 import { EditSubjectModal } from '../modals/EditSubjectModal';
 import { EditChapterModal } from '../modals/EditChapterModal';
 import { soundManager } from '../../utils/soundEffects';
+import { calculatePacingForecast } from '../../utils/pacingCalculator';
 
 interface SyllabusViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
@@ -51,7 +52,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onBackToDashboard,
   onRegisterBackHandler
 }) => {
-  const { currentExam, deleteTopic, updateTopicStatus } = useSyllabus();
+  const { currentExam, deleteTopic, updateTopicStatus, overallStats, activityHistory } = useSyllabus();
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(initialSubjectId || null);
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
@@ -174,6 +175,18 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const diff = target - now;
     return diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : 0;
   })();
+
+  // Smart Syllabus Pacing & Finish Forecast for Level 1 header
+  const pacingForecast = useMemo(() => {
+    if (!currentExam) return null;
+    return calculatePacingForecast({
+      examDateStr: currentExam.examDate || '2026-10-15',
+      totalTopics: overallStats.totalTopics,
+      completedTopics: overallStats.completedCount,
+      inProgressTopics: overallStats.inProgressCount,
+      activityHistory
+    });
+  }, [currentExam, overallStats, activityHistory]);
 
   // Filtered Subjects for Level 1
   const filteredSubjects = useMemo(() => {
@@ -1157,6 +1170,16 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               <span className="px-2 sm:px-2.5 py-0.5 rounded-lg font-mono tabular-nums font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 🏆 {overallPercentage}% Mastered
               </span>
+              {pacingForecast && (
+                <span
+                  className={`px-2 sm:px-2.5 py-0.5 rounded-lg font-mono tabular-nums font-bold border flex items-center gap-1 ${pacingForecast.statusTheme.badgeBg} ${pacingForecast.statusTheme.badgeBorder} ${pacingForecast.statusTheme.badgeText}`}
+                  title={`Required: ${pacingForecast.requiredDailyPace} topics/day | Actual: ${pacingForecast.actualDailyVelocity} topics/day | Finish: ${pacingForecast.finishLineForecastDate}`}
+                >
+                  <span>{pacingForecast.statusTheme.icon}</span>
+                  <span>{pacingForecast.requiredDailyPace}/day req</span>
+                  <span className="hidden xs:inline opacity-80">• Finish: {pacingForecast.finishLineForecastDate}</span>
+                </span>
+              )}
             </div>
 
             <h1 className="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight break-words line-clamp-2 drop-shadow-sm leading-snug">
