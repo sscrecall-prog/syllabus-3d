@@ -59,80 +59,70 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Dashboard',
       icon: LayoutDashboard,
       badge: null,
-      badgeColor: '',
-      shortcut: '1'
+      badgeColor: ''
     },
     {
       id: 'syllabus' as AppView,
       label: 'Syllabus Explorer',
       icon: BookOpen,
       badge: null,
-      badgeColor: '',
-      shortcut: '2'
+      badgeColor: ''
     },
     {
       id: 'planner' as AppView,
       label: 'Study Planner',
       icon: CalendarCheck,
       badge: plannerTasks.filter(t => t.status === 'today').length || null,
-      badgeColor: 'bg-[#2563EB] text-white shadow-[0_0_8px_rgba(37,99,235,0.4)]',
-      shortcut: '3'
+      badgeColor: 'bg-[#2563EB] text-white shadow-[0_0_8px_rgba(37,99,235,0.4)]'
     },
     {
       id: 'pacing' as AppView,
       label: 'Target Pacing & Forecast',
       icon: Clock,
       badge: null,
-      badgeColor: '',
-      shortcut: ''
+      badgeColor: ''
     },
     {
       id: 'revision' as AppView,
       label: 'Spaced Revision',
       icon: RotateCw,
       badge: dueRevisions.length || null,
-      badgeColor: 'bg-[#C49A3A] text-white shadow-[0_0_8px_rgba(196,154,58,0.5)]',
-      shortcut: '4'
+      badgeColor: 'bg-[#C49A3A] text-white shadow-[0_0_8px_rgba(196,154,58,0.5)]'
     },
     {
       id: 'weak' as AppView,
       label: 'Weak Topics & Traps',
       icon: AlertTriangle,
       badge: weakTopics.length || null,
-      badgeColor: 'bg-[#B94A48] text-white shadow-[0_0_8px_rgba(185,74,72,0.5)]',
-      shortcut: '5'
+      badgeColor: 'bg-[#B94A48] text-white shadow-[0_0_8px_rgba(185,74,72,0.5)]'
     },
     {
       id: 'mindmap' as AppView,
       label: 'Concept Mind Map',
       icon: BrainCircuit,
       badge: null,
-      badgeColor: '',
-      shortcut: '6'
+      badgeColor: ''
     },
     {
       id: 'analytics' as AppView,
       label: 'Analytics & Heatmap',
       icon: BarChart3,
       badge: null,
-      badgeColor: '',
-      shortcut: '7'
+      badgeColor: ''
     },
     {
       id: 'platforms' as AppView,
       label: 'Study Station & Hub',
       icon: Globe,
       badge: platforms.length || null,
-      badgeColor: 'bg-[#5A4FCF] text-white shadow-[0_0_8px_rgba(90,79,207,0.5)]',
-      shortcut: '8'
+      badgeColor: 'bg-[#5A4FCF] text-white shadow-[0_0_8px_rgba(90,79,207,0.5)]'
     },
     {
       id: 'settings' as AppView,
       label: 'App Settings',
       icon: Settings,
       badge: null,
-      badgeColor: '',
-      shortcut: '9'
+      badgeColor: ''
     }
   ];
 
@@ -160,16 +150,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
-              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-[#F5F5F7] dark:hover:text-black font-bold text-[13px] shadow-xs flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent dark:border-[#2F3042] tap-bounce"
-              title="Add Custom Topic (Press N)"
+              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-[#F5F5F7] dark:hover:text-black font-bold text-[13px] shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent dark:border-[#2F3042] tap-bounce"
+              title="Add Custom Topic"
             >
-              <div className="flex items-center gap-1.5">
-                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Add Custom Topic</span>
-              </div>
-              <kbd className="hidden lg:inline-block px-1.5 py-0.2 text-[10px] font-mono font-bold bg-white/20 dark:bg-black/30 rounded border border-white/20 dark:border-white/10 text-white/90 dark:text-[#CBD5E1]">
-                N
-              </kbd>
+              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Add Custom Topic</span>
             </button>
           )}
 
@@ -180,21 +165,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onOpenFocus();
               }}
               className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EFF6FF] dark:bg-[#7AA2F7]/15 hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] text-[#1D4ED8] dark:text-[#7AA2F7] dark:hover:text-black border border-[#BFDBFE] dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-xs transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
-              title="3D Focus Chamber (Press F)"
+              title="3D Focus Chamber"
             >
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] group-hover:bg-white animate-pulse" />
                 <Timer className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] group-hover:text-white dark:group-hover:text-black" />
                 <span>3D Focus Chamber</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-black/30 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white dark:group-hover:text-black">
-                  Timer
-                </span>
-                <kbd className="hidden lg:inline-block px-1.5 py-0.2 text-[10px] font-mono font-bold bg-white/60 dark:bg-black/30 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white dark:group-hover:text-black rounded border border-black/5 dark:border-white/10">
-                  F
-                </kbd>
-              </div>
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-black/30 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white dark:group-hover:text-black">
+                Timer
+              </span>
             </button>
           )}
         </div>
@@ -239,19 +219,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span className="truncate text-[13px] font-semibold">{item.label}</span>
                 </div>
 
-                {/* Compact Notification Badge & Keyboard Shortcut Indicator */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {item.badge !== null && item.badge > 0 && (
-                    <span className={`px-1.5 py-0.5 rounded-full text-[11px] font-mono font-black ${item.badgeColor}`}>
-                      {item.badge}
-                    </span>
-                  )}
-                  {item.shortcut && (
-                    <kbd className="hidden lg:inline-block px-1.5 py-0.2 text-[10px] font-mono font-bold text-[#85877E] dark:text-[#64748B] group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] rounded bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 transition-colors">
-                      {item.shortcut}
-                    </kbd>
-                  )}
-                </div>
+                {/* Compact Notification Badge */}
+                {item.badge !== null && item.badge > 0 && (
+                  <span className={`px-1.5 py-0.5 rounded-full text-[11px] font-mono font-black shrink-0 ${item.badgeColor}`}>
+                    {item.badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -324,17 +297,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               haptics.selection();
               onOpenShortcuts();
             }}
-            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-[#65675F] hover:text-[#0F172A] dark:text-[#CBD5E1] dark:hover:text-white transition-all cursor-pointer text-xs font-semibold active:scale-98 tap-bounce shadow-2xs"
-            title="Keyboard Shortcuts Cheatsheet (Press ?)"
-            aria-label="Keyboard Shortcuts Cheatsheet (Press ?)"
+            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-[#65675F] hover:text-[#0F172A] dark:text-[#CBD5E1] dark:hover:text-white transition-all cursor-pointer text-xs font-semibold active:scale-98 tap-bounce shadow-2xs"
+            title="Keyboard Shortcuts Cheatsheet"
+            aria-label="Keyboard Shortcuts Cheatsheet"
           >
-            <div className="flex items-center gap-2">
-              <Keyboard className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
-              <span className="text-[12px] font-semibold">Shortcuts</span>
-            </div>
-            <kbd className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-[#F1F5F9] dark:bg-[#202234] border border-[#CBD5E1] dark:border-[#33354C] text-[#64748B] dark:text-[#94A3B8]">
-              ?
-            </kbd>
+            <Keyboard className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
+            <span className="text-[12px] font-semibold">Shortcuts</span>
           </button>
         )}
       </div>
