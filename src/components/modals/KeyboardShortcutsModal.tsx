@@ -22,7 +22,8 @@ import {
   ShieldAlert,
   ArrowLeftRight,
   Save,
-  Check
+  Check,
+  Clock
 } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { soundManager } from '../../utils/soundEffects';
@@ -121,6 +122,18 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
       category: 'navigation',
       action: () => {
         onNavigate('planner');
+        onClose();
+      }
+    },
+    {
+      key: 'T',
+      secondaryKey: 'Pacing',
+      label: 'Target Pacing & Forecast',
+      description: 'Calculate target exam velocity, buffer & finish line',
+      icon: Clock,
+      category: 'navigation',
+      action: () => {
+        onNavigate('pacing');
         onClose();
       }
     },

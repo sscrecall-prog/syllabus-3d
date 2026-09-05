@@ -33,6 +33,7 @@ const AnalyticsView = lazy(() => import('./components/views/AnalyticsView').then
 const HeatmapView = lazy(() => import('./components/views/HeatmapView').then(m => ({ default: m.HeatmapView })));
 const SettingsView = lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
 const PlatformsView = lazy(() => import('./components/views/PlatformsView').then(m => ({ default: m.PlatformsView })));
+const PacingView = lazy(() => import('./components/views/PacingView').then(m => ({ default: m.PacingView })));
 
 // ⚡ Lazy Loaded Heavy Modals & Drawers
 const TopicDetailDrawer = lazy(() => import('./components/modals/TopicDetailDrawer').then(m => ({ default: m.TopicDetailDrawer })));
@@ -716,6 +717,15 @@ export const App: React.FC = () => {
               {currentView === 'platforms' && (
                 <ViewErrorBoundary sectionName="Learning Resources" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
                   <PlatformsView />
+                </ViewErrorBoundary>
+              )}
+
+              {currentView === 'pacing' && (
+                <ViewErrorBoundary sectionName="Target Pacing & Forecast" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
+                  <PacingView
+                    onNavigate={handleNavigate}
+                    onNavigateToSubject={handleNavigateToSubject}
+                  />
                 </ViewErrorBoundary>
               )}
 

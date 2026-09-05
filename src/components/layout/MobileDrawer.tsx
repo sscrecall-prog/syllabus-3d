@@ -20,7 +20,8 @@ import {
   Moon,
   ChevronRight,
   Trophy,
-  GraduationCap
+  GraduationCap,
+  Clock
 } from 'lucide-react';
 import { AppView } from './Sidebar';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -141,6 +142,15 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           badge: todayTasksCount > 0 ? `${todayTasksCount} today` : null,
           badgeStyle: 'bg-teal-500/15 text-teal-600 dark:text-teal-400 border-teal-500/30 font-bold',
           iconBg: 'bg-teal-500/15 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30'
+        },
+        {
+          id: 'pacing' as AppView,
+          label: 'Target Pacing & Forecast',
+          subtitle: 'Finish-line calculator & buffer',
+          icon: Clock,
+          badge: null,
+          badgeStyle: '',
+          iconBg: 'bg-blue-500/15 dark:bg-blue-500/20 text-blue-600 dark:text-[#7AA2F7] border-blue-500/30'
         },
         {
           id: 'revision' as AppView,

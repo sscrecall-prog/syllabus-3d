@@ -13,7 +13,8 @@ import {
   ExternalLink,
   Globe,
   Sparkles,
-  Keyboard
+  Keyboard,
+  Clock
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
@@ -31,6 +32,7 @@ export type AppView =
   | 'mindmap'
   | 'analytics'
   | 'heatmap'
+  | 'pacing'
   | 'settings';
 
 interface SidebarProps {
@@ -75,6 +77,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: plannerTasks.filter(t => t.status === 'today').length || null,
       badgeColor: 'bg-[#2563EB] text-white shadow-[0_0_8px_rgba(37,99,235,0.4)]',
       shortcut: '3'
+    },
+    {
+      id: 'pacing' as AppView,
+      label: 'Target Pacing & Forecast',
+      icon: Clock,
+      badge: null,
+      badgeColor: '',
+      shortcut: ''
     },
     {
       id: 'revision' as AppView,
