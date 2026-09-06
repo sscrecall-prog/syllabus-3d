@@ -71,9 +71,9 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
 
   return (
     <div
-      className={`group relative p-4 sm:p-5 rounded-3xl border transition-all duration-300 flex flex-col justify-between h-full overflow-hidden select-none ${
+      className={`group relative p-3 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all duration-300 flex flex-col justify-between h-full overflow-hidden select-none ${
         badge.unlocked
-          ? `bg-white dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth ${tierMeta.glow} hover:-translate-y-1`
+          ? `bg-white dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] shadow-xs sm:shadow-subtle-depth ${tierMeta.glow} hover:-translate-y-1`
           : 'bg-[#F8FAFC]/60 dark:bg-[#13141C] border-[#E2E8F0]/60 dark:border-[#20212C] opacity-65 hover:opacity-85'
       }`}
     >
@@ -84,17 +84,17 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
       />
 
       {/* Header Pill & Unlock Status */}
-      <div className="flex items-center justify-between gap-1.5 mb-3">
-        <span className={`text-[10px] font-mono font-black px-2.5 py-0.5 rounded-lg border uppercase tracking-wider ${tierMeta.pill}`}>
+      <div className="flex items-center justify-between gap-1 mb-2 sm:mb-3">
+        <span className={`text-[9px] sm:text-[10px] font-mono font-black px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg border uppercase tracking-wider ${tierMeta.pill}`}>
           {badge.tier}
         </span>
         {badge.unlocked ? (
-          <span className="inline-flex items-center gap-1 text-[11px] font-mono font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
-            <Check className="w-3 h-3 stroke-[3]" />
+          <span className="inline-flex items-center gap-1 text-[9px] sm:text-[11px] font-mono font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-emerald-500/20">
+            <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
             <span>Unlocked</span>
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-[#85877E] dark:text-[#71717A] bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-lg">
+          <span className="inline-flex items-center gap-1 text-[9px] sm:text-[11px] font-mono font-medium text-[#85877E] dark:text-[#71717A] bg-black/5 dark:bg-white/5 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg">
             <Lock className="w-2.5 h-2.5" />
             <span>Locked</span>
           </span>
@@ -102,7 +102,7 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
       </div>
 
       {/* 3D Metallic Center Emblem */}
-      <div className="flex flex-col items-center text-center my-2 space-y-2">
+      <div className="flex flex-col items-center text-center my-1.5 sm:my-2 space-y-1.5 sm:space-y-2">
         <div className="relative">
           {/* Ambient Outer Halo */}
           {badge.unlocked && (
@@ -113,37 +113,37 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
           )}
 
           <div
-            className={`relative w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105 border ${
+            className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md sm:shadow-lg transition-transform duration-300 group-hover:scale-105 border ${
               badge.unlocked
                 ? `bg-gradient-to-br ${tierMeta.gradient} ${tierMeta.iconBorder} ${tierMeta.iconColor}`
                 : 'bg-[#F1F5F9] dark:bg-[#1E1F2A] border-[#E2E8F0] dark:border-[#2C2E3E] text-[#85877E]'
             }`}
           >
             {badge.unlocked ? (
-              <IconComponent className="w-6 h-6 stroke-[2.2] drop-shadow-md" />
+              <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] drop-shadow-md" />
             ) : (
-              <Lock className="w-5 h-5 stroke-[2] text-[#85877E] dark:text-[#65675F]" />
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2] text-[#85877E] dark:text-[#65675F]" />
             )}
           </div>
         </div>
 
-        <h4 className="text-xs sm:text-[13px] font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase line-clamp-1 group-hover:text-amber-500 transition-colors">
+        <h4 className="text-[11px] sm:text-[13px] font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase line-clamp-1 group-hover:text-amber-500 transition-colors">
           {badge.title}
         </h4>
-        <p className="text-[11px] text-[#65675F] dark:text-[#94A3B8] line-clamp-2 leading-relaxed font-medium">
+        <p className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8] line-clamp-2 leading-relaxed font-medium">
           {badge.description}
         </p>
       </div>
 
       {/* Progress Track & Subtext */}
-      <div className="space-y-1.5 pt-3 border-t border-[#E2E8F0] dark:border-[#242533]">
-        <div className="flex justify-between text-[10px] font-mono font-bold text-[#85877E] dark:text-[#94A3B8]">
+      <div className="space-y-1 sm:space-y-1.5 pt-2 sm:pt-3 border-t border-[#E2E8F0] dark:border-[#242533]">
+        <div className="flex justify-between text-[9px] sm:text-[10px] font-mono font-bold text-[#85877E] dark:text-[#94A3B8]">
           <span>Progress</span>
           <span className="tabular-nums text-[#11120F] dark:text-white">
             {badge.progress} / {badge.maxProgress}
           </span>
         </div>
-        <div className="w-full h-2 rounded-full bg-[#F1F5F9] dark:bg-[#20212E] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#2D2F3F]/50">
+        <div className="w-full h-1.5 sm:h-2 rounded-full bg-[#F1F5F9] dark:bg-[#20212E] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#2D2F3F]/50">
           <div
             className="h-full rounded-full transition-all duration-500 shadow-sm"
             style={{

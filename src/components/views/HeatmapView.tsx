@@ -49,18 +49,18 @@ export const HeatmapView: React.FC = () => {
   const activeDaysCount = activityHistory.filter(day => day.studyMinutes > 0).length;
 
   return (
-    <div className="space-y-8 pb-12">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-8 pb-24 sm:pb-12 select-none animate-fade-in">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             120-Day Study Consistency Heatmap
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1">
             Granular visualization of your daily preparation, revisions, and time invested.
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/50">
+        <div className="w-full sm:w-auto flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/50 overflow-x-auto no-scrollbar">
           {[
             { id: 'studyTime', label: 'Study Time', icon: Clock },
             { id: 'topics', label: 'Topics', icon: CheckCircle },
@@ -71,9 +71,9 @@ export const HeatmapView: React.FC = () => {
               <button
                 key={m.id}
                 onClick={() => setMetric(m.id as HeatmapMetric)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex-1 sm:flex-initial justify-center flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all tap-bounce active:scale-95 whitespace-nowrap ${
                   metric === m.id
-                    ? 'bg-white dark:bg-slate-900 text-brand-500 shadow-sm'
+                    ? 'bg-white dark:bg-slate-900 text-brand-500 shadow-sm font-bold'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
@@ -85,93 +85,95 @@ export const HeatmapView: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div className="flex items-center gap-2 text-orange-500 mb-1">
-            <Flame className="w-4 h-4 fill-orange-500" />
-            <span className="text-[11px] font-bold uppercase">Current Streak</span>
+      {/* 2x2 Bento on Mobile, 4-Column on Desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-xs sm:shadow-sm space-y-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-orange-500 mb-0.5 sm:mb-1">
+            <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-orange-500" />
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">Current Streak</span>
           </div>
-          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
-            {profile.currentStreak} <span className="text-sm font-normal text-slate-500">days</span>
+          <h3 className="text-2xl sm:text-3xl font-black tabular-nums text-slate-900 dark:text-white leading-none">
+            {profile.currentStreak} <span className="text-xs sm:text-sm font-normal text-slate-500">days</span>
           </h3>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div className="flex items-center gap-2 text-brand-500 mb-1">
-            <Flame className="w-4 h-4" />
-            <span className="text-[11px] font-bold uppercase">Longest Streak</span>
+        <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-xs sm:shadow-sm space-y-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-brand-500 mb-0.5 sm:mb-1">
+            <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">Longest Streak</span>
           </div>
-          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
-            {profile.longestStreak} <span className="text-sm font-normal text-slate-500">days</span>
+          <h3 className="text-2xl sm:text-3xl font-black tabular-nums text-slate-900 dark:text-white leading-none">
+            {profile.longestStreak} <span className="text-xs sm:text-sm font-normal text-slate-500">days</span>
           </h3>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div className="flex items-center gap-2 text-emerald-500 mb-1">
-            <Calendar className="w-4 h-4" />
-            <span className="text-[11px] font-bold uppercase">Active Days</span>
+        <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-xs sm:shadow-sm space-y-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-emerald-500 mb-0.5 sm:mb-1">
+            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">Active Days</span>
           </div>
-          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
-            {activeDaysCount} <span className="text-sm font-normal text-slate-500">/ 120 days</span>
+          <h3 className="text-2xl sm:text-3xl font-black tabular-nums text-slate-900 dark:text-white leading-none">
+            {activeDaysCount} <span className="text-xs sm:text-sm font-normal text-slate-500">/ 120d</span>
           </h3>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div className="flex items-center gap-2 text-purple-500 mb-1">
-            <Clock className="w-4 h-4" />
-            <span className="text-[11px] font-bold uppercase">Total Invested</span>
+        <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-xs sm:shadow-sm space-y-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-purple-500 mb-0.5 sm:mb-1">
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">Total Time</span>
           </div>
-          <h3 className="text-3xl font-black tabular-nums text-slate-900 dark:text-white">
+          <h3 className="text-2xl sm:text-3xl font-black tabular-nums text-slate-900 dark:text-white leading-none">
             {Math.round(totalStudyMinutes / 60)}h
           </h3>
         </div>
       </div>
 
-      <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-[15px] sm:text-base font-bold text-slate-900 dark:text-white">
+      <div className="p-3.5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800/80 shadow-xs sm:shadow-sm space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1 sm:mb-6">
+          <h3 className="text-xs sm:text-base font-bold text-slate-900 dark:text-white">
             Preparation Calendar (Last 120 Days)
           </h3>
 
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
+          <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] text-slate-500">
             <span>Less</span>
-            <div className="w-3 h-3 rounded-md bg-slate-100 dark:bg-slate-800" />
-            <div className="w-3 h-3 rounded-md bg-brand-500/30" />
-            <div className="w-3 h-3 rounded-md bg-brand-500/60" />
-            <div className="w-3 h-3 rounded-md bg-brand-500/85" />
-            <div className="w-3 h-3 rounded-md bg-brand-500" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-[3px] sm:rounded-md bg-slate-100 dark:bg-slate-800" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-[3px] sm:rounded-md bg-brand-500/30" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-[3px] sm:rounded-md bg-brand-500/60" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-[3px] sm:rounded-md bg-brand-500/85" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-[3px] sm:rounded-md bg-brand-500" />
             <span>More</span>
           </div>
         </div>
 
-        <div className="overflow-x-auto pb-2">
-          <div className="grid grid-flow-col grid-rows-7 gap-1.5 w-fit">
+        <div className="overflow-x-auto no-scrollbar sm:custom-scrollbar pb-2 -mx-1 px-1 sm:mx-0 sm:px-0">
+          <div className="grid grid-flow-col grid-rows-7 gap-1 sm:gap-1.5 w-fit">
             {gridDays.map((day, i) => (
               <div
                 key={day.date || i}
+                onClick={() => setHoveredDay(day)}
                 onMouseEnter={() => setHoveredDay(day)}
                 onMouseLeave={() => setHoveredDay(null)}
-                className={`w-3.5 h-3.5 rounded-md ${getIntensityClass(day)} hover:ring-2 hover:ring-brand-500 transition-all cursor-pointer`}
+                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[3px] sm:rounded-md ${getIntensityClass(day)} hover:ring-2 hover:ring-brand-500 active:scale-125 transition-all cursor-pointer`}
               />
             ))}
           </div>
         </div>
 
-        <div className="h-8 mt-4 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+        <div className="min-h-[32px] mt-2 sm:mt-4 p-2 sm:p-0 rounded-xl sm:rounded-none bg-slate-50 sm:bg-transparent dark:bg-slate-800/40 sm:dark:bg-transparent flex items-center justify-between text-[11px] sm:text-xs text-slate-600 dark:text-slate-400">
           {hoveredDay ? (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
               <span className="font-bold text-slate-900 dark:text-white">
                 {new Date(hoveredDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
               <span>·</span>
               <span>{formatMinutes(hoveredDay.studyMinutes)} studied</span>
               <span>·</span>
-              <span>{hoveredDay.topicsCompleted} topics completed</span>
+              <span>{hoveredDay.topicsCompleted} topics</span>
               <span>·</span>
               <span>{hoveredDay.revisionsCompleted} revisions</span>
             </div>
           ) : (
-            <span className="text-slate-400">Hover over any day to view study details.</span>
+            <span className="text-slate-400 text-[10px] sm:text-xs">Tap or hover over any day to view study details.</span>
           )}
         </div>
       </div>
