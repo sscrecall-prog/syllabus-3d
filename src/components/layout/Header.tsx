@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
   const examName = currentExam?.name || 'Syllabus Exam';
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors select-none">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
         
         {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}
@@ -95,6 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
               title="Open Navigation Menu"
+              aria-label="Open navigation menu"
             >
               <Menu className="w-4 h-4" />
             </button>
@@ -169,6 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenSearch}
             className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0"
             title="Search Topics (Cmd + K)"
+            aria-label="Search topics"
           >
             <Search className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#8B5CF6] shrink-0" />
             <span className="hidden md:inline">Search...</span>
@@ -209,7 +211,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#2563EB] dark:text-[#A1A1AA] dark:hover:text-[#7AA2F7] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 no-print"
             title="Print Desk Revision Cheatsheet (Ctrl + P)"
-            aria-label="Print Desk Revision Cheatsheet"
+            aria-label="Print revision sheet"
           >
             <Printer className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
           </button>
@@ -219,6 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={toggleTheme}
             className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0"
             title={isOled ? "Current: OLED Pure Black (Click for Pure White)" : isDark ? "Current: Tokyo Night (Click for OLED)" : "Current: Pure White (Click for Dark)"}
+            aria-label="Toggle theme"
           >
             {isOled ? (
               <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>
@@ -244,6 +247,7 @@ export const Header: React.FC<HeaderProps> = ({
               profile.avatarColor || 'from-[#2563EB] to-indigo-600'
             } border border-[#E2E8F0] dark:border-[#272730] text-white font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0`}
             title={`Active Profile: ${profile.name || 'Aspirant'} (Click to switch)`}
+            aria-label="Switch profile"
           >
             {(profile.avatarUrl || user?.avatarUrl) ? (
               <img

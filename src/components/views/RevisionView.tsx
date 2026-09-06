@@ -183,7 +183,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
   const stage4Count = revisions.filter(r => r.stage >= 4 || r.completedDate).length;
 
   return (
-    <div className="space-y-3.5 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto select-none font-sans animate-fade-in">
+    <div className="space-y-3.5 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto font-sans animate-fade-in">
       
       {/* 1. EXECUTIVE HERO BANNER */}
       <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4">

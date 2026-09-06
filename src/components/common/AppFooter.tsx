@@ -82,7 +82,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
 
   return (
     <>
-      <footer className="mt-12 pt-8 pb-6 border-t border-[#E2E8F0] dark:border-[#272732] select-none">
+      <footer className="mt-12 pt-8 pb-6 border-t border-[#E2E8F0] dark:border-[#272732]">
         <div className="space-y-8">
           
           {/* TOP ROW: Brand identity + Key Quick Actions */}

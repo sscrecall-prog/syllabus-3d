@@ -61,6 +61,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="Home Dashboard"
+          aria-label="Home Dashboard"
+          aria-current={activeView === 'overview' ? 'page' : undefined}
         >
           {activeView === 'overview' && (
             <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
@@ -69,7 +71,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
             src="/dashboard_icon_3d.png"
             alt="Dashboard"
             className={`w-5 h-5 object-contain transition-all duration-300 ${
-              activeView === 'overview' ? 'scale-115 -translate-y-0.5 drop-shadow-sm' : 'opacity-85 group-hover:scale-105'
+              activeView === 'overview' ? 'scale-[1.15] -translate-y-0.5 drop-shadow-sm' : 'opacity-85 group-hover:scale-105'
             }`}
           />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Home</span>
@@ -99,13 +101,15 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="Syllabus Explorer"
+          aria-label="Syllabus Explorer"
+          aria-current={activeView === 'syllabus' ? 'page' : undefined}
         >
           {activeView === 'syllabus' && (
             <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
           )}
           <BookOpen
             className={`w-5 h-5 transition-all duration-300 ${
-              activeView === 'syllabus' ? 'scale-115 -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
+              activeView === 'syllabus' ? 'scale-[1.15] -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
             }`}
           />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Syllabus</span>
@@ -125,7 +129,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <div className="flex items-center justify-center px-1">
           <div className="relative group">
             {/* Ambient Breathing Aura Animation */}
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-[#7AA2F7] dark:via-[#9D7CD8] dark:to-[#BB9AF7] opacity-40 blur-xs animate-pulse group-hover:opacity-75 transition-opacity" />
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-[#7AA2F7] dark:via-[#9D7CD8] dark:to-[#BB9AF7] opacity-40 blur-sm animate-pulse group-hover:opacity-75 transition-opacity" />
             
             <button
               type="button"
@@ -142,7 +146,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   : 'ring-white'
               }`}
               title="Add Custom Study Target"
-              aria-label="Add Custom Target"
+              aria-label="Quick actions"
             >
               <Plus className="w-5 h-5 stroke-[2.8] transition-transform duration-300 group-hover:rotate-90 group-active:scale-90" />
             </button>
@@ -163,13 +167,15 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="Daily Planner"
+          aria-label="Study Planner"
+          aria-current={activeView === 'planner' ? 'page' : undefined}
         >
           {activeView === 'planner' && (
             <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
           )}
           <CalendarCheck
             className={`w-5 h-5 transition-all duration-300 ${
-              activeView === 'planner' ? 'scale-115 -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
+              activeView === 'planner' ? 'scale-[1.15] -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
             }`}
           />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Planner</span>
@@ -203,6 +209,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="More Sections & Tools"
+          aria-label="Analytics"
+          aria-current={(activeView === 'analytics' || isHubActive) ? 'page' : undefined}
         >
           {isHubActive && (
             <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
@@ -210,7 +218,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           <div className="relative">
             <Compass
               className={`w-5 h-5 transition-all duration-300 ${
-                isHubActive ? 'scale-115 -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
+                isHubActive ? 'scale-[1.15] -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
               }`}
             />
             {dueRevisions && dueRevisions.length > 0 && !isHubActive && (

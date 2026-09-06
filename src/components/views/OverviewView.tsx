@@ -235,7 +235,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
         
         {/* CARD 1: Syllabus Mastery Engine */}
-        <div className="md:col-span-7 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col justify-between relative overflow-hidden space-y-3.5 sm:space-y-4 select-none">
+        <div className="md:col-span-7 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col justify-between relative overflow-hidden space-y-3.5 sm:space-y-4">
           
           {/* Subtle Ambient Accent */}
           <div className="absolute -top-16 -left-16 w-56 h-56 bg-[#2563EB]/[0.04] dark:bg-[#7AA2F7]/[0.05] rounded-full blur-2xl pointer-events-none" />
@@ -372,7 +372,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
 
         {/* CARD 2: Daily Study Planner */}
-        <div className="md:col-span-5 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col justify-between space-y-3 relative overflow-hidden select-none">
+        <div className="md:col-span-5 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col justify-between space-y-3 relative overflow-hidden">
           
           {/* Subtle Ambient Accent */}
           <div className="absolute -top-16 -right-16 w-56 h-56 bg-amber-500/[0.04] rounded-full blur-2xl pointer-events-none" />
@@ -490,7 +490,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
       {/* 6. STUDY STATION & PLATFORMS */}
       {platforms.length > 0 && (
-        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4 relative overflow-hidden select-none">
+        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4 relative overflow-hidden">
           
           {/* Subtle Ambient Glow */}
           <div className="absolute -top-16 -right-16 w-48 h-48 bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06] rounded-full blur-2xl pointer-events-none" />
@@ -558,7 +558,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       )}
 
       {/* 7. SUBJECT MASTERY BREAKDOWN */}
-      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 sm:space-y-4 select-none print:p-0 print:border-none print:shadow-none">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
         
         {/* Header */}
         <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">

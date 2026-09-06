@@ -801,7 +801,8 @@ input, textarea, [contenteditable="true"], .selectable-text {
   /* De-clutter non-print web chrome, sidebars, toolbars & floating overlays */
   aside,
   nav,
-  header button,
+  header,
+  footer,
   .no-print,
   [data-no-print="true"],
   button:not(.print-keep),

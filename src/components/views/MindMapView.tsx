@@ -187,7 +187,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
   };
 
   return (
-    <div className="space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+    <div className="space-y-5 pb-16 animate-fade-in max-w-full overflow-x-hidden font-sans">
       
       {/* 1. EXECUTIVE HEADER & CONTROLS */}
       <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3 sm:space-y-4">
@@ -229,8 +229,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white p-0.5 cursor-pointer"
+                  aria-label="Clear search"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -274,9 +276,11 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               {/* Zoom Controls */}
               <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
                 <button
+                  type="button"
                   onClick={() => handleZoom(-0.15)}
                   className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                   title="Zoom Out"
+                  aria-label="Zoom out"
                 >
                   <ZoomOut className="w-3.5 h-3.5" />
                 </button>
@@ -284,16 +288,20 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                   {Math.round(zoomLevel * 100)}%
                 </span>
                 <button
+                  type="button"
                   onClick={() => handleZoom(0.15)}
                   className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                   title="Zoom In"
+                  aria-label="Zoom in"
                 >
                   <ZoomIn className="w-3.5 h-3.5" />
                 </button>
                 <button
+                  type="button"
                   onClick={handleResetZoom}
                   className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                   title="Reset Zoom"
+                  aria-label="Reset zoom"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
@@ -377,7 +385,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
       </div>
 
       {/* 3. MAIN CONSTELLATION CANVAS CONTAINER */}
-      <div className="relative w-full min-h-[480px] sm:min-h-[680px] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#080B14] via-[#0D1120] to-[#080B14] border border-[#1E2640] shadow-2xl overflow-hidden flex flex-col items-center justify-start p-2.5 sm:p-6 select-none">
+      <div className="relative w-full min-h-[480px] sm:min-h-[680px] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#080B14] via-[#0D1120] to-[#080B14] border border-[#1E2640] shadow-2xl overflow-hidden flex flex-col items-center justify-start p-2.5 sm:p-6">
         
         {/* Futuristic Cosmic Grid & Ambient Glows */}
         <div className="absolute inset-0 bg-[radial-gradient(#253352_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
@@ -437,7 +445,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 </div>
 
                 {/* Inner Glowing Core Container */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-22 sm:w-36 h-22 sm:h-36 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[2px] shadow-[0_0_35px_rgba(6,182,212,0.45)]">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 sm:w-36 h-24 sm:h-36 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[2px] shadow-[0_0_35px_rgba(6,182,212,0.45)]">
                   <div className="w-full h-full rounded-full bg-[#070A18] flex flex-col items-center justify-center text-center p-1.5 sm:p-2.5 relative overflow-hidden">
                     <div className="absolute inset-0 bg-radial from-cyan-500/15 via-transparent to-transparent pointer-events-none" />
                     

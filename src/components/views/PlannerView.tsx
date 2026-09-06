@@ -313,10 +313,10 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 max-w-6xl mx-auto font-sans select-none animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 pb-20 max-w-6xl mx-auto font-sans animate-fade-in">
       
       {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD WITH 3D GLASS CALENDAR BACKGROUND ═══════════════ */}
-      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[32px] bg-[#0A0D14] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-3.5 sm:space-y-4">
+      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[32px] bg-white dark:bg-[#0A0D14] border border-slate-200/80 dark:border-[#272738] shadow-xl dark:shadow-2xl relative overflow-hidden text-slate-900 dark:text-white space-y-3.5 sm:space-y-4">
         
         {/* Full Uncropped High-Fidelity 3D Planner & Stopwatch Artwork (Zero crop, fits card perfectly) */}
         <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">

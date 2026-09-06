@@ -51,7 +51,7 @@ export const AnalyticsView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-24 sm:pb-20 max-w-5xl mx-auto select-none font-sans animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 pb-24 sm:pb-20 max-w-5xl mx-auto font-sans animate-fade-in">
       
       {/* 1. EXECUTIVE HERO HEADER */}
       <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-xs sm:shadow-subtle-depth">
