@@ -156,9 +156,30 @@ export interface DailyActivity {
   revisionsCompleted: number;
 }
 
-export interface UserProgressProfile {
+export interface UserProfileItem {
+  id: string;
   name: string;
   avatarUrl?: string;
+  avatarEmoji?: string;
+  avatarColor?: string;
+  targetExamId: string;
+  targetExamDate: string;
+  currentStreak: number;
+  longestStreak: number;
+  level: number;
+  levelTitle: string;
+  xp: number;
+  soundEnabled: boolean;
+  createdAt: string;
+  lastActiveAt: string;
+}
+
+export interface UserProgressProfile {
+  id?: string;
+  name: string;
+  avatarUrl?: string;
+  avatarEmoji?: string;
+  avatarColor?: string;
   targetExamDate: string;
   currentStreak: number;
   longestStreak: number;

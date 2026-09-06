@@ -15,7 +15,8 @@ import {
   Timer,
   ChevronRight,
   GraduationCap,
-  Clock
+  Clock,
+  Users
 } from 'lucide-react';
 import { AppView } from './Sidebar';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -30,6 +31,7 @@ interface MobileDrawerProps {
   onOpenAddTopic?: () => void;
   onOpenFocus?: () => void;
   onOpenSearch?: () => void;
+  onOpenProfileSwitcher?: () => void;
 }
 
 export const MobileDrawer: React.FC<MobileDrawerProps> = ({
@@ -39,9 +41,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   onSelectView,
   onOpenAddTopic,
   onOpenFocus,
-  onOpenSearch
+  onOpenSearch,
+  onOpenProfileSwitcher
 }) => {
-  const { dueRevisions, weakTopics, plannerTasks, platforms, currentExam } = useSyllabus();
+  const { dueRevisions, weakTopics, plannerTasks, platforms, currentExam, profile } = useSyllabus();
 
   // Mobile Swipe-to-Dismiss Drawer Gesture State
   const drawerTouchStartX = useRef<number | null>(null);
@@ -237,6 +240,47 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             >
               <X className="w-4 h-4" />
             </button>
+          </div>
+
+          {/* 1.5 ACTIVE PROFILE CARD & SWITCHER */}
+          <div className="p-2.5 rounded-2xl bg-slate-50 dark:bg-[#161725] border border-slate-200/80 dark:border-[#26283C] flex items-center justify-between gap-2.5 shadow-2xs">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div
+                className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${
+                  profile.avatarColor || 'from-[#2563EB] to-indigo-600'
+                } flex items-center justify-center text-white text-base font-bold shadow-xs border border-white/20 shrink-0 overflow-hidden`}
+              >
+                {profile.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt={profile.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span>{profile.avatarEmoji || '🦁'}</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs font-black text-slate-900 dark:text-white truncate leading-tight">
+                  {profile.name || 'Aspirant'}
+                </h4>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-none mt-0.5 truncate">
+                  Lvl {profile.level} · {profile.levelTitle}
+                </p>
+              </div>
+            </div>
+
+            {onOpenProfileSwitcher && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  haptics.light();
+                  onClose();
+                  onOpenProfileSwitcher();
+                }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#222436] text-brand-600 dark:text-brand-400 border border-slate-200 dark:border-slate-700 text-[11px] font-bold shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer shrink-0 active:scale-95"
+              >
+                <Users className="w-3 h-3" />
+                <span>Switch</span>
+              </button>
+            )}
           </div>
 
           {/* 2. DUAL ACTION BUTTONS (ADD TARGET & FOCUS MODE) */}

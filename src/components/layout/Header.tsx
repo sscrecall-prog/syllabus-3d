@@ -24,6 +24,7 @@ import { EditExamTargetModal } from '../modals/EditExamTargetModal';
 interface HeaderProps {
   onOpenSearch: () => void;
   onOpenSettings: () => void;
+  onOpenProfileSwitcher?: () => void;
   onOpenMobileMenu?: () => void;
   canGoBack?: boolean;
   onGoBack?: () => void;
@@ -33,6 +34,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   onOpenSettings,
+  onOpenProfileSwitcher,
   onOpenMobileMenu,
   canGoBack = false,
   onGoBack,
@@ -227,11 +229,21 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
-          {/* User Profile Avatar */}
+          {/* User Profile Avatar / Switcher Trigger */}
           <button
-            onClick={onOpenSettings}
-            className="w-7 sm:w-8 h-7 sm:h-8 rounded-xl bg-[#11120F] dark:bg-[#23232A] border border-[#E2E8F0] dark:border-[#272730] text-[#2563EB] dark:text-[#7AA2F7] font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0"
-            title="App Settings & Profile"
+            onClick={() => {
+              soundManager.playClick();
+              haptics.light();
+              if (onOpenProfileSwitcher) {
+                onOpenProfileSwitcher();
+              } else {
+                onOpenSettings();
+              }
+            }}
+            className={`w-7 sm:w-8 h-7 sm:h-8 rounded-xl bg-gradient-to-tr ${
+              profile.avatarColor || 'from-[#2563EB] to-indigo-600'
+            } border border-[#E2E8F0] dark:border-[#272730] text-white font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0`}
+            title={`Active Profile: ${profile.name || 'Aspirant'} (Click to switch)`}
           >
             {(profile.avatarUrl || user?.avatarUrl) ? (
               <img
@@ -239,6 +251,8 @@ export const Header: React.FC<HeaderProps> = ({
                 alt={user?.name || profile.name || 'User'}
                 className="w-full h-full object-cover"
               />
+            ) : profile.avatarEmoji ? (
+              <span className="text-[13px] leading-none drop-shadow">{profile.avatarEmoji}</span>
             ) : (
               (user?.name || profile.name || 'A').charAt(0).toUpperCase()
             )}

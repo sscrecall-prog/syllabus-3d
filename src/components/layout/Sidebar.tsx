@@ -14,7 +14,8 @@ import {
   Globe,
   Sparkles,
   Keyboard,
-  Clock
+  Clock,
+  Users
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
@@ -41,6 +42,7 @@ interface SidebarProps {
   onOpenAddTopic?: () => void;
   onOpenFocus?: () => void;
   onOpenShortcuts?: () => void;
+  onOpenProfileSwitcher?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -48,7 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectView,
   onOpenAddTopic,
   onOpenFocus,
-  onOpenShortcuts
+  onOpenShortcuts,
+  onOpenProfileSwitcher
 }) => {
   const { profile, dueRevisions, weakTopics, plannerTasks, platforms } = useSyllabus();
   const { user } = useAuth();
@@ -251,17 +254,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <ExternalLink className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
         </a>
 
-        {/* Compact User Level Card */}
+        {/* Compact User Profile & Level Card */}
         <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#5A4FCF] text-white dark:text-black font-black flex items-center justify-center text-[13px] shrink-0 shadow-2xs overflow-hidden">
+              <div
+                className={`w-7 h-7 rounded-lg bg-gradient-to-br ${
+                  profile.avatarColor || 'from-[#2563EB] to-indigo-600'
+                } text-white dark:text-black font-black flex items-center justify-center text-[13px] shrink-0 shadow-2xs overflow-hidden`}
+              >
                 {(profile.avatarUrl || user?.avatarUrl) ? (
                   <img
                     src={profile.avatarUrl || user?.avatarUrl}
                     alt={user?.name || profile.name}
                     className="w-full h-full object-cover"
                   />
+                ) : profile.avatarEmoji ? (
+                  <span className="text-[13px] leading-none drop-shadow">{profile.avatarEmoji}</span>
                 ) : (
                   (user?.name || profile.name ? (user?.name || profile.name).charAt(0).toUpperCase() : 'A')
                 )}
@@ -276,9 +285,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
-            <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-md bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] font-mono border border-[#BFDBFE] dark:border-[#7AA2F7]/30">
-              Lvl {profile.level}
-            </span>
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-md bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] font-mono border border-[#BFDBFE] dark:border-[#7AA2F7]/30">
+                Lvl {profile.level}
+              </span>
+
+              {onOpenProfileSwitcher && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    haptics.light();
+                    onOpenProfileSwitcher();
+                  }}
+                  className="p-1 rounded-md text-slate-400 hover:text-[#2563EB] dark:hover:text-[#7AA2F7] hover:bg-slate-100 dark:hover:bg-[#232430] transition-colors cursor-pointer"
+                  title="Switch Study Profile"
+                  aria-label="Switch Study Profile"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="w-full h-1 rounded-full bg-[#E2E8F0] dark:bg-[#232430] overflow-hidden">

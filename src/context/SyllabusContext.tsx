@@ -16,6 +16,7 @@ import {
   RevisionRecord,
   AchievementBadge,
   UserProgressProfile,
+  UserProfileItem,
   DailyActivity,
   OverallStats,
   SubjectStats,
@@ -243,6 +244,20 @@ interface SyllabusContextType {
   updateCurrentExamDetails: (updates: { name?: string; examDate?: string; targetYear?: number }) => void;
   profile: UserProgressProfile;
   updateProfile: (updates: Partial<UserProgressProfile>) => void;
+  profiles: UserProfileItem[];
+  activeProfileId: string;
+  createProfile: (profileData: {
+    name: string;
+    avatarUrl?: string;
+    avatarEmoji?: string;
+    avatarColor?: string;
+    targetExamId: string;
+    targetExamDate?: string;
+    cloneCurrentSyllabus?: boolean;
+  }) => string;
+  switchProfile: (profileId: string) => void;
+  updateProfileById: (profileId: string, updates: Partial<UserProfileItem>) => void;
+  deleteProfile: (profileId: string) => boolean;
   achievements: AchievementBadge[];
   activityHistory: DailyActivity[];
   overallStats: OverallStats;
@@ -325,10 +340,83 @@ interface SyllabusContextType {
 
 const SyllabusContext = createContext<SyllabusContextType | undefined>(undefined);
 
+const loadInitialActiveDataset = () => {
+  if (typeof window === 'undefined') return null;
+  const activeId = localStorage.getItem('syllabus3d_active_profile_id') || 'profile_default';
+  if (activeId === 'profile_default') return null;
+  try {
+    const raw = localStorage.getItem(`syllabus3d_profile_data_${activeId}`);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+};
+
 export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
 
+  const initialActiveDataset = useMemo(() => loadInitialActiveDataset(), []);
+
+  const [activeProfileId, setActiveProfileId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('syllabus3d_active_profile_id');
+      if (saved) return saved;
+    }
+    return 'profile_default';
+  });
+
+  const [profiles, setProfiles] = useState<UserProfileItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('syllabus3d_profiles');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+      const savedProf = localStorage.getItem('syllabus3d_profile');
+      if (savedProf) {
+        try {
+          const p = JSON.parse(savedProf);
+          return [{
+            id: 'profile_default',
+            name: p.name || INITIAL_PROFILE.name,
+            avatarUrl: p.avatarUrl,
+            avatarEmoji: p.avatarEmoji || '🦁',
+            avatarColor: p.avatarColor || 'from-amber-500 to-orange-600',
+            targetExamId: p.selectedExamId || INITIAL_PROFILE.selectedExamId,
+            targetExamDate: p.targetExamDate || INITIAL_PROFILE.targetExamDate,
+            currentStreak: p.currentStreak || INITIAL_PROFILE.currentStreak,
+            longestStreak: p.longestStreak || INITIAL_PROFILE.longestStreak,
+            level: p.level || INITIAL_PROFILE.level,
+            levelTitle: p.levelTitle || INITIAL_PROFILE.levelTitle,
+            xp: p.xp || INITIAL_PROFILE.xp,
+            soundEnabled: p.soundEnabled ?? true,
+            createdAt: '2026-08-01T00:00:00.000Z',
+            lastActiveAt: new Date().toISOString()
+          }];
+        } catch (e) {}
+      }
+    }
+    return [{
+      id: 'profile_default',
+      name: INITIAL_PROFILE.name,
+      avatarEmoji: '🦁',
+      avatarColor: 'from-amber-500 to-orange-600',
+      targetExamId: INITIAL_PROFILE.selectedExamId,
+      targetExamDate: INITIAL_PROFILE.targetExamDate,
+      currentStreak: INITIAL_PROFILE.currentStreak,
+      longestStreak: INITIAL_PROFILE.longestStreak,
+      level: INITIAL_PROFILE.level,
+      levelTitle: INITIAL_PROFILE.levelTitle,
+      xp: INITIAL_PROFILE.xp,
+      soundEnabled: true,
+      createdAt: '2026-08-01T00:00:00.000Z',
+      lastActiveAt: new Date().toISOString()
+    }];
+  });
+
   const [exams, setExams] = useState<Exam[]>(() => {
+    if (initialActiveDataset?.exams) return initialActiveDataset.exams;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_exams');
       if (saved) {
@@ -339,6 +427,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   const [profile, setProfile] = useState<UserProgressProfile>(() => {
+    if (initialActiveDataset?.profile) return initialActiveDataset.profile;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_profile');
       if (saved) {
@@ -349,6 +438,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   const [achievements, setAchievements] = useState<AchievementBadge[]>(() => {
+    if (initialActiveDataset?.achievements) return initialActiveDataset.achievements;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_achievements');
       if (saved) {
@@ -359,6 +449,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   const [activityHistory, setActivityHistory] = useState<DailyActivity[]>(() => {
+    if (initialActiveDataset?.activityHistory) return initialActiveDataset.activityHistory;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_activity');
       if (saved) {
@@ -369,6 +460,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   const [revisions, setRevisions] = useState<RevisionRecord[]>(() => {
+    if (initialActiveDataset?.revisions) return initialActiveDataset.revisions;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_revisions');
       if (saved) {
@@ -392,6 +484,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   const [plannerTasks, setPlannerTasks] = useState<PlannerTask[]>(() => {
+    if (initialActiveDataset?.plannerTasks) return initialActiveDataset.plannerTasks;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_planner');
       if (saved) {
@@ -410,30 +503,43 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Debounced Batch Persistence & Quota Protection
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_exams', exams);
-  }, [exams]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_exams', exams);
+    }
+  }, [exams, activeProfileId]);
 
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_profile', profile);
-  }, [profile]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_profile', profile);
+    }
+  }, [profile, activeProfileId]);
 
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_achievements', achievements);
-  }, [achievements]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_achievements', achievements);
+    }
+  }, [achievements, activeProfileId]);
 
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_activity', activityHistory);
-  }, [activityHistory]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_activity', activityHistory);
+    }
+  }, [activityHistory, activeProfileId]);
 
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_revisions', revisions);
-  }, [revisions]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_revisions', revisions);
+    }
+  }, [revisions, activeProfileId]);
 
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_planner', plannerTasks);
-  }, [plannerTasks]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_planner', plannerTasks);
+    }
+  }, [plannerTasks, activeProfileId]);
 
   const [platforms, setPlatforms] = useState<ExternalPlatform[]>(() => {
+    if (initialActiveDataset?.platforms) return initialActiveDataset.platforms;
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('syllabus3d_platforms');
       if (saved) {
@@ -447,16 +553,89 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   useEffect(() => {
-    storageManager.debouncedSave('syllabus3d_platforms', platforms);
-  }, [platforms]);
+    if (activeProfileId === 'profile_default') {
+      storageManager.debouncedSave('syllabus3d_platforms', platforms);
+    }
+  }, [platforms, activeProfileId]);
 
   // ──── TOP 3 NON-NEGOTIABLE TARGETS & DAILY REFLECTION STATE ────
-  const [top3Targets, setTop3Targets] = useState<Top3Target[]>(() => loadStoredTop3Targets());
-  const [reflectionsHistory, setReflectionsHistory] = useState<DailyReflection[]>(() => loadStoredReflections());
+  const [top3Targets, setTop3Targets] = useState<Top3Target[]>(() => {
+    if (initialActiveDataset?.top3Targets) return initialActiveDataset.top3Targets;
+    return loadStoredTop3Targets();
+  });
+  const [reflectionsHistory, setReflectionsHistory] = useState<DailyReflection[]>(() => {
+    if (initialActiveDataset?.reflectionsHistory) return initialActiveDataset.reflectionsHistory;
+    return loadStoredReflections();
+  });
 
   useEffect(() => {
-    saveStoredTop3Targets(top3Targets);
-  }, [top3Targets]);
+    if (activeProfileId === 'profile_default') {
+      saveStoredTop3Targets(top3Targets);
+    }
+  }, [top3Targets, activeProfileId]);
+
+  // Save active profile's scoped dataset when it's not profile_default
+  useEffect(() => {
+    if (activeProfileId && activeProfileId !== 'profile_default') {
+      const activeData = {
+        exams,
+        profile,
+        achievements,
+        activityHistory,
+        revisions,
+        plannerTasks,
+        platforms,
+        top3Targets,
+        reflectionsHistory
+      };
+      storageManager.debouncedSave(`syllabus3d_profile_data_${activeProfileId}`, activeData);
+    }
+  }, [activeProfileId, exams, profile, achievements, activityHistory, revisions, plannerTasks, platforms, top3Targets, reflectionsHistory]);
+
+  // Persist profiles list
+  useEffect(() => {
+    storageManager.debouncedSave('syllabus3d_profiles', profiles);
+  }, [profiles]);
+
+  // Keep active profile in profiles list synchronized with profile state
+  useEffect(() => {
+    setProfiles(prev => {
+      const idx = prev.findIndex(p => p.id === activeProfileId);
+      if (idx === -1) return prev;
+      const cur = prev[idx];
+      if (
+        cur.name === profile.name &&
+        cur.avatarUrl === profile.avatarUrl &&
+        cur.avatarEmoji === profile.avatarEmoji &&
+        cur.avatarColor === profile.avatarColor &&
+        cur.currentStreak === profile.currentStreak &&
+        cur.longestStreak === profile.longestStreak &&
+        cur.level === profile.level &&
+        cur.xp === profile.xp &&
+        cur.targetExamId === profile.selectedExamId &&
+        cur.targetExamDate === profile.targetExamDate
+      ) {
+        return prev;
+      }
+      const updated = [...prev];
+      updated[idx] = {
+        ...cur,
+        name: profile.name,
+        avatarUrl: profile.avatarUrl,
+        avatarEmoji: profile.avatarEmoji,
+        avatarColor: profile.avatarColor,
+        currentStreak: profile.currentStreak,
+        longestStreak: profile.longestStreak,
+        level: profile.level,
+        levelTitle: profile.levelTitle,
+        xp: profile.xp,
+        targetExamId: profile.selectedExamId,
+        targetExamDate: profile.targetExamDate,
+        lastActiveAt: new Date().toISOString()
+      };
+      return updated;
+    });
+  }, [profile, activeProfileId]);
 
   // ──── LIVE AUTO-SAVE SYNC STATUS ────
   const [lastSavedAt, setLastSavedAt] = useState<string>(() => {
@@ -1827,6 +2006,280 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
+  // ──── MULTI-PROFILE ENGINE ────
+  const saveActiveProfileDataSynchronously = useCallback((profileId: string) => {
+    const dataset = {
+      exams,
+      profile,
+      achievements,
+      activityHistory,
+      revisions,
+      plannerTasks,
+      platforms,
+      top3Targets,
+      reflectionsHistory
+    };
+
+    if (profileId === 'profile_default') {
+      try {
+        localStorage.setItem('syllabus3d_exams', JSON.stringify(exams));
+        localStorage.setItem('syllabus3d_profile', JSON.stringify(profile));
+        localStorage.setItem('syllabus3d_achievements', JSON.stringify(achievements));
+        localStorage.setItem('syllabus3d_activity', JSON.stringify(activityHistory));
+        localStorage.setItem('syllabus3d_revisions', JSON.stringify(revisions));
+        localStorage.setItem('syllabus3d_planner', JSON.stringify(plannerTasks));
+        localStorage.setItem('syllabus3d_platforms', JSON.stringify(platforms));
+        localStorage.setItem('syllabus3d_top3_targets', JSON.stringify(top3Targets));
+        localStorage.setItem('syllabus3d_reflections', JSON.stringify(reflectionsHistory));
+      } catch (e) {}
+    } else {
+      try {
+        localStorage.setItem(`syllabus3d_profile_data_${profileId}`, JSON.stringify(dataset));
+      } catch (e) {}
+    }
+  }, [exams, profile, achievements, activityHistory, revisions, plannerTasks, platforms, top3Targets, reflectionsHistory]);
+
+  const loadProfileDataById = useCallback((profileId: string) => {
+    if (profileId === 'profile_default') {
+      try {
+        const examsSaved = localStorage.getItem('syllabus3d_exams');
+        const profileSaved = localStorage.getItem('syllabus3d_profile');
+        const achSaved = localStorage.getItem('syllabus3d_achievements');
+        const actSaved = localStorage.getItem('syllabus3d_activity');
+        const revSaved = localStorage.getItem('syllabus3d_revisions');
+        const planSaved = localStorage.getItem('syllabus3d_planner');
+        const platSaved = localStorage.getItem('syllabus3d_platforms');
+        const top3Saved = localStorage.getItem('syllabus3d_top3_targets');
+        const refSaved = localStorage.getItem('syllabus3d_reflections');
+
+        return {
+          exams: examsSaved ? JSON.parse(examsSaved) : INITIAL_EXAMS,
+          profile: profileSaved ? JSON.parse(profileSaved) : INITIAL_PROFILE,
+          achievements: achSaved ? JSON.parse(achSaved) : INITIAL_ACHIEVEMENTS,
+          activityHistory: actSaved ? JSON.parse(actSaved) : INITIAL_ACTIVITY_HISTORY,
+          revisions: revSaved ? JSON.parse(revSaved) : [],
+          plannerTasks: planSaved ? JSON.parse(planSaved) : INITIAL_PLANNER_TASKS,
+          platforms: platSaved ? JSON.parse(platSaved) : INITIAL_PLATFORMS,
+          top3Targets: top3Saved ? JSON.parse(top3Saved) : loadStoredTop3Targets(),
+          reflectionsHistory: refSaved ? JSON.parse(refSaved) : loadStoredReflections()
+        };
+      } catch (e) {}
+      return null;
+    } else {
+      try {
+        const raw = localStorage.getItem(`syllabus3d_profile_data_${profileId}`);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return null;
+    }
+  }, []);
+
+  const switchProfile = useCallback((targetProfileId: string) => {
+    if (targetProfileId === activeProfileId) return;
+
+    // 1. Immediately save current active profile
+    saveActiveProfileDataSynchronously(activeProfileId);
+
+    // 2. Load target profile's data
+    const targetDataset = loadProfileDataById(targetProfileId);
+    if (!targetDataset) return;
+
+    // 3. Update all React states
+    setExams(targetDataset.exams);
+    setProfile(targetDataset.profile);
+    setAchievements(targetDataset.achievements);
+    setActivityHistory(targetDataset.activityHistory);
+    setRevisions(targetDataset.revisions);
+    setPlannerTasks(targetDataset.plannerTasks);
+    setPlatforms(targetDataset.platforms);
+    setTop3Targets(targetDataset.top3Targets);
+    setReflectionsHistory(targetDataset.reflectionsHistory);
+
+    // 4. Update active ID
+    setActiveProfileId(targetProfileId);
+    try {
+      localStorage.setItem('syllabus3d_active_profile_id', targetProfileId);
+    } catch (e) {}
+
+    setProfiles(prev => prev.map(p =>
+      p.id === targetProfileId ? { ...p, lastActiveAt: new Date().toISOString() } : p
+    ));
+
+    soundManager.playCompleteChime();
+    haptics.success();
+    confetti({
+      particleCount: 35,
+      spread: 50,
+      origin: { y: 0.6 }
+    });
+  }, [activeProfileId, saveActiveProfileDataSynchronously, loadProfileDataById]);
+
+  const createProfile = useCallback((profileData: {
+    name: string;
+    avatarUrl?: string;
+    avatarEmoji?: string;
+    avatarColor?: string;
+    targetExamId: string;
+    targetExamDate?: string;
+    cloneCurrentSyllabus?: boolean;
+  }): string => {
+    // 1. Save current profile first
+    saveActiveProfileDataSynchronously(activeProfileId);
+
+    const newId = 'profile_' + Date.now();
+    const newProfileItem: UserProfileItem = {
+      id: newId,
+      name: profileData.name.trim() || 'New Aspirant',
+      avatarUrl: profileData.avatarUrl,
+      avatarEmoji: profileData.avatarEmoji || '🦁',
+      avatarColor: profileData.avatarColor || 'from-blue-600 to-indigo-600',
+      targetExamId: profileData.targetExamId || 'exam_ssc_cgl_2025',
+      targetExamDate: profileData.targetExamDate || '2026-10-15',
+      currentStreak: 0,
+      longestStreak: 0,
+      level: 1,
+      levelTitle: 'Syllabus Recruit',
+      xp: 0,
+      soundEnabled: true,
+      createdAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString()
+    };
+
+    const newProgressProfile: UserProgressProfile = {
+      id: newId,
+      name: newProfileItem.name,
+      avatarUrl: newProfileItem.avatarUrl,
+      avatarEmoji: newProfileItem.avatarEmoji,
+      avatarColor: newProfileItem.avatarColor,
+      targetExamDate: newProfileItem.targetExamDate,
+      currentStreak: 0,
+      longestStreak: 0,
+      level: 1,
+      levelTitle: 'Syllabus Recruit',
+      xp: 0,
+      soundEnabled: true,
+      selectedExamId: newProfileItem.targetExamId
+    };
+
+    let initialExamsForNewProfile: Exam[];
+    if (profileData.cloneCurrentSyllabus) {
+      initialExamsForNewProfile = JSON.parse(JSON.stringify(exams));
+    } else {
+      initialExamsForNewProfile = JSON.parse(JSON.stringify(INITIAL_EXAMS));
+    }
+
+    const initialDataset = {
+      exams: initialExamsForNewProfile,
+      profile: newProgressProfile,
+      achievements: JSON.parse(JSON.stringify(INITIAL_ACHIEVEMENTS)),
+      activityHistory: [],
+      revisions: [],
+      plannerTasks: [],
+      platforms: JSON.parse(JSON.stringify(INITIAL_PLATFORMS)),
+      top3Targets: [
+        { id: '1', text: '', completed: false },
+        { id: '2', text: '', completed: false },
+        { id: '3', text: '', completed: false }
+      ],
+      reflectionsHistory: []
+    };
+
+    try {
+      localStorage.setItem(`syllabus3d_profile_data_${newId}`, JSON.stringify(initialDataset));
+    } catch (e) {}
+
+    // Update profiles list
+    setProfiles(prev => {
+      const updated = [...prev, newProfileItem];
+      try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
+
+    // Set new profile data in state
+    setExams(initialDataset.exams);
+    setProfile(initialDataset.profile);
+    setAchievements(initialDataset.achievements);
+    setActivityHistory(initialDataset.activityHistory);
+    setRevisions(initialDataset.revisions);
+    setPlannerTasks(initialDataset.plannerTasks);
+    setPlatforms(initialDataset.platforms);
+    setTop3Targets(initialDataset.top3Targets);
+    setReflectionsHistory(initialDataset.reflectionsHistory);
+
+    setActiveProfileId(newId);
+    try { localStorage.setItem('syllabus3d_active_profile_id', newId); } catch (e) {}
+
+    soundManager.playCompleteChime();
+    haptics.success();
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 }
+    });
+
+    return newId;
+  }, [activeProfileId, exams, saveActiveProfileDataSynchronously]);
+
+  const updateProfileById = useCallback((profileId: string, updates: Partial<UserProfileItem>) => {
+    setProfiles(prev => {
+      const updated = prev.map(p => p.id === profileId ? { ...p, ...updates } : p);
+      try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
+
+    if (profileId === activeProfileId) {
+      setProfile(prev => ({
+        ...prev,
+        name: updates.name ?? prev.name,
+        avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : prev.avatarUrl,
+        avatarEmoji: updates.avatarEmoji ?? prev.avatarEmoji,
+        avatarColor: updates.avatarColor ?? prev.avatarColor,
+        targetExamDate: updates.targetExamDate ?? prev.targetExamDate,
+        selectedExamId: updates.targetExamId ?? prev.selectedExamId
+      }));
+    } else {
+      const existing = loadProfileDataById(profileId);
+      if (existing) {
+        existing.profile = {
+          ...existing.profile,
+          name: updates.name ?? existing.profile.name,
+          avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : existing.profile.avatarUrl,
+          avatarEmoji: updates.avatarEmoji ?? existing.profile.avatarEmoji,
+          avatarColor: updates.avatarColor ?? existing.profile.avatarColor,
+          targetExamDate: updates.targetExamDate ?? existing.profile.targetExamDate,
+          selectedExamId: updates.targetExamId ?? existing.profile.selectedExamId
+        };
+        try {
+          localStorage.setItem(`syllabus3d_profile_data_${profileId}`, JSON.stringify(existing));
+        } catch (e) {}
+      }
+    }
+  }, [activeProfileId, loadProfileDataById]);
+
+  const deleteProfile = useCallback((profileId: string): boolean => {
+    if (profiles.length <= 1) return false;
+
+    if (profileId === activeProfileId) {
+      const nextProfile = profiles.find(p => p.id !== profileId);
+      if (nextProfile) {
+        switchProfile(nextProfile.id);
+      }
+    }
+
+    if (profileId !== 'profile_default') {
+      try { localStorage.removeItem(`syllabus3d_profile_data_${profileId}`); } catch (e) {}
+    }
+
+    setProfiles(prev => {
+      const updated = prev.filter(p => p.id !== profileId);
+      try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
+
+    soundManager.playClick();
+    return true;
+  }, [profiles, activeProfileId, switchProfile]);
+
   const exportData = () => {
     // Gather all PDF highlights from localStorage
     const pdfHighlights: Record<string, any> = {};
@@ -1846,8 +2299,10 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     return JSON.stringify({
-      version: '2.0.0',
+      version: '2.1.0',
       exportedAt: new Date().toISOString(),
+      activeProfileId,
+      profiles,
       exams,
       profile,
       achievements,
@@ -1929,6 +2384,14 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const importData = (jsonData: string): boolean => {
     try {
       const parsed = JSON.parse(jsonData);
+      if (parsed.profiles && Array.isArray(parsed.profiles)) {
+        setProfiles(parsed.profiles);
+        try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(parsed.profiles)); } catch(e) {}
+      }
+      if (parsed.activeProfileId && typeof parsed.activeProfileId === 'string') {
+        setActiveProfileId(parsed.activeProfileId);
+        try { localStorage.setItem('syllabus3d_active_profile_id', parsed.activeProfileId); } catch(e) {}
+      }
       if (parsed.exams && Array.isArray(parsed.exams)) setExams(parsed.exams);
       if (parsed.profile) setProfile(parsed.profile);
       if (parsed.achievements && Array.isArray(parsed.achievements)) setAchievements(parsed.achievements);
@@ -2031,6 +2494,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     updateCurrentExamDetails,
     profile,
     updateProfile,
+    profiles,
+    activeProfileId,
+    createProfile,
+    switchProfile,
+    updateProfileById,
+    deleteProfile,
     achievements,
     activityHistory,
     overallStats,
@@ -2102,6 +2571,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     exams,
     currentExam,
     profile,
+    profiles,
+    activeProfileId,
+    createProfile,
+    switchProfile,
+    updateProfileById,
+    deleteProfile,
     achievements,
     activityHistory,
     overallStats,

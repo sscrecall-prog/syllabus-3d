@@ -7,7 +7,7 @@ import { OverviewView } from './components/views/OverviewView';
 import { FloatingTimerOverlay } from './components/focus/FloatingTimerOverlay';
 import { useTimer } from './context/TimerContext';
 import { AnimatedLogoIntro } from './components/intro/AnimatedLogoIntro';
-import { Topic } from './types/syllabus';
+import { Topic, UserProfileItem } from './types/syllabus';
 import { useAuth } from './context/AuthContext';
 import { AuthLayout } from './components/auth/AuthLayout';
 import { LoginView } from './components/auth/LoginView';
@@ -43,6 +43,8 @@ const CommandSearchModal = lazy(() => import('./components/modals/CommandSearchM
 const AddTopicModal = lazy(() => import('./components/modals/AddTopicModal').then(m => ({ default: m.AddTopicModal })));
 const FloatingTimerPermissionModal = lazy(() => import('./components/modals/FloatingTimerPermissionModal').then(m => ({ default: m.FloatingTimerPermissionModal })));
 const KeyboardShortcutsModal = lazy(() => import('./components/modals/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })));
+const ProfileSwitcherModal = lazy(() => import('./components/modals/ProfileSwitcherModal').then(m => ({ default: m.ProfileSwitcherModal })));
+const CreateProfileModal = lazy(() => import('./components/modals/CreateProfileModal').then(m => ({ default: m.CreateProfileModal })));
 
 const ViewLoadingFallback: React.FC = () => (
   <div className="w-full space-y-5 animate-view-fade select-none pb-12">
@@ -81,6 +83,9 @@ export const App: React.FC = () => {
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
   const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isProfileSwitcherOpen, setIsProfileSwitcherOpen] = useState(false);
+  const [isCreateProfileOpen, setIsCreateProfileOpen] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<UserProfileItem | null>(null);
   const [shortcutToast, setShortcutToast] = useState<string | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
@@ -145,6 +150,15 @@ export const App: React.FC = () => {
     }
     if (isRevisionSessionOpen) {
       setIsRevisionSessionOpen(false);
+      return;
+    }
+    if (isProfileSwitcherOpen) {
+      setIsProfileSwitcherOpen(false);
+      return;
+    }
+    if (isCreateProfileOpen) {
+      setIsCreateProfileOpen(false);
+      setEditingProfile(null);
       return;
     }
     if (isFullModalOpen) {
@@ -572,6 +586,7 @@ export const App: React.FC = () => {
         }}
         onOpenFocus={() => handleLaunchFocus(undefined)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        onOpenProfileSwitcher={() => setIsProfileSwitcherOpen(true)}
       />
 
       {/* Mobile Drawer (Left Hamburger Sheet) */}
@@ -596,6 +611,10 @@ export const App: React.FC = () => {
           setIsMobileDrawerOpen(false);
           setIsSearchOpen(true);
         }}
+        onOpenProfileSwitcher={() => {
+          setIsMobileDrawerOpen(false);
+          setIsProfileSwitcherOpen(true);
+        }}
       />
 
       {/* Main Workspace Frame */}
@@ -606,6 +625,7 @@ export const App: React.FC = () => {
             window.history.pushState({ modal: 'search' }, '');
           }}
           onOpenSettings={() => handleNavigate('settings')}
+          onOpenProfileSwitcher={() => setIsProfileSwitcherOpen(true)}
           onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
           canGoBack={currentView !== 'overview'}
           onGoBack={handleBack}
@@ -843,6 +863,42 @@ export const App: React.FC = () => {
                 setIsShortcutsOpen(false);
                 setTimeout(() => window.print(), 100);
               }}
+            />
+          </ViewErrorBoundary>
+        )}
+
+        {isProfileSwitcherOpen && (
+          <ViewErrorBoundary sectionName="Profile Switcher Modal" onReset={() => setIsProfileSwitcherOpen(false)}>
+            <ProfileSwitcherModal
+              isOpen={isProfileSwitcherOpen}
+              onClose={() => setIsProfileSwitcherOpen(false)}
+              onOpenCreate={() => {
+                setEditingProfile(null);
+                setIsCreateProfileOpen(true);
+              }}
+              onOpenEdit={(prof) => {
+                setEditingProfile(prof);
+                setIsCreateProfileOpen(true);
+              }}
+            />
+          </ViewErrorBoundary>
+        )}
+
+        {isCreateProfileOpen && (
+          <ViewErrorBoundary
+            sectionName="Create Profile Modal"
+            onReset={() => {
+              setIsCreateProfileOpen(false);
+              setEditingProfile(null);
+            }}
+          >
+            <CreateProfileModal
+              isOpen={isCreateProfileOpen}
+              onClose={() => {
+                setIsCreateProfileOpen(false);
+                setEditingProfile(null);
+              }}
+              editingProfile={editingProfile}
             />
           </ViewErrorBoundary>
         )}

@@ -1,7 +1,10 @@
 import { Exam, Subject, AchievementBadge, UserProgressProfile, DailyActivity } from '../types/syllabus';
 
 export const INITIAL_PROFILE: UserProgressProfile = {
+  id: 'profile_default',
   name: 'Sunny Rise',
+  avatarEmoji: '🦁',
+  avatarColor: 'from-amber-500 to-orange-600',
   targetExamDate: '2025-09-15',
   currentStreak: 18,
   longestStreak: 24,
