@@ -354,7 +354,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         setTimeout(() => setSaveSuccess(false), 2000);
       }
       if (e.key === 'Escape') {
-        if (isTocOpen) {
+        if (showQuizImportModal) {
+          setShowQuizImportModal(false);
+          soundManager.playClick();
+        } else if (isTocOpen) {
           setIsTocOpen(false);
           soundManager.playClick();
         } else if (isZenMode) {
@@ -384,7 +387,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [content, noteItems, onSave, isFullscreen, isZenMode, isTocOpen]);
+  }, [content, noteItems, onSave, isFullscreen, isZenMode, isTocOpen, showQuizImportModal]);
 
   // Handle Browser History & Android Back Button / Gesture in Fullscreen & Zen Mode
   useEffect(() => {
@@ -4159,10 +4162,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       {renderFullScreenReaderModal()}
 
       {/* High-Res Image Zoom Lightbox Modal */}
-      {zoomImage && (
+      {/* High-Res Image Zoom Lightbox Modal */}
+      {zoomImage && typeof document !== 'undefined' && createPortal(
         <div
           onClick={() => setZoomImage(null)}
-          className="fixed inset-0 z-[160] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+          className="fixed inset-0 z-[210] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
         >
           <div
             onClick={e => e.stopPropagation()}
@@ -4194,18 +4198,19 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="max-w-full max-h-[75vh] object-contain rounded-xl"
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* 🎯 Interactive Quiz Import & Creator Modal */}
-      {showQuizImportModal && (
+      {/* 🎯 Interactive Quiz Import & Creator Modal (Portal to document.body prevents drawer scroll trap) */}
+      {showQuizImportModal && typeof document !== 'undefined' && createPortal(
         <div
           onClick={() => setShowQuizImportModal(false)}
-          className="fixed inset-0 z-[170] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in"
+          className="fixed inset-0 z-[200] bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fade-in"
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-xl rounded-3xl bg-white dark:bg-[#151622] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="w-full max-w-xl rounded-3xl bg-white dark:bg-[#151622] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
           >
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800/80 bg-gradient-to-r from-indigo-50/80 via-blue-50/40 to-transparent dark:from-[#1A1C2E] dark:via-[#161726] dark:to-transparent flex items-center justify-between">
@@ -4305,7 +4310,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
