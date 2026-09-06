@@ -1,22 +1,12 @@
 import React, { useState } from 'react';
 import {
   Clock,
-  Target,
   Calendar,
-  Sparkles,
-  BookOpen,
-  CheckCircle2,
-  TrendingUp,
-  ShieldCheck,
-  Printer,
-  ChevronRight,
-  Layers
+  Printer
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { SyllabusPacingCard } from '../dashboard/SyllabusPacingCard';
-import { ExamCountdown3D } from '../3d/ExamCountdown3D';
 import { EditExamTargetModal } from '../modals/EditExamTargetModal';
-import { AppFooter } from '../common/AppFooter';
 import { AppView } from '../layout/Sidebar';
 import { soundManager } from '../../utils/soundEffects';
 
@@ -26,10 +16,9 @@ interface PacingViewProps {
 }
 
 export const PacingView: React.FC<PacingViewProps> = ({
-  onNavigate,
-  onNavigateToSubject
+  onNavigate
 }) => {
-  const { currentExam, subjectStats, overallStats } = useSyllabus();
+  const { currentExam, overallStats } = useSyllabus();
   const [isEditExamModalOpen, setIsEditExamModalOpen] = useState(false);
 
   const examName = currentExam?.name || 'Target Exam';
@@ -45,7 +34,7 @@ export const PacingView: React.FC<PacingViewProps> = ({
   })();
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-36 sm:pb-24 font-sans max-w-5xl mx-auto px-1 sm:px-0">
+    <div className="space-y-4 sm:space-y-6 pb-28 sm:pb-16 font-sans max-w-5xl mx-auto px-1 sm:px-0">
       
       {/* 🖨️ PRINT-ONLY DESK REVISION SUMMARY HEADER */}
       <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -128,88 +117,11 @@ export const PacingView: React.FC<PacingViewProps> = ({
         onNavigateToSyllabus={() => onNavigate('syllabus')}
       />
 
-      {/* 3. FLIP-CLOCK COUNTDOWN */}
-      <ExamCountdown3D />
-
-      {/* 4. SUBJECT-BY-SUBJECT COMPLETION & VELOCITY DISTRIBUTION */}
-      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none">
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-500/20 shrink-0">
-              <Layers className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.4]" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight truncate">
-                Subject Pacing & Syllabus Coverage
-              </h3>
-              <span className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#A1A1AA] font-medium block truncate">
-                Individual subject completion status and remaining topic load
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => onNavigate('syllabus')}
-            className="text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] hover:underline flex items-center gap-1 cursor-pointer no-print shrink-0"
-          >
-            <span>Explore</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          {subjectStats.map(subj => {
-            const remaining = Math.max(0, subj.totalTopics - subj.completedTopics);
-            return (
-              <div
-                key={subj.subjectId}
-                onClick={() => {
-                  if (onNavigateToSubject) {
-                    onNavigateToSubject(subj.subjectId);
-                  } else {
-                    onNavigate('syllabus');
-                  }
-                }}
-                className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#F8FAFC]/90 dark:bg-[#1C1D2A] border border-slate-200/80 dark:border-[#28293C] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer space-y-2.5 sm:space-y-3 shadow-2xs group active:scale-[0.99] tap-bounce"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white truncate group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors">
-                    {subj.subjectName}
-                  </span>
-                  <span className="text-xs font-mono font-black tabular-nums text-[#2563EB] dark:text-[#7AA2F7]">
-                    {subj.percentage}%
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-200 dark:bg-[#2A2C3E] overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{
-                      width: `${subj.percentage}%`,
-                      backgroundColor: subj.color || '#2563EB'
-                    }}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between text-[10.5px] sm:text-[11px] font-mono text-slate-500 dark:text-slate-400 pt-0.5">
-                  <span><strong>{subj.completedTopics}</strong>/{subj.totalTopics} Done</span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400">{remaining} Left</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Target Exam Date Customizer Modal */}
       <EditExamTargetModal
         isOpen={isEditExamModalOpen}
         onClose={() => setIsEditExamModalOpen(false)}
       />
-
-      {/* Professional Footer */}
-      <AppFooter onNavigate={onNavigate} />
 
     </div>
   );
