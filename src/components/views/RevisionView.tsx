@@ -183,32 +183,32 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
   const stage4Count = revisions.filter(r => r.stage >= 4 || r.completedDate).length;
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto select-none font-sans animate-fade-in">
+    <div className="space-y-3.5 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto select-none font-sans animate-fade-in">
       
       {/* 1. EXECUTIVE HERO BANNER */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           
           {/* Title and Icon Capsule */}
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-gradient-to-br from-[#0a3225] via-[#104b38] to-[#062017] border border-emerald-500/40 text-emerald-300 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)] shrink-0">
-              <RotateCw className="w-6 h-6 stroke-[2.3] animate-spin-slow" />
+          <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0a3225] via-[#104b38] to-[#062017] border border-emerald-500/40 text-emerald-300 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)] shrink-0">
+              <RotateCw className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.3] animate-spin-slow" />
             </div>
 
             <div className="min-w-0 space-y-0.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
-                <span>Ebbinghaus Spaced Repetition</span>
-                <span>•</span>
-                <span>Memory Retention Engine</span>
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+                <span className="truncate">Ebbinghaus Spaced Repetition</span>
+                <span className="hidden xs:inline">•</span>
+                <span className="hidden xs:inline truncate">Memory Retention Engine</span>
               </div>
-              <h2 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
+              <h2 className="text-sm xs:text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Spaced Repetition & Revision
               </h2>
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
                   Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
                 </p>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Live Reactive Sync
                 </span>
@@ -217,7 +217,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
           </div>
 
           {/* Right Action Cluster: Live Sync + Start Session */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 shrink-0 pt-0.5 sm:pt-0">
             <button
               onClick={() => {
                 soundManager.playClick();
@@ -226,14 +226,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                 setTimeout(() => setJustSynced(false), 2200);
               }}
               title="Instantly re-verify and align spaced revision intervals with your syllabus topics"
-              className={`flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-mono font-bold transition-all border cursor-pointer active:scale-95 ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-mono font-bold transition-all border cursor-pointer active:scale-95 ${
                 justSynced
                   ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black shadow-xs'
                   : 'bg-[#F8FAFC] dark:bg-[#20212E] text-[#65675F] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#2E3044] hover:border-emerald-500/50'
               }`}
             >
               <Zap className={`w-3.5 h-3.5 ${justSynced ? 'text-emerald-500 fill-emerald-500 animate-pulse' : 'text-amber-500'}`} />
-              <span>{justSynced ? '✓ Synced with Topics!' : '⚡ Live Resync'}</span>
+              <span>{justSynced ? '✓ Synced Topics!' : '⚡ Live Resync'}</span>
             </button>
 
             {/* High-Impact Action Button */}
@@ -243,7 +243,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                 onOpenRevisionSession();
               }}
               disabled={dueRevisions.length === 0}
-              className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 border tap-bounce ${
+              className={`w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 border tap-bounce ${
                 dueRevisions.length > 0
                   ? 'bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#E2E4F0] border-transparent shadow-[0_4px_15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
                   : 'bg-[#F8FAFC] dark:bg-[#1E1F2A] text-[#85877E] dark:text-[#71717A] border-[#E2E8F0] dark:border-[#2E3044] cursor-not-allowed opacity-75'
@@ -261,99 +261,99 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
       </div>
 
       {/* 2. 4-STAGE RETENTION PIPELINE BENTO CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
         
         {/* Stage 1 */}
-        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-blue-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-blue-500/50 shadow-subtle-depth space-y-1.5 sm:space-y-2.5 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+            <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
               Stage 1 • 1d
             </span>
-            <span className="text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 1</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 1</span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
-              {stage1Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
+              {stage1Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
-            <p className="text-xs sm:text-[13px] font-bold text-blue-600 dark:text-blue-400 mt-1">Initial Recall</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Fresh concepts learned</p>
+            <p className="text-[11px] sm:text-[13px] font-bold text-blue-600 dark:text-blue-400 mt-0.5 sm:mt-1">Initial Recall</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Fresh concepts</p>
           </div>
         </div>
 
         {/* Stage 2 */}
-        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-amber-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-amber-500/50 shadow-subtle-depth space-y-1.5 sm:space-y-2.5 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+            <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
               Stage 2 • 3d
             </span>
-            <span className="text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 3</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 3</span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
-              {stage2Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
+              {stage2Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
-            <p className="text-xs sm:text-[13px] font-bold text-amber-600 dark:text-amber-400 mt-1">Consolidation</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Memory reinforcing</p>
+            <p className="text-[11px] sm:text-[13px] font-bold text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-1">Consolidation</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Reinforcing</p>
           </div>
         </div>
 
         {/* Stage 3 */}
-        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-purple-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-purple-500/50 shadow-subtle-depth space-y-1.5 sm:space-y-2.5 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/25">
+            <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/25">
               Stage 3 • 7d
             </span>
-            <span className="text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 7</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 7</span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
-              {stage3Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
+              {stage3Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
-            <p className="text-xs sm:text-[13px] font-bold text-purple-600 dark:text-purple-400 mt-1">Long-Term Sync</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Core memory recall</p>
+            <p className="text-[11px] sm:text-[13px] font-bold text-purple-600 dark:text-purple-400 mt-0.5 sm:mt-1">Long-Term Sync</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Core memory</p>
           </div>
         </div>
 
         {/* Stage 4 / Mastered */}
-        <div className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-emerald-500/50 shadow-subtle-depth space-y-2.5 transition-all duration-200 overflow-hidden">
+        <div className="group relative p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-emerald-500/50 shadow-subtle-depth space-y-1.5 sm:space-y-2.5 transition-all duration-200 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60 group-hover:opacity-100" />
           <div className="flex items-center justify-between">
-            <span className="px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+            <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
               Stage 4 • 21d+
             </span>
-            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5">
+            <span className="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5">
               <ShieldCheck className="w-3 h-3" />
               <span>Mastered</span>
             </span>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-emerald-600 dark:text-emerald-400">
-              {stage4Count} <span className="text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
+            <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-emerald-600 dark:text-emerald-400">
+              {stage4Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
-            <p className="text-xs sm:text-[13px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">Permanently Locked</p>
-            <p className="text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Exam-ready recall</p>
+            <p className="text-[11px] sm:text-[13px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1">Permanently Locked</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Exam-ready</p>
           </div>
         </div>
       </div>
 
       {/* 3. SEARCH & QUEUE FILTER TOOLBAR */}
-      <div className="p-3.5 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
+      <div className="p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-2.5 sm:space-y-3.5">
         
         {/* Search & Tabs Row */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
           
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#85877E] pointer-events-none" />
+            <Search className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#85877E] pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search topics in revision queue..."
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
+              className="w-full pl-8 sm:pl-9 pr-7 sm:pr-8 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] text-xs font-medium text-[#191A17] dark:text-[#F5F5F7] placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7]"
             />
             {searchQuery && (
               <button
@@ -366,7 +366,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
           </div>
 
           {/* Queue Tab Switchers */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] shadow-2xs overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#14151F] border border-[#E2E8F0] dark:border-[#272730] shadow-2xs overflow-x-auto no-scrollbar">
             {[
               { id: 'today', label: 'Due Today', count: dueList.length, icon: Clock },
               { id: 'upcoming', label: 'Upcoming', count: upcomingList.length, icon: Calendar },
@@ -381,17 +381,17 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     soundManager.playClick();
                     setActiveTab(tab.id as any);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 active:scale-95 ${
                     isSel
                       ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
                       : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
                   }`}
                 >
-                  <TabIcon className="w-3.5 h-3.5" />
+                  <TabIcon className="w-3.5 h-3.5 shrink-0" />
                   <span>{tab.label}</span>
                   <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
                     isSel
-                      ? 'bg-white/20 dark:bg-black/20'
+                      ? 'bg-white/20 dark:bg-black/20 font-bold'
                       : 'bg-[#EEEEE8] dark:bg-[#20212E] text-[#85877E]'
                   }`}>
                     {tab.count}
@@ -404,19 +404,19 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
 
         {/* Subject Filter Pills */}
         {currentExam && currentExam.subjects.length > 0 && (
-          <div className="flex items-center gap-1.5 overflow-x-auto pt-3 border-t border-[#EEEEE8] dark:border-[#242533] no-scrollbar">
+          <div className="flex items-center gap-1.5 overflow-x-auto pt-2.5 sm:pt-3 border-t border-[#EEEEE8] dark:border-[#242533] no-scrollbar">
             <button
               onClick={() => {
                 soundManager.playClick();
                 setSelectedSubjectFilter('all');
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
                 selectedSubjectFilter === 'all'
                   ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                   : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3.5 h-3.5 shrink-0" />
               <span>All ({revisions.length})</span>
             </button>
 
@@ -433,16 +433,16 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     soundManager.playClick();
                     setSelectedSubjectFilter(s.name);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
                     isSelected
                       ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                       : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                   }`}
                 >
-                  <SubjIcon className="w-3.5 h-3.5" style={{ color: isSelected ? undefined : meta.color }} />
+                  <SubjIcon className="w-3.5 h-3.5 shrink-0" style={{ color: isSelected ? undefined : meta.color }} />
                   <span>{s.name}</span>
                   <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
-                    isSelected ? 'bg-white/20 dark:bg-black/20' : 'bg-[#E2E8F0] dark:bg-[#20212E] text-[#85877E]'
+                    isSelected ? 'bg-white/20 dark:bg-black/20 font-bold' : 'bg-[#E2E8F0] dark:bg-[#20212E] text-[#85877E]'
                   }`}>
                     {count}
                   </span>
@@ -472,7 +472,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               return (
                 <div
                   key={rev.id}
-                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-emerald-500/50 dark:hover:border-emerald-500/40 shadow-subtle-depth transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group relative overflow-hidden"
+                  className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-emerald-500/50 dark:hover:border-emerald-500/40 shadow-subtle-depth transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 group relative overflow-hidden"
                 >
                   {/* Subtle Left Accent Line */}
                   <div
@@ -486,24 +486,23 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                         onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName);
                       }
                     }}
-                    className={`flex items-center gap-3.5 min-w-0 flex-1 pl-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
+                    className={`flex items-start sm:items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1 pl-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
                   >
-                    
                     {/* 3D Squircle Subject Badge */}
                     <div
-                      className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shadow-xs shrink-0`}
+                      className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shadow-xs shrink-0 mt-0.5 sm:mt-0`}
                     >
-                      <SubjIcon className="w-5 h-5 stroke-[2.2]" />
+                      <SubjIcon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
                     </div>
 
                     <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap text-xs">
-                        <span className={`px-2.5 py-0.5 text-[11px] font-mono font-black rounded-lg border ${stageMeta.badgeClass}`}>
+                      <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap text-xs">
+                        <span className={`px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg border ${stageMeta.badgeClass}`}>
                           {stageMeta.label}
                         </span>
 
                         {/* Difficulty Badge */}
-                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg border ${
+                        <span className={`px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg border ${
                           difficulty.toLowerCase() === 'hard'
                             ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/25'
                             : difficulty.toLowerCase() === 'easy'
@@ -515,21 +514,21 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
 
                         {/* Weak Area Pill */}
                         {isWeak && (
-                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" />
+                          <span className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 flex items-center gap-1">
+                            <AlertTriangle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                             <span>Weak</span>
                           </span>
                         )}
 
                         {/* Accuracy Pill */}
                         {accuracy !== undefined && accuracy > 0 && (
-                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 tabular-nums">
+                          <span className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 tabular-nums">
                             🎯 {accuracy}%
                           </span>
                         )}
 
                         {/* Due/Overdue Tag */}
-                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg border ${
+                        <span className={`px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg border ${
                           isOverdue
                             ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
                             : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
@@ -537,23 +536,23 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                           {isOverdue ? `Overdue (${formatDateReadable(rev.scheduledDate)})` : 'Due Today'}
                         </span>
 
-                        <span className="text-[11px] font-mono font-medium text-[#65675F] dark:text-[#A1A1AA] truncate">
+                        <span className="text-[10px] sm:text-[11px] font-mono font-medium text-[#65675F] dark:text-[#A1A1AA] truncate">
                           {rev.subjectName} • {rev.chapterName}
                         </span>
                       </div>
 
-                      <h4 className="text-sm sm:text-base font-black text-[#191A17] dark:text-[#F5F5F7] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                      <h4 className="text-[13px] sm:text-base font-bold sm:font-black text-[#191A17] dark:text-[#F5F5F7] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
                         {rev.topicName}
                       </h4>
                     </div>
                   </div>
 
-                  {/* Actions (Focus Chamber + Review Card) */}
-                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+                  {/* Actions (Inspect + Review Card) */}
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end pt-1.5 sm:pt-0 border-t sm:border-t-0 border-[#F1F5F9] dark:border-[#272730]">
                     {onOpenTopicDrawer && topicObj && (
                       <button
                         onClick={() => onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName)}
-                        className="px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2B3D] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] transition-all cursor-pointer active:scale-95 shrink-0"
+                        className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2B3D] text-[11px] sm:text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] transition-all cursor-pointer active:scale-95 shrink-0"
                         title="View Topic Details"
                       >
                         Inspect
@@ -562,7 +561,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
 
                     <button
                       onClick={onOpenRevisionSession}
-                      className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all tap-bounce"
+                      className="flex-1 sm:flex-none px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-[11px] sm:text-xs font-black shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all tap-bounce"
                     >
                       <RotateCw className="w-3.5 h-3.5 stroke-[2.5]" />
                       <span>Review Card</span>
@@ -573,36 +572,36 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             })
           ) : (
             /* Clean Modern Motivating Empty State */
-            <div className="py-12 sm:py-16 px-4 sm:px-8 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4 max-w-xl mx-auto">
-              <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-teal-500/15 to-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-md">
-                <Trophy className="w-8 h-8 stroke-[2.2]" />
+            <div className="py-8 sm:py-16 px-4 sm:px-8 text-center rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4 max-w-xl mx-auto">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-teal-500/15 to-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-md">
+                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.2]" />
               </div>
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-black border border-emerald-500/25 mb-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+              <div className="space-y-1 sm:space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] sm:text-xs font-mono font-black border border-emerald-500/25 mb-0.5 sm:mb-1">
+                  <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>100% Retained Today</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                <h3 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
                   All Due Revisions Cleared Today! 🎉
                 </h3>
-                <p className="text-xs font-medium text-[#64748B] dark:text-[#CBD5E1] max-w-md mx-auto leading-relaxed">
+                <p className="text-[11px] sm:text-xs font-medium text-[#64748B] dark:text-[#CBD5E1] max-w-md mx-auto leading-relaxed">
                   Your spaced repetition queue is fully up to date. You can get ahead by reviewing upcoming cards early or inspect your mastered memory vault.
                 </p>
               </div>
 
               {/* Quick Action Buttons */}
-              <div className="flex items-center justify-center gap-2.5 flex-wrap pt-2">
+              <div className="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap pt-1 sm:pt-2">
                 {upcomingList.length > 0 && (
                   <button
                     onClick={() => {
                       soundManager.playClick();
                       setActiveTab('upcoming');
                     }}
-                    className="px-4 py-2.5 rounded-2xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-xs tap-bounce"
+                    className="w-full xs:w-auto px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-[11px] sm:text-xs font-black transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-xs tap-bounce"
                   >
-                    <Clock className="w-4 h-4 text-amber-400 dark:text-amber-500" />
+                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 dark:text-amber-500" />
                     <span>Review Upcoming Early ({upcomingList.length})</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                   </button>
                 )}
 
@@ -612,9 +611,9 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                       soundManager.playClick();
                       setActiveTab('history');
                     }}
-                    className="px-4 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#2D2E40] text-xs font-bold text-[#191A17] dark:text-[#CBD5E1] transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                    className="w-full xs:w-auto px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#2D2E40] text-[11px] sm:text-xs font-bold text-[#191A17] dark:text-[#CBD5E1] transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                   >
-                    <Trophy className="w-4 h-4 text-emerald-500" />
+                    <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
                     <span>View Mastered Vault ({historyList.length})</span>
                   </button>
                 )}
@@ -625,9 +624,9 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                       soundManager.playClick();
                       onNavigate('syllabus');
                     }}
-                    className="px-4 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#2D2E40] text-xs font-bold text-[#191A17] dark:text-[#CBD5E1] transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                    className="w-full xs:w-auto px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#2D2E40] text-[11px] sm:text-xs font-bold text-[#191A17] dark:text-[#CBD5E1] transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                   >
-                    <BookOpen className="w-4 h-4 text-sky-500" />
+                    <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-500" />
                     <span>Explore Full Syllabus</span>
                   </button>
                 )}
@@ -651,7 +650,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               return (
                 <div
                   key={rev.id}
-                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-[#2563EB]/40 transition-all"
+                  className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 group hover:border-[#2563EB]/40 transition-all"
                 >
                   <div
                     onClick={() => {
@@ -659,22 +658,22 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                         onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName);
                       }
                     }}
-                    className={`flex items-center gap-3.5 min-w-0 flex-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
+                    className={`flex items-start sm:items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0 mt-0.5 sm:mt-0`}
                     >
-                      <SubjIcon className="w-5 h-5 stroke-[2.2]" />
+                      <SubjIcon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
                     </div>
 
                     <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap text-xs">
-                        <span className={`px-2 py-0.5 text-[11px] font-mono font-black rounded-lg border ${stageMeta.badgeClass}`}>
+                      <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap text-xs">
+                        <span className={`px-2 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg border ${stageMeta.badgeClass}`}>
                           {stageMeta.label}
                         </span>
 
                         {/* Difficulty Badge */}
-                        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg border ${
+                        <span className={`px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg border ${
                           difficulty.toLowerCase() === 'hard'
                             ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/25'
                             : difficulty.toLowerCase() === 'easy'
@@ -686,42 +685,42 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
 
                         {/* Weak Area Pill */}
                         {isWeak && (
-                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" />
+                          <span className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 flex items-center gap-1">
+                            <AlertTriangle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                             <span>Weak</span>
                           </span>
                         )}
 
                         {/* Accuracy Pill */}
                         {accuracy !== undefined && accuracy > 0 && (
-                          <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 tabular-nums">
+                          <span className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono font-bold rounded-md sm:rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 tabular-nums">
                             🎯 {accuracy}%
                           </span>
                         )}
 
-                        <span className="text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">
+                        <span className="text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">
                           {rev.subjectName} • {rev.chapterName}
                         </span>
                       </div>
 
-                      <h4 className="text-sm font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
+                      <h4 className="text-[13px] sm:text-sm font-bold sm:font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
                         {rev.topicName}
                       </h4>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end pt-1.5 sm:pt-0 border-t sm:border-t-0 border-[#F1F5F9] dark:border-[#272730]">
                     {onOpenTopicDrawer && topicObj && (
                       <button
                         onClick={() => onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName)}
-                        className="px-3.5 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2B3D] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] transition-all cursor-pointer active:scale-95 shrink-0"
+                        className="px-3 sm:px-3.5 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#2A2B3D] text-[11px] sm:text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] transition-all cursor-pointer active:scale-95 shrink-0"
                         title="View Topic Details"
                       >
                         Inspect
                       </button>
                     )}
 
-                    <span className="px-3 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] font-mono flex items-center gap-1.5 shrink-0">
+                    <span className="px-2.5 sm:px-3 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[11px] sm:text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] font-mono flex items-center gap-1.5 shrink-0">
                       <Calendar className="w-3.5 h-3.5" />
                       <span>{formatDateReadable(rev.scheduledDate)}</span>
                     </span>
@@ -730,15 +729,15 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               );
             })
           ) : (
-            <div className="py-12 sm:py-16 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-dashed border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-[#2563EB]/15 to-purple-500/10 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/25 flex items-center justify-center mx-auto shadow-sm">
-                <Clock className="w-7 h-7 stroke-[1.8]" />
+            <div className="py-8 sm:py-16 px-4 text-center rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-dashed border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-3.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-[#2563EB]/15 to-purple-500/10 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/25 flex items-center justify-center mx-auto shadow-sm">
+                <Clock className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-tight">
+                <h3 className="text-sm xs:text-base sm:text-lg font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-tight">
                   No Upcoming Revisions Queued
                 </h3>
-                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto font-medium">
+                <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto font-medium">
                   You're all caught up on scheduled reviews! New spaced repetition intervals will automatically appear here as you study topics.
                 </p>
               </div>
@@ -749,7 +748,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                       soundManager.playClick();
                       setActiveTab('today');
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                    className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-[11px] sm:text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                   >
                     <span>View Due Today ({dueRevisions.length})</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -771,7 +770,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               return (
                 <div
                   key={rev.id}
-                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-emerald-500/30 shadow-subtle-depth flex items-center justify-between gap-4 group hover:border-emerald-500/60 transition-all"
+                  className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-emerald-500/30 shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4 group hover:border-emerald-500/60 transition-all"
                 >
                   <div
                     onClick={() => {
@@ -779,43 +778,43 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                         onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName);
                       }
                     }}
-                    className={`flex items-center gap-3.5 min-w-0 flex-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
+                    className={`flex items-start sm:items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0 mt-0.5 sm:mt-0`}
                     >
-                      <SubjIcon className="w-5 h-5 stroke-[2.2]" />
+                      <SubjIcon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
                     </div>
 
                     <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 text-[11px] font-mono font-bold rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-bold rounded-md sm:rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                           ✓ Mastered
                         </span>
-                        <span className="text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">{rev.subjectName}</span>
+                        <span className="text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#A1A1AA] truncate">{rev.subjectName}</span>
                       </div>
-                      <h4 className="text-sm font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
+                      <h4 className="text-[13px] sm:text-sm font-bold sm:font-black text-[#191A17] dark:text-[#F5F5F7] truncate">
                         {rev.topicName}
                       </h4>
                     </div>
                   </div>
 
-                  <span className="text-xs text-[#65675F] dark:text-[#A1A1AA] font-mono shrink-0">
+                  <span className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#A1A1AA] font-mono shrink-0 pl-1 sm:pl-0">
                     {rev.completedDate ? `Mastered on ${rev.completedDate}` : 'Retained'}
                   </span>
                 </div>
               );
             })
           ) : (
-            <div className="py-12 sm:py-16 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-dashed border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/15 via-emerald-500/15 to-blue-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/25 flex items-center justify-center mx-auto shadow-sm">
-                <Trophy className="w-7 h-7 stroke-[1.8]" />
+            <div className="py-8 sm:py-16 px-4 text-center rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-dashed border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-3.5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-500/15 via-emerald-500/15 to-blue-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/25 flex items-center justify-center mx-auto shadow-sm">
+                <Trophy className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-tight">
+                <h3 className="text-sm xs:text-base sm:text-lg font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-tight">
                   Mastered Vault is Empty
                 </h3>
-                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto font-medium">
+                <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto font-medium">
                   Topics reach the Mastered Vault once you complete Stage 4 (30 days retention cycle). Keep revising your active topics!
                 </p>
               </div>
@@ -825,7 +824,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     soundManager.playClick();
                     setActiveTab('today');
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                  className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-[11px] sm:text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                 >
                   <span>Go to Active Queue</span>
                   <ArrowRight className="w-3.5 h-3.5" />
