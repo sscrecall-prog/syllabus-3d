@@ -434,7 +434,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const ChapterBadgeIcon = chapterBadge.icon;
 
     return (
-      <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+      <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
         {/* 🖨️ PRINT-ONLY CHAPTER REVISION CHEATSHEET HEADER */}
         <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -460,37 +460,37 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 1. TOP CHAPTER HERO BANNER */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
-          <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3.5 min-w-0">
+        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
+          <div className="flex items-start sm:items-center justify-between gap-2.5 sm:gap-3 flex-wrap">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
               
               {/* Left Visual Badge Thumbnail */}
-              <div className={`w-13 sm:w-15 h-13 sm:h-15 rounded-2xl flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden ${chapterBadge.containerClass}`}>
+              <div className={`w-12 sm:w-15 h-12 sm:h-15 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-md relative overflow-hidden ${chapterBadge.containerClass}`}>
                 <ChapterBadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                <span className="text-[9px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                   {chapterBadge.badgeText}
                 </span>
               </div>
 
               {/* Banner Meta & Title */}
-              <div className="min-w-0 space-y-1">
-                <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#2563EB] dark:text-sky-300">
+              <div className="min-w-0 space-y-0.5 sm:space-y-1">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wide text-[#2563EB] dark:text-sky-300">
                   <span>{activeSubject.name}</span>
                   <span>•</span>
-                  <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
+                  <span>Ch {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
                 </div>
 
-                <h1 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase break-words line-clamp-2 leading-snug">
+                <h1 className="text-sm sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase break-words line-clamp-2 leading-snug">
                   {activeChapter.name}
                 </h1>
               </div>
             </div>
 
             {/* Quick Actions (Back, Switcher & Mastery) */}
-            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto no-print">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-auto no-print">
               <button
                 onClick={handleBackToChapters}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
                 title="Return to All Chapters"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
@@ -500,7 +500,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               {prevChapter && (
                 <button
                   onClick={() => handleSelectChapter(prevChapter.id)}
-                  className="p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
+                  className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
                   title={`Previous: ${prevChapter.name}`}
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -510,14 +510,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               {nextChapter && (
                 <button
                   onClick={() => handleSelectChapter(nextChapter.id)}
-                  className="p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
+                  className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
                   title={`Next: ${nextChapter.name}`}
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               )}
 
-              <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
+              <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
                 chapterPercent === 100
                   ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
                   : chapterPercent > 0
@@ -535,31 +535,31 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           </div>
 
           {/* Quick Metrics KPI Bento Pills */}
-          <div className="flex items-center gap-2 pt-3 border-t border-[#EEEEE8] dark:border-[#262738] flex-wrap">
-            <span className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-[#181A28] px-2.5 py-1 rounded-xl border border-[#E2E8F0]/70 dark:border-[#383A52] text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#E2E8F0]">
-              <FileText className="w-3.5 h-3.5 text-[#85877E] dark:text-indigo-400" />
+          <div className="flex items-center gap-1.5 sm:gap-2 pt-2.5 sm:pt-3 border-t border-[#EEEEE8] dark:border-[#262738] flex-wrap">
+            <span className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-[#181A28] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border border-[#E2E8F0]/70 dark:border-[#383A52] text-[10px] sm:text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#E2E8F0]">
+              <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#85877E] dark:text-indigo-400" />
               <span>{totalInActiveChapter} Topics Total</span>
             </span>
 
-            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-mono font-bold ${
+            <span className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border text-[10px] sm:text-[11px] font-mono font-bold ${
               completedInActiveChapter > 0
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                 : 'bg-[#F8FAFC] dark:bg-[#181A28] text-[#85877E] dark:text-[#CBD5E1] border-[#E2E8F0]/70 dark:border-[#383A52]'
             }`}>
-              <CheckCircle2 className="w-3.5 h-3.5" />
+              <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>{completedInActiveChapter} Mastered</span>
             </span>
 
             {inProgressInActiveChapter > 0 && (
-              <span className="flex items-center gap-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20 text-[11px] font-mono font-bold">
-                <Zap className="w-3.5 h-3.5 fill-current" />
+              <span className="flex items-center gap-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border border-amber-500/20 text-[10px] sm:text-[11px] font-mono font-bold">
+                <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" />
                 <span>{inProgressInActiveChapter} In Progress</span>
               </span>
             )}
 
             {weakInActiveChapter > 0 && (
-              <span className="flex items-center gap-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2.5 py-1 rounded-xl border border-rose-500/20 text-[11px] font-mono font-bold">
-                <AlertTriangle className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border border-rose-500/20 text-[10px] sm:text-[11px] font-mono font-bold">
+                <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>{weakInActiveChapter} Weak</span>
               </span>
             )}
@@ -567,38 +567,38 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 2. TOPICS CONTENT CONTAINER */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
+        <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
           
           {/* Header Bar: Tab, Search & Add Topic */}
-          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
+          <div className="space-y-3 sm:space-y-3.5 pb-3 sm:pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div>
-                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                <h2 className="text-[15px] sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
                   Topics Content ({totalInActiveChapter})
                 </h2>
-                <p className="text-xs text-[#65675F] dark:text-[#CBD5E1] font-medium mt-0.5">
+                <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#CBD5E1] font-medium mt-0.5">
                   Click a topic to launch full study details, notes, revision, and questions
                 </p>
               </div>
 
               <button
                 onClick={onOpenAddTopic}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0F172A] dark:bg-white hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-black text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 tap-bounce"
+                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#0F172A] dark:bg-white hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-black text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 tap-bounce"
               >
-                <Plus className="w-4 h-4 stroke-[3]" />
+                <Plus className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[3]" />
                 <span>Add Topic</span>
               </button>
             </div>
 
             {/* Clean Full-Width Search Input */}
             <div className="relative w-full">
-              <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search topics in this chapter..."
-                className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
+                className="w-full pl-9 sm:pl-10 pr-9 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
               />
               {searchInput && (
                 <button
@@ -630,7 +630,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     setStatusFilter(st.id as any);
                     soundManager.playClick();
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
                     isSelected
                       ? 'bg-[#0F172A] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                       : 'bg-white dark:bg-[#181926] text-[#45474E] dark:text-[#E2E8F0] border-[#E2E8F0] dark:border-[#383A52] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] dark:hover:bg-[#202234]'
@@ -649,7 +649,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           </div>
 
           {/* 3. TOPIC CARDS LIST (Executive Modern Study Cards) */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             {filteredChapterTopics.length === 0 ? (
               <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-[#F8FAFC]/70 dark:bg-[#151622] border border-dashed border-[#E2E8F0] dark:border-[#262738] space-y-3.5">
                 <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
@@ -704,7 +704,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={topic.id}
                     onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3"
+                    className="group relative p-3 sm:p-5 rounded-xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3 tap-bounce"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -716,18 +716,18 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Top Row: Squircle Thumbnail + Topic Title + Right Action */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
-                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1">
                         {/* 3D Squircle Thumbnail Badge (No raw emojis - Hidden in print) */}
-                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden print:hidden ${design.boxClass}`}>
-                          <BadgeIcon className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                          <span className="text-[9px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none">
+                        <div className={`w-10 sm:w-14 h-10 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden print:hidden ${design.boxClass}`}>
+                          <BadgeIcon className="w-4 sm:w-6 h-4 sm:h-6 stroke-[2.2] mb-0.5" />
+                          <span className="text-[8px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none">
                             {design.badgeNum}
                           </span>
                         </div>
 
                         {/* Title & Subtitle with Desk Checkbox in Print */}
                         <div className="min-w-0 flex-1">
-                          <h4 className={`text-sm sm:text-base font-black ${design.titleColor} group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug break-words line-clamp-2`}>
+                          <h4 className={`text-[13px] sm:text-base font-black ${design.titleColor} group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug break-words line-clamp-2`}>
                             <span className={`hidden print:inline-block desk-checkbox ${topic.status === 'completed' ? 'is-checked' : ''}`} />
                             {topic.name}
                           </h4>
@@ -747,7 +747,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                               soundManager.playClick();
                             }
                           }}
-                          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-transform active:scale-95 cursor-pointer select-none hover:opacity-90 ${design.statusPillClass}`}
+                          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-transform active:scale-95 cursor-pointer select-none hover:opacity-90 ${design.statusPillClass}`}
                           title="Click to toggle status"
                         >
                           <BadgeIcon className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2.5]" />
@@ -755,25 +755,25 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         </div>
 
                         {/* Action Chevron */}
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
+                        <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
                           <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[2.5]" />
                         </div>
                       </div>
                     </div>
 
                     {/* Dedicated Meta Chips Row (Horizontal scroll on mobile, zero clumsy wrapping) */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
-                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-2 py-0.5 rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
+                    <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
+                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                         <Layers className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
                         <span>{topic.subtopics && topic.subtopics.length > 0 ? `${topic.subtopics.length} Subtopics` : 'Core Concept'}</span>
                       </span>
 
-                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-2 py-0.5 rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
+                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                         <Clock className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                         <span>{topic.studyTimeMinutes || 0}m Study</span>
                       </span>
 
-                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-2 py-0.5 rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
+                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                         <Target className="w-3 h-3 text-rose-500 dark:text-rose-400" />
                         <span>{topic.accuracy || 0}% Accuracy</span>
                       </span>
@@ -809,7 +809,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const SubjectBadgeIcon = subjectBadge.icon;
 
     return (
-      <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+      <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
         
         {/* 🖨️ PRINT-ONLY SUBJECT REVISION CHEATSHEET HEADER */}
         <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -835,44 +835,44 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 1. TOP SUBJECT HERO BANNER */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
-          <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-3.5 min-w-0">
+        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
+          <div className="flex items-start sm:items-center justify-between gap-2.5 sm:gap-3 flex-wrap">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
               
               {/* Left Visual Badge Thumbnail */}
-              <div className={`w-13 sm:w-15 h-13 sm:h-15 rounded-2xl flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-md relative overflow-hidden ${subjectBadge.containerClass}`}>
+              <div className={`w-12 sm:w-15 h-12 sm:h-15 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-md relative overflow-hidden ${subjectBadge.containerClass}`}>
                 <SubjectBadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                <span className="text-[10px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                <span className="text-[9px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                   {subjectBadge.badgeText}
                 </span>
               </div>
 
               {/* Banner Meta & Title */}
-              <div className="min-w-0 space-y-1">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+              <div className="min-w-0 space-y-0.5 sm:space-y-1">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                   <span>{currentExam.name}</span>
                   <span>•</span>
                   <span>Subject Content</span>
                 </div>
 
-                <h1 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase break-words line-clamp-2 leading-snug">
+                <h1 className="text-sm sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase break-words line-clamp-2 leading-snug">
                   {activeSubject.name} – CHAPTERS
                 </h1>
               </div>
             </div>
 
             {/* Quick Actions (Back, Mastery Pill & Edit) */}
-            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto no-print">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-auto no-print">
               <button
                 onClick={handleBackToSubjects}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#262738] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#262738] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
                 title="Return to Batch Subjects Portal"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 <span>All Subjects</span>
               </button>
 
-              <div className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
+              <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
                 subjectPercent === 100
                   ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
                   : subjectPercent > 0
@@ -889,66 +889,66 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
               <button
                 onClick={() => setEditingSubject(activeSubject)}
-                className="p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#151622] border border-[#E2E8F0]/60 dark:border-[#262738] transition-colors cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#151622] border border-[#E2E8F0]/60 dark:border-[#262738] transition-colors cursor-pointer tap-bounce"
                 title="Edit Subject"
               >
-                <Edit2 className="w-4 h-4" />
+                <Edit2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
               </button>
             </div>
           </div>
 
           {/* Quick Metrics KPI Bento Pills */}
-          <div className="flex items-center gap-2 pt-3 border-t border-[#EEEEE8] dark:border-[#262738] flex-wrap">
-            <span className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-[#151622] px-2.5 py-1 rounded-xl border border-[#E2E8F0]/70 dark:border-[#262738] text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
-              <Layers className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
+          <div className="flex items-center gap-1.5 sm:gap-2 pt-2.5 sm:pt-3 border-t border-[#EEEEE8] dark:border-[#262738] flex-wrap">
+            <span className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-[#151622] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border border-[#E2E8F0]/70 dark:border-[#262738] text-[10px] sm:text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
+              <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
               <span>{activeSubject.chapters.length} {activeSubject.chapters.length === 1 ? 'Chapter' : 'Chapters'}</span>
             </span>
 
-            <span className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-[#151622] px-2.5 py-1 rounded-xl border border-[#E2E8F0]/70 dark:border-[#262738] text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
-              <FileText className="w-3.5 h-3.5 text-[#85877E]" />
+            <span className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-[#151622] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border border-[#E2E8F0]/70 dark:border-[#262738] text-[10px] sm:text-[11px] font-mono font-semibold text-[#11120F] dark:text-[#CBD5E1]">
+              <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#85877E]" />
               <span>{totalSubjectTopics} Total Topics</span>
             </span>
 
-            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-mono font-bold ${
+            <span className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border text-[10px] sm:text-[11px] font-mono font-bold ${
               completedSubjectTopics > 0
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                 : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#85877E] border-[#E2E8F0]/70 dark:border-[#262738]'
             }`}>
-              <CheckCircle2 className="w-3.5 h-3.5" />
+              <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>{completedSubjectTopics} Mastered</span>
             </span>
           </div>
         </div>
 
         {/* 2. CHAPTERS CONTENT CONTAINER */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
+        <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
           
           {/* Executive Header & Search Toolbar */}
-          <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
+          <div className="space-y-3 sm:space-y-3.5 pb-3 sm:pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div>
-                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                <h2 className="text-[15px] sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
                   Chapters & Syllabus Modules
                 </h2>
-                <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5">
+                <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5">
                   Select a chapter to study topics, monitor completion, and track revisions
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-[11px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 <span>{filteredChapters.length} of {activeSubject.chapters.length} Chapters</span>
               </div>
             </div>
 
             {/* Clean Full-Width Search Input */}
             <div className="relative w-full">
-              <Search className="w-4 h-4 text-[#85877E] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-[#85877E] absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={`Search chapters in ${activeSubject.name}...`}
-                className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
+                className="w-full pl-9 sm:pl-10 pr-9 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
               />
               {searchInput && (
                 <button
@@ -963,7 +963,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           </div>
 
           {/* 3. CHAPTER CARDS LIST (Executive Bento Architecture) */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             {filteredChapters.length === 0 ? (
               <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-[#F8FAFC]/70 dark:bg-[#151622] border border-dashed border-[#E2E8F0] dark:border-[#262738] space-y-3.5">
                 <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
@@ -1000,7 +1000,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={chapter.id}
                     onClick={() => handleSelectChapter(chapter.id)}
-                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4"
+                    className="group relative p-3 sm:p-5 rounded-xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -1012,18 +1012,18 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Top Row: Thumbnail + Title + Right Action */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
-                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1">
                         {/* Modern 3D Squircle Chapter Badge */}
-                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${chapterBadge.containerClass}`}>
-                          <ChapterIcon className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                          <span className="text-[8px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                        <div className={`w-10 sm:w-14 h-10 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${chapterBadge.containerClass}`}>
+                          <ChapterIcon className="w-4 sm:w-6 h-4 sm:h-6 stroke-[2.2] mb-0.5" />
+                          <span className="text-[7.5px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                             {chapterBadge.badgeText}
                           </span>
                         </div>
 
                         {/* Chapter Title & Meta */}
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors break-words line-clamp-2 leading-snug">
+                          <h3 className="text-[13px] sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors break-words line-clamp-2 leading-snug">
                             {chapter.name}
                           </h3>
                         </div>
@@ -1032,7 +1032,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       {/* Right: Status Pill & Action Chevron */}
                       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                         {/* Status Pill */}
-                        <div className={`px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 ${
+                        <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 ${
                           isChapterMastered
                             ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
                             : hasChapterStarted
@@ -1055,21 +1055,21 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         </div>
 
                         {/* Action Chevron */}
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
+                        <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
                           <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[2.5]" />
                         </div>
                       </div>
                     </div>
 
                     {/* Dedicated Meta Chips Row (Horizontal scroll on mobile, zero clumsy wrapping) */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
-                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-2 py-0.5 rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
+                    <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
+                      <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                         <FileText className="w-3 h-3 text-[#85877E] dark:text-indigo-400" />
                         <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
                       </span>
 
                       {completedInChapter > 0 && (
-                        <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-lg border border-emerald-500/20 font-bold shrink-0 whitespace-nowrap">
+                        <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-emerald-500/20 font-bold shrink-0 whitespace-nowrap">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>{completedInChapter} Mastered</span>
                         </span>
@@ -1117,7 +1117,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   // LEVEL 1: COURSE / BATCH PORTAL & SUBJECTS LIST (Mobile-First Polish)
   // ═══════════════════════════════════════════════════════════════════
   return (
-    <div className="space-y-4 sm:space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+    <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
       
       {/* 🖨️ PRINT-ONLY CLEAN DESK REVISION CHEATSHEET HEADER */}
       <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -1145,7 +1145,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
       {/* 1. TOP BATCH HERO BANNER WITH NIGHT STUDY DESK BACKGROUND */}
       {/* 1. TOP EXAM HERO BANNER (Hidden in Print) */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-[#262738] shadow-2xl relative overflow-hidden text-white print:hidden">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#0D0F17] border border-[#262738] shadow-2xl relative overflow-hidden text-white print:hidden">
         
         {/* Study Desk Background Image with Warm Lamp Glow */}
         <div 
@@ -1161,11 +1161,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         <div className="relative z-10 flex items-center gap-3 sm:gap-5 min-w-0">
           
           {/* Left Visual Badge Banner */}
-          <div className="w-13 sm:w-20 h-13 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#101422] via-[#1A233D] to-[#0A0D15] border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-lg relative overflow-hidden">
+          <div className="w-12 sm:w-20 h-12 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#101422] via-[#1A233D] to-[#0A0D15] border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-lg relative overflow-hidden">
             <span className="text-[9px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
               SYLLABUS
             </span>
-            <span className="text-[8px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-0.5 sm:mt-1">
+            <span className="text-[7.5px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-0.5 sm:mt-1">
               EXPLORER
             </span>
           </div>
@@ -1173,21 +1173,21 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           {/* Banner Meta Info */}
           <div className="space-y-1 sm:space-y-1.5 min-w-0 flex-1">
             <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-bold text-[#C2C5D6] flex-wrap">
-              <span className="flex items-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-2.5 py-0.5 rounded-lg border border-white/10 backdrop-blur-md">
+              <span className="flex items-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg border border-white/10 backdrop-blur-md">
                 <Calendar className="w-3 h-3 text-[#FACC15] shrink-0" />
                 <span>{formattedExamDate}</span>
               </span>
               {daysRemaining > 0 && (
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-lg font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
+                <span className="px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
                   ⚡ {daysRemaining}d left
                 </span>
               )}
-              <span className="px-2 sm:px-2.5 py-0.5 rounded-lg font-mono tabular-nums font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg font-mono tabular-nums font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 🏆 {overallPercentage}% Mastered
               </span>
               {pacingForecast && (
                 <span
-                  className={`px-2 sm:px-2.5 py-0.5 rounded-lg font-mono tabular-nums font-bold border flex items-center gap-1 ${pacingForecast.statusTheme.badgeBg} ${pacingForecast.statusTheme.badgeBorder} ${pacingForecast.statusTheme.badgeText}`}
+                  className={`px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg font-mono tabular-nums font-bold border flex items-center gap-1 ${pacingForecast.statusTheme.badgeBg} ${pacingForecast.statusTheme.badgeBorder} ${pacingForecast.statusTheme.badgeText}`}
                   title={`Required: ${pacingForecast.requiredDailyPace} topics/day | Actual: ${pacingForecast.actualDailyVelocity} topics/day | Finish: ${pacingForecast.finishLineForecastDate}`}
                 >
                   <span>{pacingForecast.statusTheme.icon}</span>
@@ -1201,7 +1201,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
             </h1>
 
-            <div className="flex items-center gap-2 text-[11px] sm:text-xs font-mono font-semibold text-[#A1A1B2] flex-wrap">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-semibold text-[#A1A1B2] flex-wrap">
               <span>{currentExam.subjects.length} Subjects</span>
               <span>•</span>
               <span>{totalTopicsCount} Topics</span>
@@ -1213,34 +1213,34 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       </div>
 
       {/* 2. PORTAL CONTENT CONTAINER */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4 print:p-0 print:border-none print:shadow-none">
+      <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
         
         {/* Executive Header & Search Toolbar */}
-        <div className="space-y-3.5 pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
+        <div className="space-y-3 sm:space-y-3.5 pb-3 sm:pb-3.5 border-b border-[#EEEEE8] dark:border-[#262738] no-print">
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div>
-              <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+              <h2 className="text-[15px] sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
                 Exam Subjects & Syllabus Modules
               </h2>
-              <p className="text-xs text-[#65675F] dark:text-[#CBD5E1] font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#CBD5E1] font-medium mt-0.5">
                 Click any subject to open chapters, subtopics, and revision tracker
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+            <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-[11px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
               <span>{filteredSubjects.length} of {currentExam.subjects.length} Subjects</span>
             </div>
           </div>
 
           {/* Full-Width Search Input with Ambient Glow */}
           <div className="relative w-full">
-            <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search subjects, chapters, topics..."
-              className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
+              className="w-full pl-9 sm:pl-10 pr-9 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
             />
             {searchInput && (
               <button
@@ -1255,7 +1255,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 3. DYNAMIC SUBJECT CARDS LIST (Executive Bento Architecture) */}
-        <div className="space-y-3">
+        <div className="space-y-2.5 sm:space-y-3">
           {filteredSubjects.length === 0 ? (
             <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-[#F8FAFC]/70 dark:bg-[#151622] border border-dashed border-[#E2E8F0] dark:border-[#262738] space-y-3.5">
               <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
@@ -1293,7 +1293,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <div
                   key={subject.id}
                   onClick={() => handleSelectSubject(subject.id)}
-                  className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-3 overflow-hidden"
+                  className="group relative p-3 sm:p-5 rounded-xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden tap-bounce"
                 >
                   {/* Subtle Top Glow Accent */}
                   <div
@@ -1305,18 +1305,18 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                   {/* Top Row: Thumbnail + Title + Right Action */}
                   <div className="flex items-center justify-between gap-2 sm:gap-3">
-                    <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
+                    <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1">
                       {/* Modern 3D/Glass Squircle Thumbnail */}
-                      <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${badgeStyle.containerClass}`}>
-                        <BadgeIcon className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                        <span className="text-[8px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                      <div className={`w-10 sm:w-14 h-10 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${badgeStyle.containerClass}`}>
+                        <BadgeIcon className="w-4 sm:w-6 h-4 sm:h-6 stroke-[2.2] mb-0.5" />
+                        <span className="text-[7.5px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                           {badgeStyle.badgeText}
                         </span>
                       </div>
 
                       {/* Subject Name (Never brutally truncated) */}
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors break-words line-clamp-2 leading-snug">
+                        <h3 className="text-[13px] sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors break-words line-clamp-2 leading-snug">
                           {subject.name}
                         </h3>
                       </div>
@@ -1325,7 +1325,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     {/* Right: Progress Status Pill & Action Chevron */}
                     <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                       {/* Status Pill */}
-                      <div className={`px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 ${
+                      <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 ${
                         isMastered
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
                           : hasStarted
@@ -1348,26 +1348,26 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       </div>
 
                       {/* Action Chevron */}
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
+                      <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
                         <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[2.5]" />
                       </div>
                     </div>
                   </div>
 
                   {/* Dedicated Meta Chips Row (Horizontal scroll on mobile, zero clumsy wrapping) */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
-                    <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-2 py-0.5 rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
+                  <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
+                    <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                       <Layers className="w-3 h-3 text-[#2563EB] dark:text-indigo-400" />
                       <span>{subject.chapters.length} {subject.chapters.length === 1 ? 'Chapter' : 'Chapters'}</span>
                     </span>
 
-                    <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-2 py-0.5 rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
+                    <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                       <FileText className="w-3 h-3 text-[#85877E] dark:text-indigo-400" />
                       <span>{subjectTotalTopics} Topics</span>
                     </span>
 
                     {subjectCompletedTopics > 0 && (
-                      <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-lg border border-emerald-500/20 font-bold shrink-0 whitespace-nowrap">
+                      <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-emerald-500/20 font-bold shrink-0 whitespace-nowrap">
                         <CheckCircle2 className="w-3 h-3" />
                         <span>{subjectCompletedTopics} Mastered</span>
                       </span>
