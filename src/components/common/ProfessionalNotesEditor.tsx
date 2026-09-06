@@ -56,7 +56,9 @@ import {
   ArrowLeft,
   Ruler,
   Bookmark,
-  List
+  List,
+  XCircle,
+  ExternalLink
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -71,6 +73,14 @@ import {
   processPastedNotesContent,
   repairAllTablesInDocument
 } from '../../utils/tableUtils';
+import {
+  isQuizContent,
+  parseQuizQuestions,
+  formatQuizToMarkdown,
+  generateGeminiQuizPrompt,
+  getDefaultSampleQuiz,
+  extractGeminiShareUrl
+} from '../../utils/quizUtils';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -238,6 +248,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [showImageToast, setShowImageToast] = useState(false);
   const [pasteNotice, setPasteNotice] = useState<string | null>(null);
+  
+  // Interactive Quiz & Gemini MCQ State
+  const [showQuizImportModal, setShowQuizImportModal] = useState<boolean>(false);
+  const [quizInputLink, setQuizInputLink] = useState<string>('');
+  const [quizInputText, setQuizInputText] = useState<string>('');
+  const [quizPromptCopied, setQuizPromptCopied] = useState<boolean>(false);
+  const [userQuizAnswers, setUserQuizAnswers] = useState<Record<string, Record<string, string>>>({});
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const speechRecognitionRef = useRef<any>(null);
   const fileInputImageRef = useRef<HTMLInputElement>(null);
@@ -403,9 +421,74 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     setNoteItems(updated);
     setActiveNoteId(newId);
     setShowAddTemplatesMenu(false);
-    setViewMode('edit');
+    
+    // Automatically switch to interactive Study mode if this is a quiz note
+    const isQuiz = isQuizContent(presetContent || '');
+    setViewMode(isQuiz ? 'study' : 'edit');
+
     const primaryText = noteItems.find(n => n.id === 'note_1')?.content || noteItems[0]?.content || presetContent || '';
     onSave(primaryText, updated);
+  };
+
+  // Interactive Quiz Option Selection & Audio Handler
+  const handleSelectQuizOption = (noteId: string, questionId: string, optionKey: string, isCorrect: boolean) => {
+    setUserQuizAnswers(prev => ({
+      ...prev,
+      [noteId]: {
+        ...(prev[noteId] || {}),
+        [questionId]: optionKey
+      }
+    }));
+
+    if (isCorrect) {
+      soundManager.playCompleteChime();
+    } else {
+      soundManager.playClick();
+    }
+  };
+
+  const handleRetakeQuiz = (noteId: string) => {
+    setUserQuizAnswers(prev => ({
+      ...prev,
+      [noteId]: {}
+    }));
+    soundManager.playClick();
+  };
+
+  const handleCopyQuizAiPrompt = () => {
+    const prompt = generateGeminiQuizPrompt(topicName, subjectName);
+    navigator.clipboard.writeText(prompt);
+    soundManager.playCompleteChime();
+    setQuizPromptCopied(true);
+    setTimeout(() => setQuizPromptCopied(false), 3000);
+  };
+
+  const handleCreateQuizFromModal = () => {
+    let quizMarkdown = '';
+    let title = `Quiz: ${topicName}`;
+
+    const trimmedText = quizInputText.trim();
+    const trimmedLink = quizInputLink.trim();
+
+    if (trimmedText && isQuizContent(trimmedText)) {
+      const parsed = parseQuizQuestions(trimmedText);
+      if (parsed.questions.length > 0) {
+        title = parsed.title || title;
+        quizMarkdown = formatQuizToMarkdown(title, parsed.questions, trimmedLink || parsed.sourceUrl, topicName);
+      } else {
+        quizMarkdown = formatQuizToMarkdown(title, parseQuizQuestions(trimmedText).questions, trimmedLink, topicName);
+      }
+    } else if (trimmedLink) {
+      quizMarkdown = getDefaultSampleQuiz(topicName, trimmedLink);
+      title = `Gemini Quiz: ${topicName}`;
+    } else {
+      quizMarkdown = getDefaultSampleQuiz(topicName);
+    }
+
+    handleAddNewNote(title, quizMarkdown);
+    setShowQuizImportModal(false);
+    setQuizInputLink('');
+    setQuizInputText('');
   };
 
   const handleDuplicateNote = (noteId: string) => {
@@ -1439,6 +1522,227 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       );
     }
 
+    // 🎯 Interactive Quiz Station (if content contains quiz questions)
+    if (isQuizContent(content)) {
+      const parsedQuiz = parseQuizQuestions(content);
+      if (parsedQuiz.questions.length > 0) {
+        const currentAnswers = userQuizAnswers[activeNote.id] || {};
+        const totalQuestions = parsedQuiz.questions.length;
+        const answeredCount = Object.keys(currentAnswers).length;
+        const correctCount = parsedQuiz.questions.filter(q => currentAnswers[q.id] === q.correctAnswer).length;
+        const scorePercentage = answeredCount > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+        const isComplete = answeredCount === totalQuestions;
+
+        return (
+          <div className="space-y-6 animate-fade-in">
+            {/* 🌟 Master Quiz Scorecard Banner */}
+            <div className="rounded-2xl border border-indigo-200/90 dark:border-indigo-800/60 bg-gradient-to-br from-indigo-50/90 via-blue-50/40 to-purple-50/30 dark:from-[#181A2E] dark:via-[#151624] dark:to-[#12131C] p-4 sm:p-5 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase font-mono tracking-wider bg-[#2563EB]/15 dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/30">
+                      🎯 Interactive Practice Quiz
+                    </span>
+                    {parsedQuiz.sourceUrl && (
+                      <a
+                        href={parsedQuiz.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/15 text-purple-700 dark:text-purple-300 hover:bg-purple-500/25 border border-purple-500/30 transition-colors cursor-pointer"
+                        title="Open original quiz in Google Gemini"
+                      >
+                        <Sparkles className="w-3 h-3 text-purple-500" />
+                        <span>Gemini Link</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </div>
+                  <h3 className={`${fontFam} text-lg sm:text-xl font-black text-slate-900 dark:text-white`}>
+                    {parsedQuiz.title || `${topicName} Quiz`}
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Click an option to test your knowledge with instant feedback, scoring, and explanations.
+                  </p>
+                </div>
+
+                {/* Score Stats & Retake Button */}
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right px-3.5 py-2 rounded-xl bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 shadow-xs">
+                    <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">Score</div>
+                    <div className="text-base sm:text-lg font-black font-mono text-indigo-600 dark:text-indigo-400">
+                      {correctCount} / {totalQuestions}
+                      <span className="text-xs font-normal text-slate-400 ml-1">({scorePercentage}%)</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRetakeQuiz(activeNote.id)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer transition-all active:scale-95"
+                    title="Reset quiz and re-attempt all questions"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Retake</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/40">
+                <div className="flex items-center justify-between text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 mb-1">
+                  <span>Progress: {answeredCount} of {totalQuestions} answered</span>
+                  {isComplete && (
+                    <span className={`font-black ${scorePercentage >= 70 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                      {scorePercentage >= 70 ? '🎉 Passed Exam Standard!' : '⚠️ Revision Recommended'}
+                    </span>
+                  )}
+                </div>
+                <div className="w-full h-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-blue-500 to-purple-600 transition-all duration-300"
+                    style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 🌟 Verified Gemini Source Card (if Gemini Link present) */}
+            {parsedQuiz.sourceUrl && (
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-transparent border border-purple-500/25 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-slate-900 dark:text-white block">Google Gemini Interactive Quiz Link</span>
+                    <span className="text-slate-500 dark:text-slate-400 text-[11px] block truncate max-w-[240px] sm:max-w-md">
+                      {parsedQuiz.sourceUrl}
+                    </span>
+                  </div>
+                </div>
+                <a
+                  href={parsedQuiz.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition-colors shrink-0 cursor-pointer"
+                >
+                  <span>Open Gemini ↗</span>
+                </a>
+              </div>
+            )}
+
+            {/* 🌟 List of Question Cards */}
+            <div className="space-y-4">
+              {parsedQuiz.questions.map((q, qIdx) => {
+                const selectedKey = currentAnswers[q.id];
+                const isAnswered = Boolean(selectedKey);
+                const isCorrect = selectedKey === q.correctAnswer;
+
+                return (
+                  <div
+                    key={q.id}
+                    className={`rounded-2xl border transition-all duration-200 p-4 sm:p-5 ${
+                      !isAnswered
+                        ? 'border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#141520]/90 shadow-xs'
+                        : isCorrect
+                        ? 'border-emerald-500/50 bg-emerald-500/[0.03] dark:bg-emerald-500/[0.05] shadow-xs'
+                        : 'border-rose-500/40 bg-rose-500/[0.03] dark:bg-rose-500/[0.05] shadow-xs'
+                    }`}
+                  >
+                    {/* Question Header */}
+                    <div className="flex items-start gap-3 mb-3.5">
+                      <span className={`px-2.5 py-0.5 rounded-lg text-[11px] font-black font-mono shrink-0 mt-0.5 ${
+                        !isAnswered
+                          ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                          : isCorrect
+                          ? 'bg-emerald-500 text-white shadow-xs'
+                          : 'bg-rose-500 text-white shadow-xs'
+                      }`}>
+                        Q{qIdx + 1}
+                      </span>
+                      <div className="flex-1">
+                        <h4 className={`${fontFam} text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug`}>
+                          {parseInlineMarkdown(q.question, `quiz-q-${qIdx}`)}
+                        </h4>
+                      </div>
+                    </div>
+
+                    {/* Options Grid */}
+                    <div className="space-y-2 pl-0 sm:pl-9">
+                      {q.options.map(opt => {
+                        const isOptionSelected = selectedKey === opt.key;
+                        const isThisCorrect = opt.key === q.correctAnswer;
+
+                        let optBtnStyle = 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:bg-indigo-50/50 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200';
+                        let badgeStyle = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+
+                        if (isAnswered) {
+                          if (isOptionSelected && isThisCorrect) {
+                            optBtnStyle = 'border-emerald-500 bg-emerald-500/15 text-emerald-950 dark:text-emerald-100 ring-2 ring-emerald-500/30 font-bold';
+                            badgeStyle = 'bg-emerald-500 text-white';
+                          } else if (isOptionSelected && !isThisCorrect) {
+                            optBtnStyle = 'border-rose-500 bg-rose-500/15 text-rose-950 dark:text-rose-100 ring-2 ring-rose-500/30 font-bold';
+                            badgeStyle = 'bg-rose-500 text-white';
+                          } else if (!isOptionSelected && isThisCorrect) {
+                            optBtnStyle = 'border-emerald-500/60 bg-emerald-500/5 text-emerald-800 dark:text-emerald-200 font-semibold';
+                            badgeStyle = 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400';
+                          } else {
+                            optBtnStyle = 'border-transparent bg-slate-50/60 dark:bg-slate-900/30 text-slate-400 opacity-50';
+                          }
+                        }
+
+                        return (
+                          <button
+                            key={opt.key}
+                            type="button"
+                            disabled={isAnswered}
+                            onClick={() => handleSelectQuizOption(activeNote.id, q.id, opt.key, isThisCorrect)}
+                            className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left text-xs sm:text-sm transition-all ${optBtnStyle} ${
+                              !isAnswered ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'
+                            }`}
+                          >
+                            <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 transition-colors ${badgeStyle}`}>
+                              {opt.key}
+                            </span>
+                            <span className="flex-1 leading-relaxed">
+                              {parseInlineMarkdown(opt.text, `opt-${q.id}-${opt.key}`)}
+                            </span>
+                            {isAnswered && isOptionSelected && isThisCorrect && (
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                            )}
+                            {isAnswered && isOptionSelected && !isThisCorrect && (
+                              <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Explanation Box (Revealed on Answer) */}
+                    {isAnswered && (
+                      <div className="mt-4 sm:ml-9 p-3.5 rounded-xl border border-indigo-500/30 bg-indigo-50/60 dark:bg-indigo-950/30 text-xs sm:text-sm animate-fade-in">
+                        <div className="flex items-center gap-1.5 font-bold text-indigo-700 dark:text-indigo-300 font-mono mb-1">
+                          <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
+                          <span>Correct Answer: Option {q.correctAnswer}</span>
+                        </div>
+                        {q.explanation ? (
+                          <div className={`${fontFam} text-slate-700 dark:text-slate-300 leading-relaxed pl-5`}>
+                            {parseInlineMarkdown(q.explanation, `exp-${q.id}`)}
+                          </div>
+                        ) : (
+                          <p className="text-slate-500 italic pl-5">No detailed explanation provided.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+    }
+
     const lines = content.split('\n');
     const elements: React.ReactNode[] = [];
     let i = 0;
@@ -2121,6 +2425,26 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <div className="px-2.5 py-1.5 text-[11px] uppercase font-mono text-slate-400 border-b border-[#E2E8F0] dark:border-[#272730]">
                 Choose Note Template:
               </div>
+              
+              {/* 🎯 Interactive Quiz / MCQ Practice */}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddTemplatesMenu(false);
+                  setShowQuizImportModal(true);
+                  soundManager.playClick();
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-indigo-100 dark:border-indigo-900/40"
+              >
+                <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="font-bold text-indigo-600 dark:text-indigo-400">🎯 Interactive Quiz / MCQ</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Import Gemini link or test</div>
+                </div>
+              </button>
+
               <button
                 type="button"
                 onClick={() => handleAddNewNote()}
@@ -3869,6 +4193,117 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               alt={zoomImage.title}
               className="max-w-full max-h-[75vh] object-contain rounded-xl"
             />
+          </div>
+        </div>
+      )}
+
+      {/* 🎯 Interactive Quiz Import & Creator Modal */}
+      {showQuizImportModal && (
+        <div
+          onClick={() => setShowQuizImportModal(false)}
+          className="fixed inset-0 z-[170] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="w-full max-w-xl rounded-3xl bg-white dark:bg-[#151622] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800/80 bg-gradient-to-r from-indigo-50/80 via-blue-50/40 to-transparent dark:from-[#1A1C2E] dark:via-[#161726] dark:to-transparent flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-blue-600 to-purple-600 text-white flex items-center justify-center shadow-md shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>Interactive Quiz & MCQ Engine</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Import from Google Gemini link, paste MCQs, or generate an exam quiz
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowQuizImportModal(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar">
+              {/* Option 1: Gemini Share Link */}
+              <div className="p-4 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                    <span>Gemini Quiz Share Link (Optional)</span>
+                  </label>
+                </div>
+                <input
+                  type="url"
+                  value={quizInputLink}
+                  onChange={e => setQuizInputLink(e.target.value)}
+                  placeholder="https://share.gemini.google/iMDdEutzj2LP"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                />
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Paste your public Gemini share link. It will be verified and attached with an instant 1-click launch button.
+                </p>
+              </div>
+
+              {/* Option 2: Paste Quiz Text / Markdown */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Paste Quiz Text or MCQs from Gemini / ChatGPT:
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleCopyQuizAiPrompt}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-purple-500/15 text-purple-700 dark:text-purple-300 hover:bg-purple-500/25 border border-purple-500/30 transition-all cursor-pointer shadow-xs active:scale-95"
+                    title="Copy AI prompt to generate 5 MCQs on this topic in Gemini"
+                  >
+                    <Bot className="w-3 h-3" />
+                    <span>{quizPromptCopied ? '✓ Prompt Copied!' : '🤖 Copy AI Quiz Prompt'}</span>
+                  </button>
+                </div>
+                <textarea
+                  rows={6}
+                  value={quizInputText}
+                  onChange={e => setQuizInputText(e.target.value)}
+                  placeholder={`Paste your quiz here, for example:\n\n### Q1: What is the capital of India?\n- [A] Mumbai\n- [B] New Delhi\n- [C] Kolkata\n- [D] Chennai\n**Answer:** B\n**Explanation:** New Delhi is the national capital.`}
+                  className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleCreateQuizFromModal}
+                  className="w-full sm:flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs shadow-lg shadow-indigo-500/25 transition-all cursor-pointer active:scale-98"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Create Interactive Quiz Note</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleAddNewNote(`Quiz: ${topicName}`, getDefaultSampleQuiz(topicName, quizInputLink.trim() || undefined));
+                    setShowQuizImportModal(false);
+                    setQuizInputLink('');
+                    setQuizInputText('');
+                  }}
+                  className="w-full sm:w-auto px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer active:scale-95 text-center"
+                >
+                  Use Sample Template
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
