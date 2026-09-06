@@ -487,7 +487,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
 
             {/* Quick Actions (Back, Switcher & Mastery) */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-auto no-print">
+            <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-1.5 sm:gap-2 shrink-0 pt-1 sm:pt-0 no-print">
               <button
                 onClick={handleBackToChapters}
                 className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
@@ -497,39 +497,41 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <span>Chapters</span>
               </button>
 
-              {prevChapter && (
-                <button
-                  onClick={() => handleSelectChapter(prevChapter.id)}
-                  className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
-                  title={`Previous: ${prevChapter.name}`}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-              )}
-
-              {nextChapter && (
-                <button
-                  onClick={() => handleSelectChapter(nextChapter.id)}
-                  className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
-                  title={`Next: ${nextChapter.name}`}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              )}
-
-              <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
-                chapterPercent === 100
-                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
-                  : chapterPercent > 0
-                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
-                  : 'bg-[#F8FAFC] dark:bg-[#181A28] text-[#65675F] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#383A52]'
-              }`}>
-                {chapterPercent === 100 ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                ) : (
-                  <Zap className="w-3.5 h-3.5 fill-current" />
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {prevChapter && (
+                  <button
+                    onClick={() => handleSelectChapter(prevChapter.id)}
+                    className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
+                    title={`Previous: ${prevChapter.name}`}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
                 )}
-                <span>{chapterPercent}%</span>
+
+                {nextChapter && (
+                  <button
+                    onClick={() => handleSelectChapter(nextChapter.id)}
+                    className="p-1.5 sm:p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#181A28] text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white border border-[#E2E8F0] dark:border-[#383A52] transition-colors cursor-pointer flex items-center gap-1 tap-bounce"
+                    title={`Next: ${nextChapter.name}`}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                )}
+
+                <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
+                  chapterPercent === 100
+                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
+                    : chapterPercent > 0
+                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                    : 'bg-[#F8FAFC] dark:bg-[#181A28] text-[#65675F] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#383A52]'
+                }`}>
+                  {chapterPercent === 100 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                  ) : (
+                    <Zap className="w-3.5 h-3.5 fill-current" />
+                  )}
+                  <span>{chapterPercent}%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -704,7 +706,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={topic.id}
                     onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                    className="group relative p-3 sm:p-5 rounded-xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3 tap-bounce"
+                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3 tap-bounce"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -716,10 +718,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Top Row: Squircle Thumbnail + Topic Title + Right Action */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
-                      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1">
+                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
                         {/* 3D Squircle Thumbnail Badge (No raw emojis - Hidden in print) */}
-                        <div className={`w-10 sm:w-14 h-10 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden print:hidden ${design.boxClass}`}>
-                          <BadgeIcon className="w-4 sm:w-6 h-4 sm:h-6 stroke-[2.2] mb-0.5" />
+                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden print:hidden ${design.boxClass}`}>
+                          <BadgeIcon className="w-4.5 sm:w-6 h-4.5 sm:h-6 stroke-[2.2] mb-0.5" />
                           <span className="text-[8px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none">
                             {design.badgeNum}
                           </span>
@@ -862,7 +864,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
 
             {/* Quick Actions (Back, Mastery Pill & Edit) */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 self-end sm:self-auto no-print">
+            <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-1.5 sm:gap-2 shrink-0 pt-1 sm:pt-0 no-print">
               <button
                 onClick={handleBackToSubjects}
                 className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#262738] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group shrink-0 tap-bounce"
@@ -872,28 +874,30 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <span>All Subjects</span>
               </button>
 
-              <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
-                subjectPercent === 100
-                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
-                  : subjectPercent > 0
-                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
-                  : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#65675F] dark:text-[#888A9E] border-[#E2E8F0] dark:border-[#262738]'
-              }`}>
-                {subjectPercent === 100 ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                ) : (
-                  <Zap className="w-3.5 h-3.5 fill-current" />
-                )}
-                <span>{subjectPercent}%</span>
-              </div>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono tabular-nums font-bold border ${
+                  subjectPercent === 100
+                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-black'
+                    : subjectPercent > 0
+                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                    : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#65675F] dark:text-[#888A9E] border-[#E2E8F0] dark:border-[#262738]'
+                }`}>
+                  {subjectPercent === 100 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                  ) : (
+                    <Zap className="w-3.5 h-3.5 fill-current" />
+                  )}
+                  <span>{subjectPercent}%</span>
+                </div>
 
-              <button
-                onClick={() => setEditingSubject(activeSubject)}
-                className="p-1.5 sm:p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#151622] border border-[#E2E8F0]/60 dark:border-[#262738] transition-colors cursor-pointer tap-bounce"
-                title="Edit Subject"
-              >
-                <Edit2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
-              </button>
+                <button
+                  onClick={() => setEditingSubject(activeSubject)}
+                  className="p-1.5 sm:p-2 rounded-xl text-[#85877E] hover:text-[#191A17] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#151622] border border-[#E2E8F0]/60 dark:border-[#262738] transition-colors cursor-pointer tap-bounce"
+                  title="Edit Subject"
+                >
+                  <Edit2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -989,6 +993,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 const totalInChapter = chapter.topics.length;
                 const completedInChapter = chapter.topics.filter(t => t.status === 'completed').length;
                 const inProgressInChapter = chapter.topics.filter(t => t.status === 'in_progress').length;
+                const weakInChapter = chapter.topics.filter(t => t.status === 'weak').length;
                 const chapterPercent = totalInChapter > 0 ? Math.round((completedInChapter / totalInChapter) * 100) : 0;
                 const isChapterMastered = chapterPercent === 100;
                 const hasChapterStarted = chapterPercent > 0 || inProgressInChapter > 0;
@@ -1000,7 +1005,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={chapter.id}
                     onClick={() => handleSelectChapter(chapter.id)}
-                    className="group relative p-3 sm:p-5 rounded-xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
+                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] hover:bg-[#F8FAFC] dark:hover:bg-[#1B1D2C] border border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-[0.995] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -1012,11 +1017,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Top Row: Thumbnail + Title + Right Action */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
-                      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1">
+                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
                         {/* Modern 3D Squircle Chapter Badge */}
-                        <div className={`w-10 sm:w-14 h-10 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${chapterBadge.containerClass}`}>
-                          <ChapterIcon className="w-4 sm:w-6 h-4 sm:h-6 stroke-[2.2] mb-0.5" />
-                          <span className="text-[7.5px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${chapterBadge.containerClass}`}>
+                          <ChapterIcon className="w-4.5 sm:w-6 h-4.5 sm:h-6 stroke-[2.2] mb-0.5" />
+                          <span className="text-[8px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                             {chapterBadge.badgeText}
                           </span>
                         </div>
@@ -1032,7 +1037,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       {/* Right: Status Pill & Action Chevron */}
                       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                         {/* Status Pill */}
-                        <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 ${
+                        <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 shrink-0 ${
                           isChapterMastered
                             ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
                             : hasChapterStarted
@@ -1042,15 +1047,15 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                           {isChapterMastered ? (
                             <>
                               <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2.5]" />
-                              <span>100% Mastered</span>
+                              <span>100%<span className="hidden sm:inline"> Mastered</span></span>
                             </>
                           ) : hasChapterStarted ? (
                             <>
                               <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 fill-current" />
-                              <span>{chapterPercent}% Done</span>
+                              <span>{chapterPercent}%<span className="hidden sm:inline"> Done</span></span>
                             </>
                           ) : (
-                            <span>0% Not Started</span>
+                            <span>0%<span className="hidden sm:inline"> Not Started</span></span>
                           )}
                         </div>
 
@@ -1062,7 +1067,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     </div>
 
                     {/* Dedicated Meta Chips Row (Horizontal scroll on mobile, zero clumsy wrapping) */}
-                    <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-[#65675F] dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
                       <span className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E2030] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-[#E2E8F0]/70 dark:border-[#383A52] text-[#191A17] dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
                         <FileText className="w-3 h-3 text-[#85877E] dark:text-indigo-400" />
                         <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
@@ -1074,6 +1079,20 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                           <span>{completedInChapter} Mastered</span>
                         </span>
                       )}
+
+                      {inProgressInChapter > 0 && (
+                        <span className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-amber-500/20 font-bold shrink-0 whitespace-nowrap">
+                          <Zap className="w-3 h-3" />
+                          <span>{inProgressInChapter} In Progress</span>
+                        </span>
+                      )}
+
+                      {weakInChapter > 0 && (
+                        <span className="flex items-center gap-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-rose-500/20 font-bold shrink-0 whitespace-nowrap">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>{weakInChapter} Weak</span>
+                        </span>
+                      )}
                     </div>
 
                     {/* Sleek Integrated Progress Track */}
@@ -1083,7 +1102,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         <span className="tabular-nums">{chapterPercent}% ({completedInChapter}/{totalInChapter})</span>
                       </div>
 
-                      <div className="w-full h-2 rounded-full bg-[#E2E8F0] dark:bg-[#11121A] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#262738]/50">
+                      <div className="w-full h-1.5 sm:h-2 rounded-full bg-[#E2E8F0] dark:bg-[#11121A] overflow-hidden p-0.5 border border-[#E2E8F0]/50 dark:border-[#262738]/50">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{
