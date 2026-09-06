@@ -278,27 +278,27 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
     <div className="space-y-4 font-sans select-none">
       
       {/* 1. Header & KPI Metrics Container */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] shadow-subtle-depth space-y-4 relative overflow-hidden">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] shadow-subtle-depth space-y-3.5 sm:space-y-4 relative overflow-hidden">
         {/* Glowing Top Ambient Accent */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-rose-500/60 to-transparent" />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {/* 3D Radiant Squircle Emblem */}
-            <div className="w-11 sm:w-12 h-11 sm:h-12 rounded-2xl bg-gradient-to-br from-rose-500/25 via-red-500/15 to-amber-500/10 border border-rose-500/35 text-rose-500 dark:text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)] flex items-center justify-center shrink-0">
-              <ShieldAlert className="w-6 h-6 stroke-[2.2]" />
+            <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-rose-500/25 via-red-500/15 to-amber-500/10 border border-rose-500/35 text-rose-500 dark:text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)] flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-5 sm:w-6 h-5 sm:h-6 stroke-[2.2]" />
             </div>
 
             <div className="min-w-0 space-y-0.5">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-base sm:text-lg font-black text-[#11120F] dark:text-white tracking-tight uppercase">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h3 className="text-sm sm:text-lg font-black text-[#11120F] dark:text-white tracking-tight uppercase">
                   Mistake & Examiner Trap Journal
                 </h3>
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                   <Flame className="w-3 h-3" /> Reflex Vault
                 </span>
               </div>
-              <p className="text-xs text-[#65675F] dark:text-[#CBD5E1] font-medium leading-tight">
+              <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#CBD5E1] font-medium leading-tight">
                 Turn recurring test traps and conceptual fallacies into permanent reflexes.
               </p>
             </div>
@@ -314,7 +314,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   setIsRevealed(false);
                   setIsFlashcardOpen(true);
                 }}
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2032] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#33364D] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs active:scale-95"
+                className="flex-1 sm:flex-none px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#1E2032] hover:bg-[#11120F] hover:text-white dark:hover:bg-white dark:hover:text-black text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#33364D] text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Flashcard Review</span>
@@ -324,7 +324,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             <button
               type="button"
               onClick={handleOpenAdd}
-              className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#11120F] dark:bg-white hover:bg-rose-600 dark:hover:bg-rose-400 text-white dark:text-black text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0"
+              className="flex-1 sm:flex-none px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-[#11120F] dark:bg-white hover:bg-rose-600 dark:hover:bg-rose-400 text-white dark:text-black text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Log Trap</span>
@@ -333,53 +333,53 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
         </div>
 
         {/* 3 Executive Bento Stat Cards */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-3.5">
           {/* Total Logged */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] shadow-2xs space-y-1 transition-all hover:border-[#2563EB] dark:hover:border-[#7AA2F7]">
+          <div className="p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] shadow-2xs space-y-0.5 sm:space-y-1 transition-all hover:border-[#2563EB] dark:hover:border-[#7AA2F7]">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-[#65675F] dark:text-[#CBD5E1]">
+              <span className="text-[8.5px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-[#65675F] dark:text-[#CBD5E1]">
                 Total Logged
               </span>
-              <Layers className="w-3.5 h-3.5 text-[#85877E] dark:text-[#94A3B8]" />
+              <Layers className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] dark:text-[#94A3B8]" />
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono tabular-nums text-[#11120F] dark:text-white tracking-tight">
+            <div className="text-lg sm:text-2xl font-black font-mono tabular-nums text-[#11120F] dark:text-white tracking-tight">
               {mistakes.length}
             </div>
-            <div className="text-[10px] font-mono text-[#85877E] dark:text-[#94A3B8] truncate">
-              {mistakes.length === 1 ? '1 recorded trap' : `${mistakes.length} recorded traps`}
+            <div className="text-[8.5px] sm:text-[10px] font-mono text-[#85877E] dark:text-[#94A3B8] truncate">
+              {mistakes.length === 1 ? '1 trap' : `${mistakes.length} traps`}
             </div>
           </div>
 
           {/* Active Traps */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-rose-500/5 dark:bg-rose-950/25 border border-rose-500/20 dark:border-rose-500/35 shadow-2xs space-y-1 transition-all hover:border-rose-500/40">
+          <div className="p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-rose-500/5 dark:bg-rose-950/25 border border-rose-500/20 dark:border-rose-500/35 shadow-2xs space-y-0.5 sm:space-y-1 transition-all hover:border-rose-500/40">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-                <span className={`w-1.5 h-1.5 rounded-full ${activeCount > 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-400'}`} />
+              <span className="text-[8.5px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 sm:gap-1.5 truncate">
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeCount > 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-400'}`} />
                 Active Traps
               </span>
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
+              <AlertTriangle className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-rose-500 dark:text-rose-400 shrink-0" />
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono tabular-nums text-rose-600 dark:text-rose-400 tracking-tight">
+            <div className="text-lg sm:text-2xl font-black font-mono tabular-nums text-rose-600 dark:text-rose-400 tracking-tight">
               {activeCount}
             </div>
-            <div className="text-[10px] font-mono text-rose-600/80 dark:text-rose-400/80 truncate">
-              {activeCount === 0 ? 'All traps mastered ✓' : 'Needs reinforcement'}
+            <div className="text-[8.5px] sm:text-[10px] font-mono text-rose-600/80 dark:text-rose-400/80 truncate">
+              {activeCount === 0 ? 'All mastered ✓' : 'Reinforce'}
             </div>
           </div>
 
           {/* Resolution Rate */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-950/25 border border-emerald-500/20 dark:border-emerald-500/35 shadow-2xs space-y-1 transition-all hover:border-emerald-500/40">
+          <div className="p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-emerald-500/5 dark:bg-emerald-950/25 border border-emerald-500/20 dark:border-emerald-500/35 shadow-2xs space-y-0.5 sm:space-y-1 transition-all hover:border-emerald-500/40">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400">
-                Resolution Rate
+              <span className="text-[8.5px] sm:text-[11px] font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 truncate">
+                Resolved
               </span>
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+              <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
             </div>
-            <div className="text-xl sm:text-2xl font-black font-mono tabular-nums text-emerald-600 dark:text-emerald-400 tracking-tight">
+            <div className="text-lg sm:text-2xl font-black font-mono tabular-nums text-emerald-600 dark:text-emerald-400 tracking-tight">
               {resolutionRate}%
             </div>
-            <div className="text-[10px] font-mono text-emerald-600/80 dark:text-emerald-400/80 truncate">
-              {resolvedCount} of {mistakes.length} mastered
+            <div className="text-[8.5px] sm:text-[10px] font-mono text-emerald-600/80 dark:text-emerald-400/80 truncate">
+              {resolvedCount}/{mistakes.length} mastered
             </div>
           </div>
         </div>
@@ -394,7 +394,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search traps, golden rules, examiner tricks, mock source..."
-            className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-500/15 shadow-2xs transition-all"
+            className="w-full pl-10 pr-9 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-white dark:bg-[#181A28] border border-[#E2E8F0] dark:border-[#2F3146] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 focus:ring-2 focus:ring-rose-500/15 shadow-2xs transition-all"
           />
           {searchTerm && (
             <button
@@ -419,15 +419,15 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   soundManager.playClick();
                   setFilterType(chip.id as any);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer border shrink-0 active:scale-95 ${
                   isSelected
                     ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                     : 'bg-white dark:bg-[#181A28] text-[#45474E] dark:text-[#E2E8F0] border-[#E2E8F0] dark:border-[#2F3146] hover:border-rose-400 dark:hover:border-rose-400'
                 }`}
               >
-                <ChipIcon className="w-3.5 h-3.5" />
+                <ChipIcon className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                 <span>{chip.label}</span>
-                <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
+                <span className={`px-1 sm:px-1.5 py-0.2 rounded-md text-[9.5px] sm:text-[10px] font-mono tabular-nums ${
                   isSelected
                     ? 'bg-white/20 dark:bg-black/20 text-white dark:text-black'
                     : 'bg-[#EEEEE8] dark:bg-[#202234] text-[#85877E] dark:text-slate-200 border border-transparent dark:border-[#383A52]'
@@ -535,7 +535,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
             return (
               <div
                 key={m.id}
-                className={`group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-subtle-depth space-y-3.5 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg ${
+                className={`group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border transition-all duration-200 shadow-subtle-depth space-y-3 sm:space-y-3.5 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg ${
                   m.resolved
                     ? 'bg-[#F8FAFC] dark:bg-[#181A28]/80 border-emerald-500/40 opacity-90'
                     : 'bg-white dark:bg-[#181A28] border-[#E2E8F0] dark:border-[#2F3146] hover:border-rose-500/50 shadow-xs hover:shadow-lg'
@@ -550,15 +550,15 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 />
 
                 {/* Top Badge Row */}
-                <div className="flex items-center justify-between gap-2 flex-wrap pb-2.5 border-b border-[#EEEEE8] dark:border-[#26283D]">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold border flex items-center gap-1.5 font-mono ${typeMeta.color}`}>
-                      <Icon className="w-3.5 h-3.5" />
+                <div className="flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap pb-2 sm:pb-2.5 border-b border-[#EEEEE8] dark:border-[#26283D]">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                    <span className={`px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-bold border flex items-center gap-1 sm:gap-1.5 font-mono ${typeMeta.color}`}>
+                      <Icon className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                       <span>{typeMeta.label}</span>
                     </span>
 
                     {m.severity && (
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono uppercase tracking-wider border ${
+                      <span className={`px-1.5 sm:px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-bold font-mono uppercase tracking-wider border ${
                         m.severity === 'high'
                           ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30'
                           : m.severity === 'medium'
@@ -570,20 +570,20 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     )}
 
                     {m.mockSource && (
-                      <span className="text-[10px] font-bold text-[#65675F] dark:text-[#CBD5E1] bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] px-2 py-0.5 rounded-md font-mono">
+                      <span className="text-[9.5px] sm:text-[10px] font-bold text-[#65675F] dark:text-[#CBD5E1] bg-[#F8FAFC] dark:bg-[#1E2032] border border-[#E2E8F0] dark:border-[#33364D] px-1.5 sm:px-2 py-0.5 rounded-md font-mono">
                         {m.mockSource}
                       </span>
                     )}
                   </div>
 
-                  <span className="text-[11px] text-[#85877E] dark:text-[#94A3B8] font-mono tabular-nums">
+                  <span className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#94A3B8] font-mono tabular-nums">
                     {m.dateLogged}
                   </span>
                 </div>
 
                 {/* Problem Statement */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-[#85877E] dark:text-[#94A3B8] uppercase tracking-wider font-mono flex items-center gap-1">
+                  <span className="text-[9.5px] sm:text-[10px] font-bold text-[#85877E] dark:text-[#94A3B8] uppercase tracking-wider font-mono flex items-center gap-1">
                     <span>Question / Problem Statement</span>
                   </span>
                   <p className="text-xs sm:text-sm font-black text-[#11120F] dark:text-white leading-relaxed max-w-[68ch]">
@@ -593,11 +593,11 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
 
                 {/* Wrong Logic & Examiner Trap Layer */}
                 {(m.wrongLogic || m.examinerTrap) && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                     {m.wrongLogic && (
-                      <div className="p-3 rounded-xl bg-rose-500/5 dark:bg-rose-950/20 border border-rose-500/20 dark:border-rose-500/30 space-y-1">
-                        <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 font-mono uppercase tracking-wider">
-                          <XCircle className="w-3.5 h-3.5" />
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-rose-500/5 dark:bg-rose-950/20 border border-rose-500/20 dark:border-rose-500/30 space-y-1">
+                        <span className="text-[9.5px] sm:text-[10px] font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 sm:gap-1.5 font-mono uppercase tracking-wider">
+                          <XCircle className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                           <span>My Wrong Logic (Fallacy)</span>
                         </span>
                         <p className="text-xs font-medium text-[#334155] dark:text-[#CBD5E1] leading-relaxed max-w-[68ch]">
@@ -607,9 +607,9 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     )}
 
                     {m.examinerTrap && (
-                      <div className="p-3 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 dark:border-amber-500/30 space-y-1">
-                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 font-mono uppercase tracking-wider">
-                          <AlertTriangle className="w-3.5 h-3.5" />
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 dark:border-amber-500/30 space-y-1">
+                        <span className="text-[9.5px] sm:text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 sm:gap-1.5 font-mono uppercase tracking-wider">
+                          <AlertTriangle className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                           <span>Examiner's Trap Mechanism</span>
                         </span>
                         <p className="text-xs font-medium text-[#334155] dark:text-[#CBD5E1] leading-relaxed max-w-[68ch]">
@@ -621,10 +621,10 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                 )}
 
                 {/* Correct Approach & Golden Rule */}
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/25 dark:border-emerald-500/35 space-y-2.5">
+                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/25 dark:border-emerald-500/35 space-y-2 sm:space-y-2.5">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-mono uppercase tracking-wider">
-                      <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span className="text-[9.5px] sm:text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 sm:gap-1.5 font-mono uppercase tracking-wider">
+                      <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2.5]" />
                       <span>Correct Approach & Solution</span>
                     </span>
                     <p className="text-xs sm:text-[13px] font-semibold text-[#191A17] dark:text-[#F5F5F7] whitespace-pre-line leading-relaxed max-w-[68ch]">
@@ -633,10 +633,10 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   </div>
 
                   {m.goldenRule && (
-                    <div className="pt-2.5 border-t border-emerald-500/20 dark:border-emerald-500/30 flex items-start gap-2 text-xs">
-                      <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div className="pt-2 sm:pt-2.5 border-t border-emerald-500/20 dark:border-emerald-500/30 flex items-start gap-1.5 sm:gap-2 text-xs">
+                      <Sparkles className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <span className="font-bold text-amber-600 dark:text-amber-400 font-mono text-[11px] uppercase tracking-wider">
+                        <span className="font-bold text-amber-600 dark:text-amber-400 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider">
                           Golden Rule:
                         </span>{' '}
                         <span className="font-black text-[#11120F] dark:text-white leading-relaxed max-w-[68ch]">
@@ -652,21 +652,21 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                   <button
                     type="button"
                     onClick={() => handleToggleResolve(m)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-2xs ${
+                    className={`px-3 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-2xs ${
                       m.resolved
                         ? 'bg-emerald-600 text-white shadow-sm font-black'
                         : 'bg-[#F8FAFC] dark:bg-[#1E2032] text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#33364D] hover:border-emerald-500 dark:hover:border-emerald-500'
                     }`}
                   >
                     {m.resolved ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                    <span>{m.resolved ? 'Mastered & Resolved ✓' : 'Mark Resolved'}</span>
+                    <span>{m.resolved ? 'Mastered ✓' : 'Mark Resolved'}</span>
                   </button>
 
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(m)}
-                      className="p-2 rounded-xl text-[#85877E] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
+                      className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-[#85877E] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
                       title="Edit Trap"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
@@ -675,7 +675,7 @@ export const AdvancedMistakeJournal: React.FC<AdvancedMistakeJournalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleDeleteMistake(m.id)}
-                      className="p-2 rounded-xl text-[#85877E] dark:text-[#CBD5E1] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
+                      className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-[#85877E] dark:text-[#CBD5E1] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
                       title="Delete Trap"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
