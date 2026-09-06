@@ -190,22 +190,22 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
     <div className="space-y-5 pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
       
       {/* 1. EXECUTIVE HEADER & CONTROLS */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-4">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3 sm:space-y-4">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4">
           
           {/* Left Title Capsule */}
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-gradient-to-br from-[#0c2340] via-[#113563] to-[#08172c] border border-cyan-500/40 text-cyan-300 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.25)] shrink-0">
-              <Orbit className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.2] animate-spin-slow" />
+          <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0c2340] via-[#113563] to-[#08172c] border border-cyan-500/40 text-cyan-300 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.25)] shrink-0">
+              <Orbit className="w-5 h-5 sm:w-7 sm:h-7 stroke-[2.2] animate-spin-slow" />
             </div>
 
             <div className="min-w-0 space-y-0.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
                 <span>{currentExam.name}</span>
                 <span>•</span>
                 <span>Neural Concept Graph</span>
               </div>
-              <h2 className="text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
+              <h2 className="text-sm xs:text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Interactive Concept Mind Map
               </h2>
               <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
@@ -215,10 +215,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
           </div>
 
           {/* Right Toolbar: Search, Mode Switcher & Zoom */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-start lg:justify-end">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full lg:w-auto justify-between lg:justify-end">
             
             {/* Quick Concept Filter */}
-            <div className="relative min-w-[160px] sm:min-w-[200px] flex-1 sm:flex-initial">
+            <div className="relative flex-1 sm:flex-initial sm:min-w-[200px]">
               <Search className="w-3.5 h-3.5 text-[#85877E] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
@@ -237,70 +237,73 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               )}
             </div>
 
-            {/* Layout Switcher */}
-            <div className="flex items-center p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
-              <button
-                onClick={() => {
-                  setViewLayout('radial');
-                  soundManager.playClick();
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  viewLayout === 'radial'
-                    ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
-                    : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
-                }`}
-              >
-                <Orbit className="w-3.5 h-3.5" />
-                <span>Constellation Web</span>
-              </button>
-              <button
-                onClick={() => {
-                  setViewLayout('tree');
-                  soundManager.playClick();
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  viewLayout === 'tree'
-                    ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
-                    : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
-                }`}
-              >
-                <Network className="w-3.5 h-3.5" />
-                <span>Hierarchy Tree</span>
-              </button>
-            </div>
+            {/* Mobile Actions Container */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Layout Switcher */}
+              <div className="flex items-center p-0.5 sm:p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
+                <button
+                  onClick={() => {
+                    setViewLayout('radial');
+                    soundManager.playClick();
+                  }}
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    viewLayout === 'radial'
+                      ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
+                      : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
+                  }`}
+                >
+                  <Orbit className="w-3.5 h-3.5 shrink-0" />
+                  <span><span className="hidden sm:inline">Constellation </span>Web</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setViewLayout('tree');
+                    soundManager.playClick();
+                  }}
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    viewLayout === 'tree'
+                      ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
+                      : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
+                  }`}
+                >
+                  <Network className="w-3.5 h-3.5 shrink-0" />
+                  <span><span className="hidden sm:inline">Hierarchy </span>Tree</span>
+                </button>
+              </div>
 
-            {/* Zoom Controls */}
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
-              <button
-                onClick={() => handleZoom(-0.15)}
-                className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-                title="Zoom Out"
-              >
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-[11px] font-mono font-bold px-1.5 text-[#11120F] dark:text-[#F5F5F7] tabular-nums">
-                {Math.round(zoomLevel * 100)}%
-              </span>
-              <button
-                onClick={() => handleZoom(0.15)}
-                className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-                title="Zoom In"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={handleResetZoom}
-                className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-                title="Reset Zoom"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs">
+                <button
+                  onClick={() => handleZoom(-0.15)}
+                  className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-[10px] sm:text-[11px] font-mono font-bold px-1 sm:px-1.5 text-[#11120F] dark:text-[#F5F5F7] tabular-nums">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                <button
+                  onClick={() => handleZoom(0.15)}
+                  className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={handleResetZoom}
+                  className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  title="Reset Zoom"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* 2. SUBJECT FILTER PILLS & HUD QUICK LEGEND */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-3 border-t border-[#EEEEE8] dark:border-[#262738]">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 sm:gap-3 pt-2.5 sm:pt-3 border-t border-[#EEEEE8] dark:border-[#262738]">
           
           {/* Subject Pills (Scrollable) */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 w-full md:w-auto">
@@ -309,15 +312,15 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 setSelectedSubjectId('all');
                 soundManager.playClick();
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border shrink-0 active:scale-95 tap-bounce ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all cursor-pointer border shrink-0 active:scale-95 tap-bounce ${
                 selectedSubjectId === 'all'
                   ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                   : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>All Subjects</span>
-              <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
+              <span className={`px-1 sm:px-1.5 py-0.2 rounded-md text-[9px] sm:text-[10px] font-mono tabular-nums ${
                 selectedSubjectId === 'all' ? 'bg-white/20 dark:bg-black/20' : 'bg-[#EEEEE8] dark:bg-[#1E1F2E] text-[#85877E]'
               }`}>
                 {totalTopicNodes}
@@ -337,15 +340,15 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     setSelectedSubjectId(s.id);
                     soundManager.playClick();
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0 active:scale-95 tap-bounce ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0 active:scale-95 tap-bounce ${
                     isSel
                       ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                       : 'bg-[#F8FAFC] dark:bg-[#151622] text-[#65675F] dark:text-[#A1A1B2] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
                   }`}
                 >
-                  <SubjIcon className="w-3.5 h-3.5" style={{ color: isSel ? undefined : meta.color }} />
+                  <SubjIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" style={{ color: isSel ? undefined : meta.color }} />
                   <span>{s.name}</span>
-                  <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono tabular-nums ${
+                  <span className={`px-1 sm:px-1.5 py-0.2 rounded-md text-[9px] sm:text-[10px] font-mono tabular-nums ${
                     isSel ? 'bg-white/20 dark:bg-black/20' : 'bg-[#EEEEE8] dark:bg-[#1E1F2E] text-[#85877E]'
                   }`}>
                     {sTotalTopics}
@@ -356,17 +359,17 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
           </div>
 
           {/* HUD Status Legend (Zero raw emojis) */}
-          <div className="flex items-center gap-2 text-[11px] font-mono font-bold shrink-0 flex-wrap">
-            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
-              <CheckCircle2 className="w-3 h-3 stroke-[2.5]" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-mono font-bold shrink-0 flex-wrap">
+            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-emerald-500/20">
+              <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[2.5]" />
               <span>Mastered ({masteredNodesCount})</span>
             </span>
-            <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
-              <Zap className="w-3 h-3 fill-current" />
+            <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-amber-500/20">
+              <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" />
               <span>In Progress ({inProgressNodesCount})</span>
             </span>
-            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-lg border border-rose-500/20">
-              <AlertTriangle className="w-3 h-3" />
+            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-rose-500/20">
+              <AlertTriangle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               <span>Weak ({weakNodesCount})</span>
             </span>
           </div>
@@ -374,7 +377,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
       </div>
 
       {/* 3. MAIN CONSTELLATION CANVAS CONTAINER */}
-      <div className="relative w-full min-h-[580px] sm:min-h-[680px] rounded-3xl bg-gradient-to-b from-[#080B14] via-[#0D1120] to-[#080B14] border border-[#1E2640] shadow-2xl overflow-hidden flex flex-col items-center justify-start p-4 sm:p-6 select-none">
+      <div className="relative w-full min-h-[480px] sm:min-h-[680px] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#080B14] via-[#0D1120] to-[#080B14] border border-[#1E2640] shadow-2xl overflow-hidden flex flex-col items-center justify-start p-2.5 sm:p-6 select-none">
         
         {/* Futuristic Cosmic Grid & Ambient Glows */}
         <div className="absolute inset-0 bg-[radial-gradient(#253352_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
@@ -384,14 +387,14 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
 
         {/* Hovered Node Floating HUD Card */}
         {hoveredNode && (
-          <div className="absolute top-4 left-4 z-40 p-4 rounded-2xl bg-[#0F1426]/95 border border-cyan-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.7)] backdrop-blur-xl max-w-xs animate-fade-in pointer-events-none space-y-2">
+          <div className="absolute top-2 sm:top-4 left-2 right-2 sm:right-auto sm:left-4 z-40 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#0F1426]/95 border border-cyan-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.7)] backdrop-blur-xl max-w-none sm:max-w-xs animate-fade-in pointer-events-none space-y-1.5 sm:space-y-2">
             <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
               <span>{hoveredNode.subjectName}</span>
               <span>·</span>
               <span className="truncate max-w-[120px]">{hoveredNode.chapterName}</span>
             </div>
 
-            <h4 className="text-sm font-black text-white leading-snug">
+            <h4 className="text-xs sm:text-sm font-black text-white leading-snug">
               {hoveredNode.topic.name}
             </h4>
 
@@ -416,7 +419,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
 
         {/* ZOOMABLE GRAPH CONTENT WRAPPER */}
         <div
-          className="relative z-10 w-full flex flex-col items-center justify-start transition-transform duration-300 origin-top py-4"
+          className="relative z-10 w-full flex flex-col items-center justify-start transition-transform duration-300 origin-top py-2 sm:py-4"
           style={{ transform: `scale(${zoomLevel})` }}
         >
           {viewLayout === 'radial' ? (
@@ -427,27 +430,27 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               <div className="relative z-20 flex flex-col items-center">
                 
                 {/* Outer Rotating Constellation Ring */}
-                <div className="w-36 sm:w-44 h-36 sm:h-44 rounded-full border border-dashed border-cyan-500/40 p-2 flex items-center justify-center relative animate-spin-slow">
+                <div className="w-28 sm:w-44 h-28 sm:h-44 rounded-full border border-dashed border-cyan-500/40 p-2 flex items-center justify-center relative animate-spin-slow">
                   {/* Orbiting Satellite Light */}
-                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f0ff]" />
-                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_10px_#ff007f]" />
+                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f0ff]" />
+                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-pink-400 shadow-[0_0_10px_#ff007f]" />
                 </div>
 
                 {/* Inner Glowing Core Container */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 sm:w-36 h-28 sm:h-36 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[2px] shadow-[0_0_45px_rgba(6,182,212,0.45)]">
-                  <div className="w-full h-full rounded-full bg-[#070A18] flex flex-col items-center justify-center text-center p-2.5 relative overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-22 sm:w-36 h-22 sm:h-36 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[2px] shadow-[0_0_35px_rgba(6,182,212,0.45)]">
+                  <div className="w-full h-full rounded-full bg-[#070A18] flex flex-col items-center justify-center text-center p-1.5 sm:p-2.5 relative overflow-hidden">
                     <div className="absolute inset-0 bg-radial from-cyan-500/15 via-transparent to-transparent pointer-events-none" />
                     
-                    <span className="text-[9px] sm:text-[10px] font-black text-cyan-400 uppercase tracking-widest font-mono flex items-center gap-1">
-                      <Sparkles className="w-2.5 h-2.5" />
+                    <span className="text-[8px] sm:text-[10px] font-black text-cyan-400 uppercase tracking-widest font-mono flex items-center gap-1">
+                      <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
                       TARGET CORE
                     </span>
 
-                    <h3 className="text-xs sm:text-[14px] font-black text-white leading-tight mt-1 uppercase tracking-tight line-clamp-1">
+                    <h3 className="text-[11px] sm:text-[14px] font-black text-white leading-tight mt-0.5 sm:mt-1 uppercase tracking-tight line-clamp-1">
                       {currentExam.name}
                     </h3>
 
-                    <div className="mt-1.5 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-mono font-bold text-cyan-300">
+                    <div className="mt-1 sm:mt-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[9px] sm:text-[10px] font-mono font-bold text-cyan-300">
                       {masteredNodesCount}/{totalTopicNodes} ({overallPercent}%)
                     </div>
                   </div>
@@ -455,7 +458,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               </div>
 
               {/* Dynamic SVG Energy Connector Beams */}
-              <div className="w-full h-12 sm:h-16 relative flex items-center justify-center pointer-events-none">
+              <div className="w-full h-6 sm:h-16 relative flex items-center justify-center pointer-events-none">
                 <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="beamGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -477,7 +480,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
               </div>
 
               {/* 2. SUBJECT CONSTELLATION MODULES GRID */}
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 mt-2">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 mt-1 sm:mt-2">
                 {activeSubjects.map(subj => {
                   const meta = getSubjectMeta(subj.name, subj.color);
                   const SubjIcon = meta.icon;
@@ -488,7 +491,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                   return (
                     <div
                       key={subj.id}
-                      className="group relative p-4 sm:p-5 rounded-3xl bg-[#0F1426]/90 hover:bg-[#131930] border border-[#212C4A] hover:border-cyan-500/50 shadow-xl backdrop-blur-xl transition-all duration-300 overflow-hidden space-y-3.5"
+                      className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#0F1426]/90 hover:bg-[#131930] border border-[#212C4A] hover:border-cyan-500/50 shadow-xl backdrop-blur-xl transition-all duration-300 overflow-hidden space-y-3 sm:space-y-3.5"
                     >
                       {/* Ambient Glowing Top Border */}
                       <div
@@ -499,28 +502,28 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                       />
 
                       {/* Subject Module Header */}
-                      <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/10">
-                        <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center justify-between gap-2.5 sm:gap-3 pb-2.5 sm:pb-3 border-b border-white/10">
+                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                           
                           {/* 3D Squircle Icon Badge */}
                           <div
-                            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shadow-md shrink-0`}
+                            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shadow-md shrink-0`}
                           >
-                            <SubjIcon className="w-5 h-5 stroke-[2.2]" />
+                            <SubjIcon className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
                           </div>
 
                           <div className="min-w-0">
-                            <h4 className="text-sm sm:text-base font-black text-white tracking-tight uppercase truncate group-hover:text-cyan-300 transition-colors">
+                            <h4 className="text-xs sm:text-base font-black text-white tracking-tight uppercase truncate group-hover:text-cyan-300 transition-colors">
                               {subj.name}
                             </h4>
-                            <span className="text-[10px] font-mono text-slate-400">
+                            <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
                               {subj.chapters.length} {subj.chapters.length === 1 ? 'Chapter' : 'Chapters'} · {totalInSubj} Concepts
                             </span>
                           </div>
                         </div>
 
                         {/* Subject Progress Pill */}
-                        <div className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/40 border border-white/10 text-xs font-mono font-bold text-slate-300">
+                        <div className="shrink-0 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-black/40 border border-white/10 text-[11px] sm:text-xs font-mono font-bold text-slate-300">
                           <span className={subjPercent === 100 ? 'text-emerald-400' : 'text-cyan-300'}>
                             {subjPercent}%
                           </span>
@@ -528,7 +531,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                       </div>
 
                       {/* Chapters & Neural Concept Nodes */}
-                      <div className="space-y-3">
+                      <div className="space-y-2.5 sm:space-y-3">
                         {subj.chapters.map(chap => {
                           const matchingTopics = searchQuery
                             ? chap.topics.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -537,17 +540,17 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                           if (searchQuery && matchingTopics.length === 0) return null;
 
                           return (
-                            <div key={chap.id} className="space-y-2">
+                            <div key={chap.id} className="space-y-1.5 sm:space-y-2">
                               
                               {/* Chapter Branch Tag */}
-                              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                                <ChevronRight className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                              <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+                                <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400 shrink-0" />
                                 <span className="truncate">{chap.name}</span>
-                                <span className="text-slate-600 text-[10px]">({matchingTopics.length})</span>
+                                <span className="text-slate-600 text-[9px] sm:text-[10px]">({matchingTopics.length})</span>
                               </div>
 
                               {/* Interactive Concept Node Chips */}
-                              <div className="flex flex-wrap gap-1.5 pl-3 sm:pl-4">
+                              <div className="flex flex-wrap gap-1 sm:gap-1.5 pl-1.5 sm:pl-4">
                                 {matchingTopics.map(top => {
                                   const node = getNodeDetails(top.status, top.isWeak);
                                   const NodeIcon = node.icon;
@@ -562,14 +565,14 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                                       }}
                                       onMouseEnter={() => setHoveredNode({ topic: top, subjectName: subj.name, chapterName: chap.name })}
                                       onMouseLeave={() => setHoveredNode(null)}
-                                      className={`group/chip flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 border ${node.badgeClass} ${
+                                      className={`group/chip flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 border ${node.badgeClass} ${
                                         isQueryMatch
                                           ? 'ring-2 ring-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)] bg-cyan-950/80 text-white'
                                           : 'hover:bg-white/10 hover:text-white'
                                       }`}
                                     >
-                                      <NodeIcon className="w-3 h-3 shrink-0 stroke-[2.2]" style={{ color: node.color }} />
-                                      <span className="truncate max-w-[130px] sm:max-w-[160px]">{top.name}</span>
+                                      <NodeIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 stroke-[2.2]" style={{ color: node.color }} />
+                                      <span className="truncate max-w-[120px] xs:max-w-[140px] sm:max-w-[160px]">{top.name}</span>
                                     </button>
                                   );
                                 })}
@@ -585,7 +588,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
             </div>
           ) : (
             /* HIERARCHY TREE VIEW */
-            <div className="w-full max-w-4xl space-y-4">
+            <div className="w-full max-w-4xl space-y-3 sm:space-y-4">
               {activeSubjects.map(subj => {
                 const meta = getSubjectMeta(subj.name, subj.color);
                 const SubjIcon = meta.icon;
@@ -596,7 +599,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 return (
                   <div
                     key={subj.id}
-                    className="p-5 rounded-3xl bg-[#0F1426]/90 border border-[#212C4A] shadow-xl space-y-3.5 backdrop-blur-md relative overflow-hidden"
+                    className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#0F1426]/90 border border-[#212C4A] shadow-xl space-y-2.5 sm:space-y-3.5 backdrop-blur-md relative overflow-hidden"
                   >
                     {/* Top Accent line */}
                     <div
@@ -605,22 +608,22 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     />
 
                     {/* Subject Header */}
-                    <div className="flex items-center justify-between gap-3 pb-2 border-b border-white/10">
-                      <div className="flex items-center gap-2.5">
-                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}>
-                          <SubjIcon className="w-4 h-4 stroke-[2.2]" />
+                    <div className="flex items-center justify-between gap-2.5 sm:gap-3 pb-2 border-b border-white/10">
+                      <div className="flex items-center gap-2 sm:gap-2.5">
+                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}>
+                          <SubjIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
                         </div>
                         <div>
-                          <h3 className="text-sm sm:text-base font-black text-white tracking-tight uppercase">
+                          <h3 className="text-xs sm:text-base font-black text-white tracking-tight uppercase">
                             {subj.name}
                           </h3>
-                          <span className="text-[10px] font-mono text-slate-400">
+                          <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
                             {subj.chapters.length} Chapters · {totalInSubj} Topics
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-black/40 border border-white/10 text-xs font-mono font-bold text-cyan-300">
+                      <div className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-black/40 border border-white/10 text-[11px] sm:text-xs font-mono font-bold text-cyan-300">
                         <span>{completedInSubj}/{totalInSubj}</span>
                         <span className="text-slate-500">·</span>
                         <span>{subjPercent}%</span>
@@ -628,7 +631,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     </div>
 
                     {/* Chapters Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-1 sm:pl-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 pl-0 sm:pl-2">
                       {subj.chapters.map(chap => {
                         const matchingTopics = searchQuery
                           ? chap.topics.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -639,14 +642,14 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                         return (
                           <div
                             key={chap.id}
-                            className="p-3.5 rounded-2xl bg-[#080B16]/80 border border-white/5 space-y-2"
+                            className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#080B16]/80 border border-white/5 space-y-1.5 sm:space-y-2"
                           >
-                            <div className="flex items-center justify-between text-xs font-bold text-slate-300 font-mono">
+                            <div className="flex items-center justify-between text-[11px] sm:text-xs font-bold text-slate-300 font-mono">
                               <span className="flex items-center gap-1 truncate uppercase">
-                                <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
+                                <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400 shrink-0" />
                                 {chap.name}
                               </span>
-                              <span className="text-[10px] text-slate-500">
+                              <span className="text-[9px] sm:text-[10px] text-slate-500">
                                 {matchingTopics.length}
                               </span>
                             </div>
@@ -663,13 +666,13 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                                       soundManager.playClick();
                                       onOpenTopicDrawer(top, subj.name, chap.name);
                                     }}
-                                    className="flex items-center justify-between p-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-slate-200 cursor-pointer transition-colors group"
+                                    className="flex items-center justify-between p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 text-[11px] sm:text-xs text-slate-200 cursor-pointer transition-colors group"
                                   >
-                                    <div className="flex items-center gap-2 truncate pr-2">
-                                      <NodeIcon className="w-3.5 h-3.5 shrink-0" style={{ color: node.color }} />
+                                    <div className="flex items-center gap-1.5 sm:gap-2 truncate pr-2">
+                                      <NodeIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" style={{ color: node.color }} />
                                       <span className="truncate group-hover:text-white">{top.name}</span>
                                     </div>
-                                    <div className="flex items-center gap-1 text-[10px] font-mono text-slate-400 shrink-0">
+                                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono text-slate-400 shrink-0">
                                       <span className="px-1 rounded bg-black/40 text-slate-300">{top.weightage || 0}m</span>
                                     </div>
                                   </div>
