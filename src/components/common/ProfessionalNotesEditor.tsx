@@ -215,6 +215,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const fullscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const notesContainerRef = useRef<HTMLDivElement>(null);
   const fsNotesContainerRef = useRef<HTMLDivElement>(null);
+  const fullscreenScrollRef = useRef<HTMLDivElement>(null);
 
   // Text Selection Highlighter State
   const [selectionTooltip, setSelectionTooltip] = useState<{
@@ -1032,12 +1033,35 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     soundManager.playClick();
   };
 
+  // Shared Heading Slug & Cleaning Utilities
+  const cleanHeadingText = (rawText: string) => {
+    return rawText
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/==([^=]+)==/g, '$1')
+      .replace(/^[0-9.]+\s*/, '')
+      .trim();
+  };
+
+  const getSlugFromText = (cleanText: string, slugCounts: Map<string, number>) => {
+    const baseSlug = cleanText
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, '-')
+      .replace(/^-|-$/g, '') || 'section';
+
+    const count = slugCounts.get(baseSlug) || 0;
+    slugCounts.set(baseSlug, count + 1);
+    return count === 0 ? baseSlug : `${baseSlug}-${count}`;
+  };
+
   // Table of Contents generation
   const tableOfContents = React.useMemo(() => {
     if (!content) return [];
     const lines = content.split('\n');
-    const items: { id: string; text: string; level: number }[] = [];
+    const items: { id: string; text: string; level: number; index: number }[] = [];
     const usedSlugs = new Map<string, number>();
+    let headingIdx = 0;
 
     lines.forEach((line) => {
       const trimmed = line.trim();
@@ -1055,24 +1079,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       }
 
       if (level > 0 && rawText) {
-        const cleanText = rawText
-          .replace(/\*\*([^*]+)\*\*/g, '$1')
-          .replace(/\*([^*]+)\*/g, '$1')
-          .replace(/`([^`]+)`/g, '$1')
-          .replace(/==([^=]+)==/g, '$1')
-          .replace(/^[0-9.]+\s*/, '')
-          .trim();
-
-        const baseSlug = cleanText
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '') || 'section';
-
-        const count = usedSlugs.get(baseSlug) || 0;
-        usedSlugs.set(baseSlug, count + 1);
-        const id = count === 0 ? baseSlug : `${baseSlug}-${count}`;
-
-        items.push({ id, text: cleanText, level });
+        const cleanText = cleanHeadingText(rawText);
+        const id = getSlugFromText(cleanText, usedSlugs);
+        items.push({ id, text: cleanText, level, index: headingIdx++ });
       }
     });
 
@@ -1087,16 +1096,103 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     return Math.max(1, Math.ceil(totalWordCount / 200));
   }, [totalWordCount]);
 
-  const handleScrollToHeading = (id: string) => {
+  const handleScrollToHeading = (id: string, index?: number) => {
     soundManager.playClick();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      element.classList.add('ring-2', 'ring-amber-400', 'rounded-lg');
-      setTimeout(() => {
-        element.classList.remove('ring-2', 'ring-amber-400', 'rounded-lg');
-      }, 1500);
+
+    // Determine the active scroll container and the target element within it
+    let target: HTMLElement | null = null;
+    let scrollContainer: HTMLElement | null = null;
+
+    if (isFullscreen && fullscreenScrollRef.current) {
+      scrollContainer = fullscreenScrollRef.current;
+      // Search inside the active fullscreen reader container first (avoids duplicate background ID)
+      if (id) {
+        try {
+          target = scrollContainer.querySelector<HTMLElement>(`[data-heading-id="${CSS.escape(id)}"]`);
+        } catch {
+          target = scrollContainer.querySelector<HTMLElement>(`#${id}`);
+        }
+      }
+      if (!target && index !== undefined) {
+        target = scrollContainer.querySelector<HTMLElement>(`[data-heading-index="${index}"]`);
+      }
+    } else if (notesContainerRef.current) {
+      // Normal / non-fullscreen mode
+      const container = notesContainerRef.current;
+      if (id) {
+        try {
+          target = container.querySelector<HTMLElement>(`[data-heading-id="${CSS.escape(id)}"]`);
+        } catch {
+          target = container.querySelector<HTMLElement>(`#${id}`);
+        }
+      }
+      if (!target && index !== undefined) {
+        target = container.querySelector<HTMLElement>(`[data-heading-index="${index}"]`);
+      }
+      // Locate the nearest scrolling parent
+      let parent = container.parentElement;
+      while (parent) {
+        const style = window.getComputedStyle(parent);
+        if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+          scrollContainer = parent;
+          break;
+        }
+        parent = parent.parentElement;
+      }
     }
+
+    // Fallback if not found inside scoped container
+    if (!target) {
+      if (id) {
+        try {
+          target = document.getElementById(id) || document.querySelector<HTMLElement>(`[data-heading-id="${CSS.escape(id)}"]`);
+        } catch {
+          target = document.getElementById(id);
+        }
+      }
+      if (!target && index !== undefined) {
+        target = document.querySelector<HTMLElement>(`[data-heading-index="${index}"]`);
+      }
+    }
+
+    if (!target) return;
+
+    // Perform smooth scroll to target concept
+    if (scrollContainer) {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const currentScrollTop = scrollContainer.scrollTop;
+      const targetOffset = targetRect.top - containerRect.top + currentScrollTop;
+
+      scrollContainer.scrollTo({
+        top: Math.max(0, targetOffset - 32),
+        behavior: 'smooth'
+      });
+    } else {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // High-visibility concept spotlight pulse so the user instantly sees where they landed
+    target.classList.add(
+      'ring-4',
+      'ring-amber-400',
+      'bg-amber-400/20',
+      'dark:bg-amber-400/25',
+      'rounded-xl',
+      'px-2',
+      'transition-all',
+      'duration-300'
+    );
+    setTimeout(() => {
+      target?.classList.remove(
+        'ring-4',
+        'ring-amber-400',
+        'bg-amber-400/20',
+        'dark:bg-amber-400/25',
+        'rounded-xl',
+        'px-2'
+      );
+    }, 2200);
   };
 
   // Font family helper
@@ -1357,25 +1453,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     let codeBlockCounter = 0;
     let paragraphCounter = 0;
     const usedHeadingSlugs = new Map<string, number>();
-
-    const getHeadingId = (rawText: string) => {
-      const cleanText = rawText
-        .replace(/\*\*([^*]+)\*\*/g, '$1')
-        .replace(/\*([^*]+)\*/g, '$1')
-        .replace(/`([^`]+)`/g, '$1')
-        .replace(/==([^=]+)==/g, '$1')
-        .replace(/^[0-9.]+\s*/, '')
-        .trim();
-
-      const baseSlug = cleanText
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '') || 'section';
-
-      const count = usedHeadingSlugs.get(baseSlug) || 0;
-      usedHeadingSlugs.set(baseSlug, count + 1);
-      return count === 0 ? baseSlug : `${baseSlug}-${count}`;
-    };
+    let renderedHeadingIndex = 0;
 
     while (i < lines.length) {
       const line = lines[i];
@@ -1647,39 +1725,51 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       }
 
       // 4. Headings
-      if (line.startsWith('# ')) {
-        const rawH1 = line.replace('# ', '');
-        const headingId = getHeadingId(rawH1);
+      if (trimmedLine.startsWith('# ') && !trimmedLine.startsWith('## ')) {
+        const rawH1 = trimmedLine.replace(/^#\s+/, '');
+        const cleanH1 = cleanHeadingText(rawH1);
+        const headingId = getSlugFromText(cleanH1, usedHeadingSlugs);
+        const currentIndex = renderedHeadingIndex++;
         elements.push(
           <h1
             key={i}
             id={headingId}
+            data-heading-id={headingId}
+            data-heading-index={currentIndex}
             className={`${fontFam} text-xl sm:text-2xl font-black mt-7 mb-3 pb-2.5 border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-[#11120F] dark:text-white scroll-mt-28 [break-inside:avoid]`}
           >
             <span className="w-1.5 h-6 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] inline-block shrink-0" />
             <span>{parseInlineMarkdown(rawH1, `h1-${i}`)}</span>
           </h1>
         );
-      } else if (line.startsWith('## ')) {
-        const rawH2 = line.replace('## ', '');
-        const headingId = getHeadingId(rawH2);
+      } else if (trimmedLine.startsWith('## ') && !trimmedLine.startsWith('### ')) {
+        const rawH2 = trimmedLine.replace(/^##\s+/, '');
+        const cleanH2 = cleanHeadingText(rawH2);
+        const headingId = getSlugFromText(cleanH2, usedHeadingSlugs);
+        const currentIndex = renderedHeadingIndex++;
         elements.push(
           <h2
             key={i}
             id={headingId}
+            data-heading-id={headingId}
+            data-heading-index={currentIndex}
             className={`${fontFam} text-lg sm:text-xl font-extrabold mt-6 mb-2.5 flex items-center gap-2 text-[#11120F] dark:text-white scroll-mt-28 [break-inside:avoid]`}
           >
             <span className="w-1.5 h-5 rounded-full bg-purple-500 inline-block shrink-0" />
             <span>{parseInlineMarkdown(rawH2, `h2-${i}`)}</span>
           </h2>
         );
-      } else if (line.startsWith('### ')) {
-        const rawH3 = line.replace('### ', '');
-        const headingId = getHeadingId(rawH3);
+      } else if (trimmedLine.startsWith('### ')) {
+        const rawH3 = trimmedLine.replace(/^###\s+/, '');
+        const cleanH3 = cleanHeadingText(rawH3);
+        const headingId = getSlugFromText(cleanH3, usedHeadingSlugs);
+        const currentIndex = renderedHeadingIndex++;
         elements.push(
           <h3
             key={i}
             id={headingId}
+            data-heading-id={headingId}
+            data-heading-index={currentIndex}
             className={`${fontFam} text-xs sm:text-sm font-black text-[#2563EB] dark:text-[#7AA2F7] mt-5 mb-2 uppercase tracking-wide flex items-center gap-1.5 font-mono scroll-mt-28 [break-inside:avoid]`}
           >
             <span>▶</span>
@@ -2803,6 +2893,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
         {/* Fullscreen Content Area with Scroll Tracking & Focus Ruler Pointer */}
         <div
+          ref={fullscreenScrollRef}
           className={`flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar ${isZenMode ? 'pt-4 sm:pt-16 pb-24 sm:pb-8' : ''}`}
           onScroll={(e) => {
             const el = e.currentTarget;
@@ -2920,9 +3011,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     key={item.id + '-' + idx}
                     type="button"
                     onClick={() => {
-                      handleScrollToHeading(item.id);
+                      handleScrollToHeading(item.id, item.index ?? idx);
                       setIsTocOpen(false);
                     }}
+                    title={item.text}
                     className={`w-full text-left py-1.5 px-2.5 rounded-xl text-xs transition-colors cursor-pointer hover:bg-[#2563EB]/10 dark:hover:bg-[#7AA2F7]/10 flex items-start gap-2 ${
                       item.level === 1
                         ? 'font-bold text-slate-900 dark:text-white'
@@ -2931,7 +3023,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                         : 'pl-8 font-normal text-slate-500 dark:text-slate-400'
                     }`}
                   >
-                    <span className="text-[10px] font-mono text-amber-500 mt-0.5">
+                    <span className="text-[10px] font-mono text-amber-500 mt-0.5 shrink-0">
                       {item.level === 1 ? '•' : item.level === 2 ? '–' : '›'}
                     </span>
                     <span className="truncate">{item.text}</span>
