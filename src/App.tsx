@@ -284,12 +284,12 @@ export const App: React.FC = () => {
           setIsAddTopicOpen(false);
           return;
         }
-        if (isRevisionSessionOpen) {
-          setIsRevisionSessionOpen(false);
-          return;
-        }
         if (selectedTopic) {
           setSelectedTopic(null);
+          return;
+        }
+        if (isRevisionSessionOpen) {
+          setIsRevisionSessionOpen(false);
           return;
         }
         if (isFullModalOpen) {
@@ -686,10 +686,14 @@ export const App: React.FC = () => {
 
               {currentView === 'revision' && (
                 <ViewErrorBoundary sectionName="Revision Hub" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
-                  <RevisionView onOpenRevisionSession={() => {
-                    setIsRevisionSessionOpen(true);
-                    window.history.pushState({ modal: 'revision' }, '');
-                  }} />
+                  <RevisionView
+                    onOpenRevisionSession={() => {
+                      setIsRevisionSessionOpen(true);
+                      window.history.pushState({ modal: 'revision' }, '');
+                    }}
+                    onOpenTopicDrawer={handleOpenTopicDrawer}
+                    onOpenFocus={handleLaunchFocus}
+                  />
                 </ViewErrorBoundary>
               )}
 
@@ -809,6 +813,7 @@ export const App: React.FC = () => {
             <RevisionSessionModal
               isOpen={isRevisionSessionOpen}
               onClose={() => setIsRevisionSessionOpen(false)}
+              onOpenTopic={handleOpenTopicDrawer}
             />
           </ViewErrorBoundary>
         )}

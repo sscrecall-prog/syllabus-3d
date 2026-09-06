@@ -525,7 +525,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] overflow-hidden flex justify-end topic-drawer-portal">
+    <div className="fixed inset-0 z-[120] overflow-hidden flex justify-end topic-drawer-portal">
       {/* Explicit Dark Backdrop */}
       <div
         className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-fade-in pointer-events-auto transition-opacity topic-drawer-backdrop no-print"

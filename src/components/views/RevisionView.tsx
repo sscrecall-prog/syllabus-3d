@@ -478,7 +478,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                     style={{ backgroundColor: stageMeta.accent }}
                   />
 
-                  <div className="flex items-center gap-3.5 min-w-0 flex-1 pl-1">
+                  <div
+                    onClick={() => {
+                      if (onOpenTopicDrawer && topicObj) {
+                        onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName);
+                      }
+                    }}
+                    className={`flex items-center gap-3.5 min-w-0 flex-1 pl-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
+                  >
                     
                     {/* 3D Squircle Subject Badge */}
                     <div
@@ -612,7 +619,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                   key={rev.id}
                   className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:border-[#2563EB]/40 transition-all"
                 >
-                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <div
+                    onClick={() => {
+                      if (onOpenTopicDrawer && topicObj) {
+                        onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName);
+                      }
+                    }}
+                    className={`flex items-center gap-3.5 min-w-0 flex-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
+                  >
                     <div
                       className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}
                     >
@@ -716,15 +730,23 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
         {activeTab === 'history' && (
           displayedHistory.length > 0 ? (
             displayedHistory.map(rev => {
+              const topicObj = allTopics.find(t => t.topic.id === rev.topicId);
               const meta = getSubjectMeta(rev.subjectName);
               const SubjIcon = meta.icon;
 
               return (
                 <div
                   key={rev.id}
-                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-emerald-500/30 shadow-subtle-depth flex items-center justify-between gap-4"
+                  className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#18181D] border border-emerald-500/30 shadow-subtle-depth flex items-center justify-between gap-4 group hover:border-emerald-500/60 transition-all"
                 >
-                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <div
+                    onClick={() => {
+                      if (onOpenTopicDrawer && topicObj) {
+                        onOpenTopicDrawer(topicObj.topic, rev.subjectName, rev.chapterName);
+                      }
+                    }}
+                    className={`flex items-center gap-3.5 min-w-0 flex-1 ${onOpenTopicDrawer && topicObj ? 'cursor-pointer' : ''}`}
+                  >
                     <div
                       className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${meta.gradient} border ${meta.border} ${meta.text} flex items-center justify-center shrink-0`}
                     >

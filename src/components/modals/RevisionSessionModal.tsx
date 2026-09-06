@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
-import { X, RotateCw, Trophy, ArrowRight, Check, RefreshCcw, Sparkles } from 'lucide-react';
+import { X, RotateCw, Trophy, ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { soundManager } from '../../utils/soundEffects';
+import { haptics } from '../../utils/haptics';
+import { Topic } from '../../types/syllabus';
 
 interface RevisionSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenTopic?: (topic: Topic, subjectName: string, chapterName: string) => void;
 }
 
 export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
   isOpen,
   onClose,
+  onOpenTopic
 }) => {
   const { dueRevisions, completeRevisionCard, allTopics } = useSyllabus();
 
   const [sessionQueue] = useState(() => [...dueRevisions]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [reviewedCount, setReviewedCount] = useState(0);
 
@@ -31,9 +34,24 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
     ? allTopics.find(at => at.topic.id === currentRevision.topicId)
     : undefined;
 
-  const handleFlipCard = () => {
-    setIsFlipped(prev => !prev);
+  const handleOpenTopic = () => {
     soundManager.playClick();
+    haptics.medium();
+    if (onOpenTopic && currentRevision) {
+      const targetTopic = topicMatch?.topic || ({
+        id: currentRevision.topicId,
+        name: currentRevision.topicName,
+        status: 'in_progress',
+        completedSubtopics: 0,
+        totalSubtopics: 0
+      } as unknown as Topic);
+
+      onOpenTopic(
+        targetTopic,
+        topicMatch?.subjectName || currentRevision.subjectName,
+        topicMatch?.chapterName || currentRevision.chapterName
+      );
+    }
   };
 
   const handleGrade = (grade: 'again' | 'hard' | 'good' | 'easy') => {
@@ -41,7 +59,6 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
 
     completeRevisionCard(currentRevision.id, grade);
     setReviewedCount(prev => prev + 1);
-    setIsFlipped(false);
 
     if (currentIndex + 1 < activeQueue.length) {
       setCurrentIndex(prev => prev + 1);
@@ -53,7 +70,6 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
 
   const handleReset = () => {
     setCurrentIndex(0);
-    setIsFlipped(false);
     setSessionCompleted(false);
     setReviewedCount(0);
     onClose();
@@ -129,67 +145,43 @@ export const RevisionSessionModal: React.FC<RevisionSessionModalProps> = ({
           </div>
         ) : (
           <div className="space-y-6">
-            {/* 3D PERSPECTIVE FLIP CARD CONTAINER */}
+            {/* DIRECT TOPIC CARD (CLICK TO OPEN FULL TOPIC SECTION) */}
             <div
-              onClick={handleFlipCard}
-              className="w-full h-72 cursor-pointer perspective-1000 select-none"
+              onClick={handleOpenTopic}
+              className="w-full min-h-[260px] p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#1E1F29] border-2 border-[#EBD3A0] dark:border-[#2D2E3D] hover:border-[#D4AF37] dark:hover:border-[#D4AF37] shadow-xl hover:shadow-2xl flex flex-col justify-between cursor-pointer transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] group select-none relative overflow-hidden"
+              title="Click to open full topic section"
             >
-              <div
-                className={`w-full h-full relative transition-transform duration-500 rounded-3xl preserve-3d ${
-                  isFlipped ? '[transform:rotateY(180deg)]' : ''
-                }`}
-              >
-                {/* FRONT FACE (Question / Topic Name) */}
-                <div className="absolute inset-0 w-full h-full p-6 rounded-3xl bg-white dark:bg-[#202020] border-2 border-[#EBD3A0] dark:border-[#272730] hover:border-[#D4AF37] shadow-xl flex flex-col justify-between [backface-visibility:hidden]">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#6B7280]">
-                    <span className="px-2.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37]">
-                      {currentRevision.subjectName}
-                    </span>
-                    <span>Stage {currentRevision.stage}</span>
-                  </div>
+              {/* Top ambient glow accent */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-75 group-hover:opacity-100 transition-opacity" />
 
-                  <div className="text-center space-y-2 py-4">
-                    <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider block">
-                      Topic to Recall:
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5F5F7]">
-                      {currentRevision.topicName}
-                    </h3>
-                    <p className="text-xs text-[#6B7280]">
-                      Chapter: {currentRevision.chapterName}
-                    </p>
-                  </div>
+              {/* Subject Badge & Stage */}
+              <div className="flex items-center justify-between text-xs font-bold">
+                <span className="px-3 py-1 rounded-full bg-[#D4AF37]/15 text-[#8C6D15] dark:text-[#D4AF37] border border-[#D4AF37]/25 font-black uppercase tracking-wider text-[11px]">
+                  {currentRevision.subjectName}
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-[#11120F]/5 dark:bg-white/10 text-[#6B7280] dark:text-[#A1A1AA] text-[11px] font-mono font-bold">
+                  Stage {currentRevision.stage}
+                </span>
+              </div>
 
-                  <div className="text-center text-[11px] font-bold text-[#D4AF37] flex items-center justify-center gap-1.5">
-                    <RefreshCcw className="w-3.5 h-3.5" />
-                    <span>Tap or Click anywhere to Flip & Reveal Formula / Notes</span>
-                  </div>
-                </div>
+              {/* Topic & Chapter Center Content */}
+              <div className="text-center space-y-2.5 py-4">
+                <span className="text-[11px] font-mono font-black text-[#6B7280] dark:text-[#8E90A6] uppercase tracking-widest block">
+                  Topic to Recall
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-[#171717] dark:text-[#F5F5F7] group-hover:text-[#D4AF37] transition-colors leading-tight">
+                  {currentRevision.topicName}
+                </h3>
+                <p className="text-xs font-medium text-[#6B7280] dark:text-[#8E90A6]">
+                  Chapter: <span className="font-semibold text-[#171717] dark:text-[#CBD5E1]">{currentRevision.chapterName}</span>
+                </p>
+              </div>
 
-                {/* BACK FACE (Answer / Formulas & Key Rules) */}
-                <div className="absolute inset-0 w-full h-full p-6 rounded-3xl bg-gradient-to-b from-white to-[#FAF8F5] dark:from-[#222222] dark:to-[#171717] border-2 border-[#D4AF37] shadow-2xl flex flex-col justify-between [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-y-auto">
-                  <div className="flex items-center justify-between text-xs font-bold">
-                    <span className="text-[#D4AF37] font-black">Key Concepts & Notes</span>
-                    <span className="text-[11px] text-[#6B7280]">Tap to Flip Back</span>
-                  </div>
-
-                  <div className="py-2 text-left space-y-2">
-                    {topicMatch?.topic.notes ? (
-                      <p className="text-xs font-medium text-[#171717] dark:text-[#F5F5F7] whitespace-pre-line leading-relaxed">
-                        {topicMatch.topic.notes}
-                      </p>
-                    ) : (
-                      <div className="text-center py-6 text-xs text-[#6B7280]">
-                        <p>No special notes saved yet.</p>
-                        <p className="text-[11px] text-[#D4AF37] mt-1">Review subtopics: {topicMatch?.topic.subtopics?.join(', ') || 'Core concepts'}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-[11px] font-bold text-[#6B7280] text-center border-t border-[#EBD3A0]/60 dark:border-[#2E2E2E] pt-2">
-                    How well did you recall this topic?
-                  </div>
-                </div>
+              {/* Action Prompt Pill (Clear Open Indicator) */}
+              <div className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#14151D] border border-[#EBD3A0]/80 dark:border-[#2D2E3D] group-hover:border-[#D4AF37] text-xs font-bold text-[#8C6D15] dark:text-[#D4AF37] shadow-2xs group-hover:bg-[#D4AF37]/10 transition-all">
+                <BookOpen className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                <span className="font-extrabold text-[12px]">Tap or Click to Open Full Topic Section (Notes & Formulas)</span>
+                <ArrowRight className="w-4 h-4 text-[#D4AF37] transition-transform group-hover:translate-x-1 shrink-0" />
               </div>
             </div>
 
