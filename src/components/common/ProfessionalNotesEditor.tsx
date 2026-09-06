@@ -58,7 +58,9 @@ import {
   Bookmark,
   List,
   XCircle,
-  ExternalLink
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -2297,14 +2299,204 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const wordCount = content.trim().length > 0 ? content.trim().split(/\s+/).length : 0;
   const charCount = content.length;
 
-  // ----------------------------------------------------------------------------------
-  // MULTIPLE NOTES TABS RENDERER (Clean, Modern IDE / Notion Style)
-  // ----------------------------------------------------------------------------------
-  const renderNoteTabs = (inFullscreen: boolean = false) => {
-    return (
-      <div className="flex items-center justify-between gap-3 w-full">
-        {/* Scrollable Tabs Track */}
-        <div className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 min-w-0">
+interface NoteTabsTrackProps {
+  noteItems: TopicNoteItem[];
+  activeNoteId: string;
+  setActiveNoteId: (id: string) => void;
+  editingTitleId: string | null;
+  tempTitle: string;
+  setTempTitle: (title: string) => void;
+  handleSaveRename: (noteId: string) => void;
+  handleStartRename: (note: TopicNoteItem) => void;
+  handleDuplicateNote: (noteId: string) => void;
+  handleDeleteNote: (noteId: string) => void;
+  showAddTemplatesMenu: boolean;
+  setShowAddTemplatesMenu: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowQuizImportModal: (val: boolean) => void;
+  handleAddNewNote: (title?: string, content?: string) => void;
+  inFullscreen?: boolean;
+}
+
+const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
+  noteItems,
+  activeNoteId,
+  setActiveNoteId,
+  editingTitleId,
+  tempTitle,
+  setTempTitle,
+  handleSaveRename,
+  handleStartRename,
+  handleDuplicateNote,
+  handleDeleteNote,
+  showAddTemplatesMenu,
+  setShowAddTemplatesMenu,
+  setShowQuizImportModal,
+  handleAddNewNote,
+  inFullscreen = false,
+}) => {
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const activeTabRef = useRef<HTMLDivElement>(null);
+
+  // Mouse Drag / Swipe state
+  const isMouseDownRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Overflow & Navigation state
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    if (!tabsContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = tabsContainerRef.current;
+    setCanScrollLeft(scrollLeft > 6);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+    setHasOverflow(scrollWidth > clientWidth + 4);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const el = tabsContainerRef.current;
+    if (!el) return;
+
+    el.addEventListener('scroll', checkScroll, { passive: true });
+    const ro = new ResizeObserver(() => checkScroll());
+    ro.observe(el);
+
+    return () => {
+      el.removeEventListener('scroll', checkScroll);
+      ro.disconnect();
+    };
+  }, [checkScroll, noteItems.length]);
+
+  // Global mouseup listener so dragging outside the element resets cleanly
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isMouseDownRef.current) {
+        isMouseDownRef.current = false;
+        if (isDraggingRef.current) {
+          setIsDragging(false);
+          setTimeout(() => {
+            isDraggingRef.current = false;
+          }, 60);
+        }
+      }
+    };
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, []);
+
+  // Smooth scroll active tab into view when activeNoteId changes
+  useEffect(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'nearest',
+        block: 'nearest'
+      });
+      setTimeout(checkScroll, 350);
+    }
+  }, [activeNoteId]);
+
+  // Mouse Drag / Swipe Handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('input') || target.closest('button')) return;
+
+    isMouseDownRef.current = true;
+    isDraggingRef.current = false;
+    startXRef.current = e.pageX;
+    scrollLeftRef.current = tabsContainerRef.current ? tabsContainerRef.current.scrollLeft : 0;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isMouseDownRef.current || !tabsContainerRef.current) return;
+    const deltaX = e.pageX - startXRef.current;
+
+    if (!isDraggingRef.current && Math.abs(deltaX) > 4) {
+      isDraggingRef.current = true;
+      setIsDragging(true);
+    }
+
+    if (isDraggingRef.current) {
+      tabsContainerRef.current.scrollLeft = scrollLeftRef.current - deltaX;
+      checkScroll();
+    }
+  };
+
+  const handleMouseUp = () => {
+    isMouseDownRef.current = false;
+    if (isDraggingRef.current) {
+      setIsDragging(false);
+      setTimeout(() => {
+        isDraggingRef.current = false;
+      }, 60);
+    }
+  };
+
+  // Mouse Wheel translation (vertical wheel to horizontal swipe)
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (!tabsContainerRef.current) return;
+    if (e.deltaY !== 0) {
+      tabsContainerRef.current.scrollLeft += e.deltaY;
+      checkScroll();
+    }
+  };
+
+  const scrollLeftBy = () => {
+    if (tabsContainerRef.current) {
+      tabsContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRightBy = () => {
+    if (tabsContainerRef.current) {
+      tabsContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-2 w-full select-none">
+      {/* Scrollable Tabs Track with Navigation Buttons */}
+      <div className="flex-1 flex items-center gap-1 min-w-0 relative">
+        {/* Left Arrow Button (shown when overflowing) */}
+        {hasOverflow && (
+          <button
+            type="button"
+            onClick={scrollLeftBy}
+            disabled={!canScrollLeft}
+            className={`p-1 rounded-xl border text-xs transition-all shrink-0 z-10 flex items-center justify-center ${
+              canScrollLeft
+                ? 'bg-white dark:bg-[#1E1F2B] border-slate-300/80 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-[#252636] text-slate-700 dark:text-slate-200 cursor-pointer shadow-xs hover:scale-105 active:scale-95'
+                : 'opacity-20 border-transparent text-slate-400 cursor-default pointer-events-none'
+            }`}
+            title="Scroll notes left"
+          >
+            <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+          </button>
+        )}
+
+        {/* Left Fade Gradient Mask when scrolled */}
+        {canScrollLeft && (
+          <div className="absolute left-6 top-0 bottom-0 w-6 bg-gradient-to-r from-white dark:from-[#151620] to-transparent pointer-events-none z-[5]" />
+        )}
+
+        {/* Scrollable & Draggable Tabs Track */}
+        <div
+          ref={tabsContainerRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onWheel={handleWheel}
+          className={`flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 min-w-0 touch-pan-x transition-colors ${
+            isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
+          }`}
+          title="Drag or swipe with mouse to view all notes"
+        >
           {noteItems.map((note) => {
             const isActive = note.id === activeNoteId;
             const isEditing = editingTitleId === note.id;
@@ -2312,19 +2504,25 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             return (
               <div
                 key={note.id}
-                onClick={() => {
+                ref={isActive ? activeTabRef : null}
+                onClick={(e) => {
+                  if (isDraggingRef.current) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
                   if (!isEditing && note.id !== activeNoteId) {
                     soundManager.playClick();
                     setActiveNoteId(note.id);
                   }
                 }}
-                className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer select-none shrink-0 ${
+                className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all select-none shrink-0 ${
                   isActive
                     ? 'bg-white dark:bg-[#1E1F2B] text-slate-900 dark:text-white border-slate-300/80 dark:border-purple-500/40 shadow-sm ring-1 ring-black/5 dark:ring-purple-500/20'
                     : 'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
                 }`}
               >
-                <img src="/notes_icon_3d.png" alt="Note" className="w-4 h-4 object-contain shrink-0 drop-shadow-xs" />
+                <img src="/notes_icon_3d.png" alt="Note" className="w-4 h-4 object-contain shrink-0 drop-shadow-xs pointer-events-none" />
 
                 {isEditing ? (
                   <form
@@ -2369,7 +2567,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                         e.stopPropagation();
                         handleStartRename(note);
                       }}
-                      className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+                      className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
                       title="Rename Note"
                     >
                       <Edit3 className="w-3 h-3" />
@@ -2381,7 +2579,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                         e.stopPropagation();
                         handleDuplicateNote(note.id);
                       }}
-                      className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+                      className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
                       title="Duplicate Note"
                     >
                       <CopyPlus className="w-3 h-3" />
@@ -2394,7 +2592,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                           e.stopPropagation();
                           handleDeleteNote(note.id);
                         }}
-                        className="p-1 rounded-md hover:bg-rose-500/20 text-slate-400 hover:text-rose-500 transition-colors"
+                        className="p-1 rounded-md hover:bg-rose-500/20 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
                         title="Delete Note"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -2407,126 +2605,174 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           })}
         </div>
 
-        {/* Right Pinned Add Note Button with Dropdown Templates */}
-        <div className="relative shrink-0">
+        {/* Right Fade Gradient Mask when scrollable */}
+        {canScrollRight && (
+          <div className="absolute right-6 top-0 bottom-0 w-6 bg-gradient-to-l from-white dark:from-[#151620] to-transparent pointer-events-none z-[5]" />
+        )}
+
+        {/* Right Arrow Button (shown when overflowing) */}
+        {hasOverflow && (
           <button
             type="button"
-            onClick={() => setShowAddTemplatesMenu(prev => !prev)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] hover:bg-[#1D4ED8] dark:hover:bg-[#6090F5] text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-            title="Create a new Note Page for this topic"
+            onClick={scrollRightBy}
+            disabled={!canScrollRight}
+            className={`p-1 rounded-xl border text-xs transition-all shrink-0 z-10 flex items-center justify-center ${
+              canScrollRight
+                ? 'bg-white dark:bg-[#1E1F2B] border-slate-300/80 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-[#252636] text-slate-700 dark:text-slate-200 cursor-pointer shadow-xs hover:scale-105 active:scale-95'
+                : 'opacity-20 border-transparent text-slate-400 cursor-default pointer-events-none'
+            }`}
+            title="Scroll notes right"
           >
-            <Plus className="w-3.5 h-3.5 stroke-[3]" />
-            <span>+ Add Note</span>
+            <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
-
-          {/* Quick Note Templates Dropdown */}
-          {showAddTemplatesMenu && (
-            <div
-              className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white dark:bg-[#181822] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="px-2.5 py-1.5 text-[11px] uppercase font-mono text-slate-400 border-b border-[#E2E8F0] dark:border-[#272730]">
-                Choose Note Template:
-              </div>
-              
-              {/* 🎯 Interactive Quiz / MCQ Practice */}
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddTemplatesMenu(false);
-                  setShowQuizImportModal(true);
-                  soundManager.playClick();
-                }}
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-indigo-100 dark:border-indigo-900/40"
-              >
-                <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-xs">
-                  <Sparkles className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="font-bold text-indigo-600 dark:text-indigo-400">🎯 Interactive Quiz / MCQ</div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Import Gemini link or test</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleAddNewNote()}
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F8FAFC] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-              >
-                <img src="/notes_icon_3d.png" alt="Notes" className="w-5 h-5 object-contain shrink-0 drop-shadow-xs" />
-                <div>
-                  <div className="font-bold">📄 Blank Notes Page</div>
-                  <div className="text-[11px] text-slate-400 font-normal">Start with clean canvas</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddNewNote(
-                    'Formula Sheet',
-                    `# Key Formulas & Speed Shortcuts\n> [!FORMULA]\n> Standard Equation: Speed = Distance / Time\n> Average Speed = 2xy / (x + y)\n\n> [!TIP]\n> Ratio Trick: Speed ratio a:b equals Time ratio b:a.\n\n### Revision Checklist\n- [ ] Memorize 5 key unit conversions\n- [ ] Practice 5 previous year exam questions`
-                  )
-                }
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-              >
-                <Sigma className="w-4 h-4 text-purple-500" />
-                <div>
-                  <div className="font-bold">🧮 Formula & Shortcuts</div>
-                  <div className="text-[11px] text-slate-400 font-normal">Formulas, equations & tricks</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddNewNote(
-                    'Comparison Table',
-                    `# Concept Comparison Table\n| Case / Parameter | Formula | Shortcut Rule |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed | $S_{rel} = s_1 + s_2$ | Opposite directions: add speeds |`
-                  )
-                }
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-              >
-                <TableIcon className="w-4 h-4 text-cyan-500" />
-                <div>
-                  <div className="font-bold">📊 Comparison Table</div>
-                  <div className="text-[11px] text-slate-400 font-normal">Side-by-side concept matrix</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddNewNote(
-                    'Rules & Traps Guide',
-                    `# Golden Rules & Exam Traps\n> [!RULE]\n> Golden Rule: Fundamental concept definition and rules.\n\n> [!WARNING]\n> High-Frequency Trap: Watch out for negative markings in tricky exceptions!\n\n### High-Yield Questions\n- [ ] Check subject-verb agreement\n- [ ] Verify standard conversions`
-                  )
-                }
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-              >
-                <AlertTriangle className="w-4 h-4 text-rose-500" />
-                <div>
-                  <div className="font-bold">⚠️ Rules & Traps Guide</div>
-                  <div className="text-[11px] text-slate-400 font-normal">Mistakes & examiner traps</div>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddNewNote(
-                    'PYQ & Solved Tricks',
-                    `# Solved Previous Year Exam Questions (PYQ)\n> [!EXAMPLE]\n> Question: A train crosses a 300m bridge in 20 seconds. Speed = ?\n> Solution: Total distance = train + bridge.\n\n### Self Practice Checklist\n- [ ] Solve 2023 Tier 1 Questions\n- [ ] Solve 2024 Tier 2 Questions`
-                  )
-                }
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-              >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <div>
-                  <div className="font-bold">🎯 PYQ & Solved Tricks</div>
-                  <div className="text-[11px] text-slate-400 font-normal">Previous year questions</div>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
+        )}
       </div>
+
+      {/* Right Pinned Add Note Button with Dropdown Templates */}
+      <div className="relative shrink-0">
+        <button
+          type="button"
+          onClick={() => setShowAddTemplatesMenu(prev => !prev)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] dark:bg-[#7AA2F7] text-white dark:text-[#0B0B0D] hover:bg-[#1D4ED8] dark:hover:bg-[#6090F5] text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
+          title="Create a new Note Page for this topic"
+        >
+          <Plus className="w-3.5 h-3.5 stroke-[3]" />
+          <span>+ Add Note</span>
+        </button>
+
+        {/* Quick Note Templates Dropdown */}
+        {showAddTemplatesMenu && (
+          <div
+            className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white dark:bg-[#181822] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="px-2.5 py-1.5 text-[11px] uppercase font-mono text-slate-400 border-b border-[#E2E8F0] dark:border-[#272730]">
+              Choose Note Template:
+            </div>
+            
+            {/* 🎯 Interactive Quiz / MCQ Practice */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowAddTemplatesMenu(false);
+                setShowQuizImportModal(true);
+                soundManager.playClick();
+              }}
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-indigo-100 dark:border-indigo-900/40"
+            >
+              <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <div className="font-bold text-indigo-600 dark:text-indigo-400">🎯 Interactive Quiz / MCQ</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Import Gemini link or test</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAddNewNote()}
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F8FAFC] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+            >
+              <img src="/notes_icon_3d.png" alt="Notes" className="w-5 h-5 object-contain shrink-0 drop-shadow-xs pointer-events-none" />
+              <div>
+                <div className="font-bold">📄 Blank Notes Page</div>
+                <div className="text-[11px] text-slate-400 font-normal">Start with clean canvas</div>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                handleAddNewNote(
+                  'Formula Sheet',
+                  `# Key Formulas & Speed Shortcuts\n> [!FORMULA]\n> Standard Equation: Speed = Distance / Time\n> Average Speed = 2xy / (x + y)\n\n> [!TIP]\n> Ratio Trick: Speed ratio a:b equals Time ratio b:a.\n\n### Revision Checklist\n- [ ] Memorize 5 key unit conversions\n- [ ] Practice 5 previous year exam questions`
+                )
+              }
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+            >
+              <Sigma className="w-4 h-4 text-purple-500" />
+              <div>
+                <div className="font-bold">🧮 Formula & Shortcuts</div>
+                <div className="text-[11px] text-slate-400 font-normal">Formulas, equations & tricks</div>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                handleAddNewNote(
+                  'Comparison Table',
+                  `# Concept Comparison Table\n| Case / Parameter | Formula | Shortcut Rule |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed | $S_{rel} = s_1 + s_2$ | Opposite directions: add speeds |`
+                )
+              }
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+            >
+              <TableIcon className="w-4 h-4 text-cyan-500" />
+              <div>
+                <div className="font-bold">📊 Comparison Table</div>
+                <div className="text-[11px] text-slate-400 font-normal">Side-by-side concept matrix</div>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                handleAddNewNote(
+                  'Rules & Traps Guide',
+                  `# Golden Rules & Exam Traps\n> [!RULE]\n> Golden Rule: Fundamental concept definition and rules.\n\n> [!WARNING]\n> High-Frequency Trap: Watch out for negative markings in tricky exceptions!\n\n### High-Yield Questions\n- [ ] Check subject-verb agreement\n- [ ] Verify standard conversions`
+                )
+              }
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+            >
+              <AlertTriangle className="w-4 h-4 text-rose-500" />
+              <div>
+                <div className="font-bold">⚠️ Rules & Traps Guide</div>
+                <div className="text-[11px] text-slate-400 font-normal">Mistakes & examiner traps</div>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                handleAddNewNote(
+                  'PYQ & Solved Tricks',
+                  `# Solved Previous Year Exam Questions (PYQ)\n> [!EXAMPLE]\n> Question: A train crosses a 300m bridge in 20 seconds. Speed = ?\n> Solution: Total distance = train + bridge.\n\n### Self Practice Checklist\n- [ ] Solve 2023 Tier 1 Questions\n- [ ] Solve 2024 Tier 2 Questions`
+                )
+              }
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+            >
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <div>
+                <div className="font-bold">🎯 PYQ & Solved Tricks</div>
+                <div className="text-[11px] text-slate-400 font-normal">Previous year questions</div>
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+  // ----------------------------------------------------------------------------------
+  // MULTIPLE NOTES TABS RENDERER (Mouse Swipe, Drag-to-Scroll & Wheel Navigation)
+  // ----------------------------------------------------------------------------------
+  const renderNoteTabs = (inFullscreen: boolean = false) => {
+    return (
+      <NoteTabsTrack
+        noteItems={noteItems}
+        activeNoteId={activeNoteId}
+        setActiveNoteId={setActiveNoteId}
+        editingTitleId={editingTitleId}
+        tempTitle={tempTitle}
+        setTempTitle={setTempTitle}
+        handleSaveRename={handleSaveRename}
+        handleStartRename={handleStartRename}
+        handleDuplicateNote={handleDuplicateNote}
+        handleDeleteNote={handleDeleteNote}
+        showAddTemplatesMenu={showAddTemplatesMenu}
+        setShowAddTemplatesMenu={setShowAddTemplatesMenu}
+        setShowQuizImportModal={setShowQuizImportModal}
+        handleAddNewNote={handleAddNewNote}
+        inFullscreen={inFullscreen}
+      />
     );
   };
 
