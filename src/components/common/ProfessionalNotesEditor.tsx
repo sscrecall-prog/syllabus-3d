@@ -63,6 +63,14 @@ import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
 import { TopicImageAttachment, TopicLecture, TopicNoteItem } from '../../types/syllabus';
 import { parseTimestampToSeconds } from '../../utils/youtubeUtils';
 import { formatAiNotes, generateAiNotesPrompt } from '../../utils/aiNotesFormatter';
+import { MathBlock, InlineMath } from '../../utils/mathRenderer';
+import {
+  cleanAndRepairMarkdownTable,
+  isTableSeparatorRow,
+  parseTableAlignments,
+  processPastedNotesContent,
+  repairAllTablesInDocument
+} from '../../utils/tableUtils';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -228,31 +236,53 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [zoomImage, setZoomImage] = useState<{ src: string; title: string } | null>(null);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [showImageToast, setShowImageToast] = useState(false);
+  const [pasteNotice, setPasteNotice] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const speechRecognitionRef = useRef<any>(null);
   const fileInputImageRef = useRef<HTMLInputElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync with initialNoteItems / initialContent if topic changed
+  // Guard against re-initializing notes when user adds/edits notes within the same topic
+  const prevTopicRef = useRef<string>(topicName);
+
   useEffect(() => {
-    if (initialNoteItems && initialNoteItems.length > 0) {
+    // Only re-sync from scratch when the topic actually changes
+    if (prevTopicRef.current !== topicName) {
+      prevTopicRef.current = topicName;
+      if (initialNoteItems && initialNoteItems.length > 0) {
+        setNoteItems(initialNoteItems);
+        setActiveNoteId(initialNoteItems[0].id);
+      } else {
+        setNoteItems([
+          {
+            id: 'note_1',
+            title: 'Main Notes',
+            content: initialContent || '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ]);
+        setActiveNoteId('note_1');
+      }
+    }
+  }, [topicName, initialNoteItems, initialContent]);
+
+  // Handle async delivery of noteItems for current topic if initially empty
+  useEffect(() => {
+    if (
+      initialNoteItems &&
+      initialNoteItems.length > 0 &&
+      noteItems.length === 1 &&
+      noteItems[0].id === 'note_1' &&
+      !noteItems[0].content &&
+      prevTopicRef.current === topicName
+    ) {
       setNoteItems(initialNoteItems);
       if (!initialNoteItems.some(n => n.id === activeNoteId)) {
         setActiveNoteId(initialNoteItems[0].id);
       }
-    } else if (initialContent !== undefined) {
-      setNoteItems([
-        {
-          id: 'note_1',
-          title: 'Main Notes',
-          content: initialContent || '',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      ]);
-      setActiveNoteId('note_1');
     }
-  }, [initialNoteItems, initialContent]);
+  }, [initialNoteItems, topicName]);
 
   // Load Saved Freehand Strokes per Topic & Note
   useEffect(() => {
@@ -373,7 +403,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     setActiveNoteId(newId);
     setShowAddTemplatesMenu(false);
     setViewMode('edit');
-    onSave(presetContent || '', updated);
+    const primaryText = noteItems.find(n => n.id === 'note_1')?.content || noteItems[0]?.content || presetContent || '';
+    onSave(primaryText, updated);
   };
 
   const handleDuplicateNote = (noteId: string) => {
@@ -716,37 +747,81 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     });
   };
 
-  // Direct Screenshot / Image Paste Handler (Ctrl + V)
+  // Direct Screenshot / Image & Smart AI Table/Formula Paste Handler (Ctrl + V)
   const handlePaste = async (e: React.ClipboardEvent) => {
+    // 1. Check for image / screenshot paste first
     const items = e.clipboardData?.items;
-    if (!items) return;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile();
+          if (file) {
+            e.preventDefault();
+            soundManager.playClick();
+            setIsProcessingImage(true);
 
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        const file = items[i].getAsFile();
-        if (file) {
-          e.preventDefault();
-          soundManager.playClick();
-          setIsProcessingImage(true);
+            try {
+              const base64Data = await compressAndReadImage(file);
+              const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              const title = file.name && file.name !== 'image.png' ? file.name : `Screenshot ${timeStr}`;
 
-          try {
-            const base64Data = await compressAndReadImage(file);
-            const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-            const title = file.name && file.name !== 'image.png' ? file.name : `Screenshot ${timeStr}`;
-
-            if (onAddImage) {
-              onAddImage({ title, dataUrl: base64Data, fileSize: file.size });
+              if (onAddImage) {
+                onAddImage({ title, dataUrl: base64Data, fileSize: file.size });
+              }
+              soundManager.playCompleteChime();
+              setShowImageToast(true);
+              setTimeout(() => setShowImageToast(false), 2500);
+            } catch (err) {
+              console.error('Failed to paste screenshot:', err);
+            } finally {
+              setIsProcessingImage(false);
             }
-            soundManager.playCompleteChime();
-            setShowImageToast(true);
-            setTimeout(() => setShowImageToast(false), 2500);
-          } catch (err) {
-            console.error('Failed to paste screenshot:', err);
-          } finally {
-            setIsProcessingImage(false);
+            return;
           }
-          return;
         }
+      }
+    }
+
+    // 2. Smart AI Table & Formula Paste Processor
+    const plainText = e.clipboardData?.getData('text/plain');
+    const htmlText = e.clipboardData?.getData('text/html');
+
+    if (plainText) {
+      const isTargetInput = e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement;
+      const processed = processPastedNotesContent(plainText, htmlText);
+
+      if (processed.isTransformed) {
+        e.preventDefault();
+        soundManager.playClick();
+
+        const targetEl = e.target instanceof HTMLTextAreaElement ? e.target : textareaRef.current;
+        if (targetEl) {
+          const start = targetEl.selectionStart ?? content.length;
+          const end = targetEl.selectionEnd ?? content.length;
+          const newContent = content.substring(0, start) + processed.content + content.substring(end);
+          updateContentAndSave(newContent);
+          setTimeout(() => {
+            if (targetEl) {
+              targetEl.selectionStart = start + processed.content.length;
+              targetEl.selectionEnd = start + processed.content.length;
+            }
+          }, 0);
+        } else {
+          const newContent = content.trim() ? `${content}\n\n${processed.content}` : processed.content;
+          updateContentAndSave(newContent);
+        }
+
+        setPasteNotice(`✓ ${processed.transformReason || 'Smart Table & Formula Formatting Applied!'}`);
+        setTimeout(() => setPasteNotice(null), 3500);
+      } else if (!isTargetInput) {
+        // User pasted in study mode or container outside an input/textarea
+        e.preventDefault();
+        soundManager.playClick();
+        const repairedText = repairAllTablesInDocument(plainText);
+        const newContent = content.trim() ? `${content}\n\n${repairedText}` : repairedText;
+        updateContentAndSave(newContent);
+        setPasteNotice('✓ Notes Pasted & Formatted!');
+        setTimeout(() => setPasteNotice(null), 3000);
       }
     }
   };
@@ -911,13 +986,23 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
   // Insert Templates
   const insertFormulaTemplate = () => {
-    const tpl = `\n# Key Formulas & Definitions\n> [!FORMULA]\n> Standard Formula: Speed = Distance / Time\n> Average Speed (Equal Distance) = 2xy / (x + y)\n\n> [!TIP]\n> Shortcut Method: Ratio method converts speed ratio a:b to time ratio b:a.\n\n> [!WARNING]\n> Common Trap: Don't take simple arithmetic average when distances are constant!\n\n### High-Yield Action Checklist\n- [ ] Memorize basic conversion (1 km/h = 5/18 m/s)\n- [ ] Practice 5 previous year exam questions\n`;
+    const tpl = `\n# Key Formulas & Definitions\n> [!FORMULA]\n> Standard Speed Formula: $$\\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}}$$\n> Average Speed (Constant Distance): $$\\text{Average Speed} = \\frac{2xy}{x + y}$$\n\n> [!TIP]\n> Shortcut Method: Ratio method converts speed ratio $a:b$ to time ratio $b:a$.\n\n> [!WARNING]\n> Common Trap: Don't take simple arithmetic average $(x+y)/2$ when distance is constant!\n\n### High-Yield Action Checklist\n- [ ] Memorize basic conversion: $1\\text{ km/h} = \\frac{5}{18}\\text{ m/s}$\n- [ ] Practice 5 previous year exam questions\n`;
     updateContentAndSave(content ? content + '\n' + tpl : tpl);
   };
 
   const insertComparisonTableTemplate = () => {
-    const tpl = `\n### Comparison Table & Key Parameters\n| Concept / Case | Formula / Rule | Shortcut / Key Note |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed (Same Dir) | $S_{rel} = s_1 - s_2$ | Subtract speeds |\n| Case 4: Relative Speed (Opp Dir) | $S_{rel} = s_1 + s_2$ | Add speeds |\n`;
+    const tpl = `\n### Comparison Table & Key Parameters\n| Concept / Case | Formula / Rule | Shortcut / Key Note |\n| :--- | :---: | :--- |\n| Case 1: Constant Distance | $\\frac{t_1}{t_2} = \\frac{s_2}{s_1}$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $\\frac{d_1}{d_2} = \\frac{s_1}{s_2}$ | Distance directly proportional to speed |\n| Case 3: Relative Speed (Same Dir) | $S_{rel} = s_1 - s_2$ | Subtract speeds |\n| Case 4: Relative Speed (Opp Dir) | $S_{rel} = s_1 + s_2$ | Add speeds |\n`;
     updateContentAndSave(content ? content + '\n' + tpl : tpl);
+  };
+
+  // 1-Click Table & Formula Healer
+  const handleRepairTablesAndFormulas = () => {
+    if (!content.trim()) return;
+    soundManager.playCompleteChime();
+    const repaired = repairAllTablesInDocument(content);
+    updateContentAndSave(repaired);
+    setPasteNotice('✓ Tables & Formulas Repaired & Beautified!');
+    setTimeout(() => setPasteNotice(null), 3500);
   };
 
   const insertGrammarRuleTemplate = () => {
@@ -1097,7 +1182,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const parseInlineMarkdown = (text: string, keyPrefix: string = 'inline'): React.ReactNode[] => {
     if (!text) return [];
 
-    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|⏱️\s*(?:\[\d{1,2}:\d{2}(?::\d{2})?\]|\d{1,2}:\d{2}(?::\d{2})?))/g;
+    const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|==[^=]+==|~~[^~]+~~|\$\$[^\$]+\$\$|\$[^\$]+\$|\\\([^\\]+\\\)|⏱️\s*(?:\[\d{1,2}:\d{2}(?::\d{2})?\]|\d{1,2}:\d{2}(?::\d{2})?))/g;
     const parts = text.split(tokenRegex);
 
     return parts.map((part, index) => {
@@ -1180,21 +1265,21 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           </del>
         );
       }
-      // Math / Formula badge
+      // Math / Formula (KaTeX rendered)
       if (
         (part.startsWith('$$') && part.endsWith('$$') && part.length >= 4) ||
-        (part.startsWith('$') && part.endsWith('$') && part.length >= 2)
+        (part.startsWith('$') && part.endsWith('$') && part.length >= 2) ||
+        (part.startsWith('\\(') && part.endsWith('\\)') && part.length >= 4)
       ) {
-        const mathContent = part.startsWith('$$') ? part.slice(2, -2) : part.slice(1, -1);
-        return (
-          <span
-            key={k}
-            className="inline-flex items-center gap-1 px-2 py-0.5 mx-0.5 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-700 dark:text-purple-300 font-mono font-bold text-[11px] sm:text-xs"
-          >
-            <span className="text-purple-500 text-[11px]">∑</span>
-            <span>{mathContent}</span>
-          </span>
-        );
+        let mathContent = '';
+        if (part.startsWith('$$')) {
+          mathContent = part.slice(2, -2);
+        } else if (part.startsWith('\\(')) {
+          mathContent = part.slice(2, -2);
+        } else {
+          mathContent = part.slice(1, -1);
+        }
+        return <InlineMath key={k} latex={mathContent} />;
       }
       // Video Timestamp jump (Requires explicit ⏱️ prefix so normal clock times like "3:15 PM" or "9:30 AM" are not affected)
       if (part.startsWith('⏱️')) {
@@ -1344,67 +1429,158 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         continue;
       }
 
-      // 2. Markdown Tables (| col1 | col2 |)
-      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
-        const tableLines: string[] = [];
+      // 1.5. Display / Block Math Formulas ($$ ... $$ or \[ ... \])
+      const trimmedLine = line.trim();
+      const isBlockMathStart = trimmedLine.startsWith('$$') || trimmedLine.startsWith('\\[');
+      if (isBlockMathStart) {
+        const isSingleLine =
+          (trimmedLine.startsWith('$$') && trimmedLine.endsWith('$$') && trimmedLine.length > 2 && trimmedLine !== '$$') ||
+          (trimmedLine.startsWith('\\[') && trimmedLine.endsWith('\\]') && trimmedLine.length > 2);
 
-        while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
-          tableLines.push(lines[i].trim());
+        if (isSingleLine) {
+          const formulaContent = trimmedLine.startsWith('$$')
+            ? trimmedLine.slice(2, -2)
+            : trimmedLine.slice(2, -2);
+          elements.push(
+            <MathBlock key={'mathblock-' + i} latex={formulaContent} />
+          );
+          i++;
+          continue;
+        }
+
+        const mathLines: string[] = [];
+        const firstLine = trimmedLine.replace(/^(\$\$|\\\[)/, '').trim();
+        if (firstLine) mathLines.push(firstLine);
+        i++;
+
+        while (i < lines.length) {
+          const mTrim = lines[i].trim();
+          if (mTrim.endsWith('$$') || mTrim.endsWith('\\]')) {
+            const lastLine = mTrim.replace(/(\$\$|\\\])$/, '').trim();
+            if (lastLine) mathLines.push(lastLine);
+            i++;
+            break;
+          }
+          mathLines.push(lines[i]);
           i++;
         }
 
-        if (tableLines.length >= 2) {
+        const fullLatex = mathLines.join('\n');
+        elements.push(
+          <MathBlock key={'mathblock-' + i} latex={fullLatex} />
+        );
+        continue;
+      }
+
+      // 2. Markdown Tables (| col1 | col2 |)
+      const isTableStart = (trimmedLine.startsWith('|') || (trimmedLine.includes('|') && i + 1 < lines.length && lines[i + 1].includes('|'))) && !trimmedLine.startsWith('>');
+      if (isTableStart) {
+        const rawTableLines: string[] = [line];
+        let j = i + 1;
+
+        while (j < lines.length) {
+          const nextTrim = lines[j].trim();
+          if (nextTrim.includes('|') || nextTrim === '') {
+            if (nextTrim === '') {
+              if (j + 1 < lines.length && lines[j + 1].includes('|')) {
+                j++;
+                continue;
+              } else {
+                break;
+              }
+            }
+            rawTableLines.push(lines[j]);
+            j++;
+          } else {
+            break;
+          }
+        }
+
+        if (rawTableLines.length >= 2) {
+          const repaired = cleanAndRepairMarkdownTable(rawTableLines.join('\n'));
+          const tableLines = repaired.split('\n');
+
           const parseRow = (rowStr: string) => {
-            return rowStr
-              .slice(1, -1)
-              .split('|')
-              .map(c => c.trim());
+            const inner = rowStr.trim().replace(/^\|/, '').replace(/\|$/, '');
+            return inner.split('|').map(c => c.trim());
           };
 
           const rawHeaders = parseRow(tableLines[0]);
-          const isSeparator = /^\|(?:\s*:?-+:?\s*\|)+$/.test(tableLines[1]);
-          const dataRows = (isSeparator ? tableLines.slice(2) : tableLines.slice(1)).map(parseRow);
+          const hasSeparator = tableLines.length > 1 && isTableSeparatorRow(tableLines[1]);
+          const alignments = hasSeparator ? parseTableAlignments(tableLines[1]) : rawHeaders.map(() => 'left' as const);
+          const dataRows = (hasSeparator ? tableLines.slice(2) : tableLines.slice(1)).map(parseRow);
+
+          const getAlignClass = (align?: 'left' | 'center' | 'right') => {
+            if (align === 'center') return 'text-center';
+            if (align === 'right') return 'text-right';
+            return 'text-left';
+          };
 
           elements.push(
             <div
               key={'table-' + i}
-              className="my-5 overflow-x-auto rounded-2xl border border-[#E2E8F0] dark:border-[#272730] shadow-sm bg-white/80 dark:bg-[#12131A]/90 backdrop-blur-sm [break-inside:avoid]"
+              className="my-5 rounded-2xl border border-[#E2E8F0] dark:border-[#272730] shadow-sm bg-white/90 dark:bg-[#12131A]/95 backdrop-blur-sm overflow-hidden [break-inside:avoid]"
             >
-              <table className="w-full text-left border-collapse min-w-[340px] font-sans">
-                <thead>
-                  <tr className="bg-gradient-to-r from-[#F8FAFC] to-[#F1F5F9] dark:from-[#181926] dark:to-[#1E2030] border-b border-[#E2E8F0] dark:border-[#272730] text-[11px] font-black uppercase tracking-wider text-[#11120F] dark:text-[#C0CAF5] font-mono">
-                    {rawHeaders.map((h, hIdx) => (
-                      <th
-                        key={hIdx}
-                        className="py-3 px-4 font-black border-r border-[#E2E8F0]/50 dark:border-[#272730]/50 last:border-r-0"
-                      >
-                        {parseInlineMarkdown(h, `th-${i}-${hIdx}`)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E2E8F0]/40 dark:divide-[#272730]/60">
-                  {dataRows.map((row, rIdx) => (
-                    <tr
-                      key={rIdx}
-                      className={`transition-colors hover:bg-[#2563EB]/5 dark:hover:bg-[#7AA2F7]/5 ${
-                        rIdx % 2 === 0 ? 'bg-transparent' : 'bg-slate-50/60 dark:bg-[#161722]/50'
-                      }`}
-                    >
-                      {row.map((cell, cIdx) => (
-                        <td
-                          key={cIdx}
-                          className={`py-3 px-4 ${fontSize} font-medium border-r border-[#E2E8F0]/30 dark:border-[#272730]/30 last:border-r-0 leading-relaxed`}
+              {/* Table Top Action Bar */}
+              <div className="flex items-center justify-between px-3.5 py-1.5 bg-slate-100/70 dark:bg-[#181926]/90 border-b border-[#E2E8F0] dark:border-[#272730] text-[11px] font-mono">
+                <span className="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 uppercase tracking-wider">
+                  <TableIcon className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
+                  Comparison Table ({dataRows.length} Rows)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(repaired);
+                    soundManager.playClick();
+                  }}
+                  className="inline-flex items-center gap-1 text-[10.5px] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-2 py-0.5 rounded bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-slate-700/60 cursor-pointer transition-all active:scale-95"
+                  title="Copy Markdown Table"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy Table</span>
+                </button>
+              </div>
+
+              {/* Responsive Scrollable Table */}
+              <div className="overflow-x-auto scrollbar-thin">
+                <table className="w-full border-collapse min-w-[380px] font-sans">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-[#F8FAFC] via-[#F1F5F9] to-[#F8FAFC] dark:from-[#181926] dark:via-[#1E2030] dark:to-[#181926] border-b border-[#E2E8F0] dark:border-[#272730] text-[11px] font-black uppercase tracking-wider text-[#11120F] dark:text-[#C0CAF5] font-mono">
+                      {rawHeaders.map((h, hIdx) => (
+                        <th
+                          key={hIdx}
+                          className={`py-3 px-4 font-black border-r border-[#E2E8F0]/50 dark:border-[#272730]/50 last:border-r-0 ${getAlignClass(alignments[hIdx])}`}
                         >
-                          {parseInlineMarkdown(cell, `td-${i}-${rIdx}-${cIdx}`)}
-                        </td>
+                          {parseInlineMarkdown(h, `th-${i}-${hIdx}`)}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-[#E2E8F0]/40 dark:divide-[#272730]/60">
+                    {dataRows.map((row, rIdx) => (
+                      <tr
+                        key={rIdx}
+                        className={`transition-colors hover:bg-[#2563EB]/5 dark:hover:bg-[#7AA2F7]/5 ${
+                          rIdx % 2 === 0 ? 'bg-transparent' : 'bg-slate-50/50 dark:bg-[#161722]/40'
+                        }`}
+                      >
+                        {row.map((cell, cIdx) => (
+                          <td
+                            key={cIdx}
+                            className={`py-3 px-4 ${fontSize} font-medium border-r border-[#E2E8F0]/30 dark:border-[#272730]/30 last:border-r-0 leading-relaxed ${getAlignClass(alignments[cIdx])}`}
+                          >
+                            {parseInlineMarkdown(cell, `td-${i}-${rIdx}-${cIdx}`)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           );
+
+          i = j;
           continue;
         }
       }
@@ -2876,6 +3052,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <span>Format AI</span>
             </button>
 
+            {/* Fix Tables & Formulas */}
+            <button
+              type="button"
+              onClick={handleRepairTablesAndFormulas}
+              disabled={!content.trim()}
+              title="Auto-repair broken tables, missing pipes, and format formulas"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+            >
+              <TableIcon className="w-3.5 h-3.5 text-blue-500" />
+              <span>Fix Tables</span>
+            </button>
+
             {/* Copy AI Prompt */}
             <button
               type="button"
@@ -3297,6 +3485,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold animate-fade-in">
           <Check className="w-4 h-4 stroke-[3]" />
           <span>Screenshot attached successfully to this topic!</span>
+        </div>
+      )}
+
+      {/* Smart Paste / Table & Formula Success Toast */}
+      {pasteNotice && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold animate-fade-in shadow-xs">
+          <Sparkles className="w-4 h-4 text-purple-500 stroke-[2.5]" />
+          <span>{pasteNotice}</span>
         </div>
       )}
 

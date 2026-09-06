@@ -1,9 +1,16 @@
-/**
+﻿/**
  * AI Notes Formatter & Beautifier
  * Transforms raw text copied from Google Gemini, ChatGPT, Claude, or Web portals
  * into structured, high-yield professional academic notes with Notion/GitHub style callouts,
- * formulas, exam traps, and comparison tables.
+ * KaTeX formulas, exam traps, and clean comparison tables.
  */
+
+import {
+  cleanAndRepairMarkdownTable,
+  isTsvTable,
+  tsvToMarkdownTable,
+  sanitizeAiCitations
+} from './tableUtils';
 
 export interface FormatAiNotesOptions {
   topicName?: string;
@@ -30,7 +37,16 @@ const AI_CONVERSATIONAL_PREFIXES = [
 export function formatAiNotes(rawText: string, options?: FormatAiNotesOptions): string {
   if (!rawText || !rawText.trim()) return '';
 
-  let lines = rawText.replace(/\r\n/g, '\n').split('\n');
+  // 0. If entire text or large part is TSV, convert tables first
+  let preparedText = rawText;
+  if (isTsvTable(preparedText)) {
+    preparedText = tsvToMarkdownTable(preparedText);
+  }
+
+  // Sanitize any citation clutter (like PDF badges from Gemini/NotebookLM)
+  preparedText = sanitizeAiCitations(preparedText);
+
+  let lines = preparedText.replace(/\r\n/g, '\n').split('\n');
 
   // 1. Filter out AI introductory & outro pleasantries
   const filteredLines: string[] = [];
@@ -55,23 +71,19 @@ export function formatAiNotes(rawText: string, options?: FormatAiNotesOptions): 
     const lastLine = filteredLines[filteredLines.length - 1].trim();
     if (!lastLine) {
       filteredLines.pop();
-      continue;
-    }
-    const isOutro = AI_CONVERSATIONAL_PREFIXES.some(pattern => pattern.test(lastLine));
-    if (isOutro) {
+    } else if (AI_CONVERSATIONAL_PREFIXES.some(pattern => pattern.test(lastLine))) {
       filteredLines.pop();
     } else {
       break;
     }
   }
 
-  // 2. Process and convert lines into structured Markdown & Callout blocks
+  // 2. Process and convert lines into structured Markdown, Formulas & Callout blocks
   const outputLines: string[] = [];
   let inCodeBlock = false;
-  let inTable = false;
 
   for (let i = 0; i < filteredLines.length; i++) {
-    let line = filteredLines[i];
+    const line = filteredLines[i];
     const trimmed = line.trim();
 
     // Check code blocks
@@ -86,13 +98,54 @@ export function formatAiNotes(rawText: string, options?: FormatAiNotesOptions): 
       continue;
     }
 
-    // Markdown Table lines (preserve and format)
-    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-      inTable = true;
-      outputLines.push(line);
+    // Check Multi-line Block Math ($$ or \[)
+    if (trimmed === '$$' || trimmed === '\\[') {
+      const mathLines: string[] = [line];
+      i++;
+      while (i < filteredLines.length) {
+        const mLine = filteredLines[i];
+        const mTrimmed = mLine.trim();
+        mathLines.push(mLine);
+        if (mTrimmed === '$$' || mTrimmed === '\\]') {
+          break;
+        }
+        i++;
+      }
+      outputLines.push(mathLines.join('\n'));
       continue;
-    } else if (inTable && !trimmed.startsWith('|')) {
-      inTable = false;
+    }
+
+    // Markdown Table blocks: detect and auto-repair
+    if (trimmed.startsWith('|') || (trimmed.includes('|') && (i + 1 < filteredLines.length && filteredLines[i + 1].includes('|')))) {
+      const tableLines: string[] = [line];
+      let j = i + 1;
+
+      while (j < filteredLines.length) {
+        const nextTrimmed = filteredLines[j].trim();
+        if (nextTrimmed.includes('|') || nextTrimmed === '') {
+          // Check if an empty line really ends the table or if next line still has pipes
+          if (nextTrimmed === '') {
+            if (j + 1 < filteredLines.length && filteredLines[j + 1].trim().includes('|')) {
+              // Soft gap inside table, continue
+              j++;
+              continue;
+            } else {
+              break;
+            }
+          }
+          tableLines.push(filteredLines[j]);
+          j++;
+        } else {
+          break;
+        }
+      }
+
+      if (tableLines.length >= 2) {
+        const repaired = cleanAndRepairMarkdownTable(tableLines.join('\n'));
+        outputLines.push(repaired);
+        i = j - 1;
+        continue;
+      }
     }
 
     // 3. Auto-convert AI callout headers (e.g. **Formula:** or **Important:** or **Tip:**)
@@ -200,12 +253,15 @@ Please provide comprehensive, high-yield, structured study notes for the topic: 
 Format your response strictly using clean Markdown with the following elements:
 1. # ${topicName} (Concise 2-sentence core summary)
 2. > [!RULE] (Core Definition & Golden Rules)
-3. > [!FORMULA] (All critical formulas, conversions, and equations with clear variable definitions)
+3. > [!FORMULA] (All critical formulas and equations in LaTeX: use $$ ... $$ for display equations and $ ... $ for inline variables)
 4. > [!TIP] (High-speed Shortcuts, Elimination Tricks, Ratio/Venn Shortcuts)
 5. > [!WARNING] (Common Exam Traps, Tricky Exceptions & Pitfalls where students lose marks)
-6. Markdown Comparison Table (comparing key cases, formulas, or rules side-by-side)
+6. Markdown Comparison Table (Clean markdown table with column headers, proper |:---| separators, and every row enclosed with | ... | with NO newlines inside table cells)
 7. > [!EXAMPLE] (2 Solved Standard Exam Questions with Step-by-Step Short Solution)
 8. - [ ] (5 High-Probability Practice & Revision Checklist items)
 
-Keep it dense, concise, zero-fluff, and 100% exam-oriented.`;
+Important formatting rules for AI:
+- Tables: Always use complete markdown tables with pipes on both sides (| col 1 | col 2 |). Never insert line breaks or citations inside a table cell.
+- Formulas: Format mathematical formulas using standard LaTeX. Use $$ ... $$ for equations on separate lines and $ ... $ inline.
+- Dense, concise, zero pleasantries or intro chatter, 100% exam-oriented.`;
 }

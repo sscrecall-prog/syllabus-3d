@@ -4,6 +4,13 @@
  * and opens it in a new Chrome tab with instant print/save PDF capability.
  */
 
+import { renderMathToHtml } from './mathRenderer';
+import {
+  cleanAndRepairMarkdownTable,
+  parseTableAlignments,
+  isTableSeparatorRow
+} from './tableUtils';
+
 interface GeneratePdfOptions {
   topicName: string;
   subjectName?: string;
@@ -22,6 +29,27 @@ function escapeHtml(text: string): string {
     .replace(/'/g, '&#039;');
 }
 
+function formatInlinePrintableMarkdown(text: string): string {
+  if (!text) return '';
+  // Render Math with KaTeX
+  let out = text.replace(/(\$\$[^\$]+\$\$|\$[^\$]+\$|\\\([^\\]+\\\))/g, (match) => {
+    let math = '';
+    if (match.startsWith('$$')) math = match.slice(2, -2);
+    else if (match.startsWith('\\(')) math = match.slice(2, -2);
+    else math = match.slice(1, -1);
+    return renderMathToHtml(math, false);
+  });
+  // Bold
+  out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  out = out.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Code
+  out = out.replace(/`([^`]+)`/g, '<code class="printable-code">$1</code>');
+  // Highlights
+  out = out.replace(/==([^=]+)==/g, '<mark class="printable-mark">$1</mark>');
+  return out;
+}
+
 function parseMarkdownToPrintableHtml(markdown: string): string {
   if (!markdown || !markdown.trim()) {
     return '<p class="empty-notice">No notes written for this topic yet.</p>';
@@ -33,6 +61,91 @@ function parseMarkdownToPrintableHtml(markdown: string): string {
 
   while (i < lines.length) {
     const line = lines[i];
+    const trimmedLine = line.trim();
+
+    // Block Math ($$ ... $$ or \[ ... \])
+    if (trimmedLine.startsWith('$$') || trimmedLine.startsWith('\\[')) {
+      if ((trimmedLine.startsWith('$$') && trimmedLine.endsWith('$$') && trimmedLine.length > 2 && trimmedLine !== '$$') ||
+          (trimmedLine.startsWith('\\[') && trimmedLine.endsWith('\\]') && trimmedLine.length > 2)) {
+        const formula = trimmedLine.startsWith('$$') ? trimmedLine.slice(2, -2) : trimmedLine.slice(2, -2);
+        htmlParts.push(`<div class="printable-mathblock">${renderMathToHtml(formula, true)}</div>`);
+        i++;
+        continue;
+      }
+      const mathLines: string[] = [];
+      const firstLine = trimmedLine.replace(/^(\$\$|\\\[)/, '').trim();
+      if (firstLine) mathLines.push(firstLine);
+      i++;
+      while (i < lines.length) {
+        const mTrim = lines[i].trim();
+        if (mTrim.endsWith('$$') || mTrim.endsWith('\\]')) {
+          const lastLine = mTrim.replace(/(\$\$|\\\])$/, '').trim();
+          if (lastLine) mathLines.push(lastLine);
+          i++;
+          break;
+        }
+        mathLines.push(lines[i]);
+        i++;
+      }
+      htmlParts.push(`<div class="printable-mathblock">${renderMathToHtml(mathLines.join('\n'), true)}</div>`);
+      continue;
+    }
+
+    // Markdown Table blocks
+    if ((trimmedLine.startsWith('|') || (trimmedLine.includes('|') && i + 1 < lines.length && lines[i + 1].includes('|'))) && !trimmedLine.startsWith('>')) {
+      const rawTableLines: string[] = [line];
+      let j = i + 1;
+      while (j < lines.length) {
+        const nextTrim = lines[j].trim();
+        if (nextTrim.includes('|') || nextTrim === '') {
+          if (nextTrim === '') {
+            if (j + 1 < lines.length && lines[j + 1].includes('|')) {
+              j++;
+              continue;
+            } else {
+              break;
+            }
+          }
+          rawTableLines.push(lines[j]);
+          j++;
+        } else {
+          break;
+        }
+      }
+
+      if (rawTableLines.length >= 2) {
+        const repaired = cleanAndRepairMarkdownTable(rawTableLines.join('\n'));
+        const tableLines = repaired.split('\n');
+        const parseRow = (rowStr: string) => {
+          const inner = rowStr.trim().replace(/^\|/, '').replace(/\|$/, '');
+          return inner.split('|').map(c => c.trim());
+        };
+
+        const rawHeaders = parseRow(tableLines[0]);
+        const hasSeparator = tableLines.length > 1 && isTableSeparatorRow(tableLines[1]);
+        const alignments = hasSeparator ? parseTableAlignments(tableLines[1]) : rawHeaders.map(() => 'left' as const);
+        const dataRows = (hasSeparator ? tableLines.slice(2) : tableLines.slice(1)).map(parseRow);
+
+        let tableHtml = '<div class="printable-table-wrapper"><table class="printable-table"><thead><tr>';
+        rawHeaders.forEach((h, hIdx) => {
+          const align = alignments[hIdx] || 'left';
+          tableHtml += `<th style="text-align: ${align};">${formatInlinePrintableMarkdown(h)}</th>`;
+        });
+        tableHtml += '</tr></thead><tbody>';
+        dataRows.forEach(row => {
+          tableHtml += '<tr>';
+          row.forEach((cell, cIdx) => {
+            const align = alignments[cIdx] || 'left';
+            tableHtml += `<td style="text-align: ${align};">${formatInlinePrintableMarkdown(cell)}</td>`;
+          });
+          tableHtml += '</tr>';
+        });
+        tableHtml += '</tbody></table></div>';
+        htmlParts.push(tableHtml);
+        i = j;
+        continue;
+      }
+    }
 
     // Callout block (> [!TYPE] ...)
     if (line.trim().startsWith('> [!')) {
@@ -77,7 +190,7 @@ function parseMarkdownToPrintableHtml(markdown: string): string {
             <span class="callout-title">${escapeHtml(title)}</span>
           </div>
           <div class="callout-body">
-            ${calloutLines.map(cl => `<p>${escapeHtml(cl)}</p>`).join('')}
+            ${calloutLines.map(cl => `<p>${formatInlinePrintableMarkdown(cl)}</p>`).join('')}
           </div>
         </div>
       `);
@@ -86,11 +199,11 @@ function parseMarkdownToPrintableHtml(markdown: string): string {
 
     // Headings
     if (line.startsWith('# ')) {
-      htmlParts.push(`<h1 class="note-h1">${escapeHtml(line.replace('# ', ''))}</h1>`);
+      htmlParts.push(`<h1 class="note-h1">${formatInlinePrintableMarkdown(line.replace('# ', ''))}</h1>`);
     } else if (line.startsWith('## ')) {
-      htmlParts.push(`<h2 class="note-h2">${escapeHtml(line.replace('## ', ''))}</h2>`);
+      htmlParts.push(`<h2 class="note-h2">${formatInlinePrintableMarkdown(line.replace('## ', ''))}</h2>`);
     } else if (line.startsWith('### ')) {
-      htmlParts.push(`<h3 class="note-h3">${escapeHtml(line.replace('### ', ''))}</h3>`);
+      htmlParts.push(`<h3 class="note-h3">${formatInlinePrintableMarkdown(line.replace('### ', ''))}</h3>`);
     }
     // Checklists
     else if (line.trim().startsWith('- [ ] ') || line.trim().startsWith('- [x] ')) {
@@ -99,7 +212,7 @@ function parseMarkdownToPrintableHtml(markdown: string): string {
       htmlParts.push(`
         <div class="checklist-item ${isDone ? 'checked' : ''}">
           <span class="checkbox">${isDone ? '☑' : '☐'}</span>
-          <span class="task-text">${escapeHtml(text)}</span>
+          <span class="task-text">${formatInlinePrintableMarkdown(text)}</span>
         </div>
       `);
     }
@@ -108,7 +221,7 @@ function parseMarkdownToPrintableHtml(markdown: string): string {
       htmlParts.push(`
         <div class="bullet-item">
           <span class="bullet">•</span>
-          <span class="bullet-text">${escapeHtml(line.trim().substring(2))}</span>
+          <span class="bullet-text">${formatInlinePrintableMarkdown(line.trim().substring(2))}</span>
         </div>
       `);
     }
@@ -122,11 +235,7 @@ function parseMarkdownToPrintableHtml(markdown: string): string {
     }
     // Regular paragraph
     else {
-      // Parse inline bold/italic
-      let formatted = escapeHtml(line);
-      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      htmlParts.push(`<p class="note-p">${formatted}</p>`);
+      htmlParts.push(`<p class="note-p">${formatInlinePrintableMarkdown(line)}</p>`);
     }
 
     i++;
@@ -166,6 +275,7 @@ export function generateAndOpenNotesPdf(options: GeneratePdfOptions): void {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(topicName)} - Academic Notes PDF</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
@@ -468,6 +578,72 @@ export function generateAndOpenNotesPdf(options: GeneratePdfOptions): void {
 
     .spacer {
       height: 12px;
+    }
+
+    /* Printable Tables */
+    .printable-table-wrapper {
+      margin: 16px 0;
+      overflow-x: auto;
+      page-break-inside: avoid;
+    }
+
+    .printable-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      line-height: 1.5;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .printable-table th {
+      background: #F1F5F9;
+      color: #0F172A;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+    }
+
+    .printable-table td {
+      padding: 8px 12px;
+      border: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    .printable-table tr:nth-child(even) td {
+      background: #F8FAFC;
+    }
+
+    /* Printable Math Block */
+    .printable-mathblock {
+      margin: 16px 0;
+      padding: 14px 20px;
+      background: #FAF5FF;
+      border: 1px solid #E9D5FF;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 15px;
+      page-break-inside: avoid;
+    }
+
+    .printable-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      color: #0F172A;
+    }
+
+    .printable-mark {
+      background: #FEF08A;
+      padding: 1px 4px;
+      border-radius: 3px;
     }
 
     /* Document Footer */

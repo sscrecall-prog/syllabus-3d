@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SyllabusProvider } from './context/SyllabusContext';
 import { TimerProvider } from './context/TimerContext';
 import './index.css';
+import 'katex/dist/katex.min.css';
 
 // Request Persistent Storage & Background Keep-Alive for Android / PWA
 if (typeof window !== 'undefined') {
