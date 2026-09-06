@@ -279,32 +279,32 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none animate-fade-in"
+      className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 select-none animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl bg-white dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#272730] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+        className="relative w-full max-w-2xl bg-white dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#272730] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] my-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 sm:p-6 border-b border-[#E2E8F0] dark:border-[#242533] flex items-center justify-between bg-[#F8FAFC]/80 dark:bg-[#161722]/80 backdrop-blur-md">
-          <div className="flex items-center gap-3">
+        <div className="p-4 sm:p-6 border-b border-[#E2E8F0] dark:border-[#242533] flex items-center justify-between bg-[#F8FAFC]/80 dark:bg-[#161722]/80 backdrop-blur-md">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <div
-              className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md border border-white/20 transition-all duration-300 shrink-0"
+              className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shadow-md border border-white/20 transition-all duration-300 shrink-0"
               style={{ backgroundColor: color }}
             >
               {icon}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h2 className="text-sm sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight truncate">
                   {editPlatformData ? 'Edit Study Platform' : 'Add Course / Test Platform'}
                 </h2>
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/20 dark:border-[#7AA2F7]/25">
+                <span className="px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-mono font-bold bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#2563EB]/20 dark:border-[#7AA2F7]/25 shrink-0">
                   PRO
                 </span>
               </div>
-              <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#94A3B8] font-medium mt-0.5 line-clamp-1 sm:line-clamp-none">
                 Configure your coaching batches, mock test engines, and digital resources
               </p>
             </div>
@@ -314,7 +314,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
               soundManager.playClick();
               onClose();
             }}
-            className="p-2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white rounded-lg sm:rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0 ml-2"
             title="Close modal"
           >
             <X className="w-5 h-5" />
@@ -322,7 +322,7 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1 custom-scrollbar">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1 custom-scrollbar">
 
           {error && (
             <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-bold text-rose-600 dark:text-rose-400 animate-shake flex items-center gap-2">
@@ -621,18 +621,18 @@ export const AddPlatformModal: React.FC<AddPlatformModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 sm:p-5 border-t border-[#EEEEE8] dark:border-[#242533] bg-[#F8FAFC]/80 dark:bg-[#161722]/80 flex items-center justify-end gap-3">
+        <div className="p-3.5 sm:p-5 border-t border-[#EEEEE8] dark:border-[#242533] bg-[#F8FAFC]/80 dark:bg-[#161722]/80 flex items-center justify-end gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
+            className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold text-[#65675F] dark:text-[#CBD5E1] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors active:scale-95 tap-bounce"
           >
             Cancel
           </button>
           <button
             form="add-platform-form"
             type="submit"
-            className="px-6 py-2.5 rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#CBD5E1] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+            className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#11120F] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#CBD5E1] text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2 tap-bounce"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>{editPlatformData ? 'Save Changes' : 'Add Platform'}</span>
