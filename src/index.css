@@ -407,12 +407,44 @@ html:not(.dark):not(.sepia) .hover\:bg-\[\#596B35\]:hover {
 .dark .dark\:text-\[\#A7AA9C\],
 .dark .dark\:text-\[\#85877E\],
 .dark .dark\:text-\[\#65675F\],
-.dark .dark\:text-\[\#A9B1D6\] {
+.dark .dark\:text-\[\#A9B1D6\],
+.dark .text-\[\#85877E\],
+.dark .text-\[\#65675F\],
+.dark .text-\[\#64748B\],
+.dark .text-\[\#6B7280\],
+.dark .text-\[\#787C99\] {
   color: #CBD5E1 !important;
 }
 
 .dark .dark\:text-\[\#787C99\] {
   color: #94A3B8 !important;
+}
+
+/* Pure OLED Pitch Black Contrast Tuning (High-Contrast Eye Comfort) */
+.dark.oled .dark\:text-\[\#A1A1AA\],
+.dark.oled .dark\:text-\[\#A7AA9C\],
+.dark.oled .dark\:text-\[\#85877E\],
+.dark.oled .dark\:text-\[\#65675F\],
+.dark.oled .dark\:text-\[\#A9B1D6\],
+.dark.oled .text-\[\#85877E\],
+.dark.oled .text-\[\#65675F\],
+.dark.oled .text-\[\#64748B\],
+.dark.oled .text-\[\#6B7280\],
+.dark.oled .text-\[\#787C99\] {
+  color: #E2E8F0 !important;
+}
+
+/* Crisp Input/Textarea Placeholders in Dark & OLED Modes */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94A3B8 !important;
+  opacity: 0.9 !important;
+}
+
+.dark.oled input::placeholder,
+.dark.oled textarea::placeholder {
+  color: #A1A1B2 !important;
+  opacity: 0.95 !important;
 }
 
 /* Accent #7AA2F7 Colors */

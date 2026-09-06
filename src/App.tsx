@@ -693,6 +693,7 @@ export const App: React.FC = () => {
                     }}
                     onOpenTopicDrawer={handleOpenTopicDrawer}
                     onOpenFocus={handleLaunchFocus}
+                    onNavigate={handleNavigate}
                   />
                 </ViewErrorBoundary>
               )}
@@ -702,6 +703,7 @@ export const App: React.FC = () => {
                   <WeakTopicsView
                     onOpenTopicDrawer={handleOpenTopicDrawer}
                     onOpenFocus={handleLaunchFocus}
+                    onNavigate={handleNavigate}
                   />
                 </ViewErrorBoundary>
               )}

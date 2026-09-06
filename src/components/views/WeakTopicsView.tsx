@@ -16,7 +16,8 @@ import {
   Check,
   Zap,
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  BookOpen
 } from 'lucide-react';
 import { Topic, MistakeType } from '../../types/syllabus';
 import { soundManager } from '../../utils/soundEffects';
@@ -24,13 +25,15 @@ import { soundManager } from '../../utils/soundEffects';
 interface WeakTopicsViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
   onOpenFocus?: (topicId?: string) => void;
+  onNavigate?: (view: any) => void;
 }
 
 type SeverityFilter = 'all' | 'critical' | 'moderate' | 'traps_only';
 
 export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
   onOpenTopicDrawer,
-  onOpenFocus
+  onOpenFocus,
+  onNavigate
 }) => {
   const { weakTopics, currentExam, updateTopicStatus } = useSyllabus();
 
@@ -322,7 +325,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
               </p>
             </div>
 
-            {(searchQuery.trim() || severityFilter !== 'all' || selectedSubject !== 'all') && (
+            {(searchQuery.trim() || severityFilter !== 'all' || selectedSubject !== 'all') ? (
               <div className="pt-1">
                 <button
                   onClick={() => {
@@ -337,6 +340,26 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset All Filters & Search</span>
                 </button>
+              </div>
+            ) : (
+              <div className="pt-2 flex items-center justify-center gap-2.5 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold border border-emerald-500/25">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>100% Trap Free • High Retention Strength</span>
+                </span>
+                {onNavigate && (
+                  <button
+                    onClick={() => {
+                      soundManager.playClick();
+                      onNavigate('syllabus');
+                    }}
+                    className="px-4 py-2 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-xs font-black transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-xs tap-bounce"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Explore Full Syllabus</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             )}
           </div>

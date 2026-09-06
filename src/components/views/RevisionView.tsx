@@ -32,12 +32,14 @@ interface RevisionViewProps {
   onOpenRevisionSession: () => void;
   onOpenTopicDrawer?: (topic: Topic, subName: string, chName: string) => void;
   onOpenFocus?: (topicId?: string) => void;
+  onNavigate?: (view: any) => void;
 }
 
 export const RevisionView: React.FC<RevisionViewProps> = ({
   onOpenRevisionSession,
   onOpenTopicDrawer,
-  onOpenFocus
+  onOpenFocus,
+  onNavigate
 }) => {
   const { revisions, dueRevisions, allTopics, currentExam, resyncAllRevisions } = useSyllabus();
   const [justSynced, setJustSynced] = useState(false);
@@ -570,34 +572,66 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               );
             })
           ) : (
-            /* Clean Empty State */
-            <div className="py-12 sm:py-16 px-4 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0a3225] to-[#062017] border border-emerald-500/30 text-emerald-300 flex items-center justify-center mx-auto shadow-md">
-                <Trophy className="w-8 h-8" />
+            /* Clean Modern Motivating Empty State */
+            <div className="py-12 sm:py-16 px-4 sm:px-8 text-center rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4 max-w-xl mx-auto">
+              <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-teal-500/15 to-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-md">
+                <Trophy className="w-8 h-8 stroke-[2.2]" />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-black text-[#191A17] dark:text-[#F5F5F7] uppercase tracking-tight">
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-black border border-emerald-500/25 mb-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>100% Retained Today</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
                   All Due Revisions Cleared Today! 🎉
                 </h3>
-                <p className="text-xs text-[#65675F] dark:text-[#A1A1AA] max-w-md mx-auto font-medium">
-                  Your spaced repetition queue is fully up to date. You can review upcoming cards early or inspect your mastered vault.
+                <p className="text-xs font-medium text-[#64748B] dark:text-[#CBD5E1] max-w-md mx-auto leading-relaxed">
+                  Your spaced repetition queue is fully up to date. You can get ahead by reviewing upcoming cards early or inspect your mastered memory vault.
                 </p>
               </div>
 
-              {upcomingList.length > 0 && (
-                <div className="pt-2">
+              {/* Quick Action Buttons */}
+              <div className="flex items-center justify-center gap-2.5 flex-wrap pt-2">
+                {upcomingList.length > 0 && (
                   <button
                     onClick={() => {
                       soundManager.playClick();
                       setActiveTab('upcoming');
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#191A17] dark:text-[#F5F5F7] transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                    className="px-4 py-2.5 rounded-2xl bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-emerald-600 dark:hover:bg-emerald-400 text-xs font-black transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-xs tap-bounce"
                   >
-                    <span>View {upcomingList.length} Upcoming Cards</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-500" />
+                    <Clock className="w-4 h-4 text-amber-400 dark:text-amber-500" />
+                    <span>Review Upcoming Early ({upcomingList.length})</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
-                </div>
-              )}
+                )}
+
+                {historyList.length > 0 && (
+                  <button
+                    onClick={() => {
+                      soundManager.playClick();
+                      setActiveTab('history');
+                    }}
+                    className="px-4 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#2D2E40] text-xs font-bold text-[#191A17] dark:text-[#CBD5E1] transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                  >
+                    <Trophy className="w-4 h-4 text-emerald-500" />
+                    <span>View Mastered Vault ({historyList.length})</span>
+                  </button>
+                )}
+
+                {onNavigate && (
+                  <button
+                    onClick={() => {
+                      soundManager.playClick();
+                      onNavigate('syllabus');
+                    }}
+                    className="px-4 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-[#EEEEE8] dark:hover:bg-[#282938] border border-[#E2E8F0] dark:border-[#2D2E40] text-xs font-bold text-[#191A17] dark:text-[#CBD5E1] transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                  >
+                    <BookOpen className="w-4 h-4 text-sky-500" />
+                    <span>Explore Full Syllabus</span>
+                  </button>
+                )}
+              </div>
             </div>
           )
         )}
