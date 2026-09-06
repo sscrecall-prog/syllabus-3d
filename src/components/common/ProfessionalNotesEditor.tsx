@@ -1036,6 +1036,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // Shared Heading Slug & Cleaning Utilities
   const cleanHeadingText = (rawText: string) => {
     return rawText
+      .replace(/\s+#+\s*$/, '')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')
       .replace(/`([^`]+)`/g, '$1')
@@ -1065,23 +1066,15 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
     lines.forEach((line) => {
       const trimmed = line.trim();
-      let level = 0;
-      let rawText = '';
-      if (trimmed.startsWith('### ')) {
-        level = 3;
-        rawText = trimmed.replace(/^###\s+/, '');
-      } else if (trimmed.startsWith('## ')) {
-        level = 2;
-        rawText = trimmed.replace(/^##\s+/, '');
-      } else if (trimmed.startsWith('# ')) {
-        level = 1;
-        rawText = trimmed.replace(/^#\s+/, '');
-      }
-
-      if (level > 0 && rawText) {
-        const cleanText = cleanHeadingText(rawText);
-        const id = getSlugFromText(cleanText, usedSlugs);
-        items.push({ id, text: cleanText, level, index: headingIdx++ });
+      const match = trimmed.match(/^(#{1,6})\s+(.*)$/);
+      if (match) {
+        const level = match[1].length;
+        const rawText = match[2].replace(/\s+#+\s*$/, '').trim();
+        if (rawText) {
+          const cleanText = cleanHeadingText(rawText);
+          const id = getSlugFromText(cleanText, usedSlugs);
+          items.push({ id, text: cleanText, level, index: headingIdx++ });
+        }
       }
     });
 
@@ -1724,58 +1717,102 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         continue;
       }
 
-      // 4. Headings
-      if (trimmedLine.startsWith('# ') && !trimmedLine.startsWith('## ')) {
-        const rawH1 = trimmedLine.replace(/^#\s+/, '');
-        const cleanH1 = cleanHeadingText(rawH1);
-        const headingId = getSlugFromText(cleanH1, usedHeadingSlugs);
+      // 4. Headings (# H1 to ###### H6)
+      const headingMatch = trimmedLine.match(/^(#{1,6})\s+(.*)$/);
+      if (headingMatch) {
+        const hashCount = headingMatch[1].length;
+        const rawHeading = headingMatch[2].replace(/\s+#+\s*$/, '').trim();
+        const cleanHeading = cleanHeadingText(rawHeading);
+        const headingId = getSlugFromText(cleanHeading, usedHeadingSlugs);
         const currentIndex = renderedHeadingIndex++;
-        elements.push(
-          <h1
-            key={i}
-            id={headingId}
-            data-heading-id={headingId}
-            data-heading-index={currentIndex}
-            className={`${fontFam} text-xl sm:text-2xl font-black mt-7 mb-3 pb-2.5 border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-[#11120F] dark:text-white scroll-mt-28 [break-inside:avoid]`}
-          >
-            <span className="w-1.5 h-6 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] inline-block shrink-0" />
-            <span>{parseInlineMarkdown(rawH1, `h1-${i}`)}</span>
-          </h1>
-        );
-      } else if (trimmedLine.startsWith('## ') && !trimmedLine.startsWith('### ')) {
-        const rawH2 = trimmedLine.replace(/^##\s+/, '');
-        const cleanH2 = cleanHeadingText(rawH2);
-        const headingId = getSlugFromText(cleanH2, usedHeadingSlugs);
-        const currentIndex = renderedHeadingIndex++;
-        elements.push(
-          <h2
-            key={i}
-            id={headingId}
-            data-heading-id={headingId}
-            data-heading-index={currentIndex}
-            className={`${fontFam} text-lg sm:text-xl font-extrabold mt-6 mb-2.5 flex items-center gap-2 text-[#11120F] dark:text-white scroll-mt-28 [break-inside:avoid]`}
-          >
-            <span className="w-1.5 h-5 rounded-full bg-purple-500 inline-block shrink-0" />
-            <span>{parseInlineMarkdown(rawH2, `h2-${i}`)}</span>
-          </h2>
-        );
-      } else if (trimmedLine.startsWith('### ')) {
-        const rawH3 = trimmedLine.replace(/^###\s+/, '');
-        const cleanH3 = cleanHeadingText(rawH3);
-        const headingId = getSlugFromText(cleanH3, usedHeadingSlugs);
-        const currentIndex = renderedHeadingIndex++;
-        elements.push(
-          <h3
-            key={i}
-            id={headingId}
-            data-heading-id={headingId}
-            data-heading-index={currentIndex}
-            className={`${fontFam} text-xs sm:text-sm font-black text-[#2563EB] dark:text-[#7AA2F7] mt-5 mb-2 uppercase tracking-wide flex items-center gap-1.5 font-mono scroll-mt-28 [break-inside:avoid]`}
-          >
-            <span>▶</span>
-            <span>{parseInlineMarkdown(rawH3, `h3-${i}`)}</span>
-          </h3>
-        );
+
+        if (hashCount === 1) {
+          elements.push(
+            <h1
+              key={i}
+              id={headingId}
+              data-heading-id={headingId}
+              data-heading-index={currentIndex}
+              className={`${fontFam} text-xl sm:text-2xl font-black mt-7 mb-3 pb-2.5 border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-[#11120F] dark:text-white scroll-mt-28 [break-inside:avoid]`}
+            >
+              <span className="w-1.5 h-6 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] inline-block shrink-0" />
+              <span>{parseInlineMarkdown(rawHeading, `h1-${i}`)}</span>
+            </h1>
+          );
+        } else if (hashCount === 2) {
+          // 🌟 2nd Headings in Callout Card Style (User request: "2nd Headings callout me ho")
+          elements.push(
+            <div
+              key={i}
+              id={headingId}
+              data-heading-id={headingId}
+              data-heading-index={currentIndex}
+              className="my-5 rounded-2xl border border-indigo-200/90 dark:border-indigo-800/60 border-l-4 border-l-indigo-600 dark:border-l-indigo-400 bg-gradient-to-r from-indigo-50/90 via-blue-50/40 to-white/30 dark:from-[#1A1C2E]/90 dark:via-[#161726]/60 dark:to-[#11121A]/30 p-3.5 sm:p-4 shadow-xs scroll-mt-28 [break-inside:avoid]"
+            >
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-5 sm:h-6 rounded-full bg-indigo-600 dark:bg-indigo-400 shrink-0" />
+                <h2 className={`${fontFam} text-base sm:text-lg font-black text-indigo-950 dark:text-indigo-100 flex-1 leading-snug tracking-tight m-0`}>
+                  {parseInlineMarkdown(rawHeading, `h2-${i}`)}
+                </h2>
+              </div>
+            </div>
+          );
+        } else if (hashCount === 3) {
+          elements.push(
+            <h3
+              key={i}
+              id={headingId}
+              data-heading-id={headingId}
+              data-heading-index={currentIndex}
+              className={`${fontFam} text-xs sm:text-sm font-black text-[#2563EB] dark:text-[#7AA2F7] mt-5 mb-2 uppercase tracking-wide flex items-center gap-1.5 font-mono scroll-mt-28 [break-inside:avoid]`}
+            >
+              <span>▶</span>
+              <span>{parseInlineMarkdown(rawHeading, `h3-${i}`)}</span>
+            </h3>
+          );
+        } else if (hashCount === 4) {
+          // 🌟 Level 4 Subheading (User request: "NOTES KE SUBHEADINGS ME #### kyun aa raha ise nhi aana chahiye")
+          elements.push(
+            <h4
+              key={i}
+              id={headingId}
+              data-heading-id={headingId}
+              data-heading-index={currentIndex}
+              className={`${fontFam} text-sm sm:text-base font-bold text-amber-700 dark:text-amber-400 mt-4 mb-2 flex items-center gap-2 scroll-mt-28 [break-inside:avoid]`}
+            >
+              <span className="w-1.5 h-3.5 rounded-full bg-amber-500 shrink-0" />
+              <span>{parseInlineMarkdown(rawHeading, `h4-${i}`)}</span>
+            </h4>
+          );
+        } else if (hashCount === 5) {
+          // 🌟 Level 5 Subheading (e.g. "##### Members of the Drafting Committee:")
+          elements.push(
+            <h5
+              key={i}
+              id={headingId}
+              data-heading-id={headingId}
+              data-heading-index={currentIndex}
+              className={`${fontFam} text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-400 mt-3.5 mb-1.5 flex items-center gap-1.5 scroll-mt-28 [break-inside:avoid]`}
+            >
+              <span className="w-1.5 h-3 rounded-full bg-emerald-500 shrink-0" />
+              <span>{parseInlineMarkdown(rawHeading, `h5-${i}`)}</span>
+            </h5>
+          );
+        } else {
+          // 🌟 Level 6 Subheading (######)
+          elements.push(
+            <h6
+              key={i}
+              id={headingId}
+              data-heading-id={headingId}
+              data-heading-index={currentIndex}
+              className={`${fontFam} text-xs font-semibold text-slate-600 dark:text-slate-400 mt-3 mb-1 uppercase tracking-wider flex items-center gap-1.5 scroll-mt-28 [break-inside:avoid]`}
+            >
+              <span className="w-1 h-2.5 rounded-full bg-slate-400 dark:bg-slate-500 shrink-0" />
+              <span>{parseInlineMarkdown(rawHeading, `h6-${i}`)}</span>
+            </h6>
+          );
+        }
       }
       // 5. Checkbox Tasks (- [ ] / - [x])
       else if (line.trim().startsWith('- [ ] ') || line.trim().startsWith('- [x] ')) {
@@ -3019,12 +3056,16 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                       item.level === 1
                         ? 'font-bold text-slate-900 dark:text-white'
                         : item.level === 2
-                        ? 'pl-5 font-medium text-slate-700 dark:text-slate-300'
-                        : 'pl-8 font-normal text-slate-500 dark:text-slate-400'
+                        ? 'pl-4 font-semibold text-indigo-700 dark:text-indigo-300'
+                        : item.level === 3
+                        ? 'pl-6 font-medium text-slate-700 dark:text-slate-300'
+                        : item.level === 4
+                        ? 'pl-8 font-normal text-amber-700 dark:text-amber-400'
+                        : 'pl-10 font-normal text-slate-500 dark:text-slate-400 text-[11px]'
                     }`}
                   >
                     <span className="text-[10px] font-mono text-amber-500 mt-0.5 shrink-0">
-                      {item.level === 1 ? '•' : item.level === 2 ? '–' : '›'}
+                      {item.level === 1 ? '•' : item.level === 2 ? '◆' : item.level === 3 ? '▶' : item.level === 4 ? '–' : '›'}
                     </span>
                     <span className="truncate">{item.text}</span>
                   </button>
