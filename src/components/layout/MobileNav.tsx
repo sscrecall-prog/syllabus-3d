@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-  LayoutDashboard,
   CalendarCheck,
   BookOpen,
   Plus,
-  Compass,
-  Timer
+  Compass
 } from 'lucide-react';
 import { AppView } from './Sidebar';
 import { soundManager } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
+import { useTheme } from '../../context/ThemeContext';
+import { useSyllabus } from '../../context/SyllabusContext';
 
 interface MobileNavProps {
   activeView: AppView;
@@ -26,106 +26,168 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onOpenFocus,
   onOpenMobileMenu
 }) => {
+  const { isDark, isOled, isSepia } = useTheme();
+  const { dueRevisions } = useSyllabus();
+
+  const isHubActive = ['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView);
+
   return (
-    <nav className="md:hidden fixed bottom-2 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[calc(env(safe-area-inset-bottom,0px)+4px)] pointer-events-none">
-      <div className="pointer-events-auto flex items-center justify-between px-2 py-1.5 rounded-3xl bg-white/95 dark:bg-[#12131F]/96 backdrop-blur-xl border border-[#E2E8F0] dark:border-[#272A3D] shadow-2xl shadow-slate-900/10 dark:shadow-black/40">
-        
+    <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[calc(env(safe-area-inset-bottom,0px))] pointer-events-none animate-slide-up">
+      <div
+        className={`pointer-events-auto flex items-center justify-between px-2 py-1.5 rounded-3xl backdrop-blur-2xl border transition-all duration-300 relative ${
+          isOled
+            ? 'bg-black/95 border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.85)]'
+            : isSepia
+            ? 'bg-[#FBF7F0]/95 border-[#D5C9AD] shadow-[0_10px_30px_rgba(59,48,34,0.12)]'
+            : isDark
+            ? 'bg-[#12131F]/95 border-[#272A3D] shadow-[0_12px_40px_rgba(0,0,0,0.55)]'
+            : 'bg-white/95 border-slate-200/90 shadow-[0_10px_35px_rgba(15,23,42,0.08)]'
+        }`}
+      >
+        {/* Top Subtle Ambient Glass Shine Bevel */}
+        <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-blue-500/25 dark:via-[#7AA2F7]/35 to-transparent pointer-events-none" />
+
         {/* Item 1: Home Dashboard */}
         <button
+          type="button"
           onClick={() => {
             soundManager.playClick();
             haptics.light();
             onSelectView('overview');
           }}
-          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative group transition-all duration-200 ${
             activeView === 'overview'
-              ? 'text-[#2563EB] dark:text-[#7AA2F7] font-black'
-              : 'text-[#64748B] dark:text-[#8E90A6] hover:text-[#0F172A] dark:hover:text-white'
+              ? 'text-blue-600 dark:text-[#7AA2F7] font-black'
+              : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="Home Dashboard"
         >
           {activeView === 'overview' && (
-            <span className="absolute inset-0 bg-[#2563EB]/10 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+            <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
           )}
           <img
             src="/dashboard_icon_3d.png"
             alt="Dashboard"
-            className={`w-5 h-5 object-contain transition-transform ${
-              activeView === 'overview' ? 'scale-110 drop-shadow-sm' : 'opacity-75'
+            className={`w-5 h-5 object-contain transition-all duration-300 ${
+              activeView === 'overview' ? 'scale-115 -translate-y-0.5 drop-shadow-sm' : 'opacity-85 group-hover:scale-105'
             }`}
           />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Home</span>
-          {activeView === 'overview' && (
-            <span className="w-1 h-1 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          {activeView === 'overview' ? (
+            <div className="flex items-center justify-center mt-0.5">
+              <span className="relative flex h-1.5 w-1.5 items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 dark:bg-[#7AA2F7] opacity-75" />
+                <span className="relative inline-flex rounded-full h-1 w-1 bg-blue-600 dark:bg-[#7AA2F7] shadow-[0_0_6px_#2563EB] dark:shadow-[0_0_8px_#7AA2F7]" />
+              </span>
+            </div>
+          ) : (
+            <span className="h-1.5 mt-0.5" />
           )}
         </button>
 
         {/* Item 2: Syllabus Explorer */}
         <button
+          type="button"
           onClick={() => {
             soundManager.playClick();
             haptics.light();
             onSelectView('syllabus');
           }}
-          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative group transition-all duration-200 ${
             activeView === 'syllabus'
-              ? 'text-[#2563EB] dark:text-[#7AA2F7] font-black'
-              : 'text-[#64748B] dark:text-[#8E90A6] hover:text-[#0F172A] dark:hover:text-white'
+              ? 'text-blue-600 dark:text-[#7AA2F7] font-black'
+              : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="Syllabus Explorer"
         >
           {activeView === 'syllabus' && (
-            <span className="absolute inset-0 bg-[#2563EB]/10 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+            <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
           )}
-          <BookOpen className={`w-5 h-5 ${activeView === 'syllabus' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+          <BookOpen
+            className={`w-5 h-5 transition-all duration-300 ${
+              activeView === 'syllabus' ? 'scale-115 -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
+            }`}
+          />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Syllabus</span>
-          {activeView === 'syllabus' && (
-            <span className="w-1 h-1 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          {activeView === 'syllabus' ? (
+            <div className="flex items-center justify-center mt-0.5">
+              <span className="relative flex h-1.5 w-1.5 items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 dark:bg-[#7AA2F7] opacity-75" />
+                <span className="relative inline-flex rounded-full h-1 w-1 bg-blue-600 dark:bg-[#7AA2F7] shadow-[0_0_6px_#2563EB] dark:shadow-[0_0_8px_#7AA2F7]" />
+              </span>
+            </div>
+          ) : (
+            <span className="h-1.5 mt-0.5" />
           )}
         </button>
 
         {/* Center Primary Action Button (Add Target & Focus) */}
         <div className="flex items-center justify-center px-1">
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              haptics.medium();
-              if (onOpenAddTopic) onOpenAddTopic();
-            }}
-            className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#2563EB] to-[#3B82F6] dark:from-[#7AA2F7] dark:to-[#5B82D7] text-white dark:text-[#0B0B0D] shadow-lg shadow-[#2563EB]/30 dark:shadow-[#7AA2F7]/30 flex items-center justify-center tap-bounce cursor-pointer border-2 border-white dark:border-[#12131F]"
-            title="Add Custom Study Target"
-            aria-label="Add Custom Target"
-          >
-            <Plus className="w-5 h-5 stroke-[3]" />
-          </button>
+          <div className="relative group">
+            {/* Ambient Breathing Aura Animation */}
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-[#7AA2F7] dark:via-[#9D7CD8] dark:to-[#BB9AF7] opacity-40 blur-xs animate-pulse group-hover:opacity-75 transition-opacity" />
+            
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                haptics.medium();
+                if (onOpenAddTopic) onOpenAddTopic();
+              }}
+              className={`relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#2563EB] to-[#4F46E5] dark:from-[#7AA2F7] dark:to-[#8B5CF6] text-white dark:text-[#0B0C15] shadow-lg shadow-blue-600/30 dark:shadow-[#7AA2F7]/35 flex items-center justify-center tap-bounce cursor-pointer ring-4 transition-all duration-300 active:scale-90 ${
+                isOled
+                  ? 'ring-black'
+                  : isDark
+                  ? 'ring-[#12131F]'
+                  : 'ring-white'
+              }`}
+              title="Add Custom Study Target"
+              aria-label="Add Custom Target"
+            >
+              <Plus className="w-5 h-5 stroke-[2.8] transition-transform duration-300 group-hover:rotate-90 group-active:scale-90" />
+            </button>
+          </div>
         </div>
 
         {/* Item 3: Planner */}
         <button
+          type="button"
           onClick={() => {
             soundManager.playClick();
             haptics.light();
             onSelectView('planner');
           }}
-          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative ${
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative group transition-all duration-200 ${
             activeView === 'planner'
-              ? 'text-[#2563EB] dark:text-[#7AA2F7] font-black'
-              : 'text-[#64748B] dark:text-[#8E90A6] hover:text-[#0F172A] dark:hover:text-white'
+              ? 'text-blue-600 dark:text-[#7AA2F7] font-black'
+              : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="Daily Planner"
         >
           {activeView === 'planner' && (
-            <span className="absolute inset-0 bg-[#2563EB]/10 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+            <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
           )}
-          <CalendarCheck className={`w-5 h-5 ${activeView === 'planner' ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+          <CalendarCheck
+            className={`w-5 h-5 transition-all duration-300 ${
+              activeView === 'planner' ? 'scale-115 -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
+            }`}
+          />
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Planner</span>
-          {activeView === 'planner' && (
-            <span className="w-1 h-1 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          {activeView === 'planner' ? (
+            <div className="flex items-center justify-center mt-0.5">
+              <span className="relative flex h-1.5 w-1.5 items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 dark:bg-[#7AA2F7] opacity-75" />
+                <span className="relative inline-flex rounded-full h-1 w-1 bg-blue-600 dark:bg-[#7AA2F7] shadow-[0_0_6px_#2563EB] dark:shadow-[0_0_8px_#7AA2F7]" />
+              </span>
+            </div>
+          ) : (
+            <span className="h-1.5 mt-0.5" />
           )}
         </button>
 
         {/* Item 4: More / Hub Drawer */}
         <button
+          type="button"
           onClick={() => {
             soundManager.playClick();
             haptics.light();
@@ -135,20 +197,36 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               onOpenFocus();
             }
           }}
-          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative ${
-            ['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView)
-              ? 'text-[#2563EB] dark:text-[#7AA2F7] font-black'
-              : 'text-[#64748B] dark:text-[#8E90A6] hover:text-[#0F172A] dark:hover:text-white'
+          className={`flex-1 min-h-[46px] flex flex-col items-center justify-center py-1 px-1 rounded-2xl tap-bounce cursor-pointer relative group transition-all duration-200 ${
+            isHubActive
+              ? 'text-blue-600 dark:text-[#7AA2F7] font-black'
+              : 'text-slate-600 dark:text-[#94A3B8] hover:text-slate-900 dark:hover:text-white font-medium'
           }`}
           title="More Sections & Tools"
         >
-          {['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView) && (
-            <span className="absolute inset-0 bg-[#2563EB]/10 dark:bg-[#7AA2F7]/15 rounded-2xl -z-10 shadow-2xs" />
+          {isHubActive && (
+            <span className="absolute inset-0 bg-blue-600/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 rounded-2xl -z-10 shadow-xs transition-all duration-300" />
           )}
-          <Compass className={`w-5 h-5 ${['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView) ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+          <div className="relative">
+            <Compass
+              className={`w-5 h-5 transition-all duration-300 ${
+                isHubActive ? 'scale-115 -translate-y-0.5 stroke-[2.5]' : 'stroke-[2] group-hover:scale-105'
+              }`}
+            />
+            {dueRevisions && dueRevisions.length > 0 && !isHubActive && (
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.6)] animate-pulse" />
+            )}
+          </div>
           <span className="text-[11px] mt-0.5 tracking-tight font-sans">Hub</span>
-          {['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView) && (
-            <span className="w-1 h-1 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-0.5 animate-pulse" />
+          {isHubActive ? (
+            <div className="flex items-center justify-center mt-0.5">
+              <span className="relative flex h-1.5 w-1.5 items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 dark:bg-[#7AA2F7] opacity-75" />
+                <span className="relative inline-flex rounded-full h-1 w-1 bg-blue-600 dark:bg-[#7AA2F7] shadow-[0_0_6px_#2563EB] dark:shadow-[0_0_8px_#7AA2F7]" />
+              </span>
+            </div>
+          ) : (
+            <span className="h-1.5 mt-0.5" />
           )}
         </button>
       </div>
