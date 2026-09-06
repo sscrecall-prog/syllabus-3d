@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Table & AI Note Utilities
  * Converts HTML/TSV tables into GFM Markdown, repairs broken tables from LLMs,
  * sanitizes citation clutter, and formats clean data columns.
@@ -302,7 +302,7 @@ export function repairAllTablesInDocument(docText: string): string {
     const pipeCount = (trimmed.match(/\|/g) || []).length;
     const isTableLine =
       (trimmed.startsWith('|') && pipeCount >= 1) ||
-      (pipeCount >= 2 && !trimmed.startsWith('#') && !trimmed.startsWith('>') && !trimmed.startsWith('```'));
+      (pipeCount >= 2 && !trimmed.startsWith('#') && !trimmed.startsWith('>') && !trimmed.startsWith('```') && !trimmed.startsWith('* ') && !trimmed.startsWith('- ') && !trimmed.startsWith('$$'));
 
     if (isTableLine) {
       const tableLines: string[] = [line];
@@ -330,10 +330,14 @@ export function repairAllTablesInDocument(docText: string): string {
       }
 
       if (tableLines.length >= 2) {
-        const repaired = cleanAndRepairMarkdownTable(tableLines.join('\n'));
-        output.push(repaired);
-        i = j;
-        continue;
+        const hasSeparator = tableLines.some(l => isTableSeparatorRow(l));
+        const mostlyPipes = tableLines.filter(l => l.trim().startsWith('|')).length >= 2;
+        if (hasSeparator || mostlyPipes) {
+          const repaired = cleanAndRepairMarkdownTable(tableLines.join('\n'));
+          output.push(repaired);
+          i = j;
+          continue;
+        }
       }
     }
 
@@ -345,18 +349,54 @@ export function repairAllTablesInDocument(docText: string): string {
 }
 
 /**
+ * Checks if the clipboard content is EXCLUSIVELY an HTML table (e.g. copied from Excel, Sheets, or Wikipedia table),
+ * as opposed to a full article/lesson from Gemini / ChatGPT that merely contains a table inside it.
+ */
+export function isPureHtmlTableCopy(htmlText: string, plainText: string): boolean {
+  if (!htmlText || !htmlText.includes('<table')) return false;
+
+  // If plainText contains markdown headings, bullet lists, or is a long structured document,
+  // it is a full note/lesson and should NEVER be truncated to just a single table!
+  if (plainText) {
+    if (/(?:^|\n)\s*#{1,6}\s+/m.test(plainText)) return false;
+    const lines = plainText.trim().split('\n');
+    if (lines.length > 25 && !isTsvTable(plainText)) return false;
+  }
+
+  if (typeof DOMParser === 'undefined') return false;
+
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, 'text/html');
+    const table = doc.querySelector('table');
+    if (!table) return false;
+
+    // Clone body and remove all tables to see if substantial non-table content exists
+    const bodyClone = doc.body.cloneNode(true) as HTMLElement;
+    bodyClone.querySelectorAll('table').forEach(t => t.remove());
+    const nonTableText = (bodyClone.textContent || '').trim().replace(/\s+/g, ' ');
+
+    // Only considered pure table copy if there is virtually no surrounding text (< 35 chars)
+    return nonTableText.length < 35;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Intelligent clipboard content processor on paste:
- * - Detects HTML tables & converts to Markdown
- * - Detects TSV tables & converts to Markdown
- * - Repairs broken markdown tables within the document
+ * - Preserves complete notes, lessons, headings, formulas, and bullet points from Gemini / ChatGPT
+ * - Repairs broken markdown tables inside full documents without affecting other sections
+ * - Detects standalone HTML tables (e.g. from Excel/Sheets) and converts to Markdown
+ * - Detects standalone TSV tables and converts to Markdown
  * - Cleans AI citations and PDF chips
  */
 export function processPastedNotesContent(
   plainText: string,
   htmlText?: string
 ): { content: string; isTransformed: boolean; transformReason?: string } {
-  // 1. Check for HTML Table in clipboard
-  if (htmlText && htmlText.includes('<table')) {
+  // 1. Check for pure HTML Table copy (ONLY when copying purely a table from Excel/Wikipedia, NOT full Gemini notes)
+  if (htmlText && isPureHtmlTableCopy(htmlText, plainText)) {
     const mdTable = htmlTableToMarkdown(htmlText);
     if (mdTable) {
       return {
@@ -367,8 +407,8 @@ export function processPastedNotesContent(
     }
   }
 
-  // 2. Check for Tab-Separated Values (TSV)
-  if (plainText && isTsvTable(plainText)) {
+  // 2. Check for pure Tab-Separated Values (TSV from Excel/Sheets without markdown headers)
+  if (plainText && isTsvTable(plainText) && !/(?:^|\n)\s*#{1,6}\s+/m.test(plainText)) {
     const mdTable = tsvToMarkdownTable(plainText);
     if (mdTable) {
       return {
@@ -379,10 +419,10 @@ export function processPastedNotesContent(
     }
   }
 
-  // 3. Clean stray citations like [PDF] or PDF chips
+  // 3. Clean stray citations like [PDF] or PDF chips from NotebookLM / Gemini Canvas
   let cleaned = sanitizeAiCitations(plainText);
 
-  // 4. Scan and repair all table blocks in the document
+  // 4. Scan and repair all table blocks inside the document without affecting headings/paragraphs
   if (cleaned.includes('|')) {
     const repairedDoc = repairAllTablesInDocument(cleaned);
     if (repairedDoc !== plainText) {

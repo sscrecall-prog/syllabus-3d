@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   cleanAndRepairMarkdownTable,
   repairAllTablesInDocument,
@@ -71,5 +71,40 @@ Keep this handy.`;
     expect(processed).toContain('Here is the core summary.');
     expect(processed).toContain('### Important Note');
     expect(processed).toContain('Keep this handy.');
+  });
+
+  it('processPastedNotesContent preserves full Gemini lesson and does not truncate to only table', () => {
+    const fullGeminiLesson = `# LESSON 10 — CHART FUNDAMENTALS
+
+## 1. Learning Objective
+* Understand how market transactions are translated visually onto a price chart.
+
+## 2. Concept Overview
+Price charts are graphical representations of historical transactions.
+
+## 10. Table / Comparison
+| Dimension | Linear (Arithmetic) Chart | Logarithmic (Log) Chart |
+| --- | --- | --- |
+| **Price Axis Metric** | Absolute Rupee increments | Percentage increments |
+
+## 15. Practical Task
+* Total Range ($H - L$)`;
+
+    const htmlWithTable = `<h1>LESSON 10</h1><p>Price charts...</p><table><tr><th>Dimension</th><th>Linear</th><th>Log</th></tr><tr><td>Metric</td><td>Absolute</td><td>Percentage</td></tr></table>`;
+
+    const result = processPastedNotesContent(fullGeminiLesson, htmlWithTable);
+    expect(result.content).toContain('# LESSON 10 — CHART FUNDAMENTALS');
+    expect(result.content).toContain('## 1. Learning Objective');
+    expect(result.content).toContain('## 2. Concept Overview');
+    expect(result.content).toContain('## 10. Table / Comparison');
+    expect(result.content).toContain('| Dimension | Linear (Arithmetic) Chart | Logarithmic (Log) Chart |');
+    expect(result.content).toContain('## 15. Practical Task');
+  });
+
+  it('processPastedNotesContent converts pure standalone HTML table', () => {
+    const standaloneHtml = `<table><tr><th>Stock</th><th>Price</th></tr><tr><td>TATA</td><td>1000</td></tr></table>`;
+    const result = processPastedNotesContent('Stock Price\nTATA 1000', standaloneHtml);
+    expect(result.content).toContain('| Stock | Price |');
+    expect(result.content).toContain('| TATA | 1000 |');
   });
 });
