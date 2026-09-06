@@ -79,6 +79,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
   // View Mode
   const [viewMode, setViewMode] = useState<'kanban' | 'calendar'>('kanban');
+  const [mobileActiveColumn, setMobileActiveColumn] = useState<PlannerColumnStatus | 'all'>('all');
 
   // Modal State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -315,14 +316,14 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
     <div className="space-y-4 sm:space-y-6 pb-20 max-w-6xl mx-auto font-sans select-none animate-fade-in">
       
       {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD WITH 3D GLASS CALENDAR BACKGROUND ═══════════════ */}
-      <div className="p-5 sm:p-7 rounded-[32px] bg-[#0A0D14] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-4">
+      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[32px] bg-[#0A0D14] border border-[#272738] shadow-2xl relative overflow-hidden text-white space-y-3.5 sm:space-y-4">
         
         {/* Full Uncropped High-Fidelity 3D Planner & Stopwatch Artwork (Zero crop, fits card perfectly) */}
         <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
           <img
             src="/planner_banner.png"
             alt="Daily Study Planner 3D"
-            className="h-full w-auto max-w-none object-contain object-right opacity-80 sm:opacity-95 select-none"
+            className="h-full w-auto max-w-none object-contain object-right opacity-35 sm:opacity-95 select-none"
             loading="eager"
             decoding="async"
             width={600}
@@ -331,8 +332,8 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         </div>
 
         {/* Multi-layered Glass Gradients for 100% Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0D14] via-[#0A0D14]/80 md:via-[#0A0D14]/40 to-transparent pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0D14]/70 via-transparent to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0D14] via-[#0A0D14]/90 sm:via-[#0A0D14]/80 md:via-[#0A0D14]/40 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0D14]/80 via-transparent to-transparent pointer-events-none z-0" />
         
         {/* Subtle Ambient Glow Orbs */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
@@ -340,15 +341,15 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
         {/* Top Header Row */}
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FACC15] to-[#CA8A04] text-black flex items-center justify-center font-bold shadow-md shrink-0 border border-white/20">
-              <CalendarCheck className="w-5 h-5 stroke-[2.5]" />
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 sm:w-11 h-9 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#FACC15] to-[#CA8A04] text-black flex items-center justify-center font-bold shadow-md shrink-0 border border-white/20">
+              <CalendarCheck className="w-4.5 sm:w-5 h-4.5 sm:h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h2 className="text-base sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm">
+              <h2 className="text-sm sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm">
                 Daily Study Planner
               </h2>
-              <p className="text-xs text-[#C5C8D8]">
+              <p className="text-[11px] sm:text-xs text-[#C5C8D8]">
                 Target tracking, daily sprints, and study queue
               </p>
             </div>
@@ -361,7 +362,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               setTargetDate(getTodayDateString());
               setShowAddModal(true);
             }}
-            className="group relative px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#FACC15] to-[#EAB308] hover:from-[#fde047] hover:to-[#ca8a04] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(250,204,21,0.35)] hover:shadow-[0_0_30px_rgba(250,204,21,0.55)] transition-all active:scale-95 cursor-pointer shrink-0 self-start sm:self-auto flex items-center gap-2 overflow-hidden border border-white/20"
+            className="group relative w-full sm:w-auto justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#FACC15] to-[#EAB308] hover:from-[#fde047] hover:to-[#ca8a04] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(250,204,21,0.35)] hover:shadow-[0_0_30px_rgba(250,204,21,0.55)] transition-all active:scale-95 cursor-pointer shrink-0 flex items-center gap-2 overflow-hidden border border-white/20"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <Plus className="w-4 h-4 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
@@ -370,63 +371,63 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         </div>
 
         {/* Concise Metric Bento Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 relative z-10">
           
           {/* Today's Velocity */}
-          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-emerald-500/40 transition-all flex items-center justify-between shadow-lg group">
+          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-emerald-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Velocity</span>
-              <h4 className="text-xl font-black font-mono text-white leading-none tabular-nums">
+              <span className="text-[9.5px] sm:text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Velocity</span>
+              <h4 className="text-lg sm:text-xl font-black font-mono text-white leading-none tabular-nums">
                 {todayProgressPercent}%
               </h4>
-              <span className="text-[11px] text-[#A1A1B2] font-mono tabular-nums">
+              <span className="text-[9.5px] sm:text-[11px] text-[#A1A1B2] font-mono tabular-nums">
                 {completedTodayCount}/{totalTodayCount} Done
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30 group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
+            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30 group-hover:scale-110 transition-transform">
+              <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.5]" />
             </div>
           </div>
 
           {/* Daily Streak */}
-          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-orange-500/40 transition-all flex items-center justify-between shadow-lg group">
+          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-orange-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Streak</span>
-              <h4 className="text-xl font-black font-mono text-orange-400 leading-none tabular-nums">
-                {profile.currentStreak} <span className="text-xs font-sans text-[#9A9CAE]">days</span>
+              <span className="text-[9.5px] sm:text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Streak</span>
+              <h4 className="text-lg sm:text-xl font-black font-mono text-orange-400 leading-none tabular-nums">
+                {profile.currentStreak} <span className="text-[10px] sm:text-xs font-sans text-[#9A9CAE]">days</span>
               </h4>
-              <span className="text-[11px] text-orange-400/80 font-medium font-mono tabular-nums">Best: {profile.longestStreak}d</span>
+              <span className="text-[9.5px] sm:text-[11px] text-orange-400/80 font-medium font-mono tabular-nums">Best: {profile.longestStreak}d</span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30 group-hover:scale-110 transition-transform">
-              <Flame className="w-5 h-5 animate-pulse" />
+            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30 group-hover:scale-110 transition-transform">
+              <Flame className="w-4 sm:w-5 h-4 sm:h-5 animate-pulse" />
             </div>
           </div>
 
           {/* Study Time */}
-          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/40 transition-all flex items-center justify-between shadow-lg group">
+          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Planned</span>
-              <h4 className="text-xl font-black font-mono text-white leading-none tabular-nums">
-                {(totalPlannedMinutes / 60).toFixed(1)} <span className="text-xs font-sans text-[#9A9CAE]">hrs</span>
+              <span className="text-[9.5px] sm:text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">Planned</span>
+              <h4 className="text-lg sm:text-xl font-black font-mono text-white leading-none tabular-nums">
+                {(totalPlannedMinutes / 60).toFixed(1)} <span className="text-[10px] sm:text-xs font-sans text-[#9A9CAE]">hrs</span>
               </h4>
-              <span className="text-[11px] text-emerald-400 font-medium font-mono tabular-nums">{(completedMinutes / 60).toFixed(1)}h finished</span>
+              <span className="text-[9.5px] sm:text-[11px] text-emerald-400 font-medium font-mono tabular-nums">{(completedMinutes / 60).toFixed(1)}h finished</span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center border border-blue-500/30 group-hover:scale-110 transition-transform">
-              <Clock className="w-5 h-5 stroke-[2.2]" />
+            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center border border-blue-500/30 group-hover:scale-110 transition-transform">
+              <Clock className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.2]" />
             </div>
           </div>
 
           {/* Focus XP */}
-          <div className="p-3.5 rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/40 transition-all flex items-center justify-between shadow-lg group">
+          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#131520]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/40 transition-all flex items-center justify-between shadow-lg group">
             <div className="space-y-0.5">
-              <span className="text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">XP Level</span>
-              <h4 className="text-xl font-black font-mono text-purple-400 leading-none tabular-nums">
+              <span className="text-[9.5px] sm:text-[11px] font-bold text-[#9A9CAE] uppercase font-mono tracking-wider">XP Level</span>
+              <h4 className="text-lg sm:text-xl font-black font-mono text-purple-400 leading-none tabular-nums">
                 Lvl {profile.level}
               </h4>
-              <span className="text-[11px] text-purple-400 font-medium font-mono tabular-nums">{profile.xp} XP</span>
+              <span className="text-[9.5px] sm:text-[11px] text-purple-400 font-medium font-mono tabular-nums">{profile.xp} XP</span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
-              <Star className="w-5 h-5 stroke-[2.2]" />
+            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
+              <Star className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.2]" />
             </div>
           </div>
 
@@ -434,22 +435,22 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
         {/* Smart Suggestions Chips (if any) */}
         {smartSuggestions.length > 0 && (
-          <div className="relative z-10 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-2 border-t border-white/10">
-            <span className="text-[11px] tabular-nums font-bold text-[#C5C8D8] uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
+          <div className="relative z-10 flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 no-scrollbar pt-2 border-t border-white/10">
+            <span className="text-[10px] sm:text-[11px] tabular-nums font-bold text-[#C5C8D8] uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Suggested:</span>
             </span>
             {smartSuggestions.map((sug, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 shrink-0"
+                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/10 backdrop-blur-md border border-white/15 shrink-0"
               >
-                <span className="text-xs font-bold text-white truncate max-w-[140px]">
+                <span className="text-[11px] sm:text-xs font-bold text-white truncate max-w-[120px] sm:max-w-[140px]">
                   {sug.topicName}
                 </span>
                 <button
                   onClick={() => handleAddSuggestion(sug.topicName, sug.subjectName, sug.subjectColor, sug.topicId)}
-                  className="px-2 py-0.5 rounded-lg bg-[#FACC15] hover:bg-[#EAB308] text-black text-[11px] font-extrabold cursor-pointer transition-all active:scale-95"
+                  className="px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg bg-[#FACC15] hover:bg-[#EAB308] text-black text-[10px] sm:text-[11px] font-extrabold cursor-pointer transition-all active:scale-95"
                 >
                   + Add
                 </button>
@@ -464,16 +465,16 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       <Top3TargetsWidget />
 
       {/* ═══════════════ 2. VIEW CONTROLS & SUBJECT FILTER BAR ═══════════════ */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+      <div className="flex flex-row items-center justify-between gap-2">
         
         {/* Kanban vs Calendar Switcher */}
-        <div className="flex items-center p-1 rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs shrink-0 self-start">
+        <div className="flex items-center p-0.5 sm:p-1 rounded-lg sm:rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] shadow-2xs shrink-0">
           <button
             onClick={() => {
               soundManager.playClick();
               setViewMode('kanban');
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 text-[11px] sm:text-xs font-bold rounded-md sm:rounded-lg transition-all cursor-pointer ${
               viewMode === 'kanban'
                 ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
                 : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
@@ -488,7 +489,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               soundManager.playClick();
               setViewMode('calendar');
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 text-[11px] sm:text-xs font-bold rounded-md sm:rounded-lg transition-all cursor-pointer ${
               viewMode === 'calendar'
                 ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
                 : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
@@ -506,7 +507,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               soundManager.playClick();
               clearCompletedPlannerTasks();
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-bold text-[#65675F] hover:text-rose-500 dark:text-[#94A3B8] hover:border-rose-500/30 transition-all cursor-pointer self-end sm:self-auto active:scale-95 shadow-2xs"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-[11px] sm:text-xs font-bold text-[#65675F] hover:text-rose-500 dark:text-[#94A3B8] hover:border-rose-500/30 transition-all cursor-pointer active:scale-95 shadow-2xs"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Clear Done ({completedTasks.length})</span>
@@ -522,7 +523,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               soundManager.playClick();
               setSelectedSubjectFilter('all');
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
               selectedSubjectFilter === 'all'
                 ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                 : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
@@ -547,7 +548,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                   soundManager.playClick();
                   setSelectedSubjectFilter(s.name);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all border cursor-pointer shrink-0 active:scale-95 ${
                   isSelected
                     ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
                     : 'bg-white dark:bg-[#151622] text-[#65675F] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#262738] hover:border-[#2563EB] dark:hover:border-[#7AA2F7]'
@@ -568,183 +569,235 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
 
       {/* ═══════════════ 4. MAIN WORKSPACE VIEW (KANBAN / CALENDAR) ═══════════════ */}
       {viewMode === 'kanban' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {columns.map(col => {
-            const ColIcon = col.icon;
-            return (
-              <div
-                key={col.id}
-                className="flex flex-col rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth p-3.5 space-y-3 min-h-[380px]"
-              >
-                {/* Column Header */}
-                <div className="flex items-center justify-between pb-2.5 border-b border-[#EEEEE8] dark:border-[#24283B]">
-                  <div className="flex items-center gap-2">
-                    <div className={`p-1.5 rounded-xl ${col.badgeCol}`}>
-                      <ColIcon className="w-4 h-4" />
-                    </div>
-                    <h3 className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide">
-                      {col.title}
-                    </h3>
-                  </div>
-                  <span className={`px-2 py-0.5 text-[11px] font-black rounded-lg font-mono ${col.badgeCol}`}>
+        <div className="space-y-3">
+          {/* Mobile Column Segmented Filter (Hidden on Desktop) */}
+          <div className="sm:hidden flex items-center gap-1 p-1 rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] overflow-x-auto no-scrollbar shadow-2xs">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                setMobileActiveColumn('all');
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap cursor-pointer transition-all ${
+                mobileActiveColumn === 'all'
+                  ? 'bg-[#11120F] dark:bg-white text-white dark:text-black font-black shadow-xs'
+                  : 'text-[#65675F] dark:text-[#94A3B8]'
+              }`}
+            >
+              <span>All Columns</span>
+              <span className={`px-1 rounded-md text-[9.5px] font-mono tabular-nums ${
+                mobileActiveColumn === 'all' ? 'bg-white/20 dark:bg-black/20' : 'bg-[#F1F5F9] dark:bg-[#222332]'
+              }`}>
+                {filteredTasks.length}
+              </span>
+            </button>
+
+            {columns.map(col => {
+              const isActive = mobileActiveColumn === col.id;
+              const ColIcon = col.icon;
+              return (
+                <button
+                  key={col.id}
+                  onClick={() => {
+                    soundManager.playClick();
+                    setMobileActiveColumn(col.id);
+                  }}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap cursor-pointer transition-all ${
+                    isActive
+                      ? 'bg-[#11120F] dark:bg-white text-white dark:text-black font-black shadow-xs'
+                      : 'text-[#65675F] dark:text-[#94A3B8]'
+                  }`}
+                >
+                  <ColIcon className="w-3 h-3" />
+                  <span>{col.title.replace("'s Targets", '').replace(' Targets', '').replace('This ', '')}</span>
+                  <span className={`px-1 rounded-md text-[9.5px] font-mono tabular-nums ${
+                    isActive ? 'bg-white/20 dark:bg-black/20' : 'bg-[#F1F5F9] dark:bg-[#222332]'
+                  }`}>
                     {col.tasks.length}
                   </span>
-                </div>
+                </button>
+              );
+            })}
+          </div>
 
-                {/* Task Cards */}
-                <div className="flex-1 space-y-2 overflow-y-auto max-h-[500px] no-scrollbar">
-                  {col.tasks.length === 0 ? (
-                    <div className="py-7 px-3 flex flex-col items-center justify-center text-center border border-dashed border-[#E2E8F0] dark:border-[#24283B] rounded-2xl bg-[#F8FAFC]/60 dark:bg-[#141520]/50 space-y-2.5">
-                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center text-[#85877E] dark:text-[#7AA2F7] shadow-2xs">
-                        {col.id === 'upcoming' && <ListPlus className="w-5 h-5 text-indigo-500" />}
-                        {col.id === 'today' && <Target className="w-5 h-5 text-amber-500" />}
-                        {col.id === 'in_progress' && <Zap className="w-5 h-5 text-sky-500 fill-current" />}
-                        {col.id === 'completed' && <Trophy className="w-5 h-5 text-emerald-500" />}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
+            {columns.map(col => {
+              const ColIcon = col.icon;
+              const isHiddenOnMobile = mobileActiveColumn !== 'all' && mobileActiveColumn !== col.id;
+              return (
+                <div
+                  key={col.id}
+                  className={`${isHiddenOnMobile ? 'hidden sm:flex' : 'flex'} flex-col rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth p-3 sm:p-3.5 space-y-2.5 sm:space-y-3 min-h-[160px] sm:min-h-[380px]`}
+                >
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between pb-2 sm:pb-2.5 border-b border-[#EEEEE8] dark:border-[#24283B]">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-1.5 rounded-xl ${col.badgeCol}`}>
+                        <ColIcon className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                       </div>
-                      <div className="space-y-0.5">
-                        <p className="text-xs font-black text-[#11120F] dark:text-[#C0CAF5]">
-                          {col.id === 'upcoming' && 'Queue Clear'}
-                          {col.id === 'today' && 'Runway Open'}
-                          {col.id === 'in_progress' && 'Ready For Sprint'}
-                          {col.id === 'completed' && 'Awaiting Conquests'}
-                        </p>
-                        <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] max-w-[160px] leading-tight mx-auto">
-                          {col.id === 'upcoming' && 'Schedule targets for upcoming days.'}
-                          {col.id === 'today' && "Ready for today's high-yield targets."}
-                          {col.id === 'in_progress' && 'Start a focus sprint on any target.'}
-                          {col.id === 'completed' && 'Finished tasks will celebrate here.'}
-                        </p>
-                      </div>
-                      {(col.id === 'upcoming' || col.id === 'today') && (
-                        <button
-                          onClick={() => {
-                            soundManager.playClick();
-                            setTargetColumn(col.id as any);
-                            setTargetDate(getTodayDateString());
-                            setShowAddModal(true);
-                          }}
-                          className="mt-0.5 px-3 py-1 rounded-lg bg-white dark:bg-[#1E2030] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
-                        >
-                          + Add Target
-                        </button>
-                      )}
+                      <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] uppercase tracking-wide">
+                        {col.title}
+                      </h3>
                     </div>
-                  ) : (
-                    col.tasks.map(task => {
-                      const pBadge = getPriorityBadge(task.priority);
-                      const isDone = task.status === 'completed';
+                    <span className={`px-2 py-0.5 text-[10px] sm:text-[11px] font-black rounded-lg font-mono ${col.badgeCol}`}>
+                      {col.tasks.length}
+                    </span>
+                  </div>
 
-                      return (
-                        <div
-                          key={task.id}
-                          className={`p-3 rounded-2xl border transition-all space-y-2 group ${
-                            isDone
-                              ? 'bg-emerald-500/5 border-emerald-500/20 opacity-75'
-                              : 'bg-[#F8FAFC] dark:bg-[#12141A] border-[#E2E8F0] dark:border-[#24283B] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs'
-                          }`}
-                        >
-                          {/* Title & Checkbox */}
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-start gap-2 min-w-0">
-                              <button
-                                onClick={() => handleToggleWithConfetti(task.id)}
-                                className={`w-4.5 h-4.5 rounded-lg border-2 flex items-center justify-center transition-all shrink-0 cursor-pointer mt-0.5 ${
-                                  isDone
-                                    ? 'bg-emerald-500 border-emerald-500 text-white'
-                                    : 'border-[#85877E] hover:border-emerald-500 hover:bg-emerald-500/10'
-                                }`}
-                              >
-                                {isDone && <Check className="w-3 h-3 stroke-[3]" />}
-                              </button>
-                              <span className={`text-[13px] font-bold leading-snug line-clamp-2 ${
-                                isDone ? 'line-through text-[#85877E]' : 'text-[#11120F] dark:text-[#C0CAF5]'
-                              }`}>
-                                {task.topicName}
-                              </span>
-                            </div>
+                  {/* Task Cards */}
+                  <div className="flex-1 space-y-2 overflow-y-auto max-h-[500px] no-scrollbar">
+                    {col.tasks.length === 0 ? (
+                      <div className="py-4 sm:py-7 px-3 flex flex-col items-center justify-center text-center border border-dashed border-[#E2E8F0] dark:border-[#24283B] rounded-xl sm:rounded-2xl bg-[#F8FAFC]/60 dark:bg-[#141520]/50 space-y-2 sm:space-y-2.5">
+                        <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center text-[#85877E] dark:text-[#7AA2F7] shadow-2xs">
+                          {col.id === 'upcoming' && <ListPlus className="w-4 sm:w-5 h-4 sm:h-5 text-indigo-500" />}
+                          {col.id === 'today' && <Target className="w-4 sm:w-5 h-4 sm:h-5 text-amber-500" />}
+                          {col.id === 'in_progress' && <Zap className="w-4 sm:w-5 h-4 sm:h-5 text-sky-500 fill-current" />}
+                          {col.id === 'completed' && <Trophy className="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500" />}
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-[11px] sm:text-xs font-black text-[#11120F] dark:text-[#C0CAF5]">
+                            {col.id === 'upcoming' && 'Queue Clear'}
+                            {col.id === 'today' && 'Runway Open'}
+                            {col.id === 'in_progress' && 'Ready For Sprint'}
+                            {col.id === 'completed' && 'Awaiting Conquests'}
+                          </p>
+                          <p className="text-[10px] sm:text-[11px] text-[#64748B] dark:text-[#94A3B8] max-w-[160px] leading-tight mx-auto">
+                            {col.id === 'upcoming' && 'Schedule targets for upcoming days.'}
+                            {col.id === 'today' && "Ready for today's high-yield targets."}
+                            {col.id === 'in_progress' && 'Start a focus sprint on any target.'}
+                            {col.id === 'completed' && 'Finished tasks will celebrate here.'}
+                          </p>
+                        </div>
+                        {(col.id === 'upcoming' || col.id === 'today') && (
+                          <button
+                            onClick={() => {
+                              soundManager.playClick();
+                              setTargetColumn(col.id as any);
+                              setTargetDate(getTodayDateString());
+                              setShowAddModal(true);
+                            }}
+                            className="mt-0.5 px-3 py-1 rounded-lg bg-white dark:bg-[#1E2030] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[10px] sm:text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                          >
+                            + Add Target
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      col.tasks.map(task => {
+                        const pBadge = getPriorityBadge(task.priority);
+                        const isDone = task.status === 'completed';
 
-                            <button
-                              onClick={() => {
-                                soundManager.playClick();
-                                deletePlannerTask(task.id);
-                              }}
-                              className="opacity-0 group-hover:opacity-100 p-1 text-[#85877E] hover:text-rose-500 transition-all cursor-pointer shrink-0"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
+                        return (
+                          <div
+                            key={task.id}
+                            className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border transition-all space-y-1.5 sm:space-y-2 group ${
+                              isDone
+                                ? 'bg-emerald-500/5 border-emerald-500/20 opacity-75'
+                                : 'bg-[#F8FAFC] dark:bg-[#12141A] border-[#E2E8F0] dark:border-[#24283B] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-xs'
+                            }`}
+                          >
+                            {/* Title & Checkbox */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-start gap-2 min-w-0">
+                                <button
+                                  onClick={() => handleToggleWithConfetti(task.id)}
+                                  className={`w-4 sm:w-4.5 h-4 sm:h-4.5 rounded-lg border-2 flex items-center justify-center transition-all shrink-0 cursor-pointer mt-0.5 ${
+                                    isDone
+                                      ? 'bg-emerald-500 border-emerald-500 text-white'
+                                      : 'border-[#85877E] hover:border-emerald-500 hover:bg-emerald-500/10'
+                                  }`}
+                                >
+                                  {isDone && <Check className="w-2.5 sm:w-3 h-2.5 sm:h-3 stroke-[3]" />}
+                                </button>
+                                <span className={`text-[12.5px] sm:text-[13px] font-bold leading-snug line-clamp-2 ${
+                                  isDone ? 'line-through text-[#85877E]' : 'text-[#11120F] dark:text-[#C0CAF5]'
+                                }`}>
+                                  {task.topicName}
+                                </span>
+                              </div>
 
-                          {/* Subject & Priority Chips */}
-                          <div className="flex items-center justify-between gap-1 text-[11px]">
-                            <span className="px-2 py-0.5 rounded-md font-bold truncate max-w-[110px] bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#24283B]">
-                              {task.subjectName}
-                            </span>
-                            <span className={`px-1.5 py-0.5 rounded-md font-mono font-bold border ${pBadge.classes}`}>
-                              {pBadge.label}
-                            </span>
-                            <span className="font-mono text-[#85877E] ml-auto">
-                              ⏱️ {task.estimatedMinutes}m
-                            </span>
-                          </div>
-
-                          {/* Quick Focus Sprint & Move Dropdown */}
-                          <div className="pt-1.5 border-t border-[#EEEEE8] dark:border-[#24283B] flex items-center justify-between gap-2">
-                            {onOpenFocusChamber && !isDone ? (
                               <button
                                 onClick={() => {
                                   soundManager.playClick();
-                                  onOpenFocusChamber(task.topicId);
+                                  deletePlannerTask(task.id);
                                 }}
-                                className="px-2.5 py-1 rounded-lg bg-[#0F172A] hover:bg-[#2563EB] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[11px] tabular-nums font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95 tap-bounce"
+                                className="opacity-60 sm:opacity-0 group-hover:opacity-100 p-1 text-[#85877E] hover:text-rose-500 transition-all cursor-pointer shrink-0"
+                                title="Delete"
                               >
-                                <Zap className="w-3 h-3 fill-current" />
-                                <span>Focus</span>
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
-                            ) : <div />}
+                            </div>
 
-                            <div className="flex items-center gap-1 ml-auto text-[11px] tabular-nums font-bold">
-                              {col.id !== 'today' && (
+                            {/* Subject & Priority Chips */}
+                            <div className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px]">
+                              <span className="px-1.5 sm:px-2 py-0.5 rounded-md font-bold truncate max-w-[100px] sm:max-w-[110px] bg-white dark:bg-[#18181D] text-[#65675F] dark:text-[#A9B1D6] border border-[#E2E8F0] dark:border-[#24283B]">
+                                {task.subjectName}
+                              </span>
+                              <span className={`px-1.5 py-0.5 rounded-md font-mono font-bold border ${pBadge.classes}`}>
+                                {pBadge.label}
+                              </span>
+                              <span className="font-mono text-[#85877E] ml-auto">
+                                ⏱️ {task.estimatedMinutes}m
+                              </span>
+                            </div>
+
+                            {/* Quick Focus Sprint & Move Dropdown */}
+                            <div className="pt-1.5 border-t border-[#EEEEE8] dark:border-[#24283B] flex items-center justify-between gap-2">
+                              {onOpenFocusChamber && !isDone ? (
                                 <button
-                                  onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'today'); }}
-                                  className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#18181D] hover:bg-cyan-500 hover:text-white text-[#65675F] dark:text-[#A9B1D6] transition-all cursor-pointer"
+                                  onClick={() => {
+                                    soundManager.playClick();
+                                    onOpenFocusChamber(task.topicId);
+                                  }}
+                                  className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-[#0F172A] hover:bg-[#2563EB] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-[10px] sm:text-[11px] tabular-nums font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95 tap-bounce"
                                 >
-                                  Today
+                                  <Zap className="w-3 h-3 fill-current" />
+                                  <span>Focus</span>
                                 </button>
-                              )}
-                              {col.id !== 'in_progress' && (
-                                <button
-                                  onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'in_progress'); }}
-                                  className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#18181D] hover:bg-purple-500 hover:text-white text-[#65675F] dark:text-[#A9B1D6] transition-all cursor-pointer"
-                                >
-                                  Focus
-                                </button>
-                              )}
-                              {col.id !== 'upcoming' && (
-                                <button
-                                  onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'upcoming'); }}
-                                  className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#18181D] hover:bg-amber-500 hover:text-white text-[#65675F] dark:text-[#A9B1D6] transition-all cursor-pointer"
-                                >
-                                  Week
-                                </button>
-                              )}
+                              ) : <div />}
+
+                              <div className="flex items-center gap-1 ml-auto text-[10px] sm:text-[11px] tabular-nums font-bold">
+                                {col.id !== 'today' && (
+                                  <button
+                                    onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'today'); }}
+                                    className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#18181D] hover:bg-cyan-500 hover:text-white text-[#65675F] dark:text-[#A9B1D6] transition-all cursor-pointer"
+                                  >
+                                    Today
+                                  </button>
+                                )}
+                                {col.id !== 'in_progress' && (
+                                  <button
+                                    onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'in_progress'); }}
+                                    className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#18181D] hover:bg-purple-500 hover:text-white text-[#65675F] dark:text-[#A9B1D6] transition-all cursor-pointer"
+                                  >
+                                    Focus
+                                  </button>
+                                )}
+                                {col.id !== 'upcoming' && (
+                                  <button
+                                    onClick={() => { soundManager.playClick(); movePlannerTask(task.id, 'upcoming'); }}
+                                    className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#18181D] hover:bg-amber-500 hover:text-white text-[#65675F] dark:text-[#A9B1D6] transition-all cursor-pointer"
+                                  >
+                                    Week
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })
-                  )}
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       ) : (
         /* ═══════════════ 5. WEEKLY CALENDAR VIEW ═══════════════ */
         <div className="space-y-3">
           {/* Week Navigation */}
-          <div className="p-3.5 rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex items-center justify-between gap-3">
-            <div className="flex items-center gap-1.5">
+          <div className="p-2.5 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
+            <div className="flex items-center justify-between sm:justify-start gap-1.5">
               <button
                 onClick={() => { soundManager.playClick(); setWeekOffset(w => w - 1); }}
                 className="p-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#12141A] border border-[#E2E8F0] dark:border-[#24283B] text-[#65675F] dark:text-[#A9B1D6] hover:text-[#11120F] transition-all cursor-pointer"
@@ -769,8 +822,8 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               </button>
             </div>
 
-            <div className="text-[15px] sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] font-mono flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
+            <div className="text-xs sm:text-base font-black text-[#11120F] dark:text-[#C0CAF5] font-mono flex items-center justify-center sm:justify-start gap-2">
+              <Calendar className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#7AA2F7]" />
               <span>{weekDays[0]?.monthName} {weekDays[0]?.dayNum} – {weekDays[6]?.monthName} {weekDays[6]?.dayNum}</span>
             </div>
           </div>
@@ -778,30 +831,29 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
           {/* 7-Day Columns */}
           <div
             ref={calendarScrollRef}
-            className="grid grid-cols-1 sm:grid-cols-7 gap-2.5 overflow-x-auto pb-1 no-scrollbar"
+            className="grid grid-cols-1 sm:grid-cols-7 gap-2 sm:gap-2.5 overflow-x-auto pb-1 no-scrollbar"
           >
             {weekDays.map(day => {
               const dayTasks = filteredTasks.filter(t => t.scheduledDate === day.dateStr);
-              const completedInDay = dayTasks.filter(t => t.status === 'completed').length;
 
               return (
                 <div
                   key={day.dateStr}
                   data-today={day.isToday}
-                  className={`p-3 rounded-2xl border transition-all space-y-2 ${
+                  className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border transition-all space-y-2 ${
                     day.isToday
-                      ? 'bg-white dark:bg-[#18181D] border-[#2563EB] dark:border-[#7AA2F7] shadow-sm'
+                      ? 'bg-white dark:bg-[#18181D] border-[#2563EB] dark:border-[#7AA2F7] shadow-sm ring-1 ring-[#2563EB]/20 dark:ring-[#7AA2F7]/20'
                       : 'bg-[#F8FAFC] dark:bg-[#12141A] border-[#E2E8F0] dark:border-[#24283B]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className={`text-[11px] tabular-nums font-bold uppercase font-mono block ${
+                      <span className={`text-[10px] sm:text-[11px] tabular-nums font-bold uppercase font-mono block ${
                         day.isToday ? 'text-[#2563EB] dark:text-[#7AA2F7]' : 'text-[#85877E]'
                       }`}>
                         {day.dayName}
                       </span>
-                      <h4 className="text-base font-black font-mono text-[#11120F] dark:text-[#C0CAF5]">
+                      <h4 className="text-sm sm:text-base font-black font-mono text-[#11120F] dark:text-[#C0CAF5]">
                         {day.dayNum}
                       </h4>
                     </div>
@@ -819,20 +871,24 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
                     </button>
                   </div>
 
-                  <div className="space-y-1.5 max-h-[220px] overflow-y-auto no-scrollbar">
-                    {dayTasks.map(t => (
-                      <div
-                        key={t.id}
-                        onClick={() => handleToggleWithConfetti(t.id)}
-                        className={`p-2 rounded-xl border text-[11px] tabular-nums font-bold cursor-pointer transition-all ${
-                          t.status === 'completed'
-                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 line-through'
-                            : 'bg-white dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#24283B] text-[#11120F] dark:text-[#C0CAF5]'
-                        }`}
-                      >
-                        <p className="line-clamp-1">{t.topicName}</p>
-                      </div>
-                    ))}
+                  <div className="space-y-1.5 max-h-[180px] sm:max-h-[220px] overflow-y-auto no-scrollbar">
+                    {dayTasks.length === 0 ? (
+                      <p className="text-[10px] text-[#94A3B8] italic py-1 text-center">No targets</p>
+                    ) : (
+                      dayTasks.map(t => (
+                        <div
+                          key={t.id}
+                          onClick={() => handleToggleWithConfetti(t.id)}
+                          className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl border text-[10px] sm:text-[11px] tabular-nums font-bold cursor-pointer transition-all ${
+                            t.status === 'completed'
+                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 line-through'
+                              : 'bg-white dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#24283B] text-[#11120F] dark:text-[#C0CAF5]'
+                          }`}
+                        >
+                          <p className="line-clamp-1">{t.topicName}</p>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               );
@@ -844,7 +900,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       {/* ═══════════════ 6. STREAMLINED ADD TARGET MODAL ═══════════════ */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-fade-in font-sans">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-5 space-y-4 animate-scale-in">
+          <div className="w-full max-w-lg rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-4 sm:p-5 space-y-3.5 sm:space-y-4 animate-scale-in max-h-[92vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#24283B]">
               <div className="flex items-center gap-2.5">
