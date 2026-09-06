@@ -1227,50 +1227,76 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-[#0D0F17]/90 via-transparent to-transparent pointer-events-none" />
         
         {/* Banner Content (Badge + Title + Meta) */}
-        <div className="relative z-10 flex items-center gap-3 sm:gap-5 min-w-0">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 min-w-0">
           
-          {/* Left Visual Badge Banner */}
-          <div className="w-12 sm:w-20 h-12 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#101422] via-[#1A233D] to-[#0A0D15] border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-lg relative overflow-hidden">
-            <span className="text-[9px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
-              SYLLABUS
-            </span>
-            <span className="text-[7.5px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-0.5 sm:mt-1">
-              EXPLORER
-            </span>
+          {/* Top Section on Mobile (Badge + Exam Title + Counts) / Left Badge on Desktop */}
+          <div className="flex items-center gap-3 sm:gap-0 shrink-0">
+            {/* Visual Badge Banner */}
+            <div className="w-11 sm:w-20 h-11 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#101422] via-[#1A233D] to-[#0A0D15] border border-white/20 backdrop-blur-md flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-lg relative overflow-hidden">
+              <span className="text-[8.5px] sm:text-xs font-black tracking-wider text-[#FACC15] drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none">
+                SYLLABUS
+              </span>
+              <span className="text-[7px] sm:text-[11px] font-extrabold tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-0.5 sm:mt-1">
+                EXPLORER
+              </span>
+            </div>
+
+            {/* Mobile Header: Exam Title & Subtitle next to Badge */}
+            <div className="sm:hidden min-w-0 flex-1">
+              <h1 className="text-[15px] font-black text-white tracking-tight truncate leading-tight drop-shadow-sm">
+                {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
+              </h1>
+              <div className="flex items-center gap-1 text-[10px] font-mono font-medium text-[#A1A1B2] truncate mt-0.5">
+                <span>{currentExam.subjects.length} Subj</span>
+                <span>•</span>
+                <span>{totalTopicsCount} Topics</span>
+                <span>•</span>
+                <span className="text-emerald-400 font-semibold">{completedTopicsCount} Done</span>
+              </div>
+            </div>
           </div>
 
-          {/* Banner Meta Info */}
+          {/* Banner Meta Info & Telemetry Cards */}
           <div className="space-y-1 sm:space-y-1.5 min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-bold text-[#C2C5D6] flex-wrap">
-              <span className="flex items-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg border border-white/10 backdrop-blur-md">
+            
+            {/* Telemetry Pills: 2x2 Clean Grid on Mobile, Flex Row on Desktop */}
+            <div className="grid grid-cols-2 sm:flex sm:items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-bold text-[#C2C5D6] pt-1 sm:pt-0 border-t border-white/10 sm:border-0">
+              <span className="flex items-center justify-center gap-1 sm:gap-1.5 bg-white/10 px-2 sm:px-2.5 py-1.5 sm:py-0.5 rounded-lg border border-white/10 backdrop-blur-md">
                 <Calendar className="w-3 h-3 text-[#FACC15] shrink-0" />
-                <span>{formattedExamDate}</span>
+                <span className="truncate">{formattedExamDate}</span>
               </span>
-              {daysRemaining > 0 && (
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
-                  ⚡ {daysRemaining}d left
-                </span>
-              )}
-              <span className="px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg font-mono tabular-nums font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+
+              <span className="flex items-center justify-center px-2 sm:px-2.5 py-1.5 sm:py-0.5 rounded-lg font-mono tabular-nums font-bold bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/30">
+                ⚡ {daysRemaining > 0 ? `${daysRemaining}d left` : 'Target Exam'}
+              </span>
+
+              <span className="flex items-center justify-center px-2 sm:px-2.5 py-1.5 sm:py-0.5 rounded-lg font-mono tabular-nums font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 🏆 {overallPercentage}% Mastered
               </span>
-              {pacingForecast && (
+
+              {pacingForecast ? (
                 <span
-                  className={`px-2 sm:px-2.5 py-0.5 rounded-md sm:rounded-lg font-mono tabular-nums font-bold border flex items-center gap-1 ${pacingForecast.statusTheme.badgeBg} ${pacingForecast.statusTheme.badgeBorder} ${pacingForecast.statusTheme.badgeText}`}
+                  className={`flex items-center justify-center gap-1 px-2 sm:px-2.5 py-1.5 sm:py-0.5 rounded-lg font-mono tabular-nums font-bold border ${pacingForecast.statusTheme.badgeBg} ${pacingForecast.statusTheme.badgeBorder} ${pacingForecast.statusTheme.badgeText}`}
                   title={`Required: ${pacingForecast.requiredDailyPace} topics/day | Actual: ${pacingForecast.actualDailyVelocity} topics/day | Finish: ${pacingForecast.finishLineForecastDate}`}
                 >
                   <span>{pacingForecast.statusTheme.icon}</span>
-                  <span>{pacingForecast.requiredDailyPace}/day req</span>
-                  <span className="hidden xs:inline opacity-80">• Finish: {pacingForecast.finishLineForecastDate}</span>
+                  <span className="truncate">{pacingForecast.requiredDailyPace}/day req</span>
+                  <span className="hidden md:inline opacity-80">• Finish: {pacingForecast.finishLineForecastDate}</span>
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-1 px-2 sm:px-2.5 py-1.5 sm:py-0.5 rounded-lg font-mono tabular-nums font-bold bg-white/5 border border-white/10 text-gray-400">
+                  ⚡ Pace Active
                 </span>
               )}
             </div>
 
-            <h1 className="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight break-words line-clamp-2 drop-shadow-sm leading-snug">
+            {/* Desktop Only: Main Exam Title */}
+            <h1 className="hidden sm:block sm:text-xl md:text-2xl font-black text-white tracking-tight break-words line-clamp-2 drop-shadow-sm leading-snug">
               {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
             </h1>
 
-            <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-semibold text-[#A1A1B2] flex-wrap">
+            {/* Desktop Only: Subject & Topics Meta Bar */}
+            <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 text-xs font-mono font-semibold text-[#A1A1B2] flex-wrap">
               <span>{currentExam.subjects.length} Subjects</span>
               <span>•</span>
               <span>{totalTopicsCount} Topics</span>
