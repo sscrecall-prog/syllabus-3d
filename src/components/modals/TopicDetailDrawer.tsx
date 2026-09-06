@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { Topic, TopicStatus, DifficultyLevel, TopicPdfAttachment, TopicNoteItem } from '../../types/syllabus';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -29,17 +29,57 @@ import {
 } from 'lucide-react';
 import { getTodayDateString, formatDateReadable } from '../../utils/dateUtils';
 import { calculateAdaptiveIntervals } from '../../utils/spacedRepetition';
-import { ProfessionalNotesEditor } from '../common/ProfessionalNotesEditor';
-import { AdvancedMistakeJournal } from '../mistakes/AdvancedMistakeJournal';
-import { TopicPdfAttachmentsSection } from '../common/TopicPdfAttachmentsSection';
-import { TopicLecturesSection, YoutubeIcon } from '../common/TopicLecturesSection';
-import { TopicAudioMemosSection } from '../common/TopicAudioMemosSection';
-import { SplitScreenPdfStudyModal } from '../common/SplitScreenPdfStudyModal';
-import { SplitScreenLectureStudyModal } from '../common/SplitScreenLectureStudyModal';
 import { StatusBadge } from '../common/StatusBadge';
 import { ViewErrorBoundary } from '../common/ViewErrorBoundary';
 import { soundManager } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
+
+// Youtube Icon SVG defined locally so TopicLecturesSection can be fully code-split
+const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+// Code-Split Heavy Tab Workspaces for Instant 0ms Drawer Open
+const ProfessionalNotesEditor = lazy(() =>
+  import('../common/ProfessionalNotesEditor').then(m => ({ default: m.ProfessionalNotesEditor }))
+);
+const AdvancedMistakeJournal = lazy(() =>
+  import('../mistakes/AdvancedMistakeJournal').then(m => ({ default: m.AdvancedMistakeJournal }))
+);
+const TopicPdfAttachmentsSection = lazy(() =>
+  import('../common/TopicPdfAttachmentsSection').then(m => ({ default: m.TopicPdfAttachmentsSection }))
+);
+const TopicLecturesSection = lazy(() =>
+  import('../common/TopicLecturesSection').then(m => ({ default: m.TopicLecturesSection }))
+);
+const TopicAudioMemosSection = lazy(() =>
+  import('../common/TopicAudioMemosSection').then(m => ({ default: m.TopicAudioMemosSection }))
+);
+const SplitScreenPdfStudyModal = lazy(() =>
+  import('../common/SplitScreenPdfStudyModal').then(m => ({ default: m.SplitScreenPdfStudyModal }))
+);
+const SplitScreenLectureStudyModal = lazy(() =>
+  import('../common/SplitScreenLectureStudyModal').then(m => ({ default: m.SplitScreenLectureStudyModal }))
+);
+
+// High-speed visual skeleton fallback while heavy tabs load
+const DrawerTabSkeleton: React.FC<{ label?: string }> = ({ label = 'Loading section...' }) => (
+  <div className="p-6 space-y-4 animate-pulse">
+    <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0] dark:border-[#272730]">
+      <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded-lg w-40" />
+      <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-20" />
+    </div>
+    <div className="h-28 bg-gray-100 dark:bg-[#1E1E24] rounded-2xl border border-gray-200/60 dark:border-zinc-800 flex items-center justify-center text-xs font-semibold text-gray-500 dark:text-gray-400">
+      {label}
+    </div>
+    <div className="space-y-2">
+      <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-lg w-3/4" />
+      <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-lg w-1/2" />
+    </div>
+  </div>
+);
 
 interface TopicDetailDrawerProps {
   topic: Topic | null;
@@ -947,15 +987,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 <h3 className="text-xs font-mono font-black uppercase tracking-wider text-black mb-3 border-b border-gray-300 pb-1">
                   Master Study Notes
                 </h3>
-                <ProfessionalNotesEditor
-                  initialContent={liveTopic.notes}
-                  initialNoteItems={liveTopic.noteItems}
-                  topicName={liveTopic.name}
-                  subjectName={subjectName}
-                  chapterName={chapterName}
-                  examName="SSC CGL"
-                  onSave={() => {}}
-                />
+                <div className="text-xs font-sans text-black whitespace-pre-wrap leading-relaxed">
+                  {liveTopic.notes}
+                </div>
               </div>
             )}
             
@@ -1515,36 +1549,38 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             {activeTab === 'lectures' && (
               <div key="lectures" className={`space-y-5 ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 <ViewErrorBoundary compact sectionName="Video Lectures">
-                  <TopicLecturesSection
-                    topicId={liveTopic.id}
-                    topicName={liveTopic.name}
-                    lectures={liveTopic.lectures || []}
-                    onAddLecture={(lecture) => {
-                      if (addTopicLecture) {
-                        addTopicLecture(liveTopic.id, lecture);
-                      }
-                    }}
-                    onDeleteLecture={(lectureId) => {
-                      if (deleteTopicLecture) {
-                        deleteTopicLecture(liveTopic.id, lectureId);
-                      }
-                    }}
-                    onOpenSplitStudy={(lectureId, seekSeconds) => {
-                      setSplitLectureId(lectureId);
-                      setSplitLectureSeekSeconds(seekSeconds || 0);
-                      setIsSplitLectureOpen(true);
-                    }}
-                    onAddTimestamp={(lectureId, ts) => {
-                      if (addLectureTimestamp) {
-                        addLectureTimestamp(liveTopic.id, lectureId, ts);
-                      }
-                    }}
-                    onDeleteTimestamp={(lectureId, tsId) => {
-                      if (deleteLectureTimestamp) {
-                        deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
-                      }
-                    }}
-                  />
+                  <Suspense fallback={<DrawerTabSkeleton label="Loading Video Lectures..." />}>
+                    <TopicLecturesSection
+                      topicId={liveTopic.id}
+                      topicName={liveTopic.name}
+                      lectures={liveTopic.lectures || []}
+                      onAddLecture={(lecture) => {
+                        if (addTopicLecture) {
+                          addTopicLecture(liveTopic.id, lecture);
+                        }
+                      }}
+                      onDeleteLecture={(lectureId) => {
+                        if (deleteTopicLecture) {
+                          deleteTopicLecture(liveTopic.id, lectureId);
+                        }
+                      }}
+                      onOpenSplitStudy={(lectureId, seekSeconds) => {
+                        setSplitLectureId(lectureId);
+                        setSplitLectureSeekSeconds(seekSeconds || 0);
+                        setIsSplitLectureOpen(true);
+                      }}
+                      onAddTimestamp={(lectureId, ts) => {
+                        if (addLectureTimestamp) {
+                          addLectureTimestamp(liveTopic.id, lectureId, ts);
+                        }
+                      }}
+                      onDeleteTimestamp={(lectureId, tsId) => {
+                        if (deleteLectureTimestamp) {
+                          deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
+                        }
+                      }}
+                    />
+                  </Suspense>
                 </ViewErrorBoundary>
               </div>
             )}
@@ -1553,84 +1589,90 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             {activeTab === 'notes' && (
               <div key="notes" className={`space-y-5 ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 <ViewErrorBoundary compact sectionName="Topic Notes Editor">
-                  <ProfessionalNotesEditor
-                    initialContent={notes}
-                    initialNoteItems={liveTopic.noteItems}
-                    onSave={handleSaveNotes}
-                    topicName={liveTopic.name}
-                    subjectName={subjectName}
-                    chapterName={chapterName}
-                    examName={currentExam?.name}
-                    onOpenSplitPdf={() => {
-                      setSplitPdfAttachmentId(undefined);
-                      setIsSplitPdfOpen(true);
-                    }}
-                    hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
-                    lectures={liveTopic.lectures || []}
-                    onOpenSplitLecture={(lectureId, seekSeconds) => {
-                      setSplitLectureId(lectureId || liveTopic.lectures?.[0]?.id);
-                      setSplitLectureSeekSeconds(seekSeconds || 0);
-                      setIsSplitLectureOpen(true);
-                    }}
-                    images={liveTopic.images || []}
-                    onAddImage={(img) => {
-                      if (addTopicImageAttachment) {
-                        addTopicImageAttachment(liveTopic.id, img);
-                      }
-                    }}
-                    onDeleteImage={(imgId) => {
-                      if (deleteTopicImageAttachment) {
-                        deleteTopicImageAttachment(liveTopic.id, imgId);
-                      }
-                    }}
-                  />
+                  <Suspense fallback={<DrawerTabSkeleton label="Loading Notes Workspace..." />}>
+                    <ProfessionalNotesEditor
+                      initialContent={notes}
+                      initialNoteItems={liveTopic.noteItems}
+                      onSave={handleSaveNotes}
+                      topicName={liveTopic.name}
+                      subjectName={subjectName}
+                      chapterName={chapterName}
+                      examName={currentExam?.name}
+                      onOpenSplitPdf={() => {
+                        setSplitPdfAttachmentId(undefined);
+                        setIsSplitPdfOpen(true);
+                      }}
+                      hasPdfAttachments={(liveTopic.pdfAttachments?.length || 0) > 0}
+                      lectures={liveTopic.lectures || []}
+                      onOpenSplitLecture={(lectureId, seekSeconds) => {
+                        setSplitLectureId(lectureId || liveTopic.lectures?.[0]?.id);
+                        setSplitLectureSeekSeconds(seekSeconds || 0);
+                        setIsSplitLectureOpen(true);
+                      }}
+                      images={liveTopic.images || []}
+                      onAddImage={(img) => {
+                        if (addTopicImageAttachment) {
+                          addTopicImageAttachment(liveTopic.id, img);
+                        }
+                      }}
+                      onDeleteImage={(imgId) => {
+                        if (deleteTopicImageAttachment) {
+                          deleteTopicImageAttachment(liveTopic.id, imgId);
+                        }
+                      }}
+                    />
+                  </Suspense>
                 </ViewErrorBoundary>
 
                 <ViewErrorBoundary compact sectionName="Audio Memos">
-                  <TopicAudioMemosSection
-                    topicId={liveTopic.id}
-                    topicName={liveTopic.name}
-                    audioMemos={liveTopic.audioMemos || []}
-                    onAddAudioMemo={(memo) => {
-                      if (addTopicAudioMemo) {
-                        addTopicAudioMemo(liveTopic.id, memo);
-                      }
-                    }}
-                    onDeleteAudioMemo={(memoId) => {
-                      if (deleteTopicAudioMemo) {
-                        deleteTopicAudioMemo(liveTopic.id, memoId);
-                      }
-                    }}
-                    onInsertTranscriptToNotes={(text) => {
-                      const updated = notes ? notes + '\n' + text : text;
-                      setNotes(updated);
-                      handleSaveNotes(updated);
-                    }}
-                  />
+                  <Suspense fallback={<DrawerTabSkeleton label="Loading Audio Memos..." />}>
+                    <TopicAudioMemosSection
+                      topicId={liveTopic.id}
+                      topicName={liveTopic.name}
+                      audioMemos={liveTopic.audioMemos || []}
+                      onAddAudioMemo={(memo) => {
+                        if (addTopicAudioMemo) {
+                          addTopicAudioMemo(liveTopic.id, memo);
+                        }
+                      }}
+                      onDeleteAudioMemo={(memoId) => {
+                        if (deleteTopicAudioMemo) {
+                          deleteTopicAudioMemo(liveTopic.id, memoId);
+                        }
+                      }}
+                      onInsertTranscriptToNotes={(text) => {
+                        const updated = notes ? notes + '\n' + text : text;
+                        setNotes(updated);
+                        handleSaveNotes(updated);
+                      }}
+                    />
+                  </Suspense>
                 </ViewErrorBoundary>
 
                 <ViewErrorBoundary compact sectionName="PDF Attachments">
-                  <TopicPdfAttachmentsSection
-                    topicId={liveTopic.id}
-                    topicName={liveTopic.name}
-                    subjectName={subjectName}
-                    chapterName={chapterName}
-                    attachments={liveTopic.pdfAttachments || []}
-                    onAddAttachment={(newAttachment) => {
-                      if (addTopicPdfAttachment) {
-                        addTopicPdfAttachment(liveTopic.id, newAttachment);
-                      }
-                    }}
-                    onDeleteAttachment={(attachmentId) => {
-                      if (deleteTopicPdfAttachment) {
-                        deleteTopicPdfAttachment(liveTopic.id, attachmentId);
-                      }
-                    }}
-                    onOpenSplitStudy={(attachmentId) => {
-                      setSplitPdfAttachmentId(attachmentId);
-                      setIsSplitPdfOpen(true);
-                    }}
-                  />
+                  <Suspense fallback={<DrawerTabSkeleton label="Loading PDF Attachments..." />}>
+                    <TopicPdfAttachmentsSection
+                      topicId={liveTopic.id}
+                      topicName={liveTopic.name}
+                      subjectName={subjectName}
+                      chapterName={chapterName}
+                      attachments={liveTopic.pdfAttachments || []}
+                      onAddAttachment={(newAttachment) => {
+                        if (addTopicPdfAttachment) {
+                          addTopicPdfAttachment(liveTopic.id, newAttachment);
+                        }
+                      }}
+                      onDeleteAttachment={(attachmentId) => {
+                        if (deleteTopicPdfAttachment) {
+                          deleteTopicPdfAttachment(liveTopic.id, attachmentId);
+                        }
+                      }}
+                      onOpenSplitStudy={(attachmentId) => {
+                        setSplitPdfAttachmentId(attachmentId);
+                        setIsSplitPdfOpen(true);
+                      }}
+                    />
+                  </Suspense>
                 </ViewErrorBoundary>
               </div>
             )}
@@ -1639,11 +1681,13 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             {activeTab === 'mistakes' && (
               <div key="mistakes" className={`animate-fade-in ${slideDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`}>
                 <ViewErrorBoundary compact sectionName="Mistakes & Traps Journal">
-                  <AdvancedMistakeJournal
-                    topic={liveTopic}
-                    subjectName={subjectName}
-                    chapterName={chapterName}
-                  />
+                  <Suspense fallback={<DrawerTabSkeleton label="Loading Mistakes & Traps Journal..." />}>
+                    <AdvancedMistakeJournal
+                      topic={liveTopic}
+                      subjectName={subjectName}
+                      chapterName={chapterName}
+                    />
+                  </Suspense>
                 </ViewErrorBoundary>
               </div>
             )}
@@ -1654,54 +1698,58 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
       {/* IN-APP SPLIT-SCREEN PDF STUDY MODAL */}
       {isSplitPdfOpen && (
-        <SplitScreenPdfStudyModal
-          isOpen={isSplitPdfOpen}
-          onClose={() => setIsSplitPdfOpen(false)}
-          topicName={liveTopic.name}
-          subjectName={subjectName}
-          chapterName={chapterName}
-          initialNotes={notes}
-          attachments={liveTopic.pdfAttachments || []}
-          initialAttachmentId={splitPdfAttachmentId}
-          onSaveNotes={handleSaveNotes}
-          images={liveTopic.images || []}
-          onAddImage={(img) => {
-            if (addTopicImageAttachment) {
-              addTopicImageAttachment(liveTopic.id, img);
-            }
-          }}
-          onDeleteImage={(imgId) => {
-            if (deleteTopicImageAttachment) {
-              deleteTopicImageAttachment(liveTopic.id, imgId);
-            }
-          }}
-        />
+        <Suspense fallback={null}>
+          <SplitScreenPdfStudyModal
+            isOpen={isSplitPdfOpen}
+            onClose={() => setIsSplitPdfOpen(false)}
+            topicName={liveTopic.name}
+            subjectName={subjectName}
+            chapterName={chapterName}
+            initialNotes={notes}
+            attachments={liveTopic.pdfAttachments || []}
+            initialAttachmentId={splitPdfAttachmentId}
+            onSaveNotes={handleSaveNotes}
+            images={liveTopic.images || []}
+            onAddImage={(img) => {
+              if (addTopicImageAttachment) {
+                addTopicImageAttachment(liveTopic.id, img);
+              }
+            }}
+            onDeleteImage={(imgId) => {
+              if (deleteTopicImageAttachment) {
+                deleteTopicImageAttachment(liveTopic.id, imgId);
+              }
+            }}
+          />
+        </Suspense>
       )}
 
       {/* IN-APP SPLIT-SCREEN LECTURE & TIMESTAMP SYNC MODAL */}
       {isSplitLectureOpen && (
-        <SplitScreenLectureStudyModal
-          isOpen={isSplitLectureOpen}
-          onClose={() => setIsSplitLectureOpen(false)}
-          topicName={liveTopic.name}
-          subjectName={subjectName}
-          chapterName={chapterName}
-          lectures={liveTopic.lectures || []}
-          initialLectureId={splitLectureId}
-          initialSeekSeconds={splitLectureSeekSeconds}
-          initialNotes={notes}
-          onSaveNotes={handleSaveNotes}
-          onAddTimestamp={(lectureId, ts) => {
-            if (addLectureTimestamp) {
-              addLectureTimestamp(liveTopic.id, lectureId, ts);
-            }
-          }}
-          onDeleteTimestamp={(lectureId, tsId) => {
-            if (deleteLectureTimestamp) {
-              deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
-            }
-          }}
-        />
+        <Suspense fallback={null}>
+          <SplitScreenLectureStudyModal
+            isOpen={isSplitLectureOpen}
+            onClose={() => setIsSplitLectureOpen(false)}
+            topicName={liveTopic.name}
+            subjectName={subjectName}
+            chapterName={chapterName}
+            lectures={liveTopic.lectures || []}
+            initialLectureId={splitLectureId}
+            initialSeekSeconds={splitLectureSeekSeconds}
+            initialNotes={notes}
+            onSaveNotes={handleSaveNotes}
+            onAddTimestamp={(lectureId, ts) => {
+              if (addLectureTimestamp) {
+                addLectureTimestamp(liveTopic.id, lectureId, ts);
+              }
+            }}
+            onDeleteTimestamp={(lectureId, tsId) => {
+              if (deleteLectureTimestamp) {
+                deleteLectureTimestamp(liveTopic.id, lectureId, tsId);
+              }
+            }}
+          />
+        </Suspense>
       )}
     </div>,
     document.body

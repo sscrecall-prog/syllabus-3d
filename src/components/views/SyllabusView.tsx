@@ -56,12 +56,26 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(initialSubjectId || null);
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<TopicStatus | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'content'>('content');
 
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editingChapter, setEditingChapter] = useState<{ subjectId: string; chapter: Chapter } | null>(null);
+
+  // 150ms Debounce for 60 FPS typing and filtering across massive syllabus hierarchies
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(searchInput);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const clearSearch = useCallback(() => {
+    setSearchInput('');
+    setSearchTerm('');
+  }, []);
 
   useEffect(() => {
     if (initialSubjectId && currentExam?.subjects.some(s => s.id === initialSubjectId)) {
@@ -71,6 +85,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
   // Master Step-by-Step Back Handler for Syllabus Hierarchy
   const handleSyllabusBack = useCallback(() => {
+    clearSearch();
     if (selectedChapterId) {
       setSelectedChapterId(null);
       return true; // handled Level 3 -> Level 2
@@ -80,7 +95,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       return true; // handled Level 2 -> Level 1
     }
     return false; // at Level 1, allow parent to navigate to previous view / overview
-  }, [selectedChapterId, selectedSubjectId]);
+  }, [selectedChapterId, selectedSubjectId, clearSearch]);
 
   // Register with Parent App for unified popstate and Header back button
   useEffect(() => {
@@ -120,7 +135,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     soundManager.playClick();
     setSelectedSubjectId(subjectId);
     setSelectedChapterId(null);
-    setSearchTerm('');
+    clearSearch();
     if (onSelectSubjectId) onSelectSubjectId(subjectId);
     window.history.pushState({ subjectId }, '');
   };
@@ -129,20 +144,20 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     soundManager.playClick();
     setSelectedSubjectId(null);
     setSelectedChapterId(null);
-    setSearchTerm('');
+    clearSearch();
   };
 
   const handleSelectChapter = (chapterId: string) => {
     soundManager.playClick();
     setSelectedChapterId(chapterId);
-    setSearchTerm('');
+    clearSearch();
     window.history.pushState({ chapterId }, '');
   };
 
   const handleBackToChapters = () => {
     soundManager.playClick();
     setSelectedChapterId(null);
-    setSearchTerm('');
+    clearSearch();
   };
 
   // Overall Exam Stats
@@ -580,14 +595,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search topics in this chapter..."
                 className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
               />
-              {searchTerm && (
+              {searchInput && (
                 <button
-                  onClick={() => setSearchTerm('')}
+                  onClick={clearSearch}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#85877E] dark:text-slate-300 hover:text-[#11120F] dark:hover:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
                   title="Clear search"
                 >
@@ -662,7 +677,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     <button
                       onClick={() => {
                         soundManager.playClick();
-                        setSearchTerm('');
+                        clearSearch();
                         setStatusFilter('all');
                       }}
                       className="px-4 py-2 rounded-xl bg-white dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
@@ -930,14 +945,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               <Search className="w-4 h-4 text-[#85877E] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={`Search chapters in ${activeSubject.name}...`}
                 className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
               />
-              {searchTerm && (
+              {searchInput && (
                 <button
-                  onClick={() => setSearchTerm('')}
+                  onClick={clearSearch}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
                   title="Clear search"
                 >
@@ -958,10 +973,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <h4 className="text-base font-bold text-[#11120F] dark:text-[#F5F5F7]">No chapters match your search</h4>
                   <p className="text-xs text-[#64748B] dark:text-[#94A3B8] max-w-sm mx-auto font-medium">Try searching with a different keyword or view all syllabus modules.</p>
                 </div>
-                {searchTerm && (
+                {searchInput && (
                   <div className="pt-1">
                     <button
-                      onClick={() => setSearchTerm('')}
+                      onClick={clearSearch}
                       className="px-4 py-2 rounded-xl bg-white dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                     >
                       Clear Search
@@ -1222,14 +1237,14 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             <Search className="w-4 h-4 text-[#85877E] dark:text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search subjects, chapters, topics..."
               className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-xs font-medium text-[#11120F] dark:text-white placeholder-[#85877E] dark:placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] dark:focus:border-[#7AA2F7] focus:ring-2 focus:ring-[#2563EB]/15 dark:focus:ring-[#7AA2F7]/20 shadow-2xs transition-all"
             />
-            {searchTerm && (
+            {searchInput && (
               <button
-                onClick={() => setSearchTerm('')}
+                onClick={clearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#85877E] dark:text-slate-300 hover:text-[#11120F] dark:hover:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition-colors"
                 title="Clear search"
               >
@@ -1250,10 +1265,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <h4 className="text-base font-bold text-[#11120F] dark:text-[#F5F5F7]">No subjects match your search</h4>
                 <p className="text-xs text-[#64748B] dark:text-[#94A3B8] max-w-sm mx-auto font-medium">Try searching with a different keyword or clear your filter.</p>
               </div>
-              {searchTerm && (
+              {searchInput && (
                 <div className="pt-1">
                   <button
-                    onClick={() => setSearchTerm('')}
+                    onClick={clearSearch}
                     className="px-4 py-2 rounded-xl bg-white dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                   >
                     Clear Search
