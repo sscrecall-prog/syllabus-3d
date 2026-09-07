@@ -74,6 +74,24 @@
     --color-error: #A0463E;
   }
 
+  .luxury {
+    /* Haute Couture Luxury Aesthetic — Inspired by Creamy Champagne, Blush Peach & Warm Gold */
+    --color-background: #FAF7F2;
+    --color-primary: #2C221E;
+    --color-primary-accent: #C89B5B;
+    --color-accent-light: #FBF0E6;
+    --color-secondary-accent: #D4AF37;
+    --color-surface: #FFFDFB;
+    --color-surface-soft: #F6F0E8;
+    --color-border: #EADBCE;
+    --color-text-primary: #2C221E;
+    --color-text-secondary: #6B584C;
+    --color-text-muted: #9E8B7D;
+    --color-success: #2E7D5B;
+    --color-warning: #C87D28;
+    --color-error: #B8473D;
+  }
+
   ::selection {
     background-color: rgba(122, 162, 247, 0.35);
     color: #FFFFFF;
@@ -122,6 +140,16 @@
   .sepia ::selection {
     background-color: rgba(139, 105, 20, 0.3);
     color: #3B3022;
+  }
+
+  .luxury body {
+    background-color: #FAF7F2 !important;
+    color: #2C221E !important;
+  }
+
+  .luxury ::selection {
+    background-color: rgba(200, 155, 91, 0.35);
+    color: #2C221E;
   }
 
   /* App Titles & Headings → Plus Jakarta Sans Bold with editorial tracking */
@@ -244,110 +272,110 @@
 /*  EXECUTIVE PURE WHITE LIGHT THEME NORMALIZERS                    */
 /* ================================================================= */
 
-html:not(.dark):not(.sepia) body {
+html:not(.dark):not(.sepia):not(.luxury) body {
   background-color: #F8FAFC !important;
   color: #0F172A !important;
 }
 
 /* Canvas & Backgrounds */
-html:not(.dark):not(.sepia) .bg-\[\#F7F6F0\],
-html:not(.dark):not(.sepia) [class*="bg-[#F7F6F0]"] {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#F7F6F0\],
+html:not(.dark):not(.sepia):not(.luxury) [class*="bg-[#F7F6F0]"] {
   background-color: #F8FAFC !important;
 }
 
-html:not(.dark):not(.sepia) .bg-\[\#FAF9F5\],
-html:not(.dark):not(.sepia) .bg-\[\#FAF8F5\],
-html:not(.dark):not(.sepia) .bg-\[\#F4F6EE\],
-html:not(.dark):not(.sepia) .bg-\[\#F4F6EC\] {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#FAF9F5\],
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#FAF8F5\],
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#F4F6EE\],
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#F4F6EC\] {
   background-color: #FFFFFF !important;
 }
 
-html:not(.dark):not(.sepia) .bg-\[\#EEEEE8\] {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#EEEEE8\] {
   background-color: #F1F5F9 !important;
 }
 
 /* Crisp Neutral Borders */
-html:not(.dark):not(.sepia) .border-\[\#D8D8CF\],
-html:not(.dark):not(.sepia) .border-\[\#D0D0C5\],
-html:not(.dark):not(.sepia) [class*="border-[#D8D8CF]"] {
+html:not(.dark):not(.sepia):not(.luxury) .border-\[\#D8D8CF\],
+html:not(.dark):not(.sepia):not(.luxury) .border-\[\#D0D0C5\],
+html:not(.dark):not(.sepia):not(.luxury) [class*="border-[#D8D8CF]"] {
   border-color: #E2E8F0 !important;
 }
 
-html:not(.dark):not(.sepia) .border-\[\#EEEEE8\] {
+html:not(.dark):not(.sepia):not(.luxury) .border-\[\#EEEEE8\] {
   border-color: #F1F5F9 !important;
 }
 
 /* High-Contrast Obsidian / Slate Typography */
-html:not(.dark):not(.sepia) .text-\[\#11120F\],
-html:not(.dark):not(.sepia) .text-\[\#191A17\] {
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#11120F\],
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#191A17\] {
   color: #0F172A !important;
 }
 
-html:not(.dark):not(.sepia) .text-\[\#65675F\],
-html:not(.dark):not(.sepia) .text-\[\#3D4039\],
-html:not(.dark):not(.sepia) .text-\[\#3F423B\] {
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#65675F\],
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#3D4039\],
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#3F423B\] {
   color: #475569 !important;
 }
 
-html:not(.dark):not(.sepia) .text-\[\#85877E\],
-html:not(.dark):not(.sepia) .text-\[\#55594E\] {
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#85877E\],
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#55594E\] {
   color: #64748B !important;
 }
 
 /* Professional Tech Sapphire / Royal Blue Accents */
-html:not(.dark):not(.sepia) .text-\[\#596B35\],
-html:not(.dark):not(.sepia) .text-\[\#354126\],
-html:not(.dark):not(.sepia) .text-\[\#4A5A2B\] {
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#596B35\],
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#354126\],
+html:not(.dark):not(.sepia):not(.luxury) .text-\[\#4A5A2B\] {
   color: #2563EB !important;
 }
 
-html:not(.dark):not(.sepia) .bg-\[\#596B35\] {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#596B35\] {
   background-color: #2563EB !important;
 }
 
-html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/10,
-html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/12 {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#596B35\]\/10,
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#596B35\]\/12 {
   background-color: rgba(37, 99, 235, 0.08) !important;
 }
 
-html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/15,
-html:not(.dark):not(.sepia) .bg-\[\#596B35\]\/20 {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#596B35\]\/15,
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#596B35\]\/20 {
   background-color: rgba(37, 99, 235, 0.12) !important;
 }
 
-html:not(.dark):not(.sepia) .border-\[\#596B35\] {
+html:not(.dark):not(.sepia):not(.luxury) .border-\[\#596B35\] {
   border-color: #2563EB !important;
 }
 
-html:not(.dark):not(.sepia) .border-\[\#596B35\]\/20,
-html:not(.dark):not(.sepia) .border-\[\#596B35\]\/30 {
+html:not(.dark):not(.sepia):not(.luxury) .border-\[\#596B35\]\/20,
+html:not(.dark):not(.sepia):not(.luxury) .border-\[\#596B35\]\/30 {
   border-color: rgba(37, 99, 235, 0.25) !important;
 }
 
-html:not(.dark):not(.sepia) .bg-\[\#DCE8B7\] {
+html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#DCE8B7\] {
   background-color: #EFF6FF !important;
   color: #1D4ED8 !important;
   border-color: #BFDBFE !important;
 }
 
 /* Interactive Hover & Focus */
-html:not(.dark):not(.sepia) .hover\:bg-\[\#EEEEE8\]:hover {
+html:not(.dark):not(.sepia):not(.luxury) .hover\:bg-\[\#EEEEE8\]:hover {
   background-color: #F1F5F9 !important;
 }
 
-html:not(.dark):not(.sepia) .hover\:bg-\[\#FAF9F5\]:hover {
+html:not(.dark):not(.sepia):not(.luxury) .hover\:bg-\[\#FAF9F5\]:hover {
   background-color: #F8FAFC !important;
 }
 
-html:not(.dark):not(.sepia) .hover\:border-\[\#596B35\]:hover {
+html:not(.dark):not(.sepia):not(.luxury) .hover\:border-\[\#596B35\]:hover {
   border-color: #3B82F6 !important;
 }
 
-html:not(.dark):not(.sepia) .hover\:text-\[\#596B35\]:hover {
+html:not(.dark):not(.sepia):not(.luxury) .hover\:text-\[\#596B35\]:hover {
   color: #2563EB !important;
 }
 
-html:not(.dark):not(.sepia) .hover\:bg-\[\#596B35\]:hover {
+html:not(.dark):not(.sepia):not(.luxury) .hover\:bg-\[\#596B35\]:hover {
   background-color: #1D4ED8 !important;
   color: #FFFFFF !important;
 }
@@ -742,6 +770,123 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .sepia ::-webkit-scrollbar-track { background: #EDE6D6; }
 .sepia ::-webkit-scrollbar-thumb { background: #C4B896; }
 .sepia ::-webkit-scrollbar-thumb:hover { background: #A89A78; }
+
+/* ═══════════════════════════════════════════════════════════════
+   LUXURY THEME — Haute Couture Pastel Champagne & Warm Gold
+   Inspired by Creamy Champagne, Blush Peach, Rose Gold & Pure Gold Monograms
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Canvas & Backgrounds */
+.luxury body { background-color: #FAF7F2 !important; color: #2C221E !important; }
+.luxury #root { background-color: #FAF7F2; }
+.luxury .bg-white { background-color: #FFFDFB !important; }
+.luxury .bg-\[\#F7F6F0\] { background-color: #F6EFE6 !important; }
+.luxury .bg-\[\#EEEEE8\] { background-color: #EFE6DA !important; }
+.luxury .bg-\[\#23232A\] { background-color: #F3ECE1 !important; }
+.luxury .bg-\[\#18181D\],
+.luxury .bg-\[\#16161E\],
+.luxury .bg-\[\#1E1F2A\],
+.luxury .bg-\[\#11120F\],
+.luxury .bg-\[\#0B0B0D\],
+.luxury .bg-\[\#1A1B26\],
+.luxury .bg-\[\#0A0D14\],
+.luxury .bg-\[\#0A0B12\],
+.luxury .bg-\[\#12131F\],
+.luxury .bg-\[\#161720\],
+.luxury .bg-\[\#1F2335\] { background-color: #FFFDFB !important; }
+
+/* Soft card / secondary backgrounds */
+.luxury .bg-\[\#F8FAFC\] { background-color: #F9F4ED !important; }
+.luxury .bg-\[\#F1F5F9\] { background-color: #F4ECE1 !important; }
+
+/* Borders: Warm Rose-Gold & Champagne Ivory */
+.luxury .border-\[\#E2E8F0\],
+.luxury .border-\[\#272730\],
+.luxury .border-\[\#272738\],
+.luxury .border-\[\#333446\],
+.luxury .border-\[\#232430\],
+.luxury .border-\[\#272732\],
+.luxury .border-\[\#292E42\],
+.luxury .border-\[\#2E344E\],
+.luxury .border-\[\#24283B\],
+.luxury .border-\[\#EEEEE8\],
+.luxury .border-\[\#D8D8CF\],
+.luxury .border-\[\#D0D0C5\],
+.luxury .border-\[\#E5E5DC\] { border-color: #EADBCE !important; }
+
+/* Text: Deep Warm Espresso for Maximum Readability */
+.luxury .text-\[\#11120F\],
+.luxury .text-\[\#191A17\],
+.luxury .text-\[\#0F172A\],
+.luxury .text-slate-900,
+.luxury .text-black,
+.luxury .text-\[\#F5F5F7\],
+.luxury .text-white,
+.luxury .text-\[\#C0CAF5\] { color: #2C221E !important; }
+
+/* Text: Secondary Warm Walnut */
+.luxury .text-\[\#65675F\],
+.luxury .text-\[\#475569\],
+.luxury .text-slate-600,
+.luxury .text-slate-700,
+.luxury .text-\[\#CBD5E1\],
+.luxury .text-\[\#A9B1D6\],
+.luxury .text-\[\#3D4039\] { color: #6D5B52 !important; }
+
+/* Text: Muted Warm Taupe */
+.luxury .text-\[\#85877E\],
+.luxury .text-\[\#64748B\],
+.luxury .text-slate-400,
+.luxury .text-slate-500,
+.luxury .text-\[\#94A3B8\],
+.luxury .text-\[\#A1A1AA\] { color: #9E8B7D !important; }
+
+/* Accent: Rose-Gold & Champagne Gold (#C89B5B, #B88746) */
+.luxury .text-\[\#2563EB\],
+.luxury .text-\[\#1D4ED8\],
+.luxury .text-\[\#7AA2F7\],
+.luxury .text-blue-600,
+.luxury .text-blue-500,
+.luxury .text-indigo-600 { color: #B88746 !important; }
+
+.luxury .bg-\[\#2563EB\],
+.luxury .bg-\[\#1D4ED8\],
+.luxury .bg-\[\#7AA2F7\],
+.luxury .bg-blue-600,
+.luxury .bg-blue-500 { background-color: #C89B5B !important; color: #FFFFFF !important; }
+
+.luxury .bg-\[\#EFF6FF\],
+.luxury .bg-\[\#7AA2F7\]\/15,
+.luxury .bg-\[\#7AA2F7\]\/20,
+.luxury .bg-blue-500\/10 { background-color: #FBF0E6 !important; }
+
+.luxury .border-\[\#BFDBFE\],
+.luxury .border-\[\#7AA2F7\],
+.luxury .border-\[\#2563EB\],
+.luxury .border-blue-500\/20 { border-color: #E2CEBE !important; }
+
+/* Luxury Card Pastel Highlights (Matching Image 2) */
+.luxury .luxury-card-peach {
+  background: linear-gradient(135deg, #FFEFEA 0%, #FFDFD6 100%) !important;
+  border-color: #F5CFC5 !important;
+}
+.luxury .luxury-card-mint {
+  background: linear-gradient(135deg, #EBF6F3 0%, #D8EDE7 100%) !important;
+  border-color: #C5E3DB !important;
+}
+.luxury .luxury-card-gold {
+  background: linear-gradient(135deg, #FDF7ED 0%, #F6EAD5 100%) !important;
+  border-color: #ECD8B6 !important;
+}
+.luxury .luxury-card-navy {
+  background: linear-gradient(135deg, #24354D 0%, #152233 100%) !important;
+  color: #FDF9F4 !important;
+}
+
+/* Scrollbars for Luxury */
+.luxury ::-webkit-scrollbar-track { background: #F6F0E8; }
+.luxury ::-webkit-scrollbar-thumb { background: #D9C8B5; border-radius: 9999px; }
+.luxury ::-webkit-scrollbar-thumb:hover { background: #C89B5B; }
 
 /* ═══════════════════════════════════════════════════════════════
    🖨️ CLEAN DESK REVISION PRINT MODE (Ctrl + P)

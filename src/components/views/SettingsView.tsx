@@ -81,7 +81,7 @@ export const SettingsView: React.FC = () => {
 
   const { user, logout, updateUserSession } = useAuth();
   const { updateSettings, showFloatingOverlay, settings } = useTimer();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, revertToPreviousTheme, previousTheme } = useTheme();
   const { isInstalled,} = usePWA();
   const [showPwaModal, setShowPwaModal] = useState(false);
 
@@ -872,21 +872,37 @@ export const SettingsView: React.FC = () => {
       {/* TAB 2: APPEARANCE & THEME */}
       {activeTab === 'appearance' && (
         <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 sm:space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-[#EEEEE8] dark:border-[#242533] pb-2.5 sm:pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-[#EEEEE8] dark:border-[#242533] pb-2.5 sm:pb-3">
             <div>
               <h3 className="text-xs sm:text-sm font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-wide">
                 Color Theme & Palette
               </h3>
               <p className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8]">
-                Switch between high-contrast Tokyo Night Dark, Pure OLED, Sepia, and Pure White Pro.
+                Switch between high-contrast Tokyo Night Dark, Pure OLED, Sepia, Pure White, and Luxury Haute.
               </p>
             </div>
-            <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-mono bg-white dark:bg-[#20212E] border border-slate-200 dark:border-[#272730] text-slate-900 dark:text-[#F5F5F7] capitalize shrink-0">
-              {theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : 'Pure White Pro'}
-            </span>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              {theme === 'luxury' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    haptics.success();
+                    revertToPreviousTheme();
+                  }}
+                  className="px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold bg-[#FAF7F2] dark:bg-[#20212E] border border-[#EADBCE] dark:border-[#272730] text-[#B88746] dark:text-[#7AA2F7] hover:bg-[#F5ECE0] transition-colors cursor-pointer shadow-xs active:scale-95"
+                  title={`Revert immediately to previous theme (${previousTheme})`}
+                >
+                  ↩ Revert to {previousTheme === 'dark' ? 'Dark' : previousTheme}
+                </button>
+              )}
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-mono bg-white dark:bg-[#20212E] border border-slate-200 dark:border-[#272730] text-slate-900 dark:text-[#F5F5F7] capitalize shrink-0">
+                {theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : theme === 'luxury' ? 'Luxury Haute' : 'Pure White Pro'}
+              </span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
             {/* Tokyo Night Dark */}
             <button
               type="button"
@@ -999,6 +1015,40 @@ export const SettingsView: React.FC = () => {
                 </span>
                 <span className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
                   Eye-soothing warm tones for long study sessions
+                </span>
+              </div>
+            </button>
+
+            {/* Luxury Haute Couture Theme Card */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setTheme('luxury');
+              }}
+              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
+                theme === 'luxury'
+                  ? 'bg-[#FAF7F2] border-[#C89B5B] ring-2 ring-[#C89B5B]/40 shadow-md'
+                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#FBF0E6] border border-[#EADBCE] flex items-center justify-center text-[#B88746] shrink-0">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#B88746]" />
+                </div>
+                {theme === 'luxury' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C89B5B]" />}
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs sm:text-[13px] font-extrabold text-[#2C221E] dark:text-white block">
+                    Luxury Haute
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded-md bg-[#FBF0E6] border border-[#EADBCE] text-[9px] font-bold text-[#B88746] uppercase font-mono">
+                    New
+                  </span>
+                </div>
+                <span className="text-[10px] sm:text-[11px] text-[#6D5B52] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
+                  Creamy champagne, blush peach &amp; gold aesthetics
                 </span>
               </div>
             </button>

@@ -12,14 +12,14 @@ import {
   Timer,
   ExternalLink,
   Globe,
-  Sparkles,
   Keyboard,
   Clock,
   Users,
-  Menu
+  PanelLeftClose
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { soundManager } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
 
@@ -58,79 +58,96 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed = false,
   onToggleCollapse
 }) => {
-  const { profile, dueRevisions, weakTopics, plannerTasks, platforms } = useSyllabus();
+  const { profile, dueRevisions, weakTopics, plannerTasks, platforms, overallStats } = useSyllabus();
   const { user } = useAuth();
+  const { isLuxury } = useTheme();
 
-  const navItems = [
+  const navSections = [
     {
-      id: 'overview' as AppView,
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      badge: null,
-      badgeColor: ''
+      title: 'CORE MODULES',
+      items: [
+        {
+          id: 'overview' as AppView,
+          label: 'Dashboard',
+          icon: LayoutDashboard,
+          isDashboard: true,
+          badge: null,
+          badgeColor: ''
+        },
+        {
+          id: 'syllabus' as AppView,
+          label: 'Syllabus Explorer',
+          icon: BookOpen,
+          badge: null,
+          badgeColor: ''
+        },
+        {
+          id: 'planner' as AppView,
+          label: 'Study Planner',
+          icon: CalendarCheck,
+          badge: plannerTasks.filter(t => t.status === 'today').length || null,
+          badgeColor: 'bg-[#2563EB] text-white shadow-[0_0_8px_rgba(37,99,235,0.4)]'
+        },
+        {
+          id: 'pacing' as AppView,
+          label: 'Target Pacing',
+          icon: Clock,
+          badge: 'Live',
+          badgeColor: 'bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+        }
+      ]
     },
     {
-      id: 'syllabus' as AppView,
-      label: 'Syllabus Explorer',
-      icon: BookOpen,
-      badge: null,
-      badgeColor: ''
+      title: 'MASTERY & REVISION',
+      items: [
+        {
+          id: 'revision' as AppView,
+          label: 'Spaced Revision',
+          icon: RotateCw,
+          badge: dueRevisions.length ? `${dueRevisions.length} due` : null,
+          badgeColor: 'bg-[#C49A3A] text-white shadow-[0_0_8px_rgba(196,154,58,0.5)]'
+        },
+        {
+          id: 'weak' as AppView,
+          label: 'Weak Topics',
+          icon: AlertTriangle,
+          badge: weakTopics.length || null,
+          badgeColor: 'bg-[#B94A48] text-white shadow-[0_0_8px_rgba(185,74,72,0.5)]'
+        },
+        {
+          id: 'mindmap' as AppView,
+          label: 'Concept Mind Map',
+          icon: BrainCircuit,
+          badge: null,
+          badgeColor: ''
+        },
+        {
+          id: 'analytics' as AppView,
+          label: 'Analytics & Heatmap',
+          icon: BarChart3,
+          badge: null,
+          badgeColor: ''
+        }
+      ]
     },
     {
-      id: 'planner' as AppView,
-      label: 'Study Planner',
-      icon: CalendarCheck,
-      badge: plannerTasks.filter(t => t.status === 'today').length || null,
-      badgeColor: 'bg-[#2563EB] text-white shadow-[0_0_8px_rgba(37,99,235,0.4)]'
-    },
-    {
-      id: 'pacing' as AppView,
-      label: 'Target Pacing & Forecast',
-      icon: Clock,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'revision' as AppView,
-      label: 'Spaced Revision',
-      icon: RotateCw,
-      badge: dueRevisions.length || null,
-      badgeColor: 'bg-[#C49A3A] text-white shadow-[0_0_8px_rgba(196,154,58,0.5)]'
-    },
-    {
-      id: 'weak' as AppView,
-      label: 'Weak Topics & Traps',
-      icon: AlertTriangle,
-      badge: weakTopics.length || null,
-      badgeColor: 'bg-[#B94A48] text-white shadow-[0_0_8px_rgba(185,74,72,0.5)]'
-    },
-    {
-      id: 'mindmap' as AppView,
-      label: 'Concept Mind Map',
-      icon: BrainCircuit,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'analytics' as AppView,
-      label: 'Analytics & Heatmap',
-      icon: BarChart3,
-      badge: null,
-      badgeColor: ''
-    },
-    {
-      id: 'platforms' as AppView,
-      label: 'Study Station & Hub',
-      icon: Globe,
-      badge: platforms.length || null,
-      badgeColor: 'bg-[#5A4FCF] text-white shadow-[0_0_8px_rgba(90,79,207,0.5)]'
-    },
-    {
-      id: 'settings' as AppView,
-      label: 'App Settings',
-      icon: Settings,
-      badge: null,
-      badgeColor: ''
+      title: 'SYSTEM',
+      items: [
+        {
+          id: 'platforms' as AppView,
+          label: 'Study Station & Hub',
+          icon: Globe,
+          badge: platforms.length || null,
+          badgeColor: 'bg-[#5A4FCF] text-white shadow-[0_0_8px_rgba(90,79,207,0.5)]'
+        },
+        {
+          id: 'settings' as AppView,
+          label: 'Settings',
+          icon: Settings,
+          badge: null,
+          badgeColor: ''
+        }
+      ]
     }
   ];
 
@@ -140,9 +157,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-sm'
       }`}
     >
+      {/* Edge Hover Close Button on the right border */}
+      {onToggleCollapse && !isCollapsed && (
+        <button
+          type="button"
+          onClick={() => {
+            soundManager.playClick();
+            haptics.light();
+            onToggleCollapse();
+          }}
+          className="absolute -right-3 top-14 z-50 hidden md:flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-[#181822] border border-slate-200 dark:border-[#333446] shadow-md text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer hover:scale-110 active:scale-95 group"
+          title="Close sidebar (Ctrl+B)"
+          aria-label="Close sidebar"
+        >
+          <PanelLeftClose className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+        </button>
+      )}
+
       <div className="space-y-2.5">
-        
-        {/* Gemini-Style App Branding with Collapse Trigger */}
+        {/* Tradewise-Style Header Branding & Collapse Button */}
         <div className="flex items-center justify-between gap-2 px-1 py-1">
           <div
             className="flex items-center gap-2.5 min-w-0 group cursor-pointer"
@@ -156,11 +189,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none truncate">
-                SYLLABUS 3D
-              </h1>
-              <p className="text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] mt-0.5 truncate">
-                Mastery System
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none truncate">
+                  SYLLABUS 3D
+                </h1>
+                <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[9px] font-black tracking-widest font-mono">
+                  PRO
+                </span>
+              </div>
+              <p className="text-[10px] font-bold text-[#65675F] dark:text-[#94A3B8] mt-0.5 truncate">
+                Discipline &amp; Mastery
               </p>
             </div>
           </div>
@@ -174,15 +212,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onToggleCollapse();
               }}
               className="p-1.5 rounded-xl text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#181822] border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#333446] transition-all cursor-pointer shrink-0 active:scale-95 group"
-              title="Collapse sidebar (Ctrl+B)"
-              aria-label="Collapse sidebar"
+              title="Close sidebar (Ctrl+B)"
+              aria-label="Close sidebar"
             >
-              <Menu className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <PanelLeftClose className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </button>
           )}
         </div>
 
-        {/* Action Buttons: Add Topic & Focus Chamber */}
+        {/* Action Buttons: Add Custom Topic & 3D Focus Chamber */}
         <div className="space-y-1.5">
           {onOpenAddTopic && (
             <button
@@ -216,60 +254,113 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Compact Navigation List */}
-        <nav className="space-y-0.5 relative pt-1 border-t border-[#E2E8F0] dark:border-[#232430]">
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = activeView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  soundManager.playClick();
-                  onSelectView(item.id);
-                }}
-                className={`group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${
-                  isActive
-                    ? 'bg-white dark:bg-[#1E1F2A] text-[#11120F] dark:text-white border border-[#E2E8F0] dark:border-[#333446] font-black shadow-xs'
-                    : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-white/70 dark:hover:bg-[#161720] hover:text-[#11120F] dark:hover:text-white'
-                }`}
-              >
-                {/* Active Left Indicator */}
-                {isActive && (
-                  <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-[#2563EB] dark:bg-[#7AA2F7] shadow-[0_0_6px_rgba(37,99,235,0.6)] dark:shadow-[0_0_8px_rgba(122,162,247,0.8)]" />
-                )}
-
-                <div className="flex items-center gap-2.5 min-w-0">
-                  {item.id === 'overview' ? (
-                    <img
-                      src="/dashboard_icon_3d.png"
-                      alt="Dashboard"
-                      className={`w-4 h-4 object-contain shrink-0 transition-transform ${
-                        isActive ? 'scale-110 drop-shadow-sm' : 'opacity-80 group-hover:scale-110'
+        {/* Categorized Navigation List (Tradewise Pro Aesthetic) */}
+        <div className="space-y-3 pt-1 border-t border-[#E2E8F0] dark:border-[#232430]">
+          {navSections.map(section => (
+            <div key={section.title} className="space-y-0.5">
+              <div className="px-2 pt-1 pb-1 text-[10px] font-mono font-bold tracking-wider text-[#85877E] dark:text-[#787C99] uppercase">
+                {section.title}
+              </div>
+              <nav className="space-y-0.5">
+                {section.items.map(item => {
+                  const Icon = item.icon;
+                  const isActive = activeView === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        soundManager.playClick();
+                        onSelectView(item.id);
+                      }}
+                      className={`group relative w-full flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-bold transition-all duration-150 cursor-pointer ${
+                        isActive
+                          ? isLuxury
+                            ? 'bg-gradient-to-r from-[#C89B5B] to-[#B88746] text-white shadow-sm font-black'
+                            : 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#090C15] font-black shadow-xs'
+                          : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161722] hover:text-[#11120F] dark:hover:text-white'
                       }`}
-                    />
-                  ) : (
-                    <Icon className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
-                      isActive ? 'text-[#2563EB] dark:text-[#7AA2F7]' : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
-                    }`} />
-                  )}
-                  <span className="truncate text-[13px] font-semibold">{item.label}</span>
-                </div>
+                    >
+                      {/* Active Left Indicator Bar */}
+                      {isActive && (
+                        <div
+                          className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full ${
+                            isLuxury
+                              ? 'bg-[#FFE8D6]'
+                              : 'bg-emerald-400 dark:bg-[#090C15]'
+                          }`}
+                        />
+                      )}
 
-                {/* Compact Notification Badge */}
-                {item.badge !== null && item.badge > 0 && (
-                  <span className={`px-1.5 py-0.5 rounded-full text-[11px] font-mono font-black shrink-0 ${item.badgeColor}`}>
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {item.isDashboard ? (
+                          <img
+                            src="/dashboard_icon_3d.png"
+                            alt="Dashboard"
+                            className={`w-4 h-4 object-contain shrink-0 transition-transform ${
+                              isActive ? 'scale-110 drop-shadow-sm' : 'opacity-80 group-hover:scale-110'
+                            }`}
+                          />
+                        ) : (
+                          <Icon
+                            className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
+                              isActive
+                                ? isLuxury
+                                  ? 'text-white'
+                                  : 'text-white dark:text-[#090C15]'
+                                : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
+                            }`}
+                          />
+                        )}
+                        <span className="truncate text-[13px] font-semibold">{item.label}</span>
+                      </div>
+
+                      {/* Badge / Pill */}
+                      {item.badge !== null && (
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
+                            isActive
+                              ? isLuxury
+                                ? 'bg-white/25 text-white'
+                                : 'bg-white/20 dark:bg-black/20 text-white dark:text-[#090C15]'
+                              : item.badgeColor
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Compact Bottom Cards */}
+      {/* Bottom Cards Area */}
       <div className="space-y-2 pt-2 border-t border-[#E2E8F0] dark:border-[#232430]">
+        {/* Tradewise-Style Discipline Score Progress Card */}
+        <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#141520] border border-slate-200/80 dark:border-[#272738] space-y-1.5 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              Discipline Score
+            </span>
+            <span className="text-xs font-black font-mono text-emerald-600 dark:text-emerald-400">
+              {overallStats.completionPercentage}/100
+            </span>
+          </div>
+          <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#232433] overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-400 dark:to-lime-400 rounded-full transition-all duration-500"
+              style={{ width: `${Math.max(5, overallStats.completionPercentage)}%` }}
+            />
+          </div>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+            Process &gt; Speed. Stick to your goals today.
+          </p>
+        </div>
+
+        {/* Mock Tracker Quick Link */}
         <a
           href="https://mock-percentile-tracker.vercel.app/"
           target="_blank"
@@ -282,13 +373,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] block leading-tight group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] truncate">
                 Mock Tracker
               </span>
-              <span className="text-[11px] text-[#65675F] dark:text-[#CBD5E1] block leading-none truncate">Score & Percentiles</span>
+              <span className="text-[11px] text-[#65675F] dark:text-[#CBD5E1] block leading-none truncate">Score &amp; Percentiles</span>
             </div>
           </div>
           <ExternalLink className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
         </a>
 
-        {/* Compact User Profile & Level Card */}
+        {/* User Profile & Level Card */}
         <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
@@ -350,7 +441,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* ♿ Keyboard Shortcuts Cheatsheet Trigger */}
+        {/* Keyboard Shortcuts Trigger */}
         {onOpenShortcuts && (
           <button
             onClick={() => {

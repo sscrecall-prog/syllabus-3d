@@ -15,7 +15,9 @@ import {
   GraduationCap,
   WifiOff,
   Download,
-  Settings2
+  Settings2,
+  PanelLeftOpen,
+  Sparkles
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { EditExamTargetModal } from '../modals/EditExamTargetModal';
@@ -45,7 +47,16 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
   const { user } = useAuth();
-  const { toggleTheme: handleThemeToggle, isDark, isOled } = useTheme();
+  const {
+    theme,
+    toggleTheme: handleThemeToggle,
+    revertToPreviousTheme,
+    isLuxury,
+    isDark,
+    isOled,
+    isSepia,
+    previousTheme
+  } = useTheme();
   const { isInstallable, isInstalled, triggerInstall } = usePWA();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
   const [isEditExamModalOpen, setIsEditExamModalOpen] = useState(false);
@@ -94,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Menu className="w-4 h-4" />
           </button>
 
-          {/* Desktop Gemini Sidebar Toggle (>= md): Appears when sidebar is collapsed */}
+          {/* Desktop Sidebar Toggle (>= md): Appears when sidebar is collapsed */}
           {isSidebarCollapsed && onToggleDesktopSidebar && (
             <button
               type="button"
@@ -103,11 +114,12 @@ export const Header: React.FC<HeaderProps> = ({
                 haptics.light();
                 onToggleDesktopSidebar();
               }}
-              className="hidden md:flex items-center justify-center p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group animate-fade-in"
-              title="Expand sidebar (Ctrl+B)"
-              aria-label="Expand sidebar"
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group animate-fade-in"
+              title="Open sidebar (Ctrl+B)"
+              aria-label="Open sidebar"
             >
-              <Menu className="w-4 h-4 text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors group-hover:scale-110" />
+              <PanelLeftOpen className="w-4 h-4 text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors group-hover:scale-110" />
+              <span className="text-[12px] font-bold hidden lg:inline">Sidebar</span>
             </button>
           )}
 
@@ -243,17 +255,57 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Theme Toggle (Light / Dark / OLED) */}
+          {/* Luxury Theme Active & 1-Click Revert Pill */}
+          {isLuxury && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#FBF0E6] border border-[#E2CEBE] shadow-2xs animate-fade-in shrink-0">
+              <span className="text-[11px] font-bold text-[#B88746] flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Luxury</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  haptics.success();
+                  revertToPreviousTheme();
+                }}
+                className="px-2 py-0.5 rounded-lg bg-white border border-[#E2CEBE] hover:bg-[#F6ECE0] text-[10px] font-bold text-[#2C221E] cursor-pointer shadow-xs active:scale-95 transition-all"
+                title={`Revert back to previous theme (${previousTheme})`}
+              >
+                ↩ Revert
+              </button>
+            </div>
+          )}
+
+          {/* Theme Toggle (Cycle: Luxury -> Dark -> OLED -> Light -> Sepia) */}
           <button
-            onClick={toggleTheme}
+            onClick={() => {
+              soundManager.playClick();
+              haptics.light();
+              handleThemeToggle();
+            }}
             className="p-2 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 min-h-[36px] min-w-[36px] flex items-center justify-center"
-            title={isOled ? "Current: OLED Pure Black (Click for Pure White)" : isDark ? "Current: Tokyo Night (Click for OLED)" : "Current: Pure White (Click for Dark)"}
+            title={
+              isLuxury
+                ? "Current: Luxury Theme (Click for Tokyo Night Dark)"
+                : isOled
+                ? "Current: OLED Pure Black (Click for Pure White)"
+                : isDark
+                ? "Current: Tokyo Night (Click for OLED)"
+                : isSepia
+                ? "Current: Sepia (Click for Luxury)"
+                : "Current: Pure White (Click for Sepia)"
+            }
             aria-label="Toggle theme"
           >
-            {isOled ? (
+            {isLuxury ? (
+              <Sparkles className="w-4 h-4 text-[#B88746]" />
+            ) : isOled ? (
               <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>
             ) : isDark ? (
               <Sun className="w-4 h-4 text-[#F59E0B]" />
+            ) : isSepia ? (
+              <span className="text-[11px] font-mono font-black text-[#8B6914]">SE</span>
             ) : (
               <Moon className="w-4 h-4 text-[#2563EB]" />
             )}

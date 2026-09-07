@@ -21,6 +21,7 @@ import { OfflineStatusIndicator } from './components/common/OfflineStatusIndicat
 import { ViewErrorBoundary } from './components/common/ViewErrorBoundary';
 import { storageManager } from './services/storageManager';
 import { useTheme } from './context/ThemeContext';
+import { PanelLeftOpen } from 'lucide-react';
 
 // ⚡ Lazy Loaded Secondary Views (Code Splitting for Lightning-Fast Initial Load)
 const SyllabusView = lazy(() => import('./components/views/SyllabusView').then(m => ({ default: m.SyllabusView })));
@@ -652,6 +653,20 @@ export const App: React.FC = () => {
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
         isSidebarCollapsed ? 'md:pl-0' : 'md:pl-64'
       }`}>
+        {/* Floating Desktop Edge Sidebar Trigger when Collapsed */}
+        {isSidebarCollapsed && (
+          <button
+            type="button"
+            onClick={toggleDesktopSidebar}
+            className="fixed left-0 top-18 z-40 hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-r-xl bg-white/95 dark:bg-[#181822]/95 backdrop-blur-md border-y border-r border-[#E2E8F0] dark:border-[#333446] shadow-lg text-[#191A17] dark:text-[#F5F5F7] hover:text-[#2563EB] dark:hover:text-[#7AA2F7] hover:pl-3.5 transition-all cursor-pointer group active:scale-95 animate-fade-in"
+            title="Open sidebar (Ctrl+B)"
+            aria-label="Open sidebar"
+          >
+            <PanelLeftOpen className="w-4 h-4 text-[#2563EB] dark:text-[#7AA2F7] group-hover:scale-110 transition-transform" />
+            <span className="text-[11px] font-bold font-mono tracking-tight">Open</span>
+          </button>
+        )}
+
         <Header
           onOpenSearch={() => {
             setIsSearchOpen(true);

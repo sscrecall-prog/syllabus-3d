@@ -26,7 +26,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onOpenFocus,
   onOpenMobileMenu
 }) => {
-  const { isDark, isOled, isSepia } = useTheme();
+  const { isDark, isOled, isSepia, isLuxury } = useTheme();
   const { dueRevisions } = useSyllabus();
 
   const isHubActive = ['platforms', 'revision', 'weak', 'mindmap', 'analytics', 'settings'].includes(activeView);
@@ -35,7 +35,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     <nav className="md:hidden fixed bottom-2.5 left-3 right-3 sm:left-6 sm:right-6 max-w-md mx-auto z-40 select-none pb-[calc(env(safe-area-inset-bottom,0px))] pointer-events-none animate-slide-up">
       <div
         className={`pointer-events-auto flex items-center justify-between px-2 py-1.5 rounded-3xl backdrop-blur-2xl border transition-all duration-300 relative ${
-          isOled
+          isLuxury
+            ? 'bg-[#FAF7F2]/95 border-[#EADBCE] shadow-[0_12px_40px_rgba(200,155,91,0.18)]'
+            : isOled
             ? 'bg-black/95 border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.85)]'
             : isSepia
             ? 'bg-[#FBF7F0]/95 border-[#D5C9AD] shadow-[0_10px_30px_rgba(59,48,34,0.12)]'
