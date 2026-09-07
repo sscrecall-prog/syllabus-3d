@@ -56,7 +56,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } else if (theme === 'luxury') {
       root.classList.add('luxury');
     } else if (theme === 'glass') {
-      root.classList.add('glass');
+      root.classList.add('dark', 'glass');
     }
     // 'light' = no class needed
     try {
@@ -103,7 +103,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       toggleTheme,
       setTheme,
       revertToPreviousTheme,
-      isDark: theme === 'dark' || theme === 'oled',
+      isDark: theme === 'dark' || theme === 'oled' || theme === 'glass',
       isOled: theme === 'oled',
       isSepia: theme === 'sepia',
       isLuxury: theme === 'luxury',

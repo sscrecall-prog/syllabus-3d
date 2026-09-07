@@ -898,11 +898,11 @@ input, textarea, [contenteditable="true"], .selectable-text {
 
 /* Canvas & Body Wallpaper */
 .glass body {
-  background-color: #050816 !important;
+  background-color: #030712 !important;
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.22) 0%, transparent 60%),
-    radial-gradient(circle at 10% 40%, rgba(147, 51, 234, 0.18) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 15% 50%, rgba(147, 51, 234, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 85%, rgba(37, 99, 235, 0.28) 0%, transparent 55%),
     url('/app-wallpaper.jpg') !important;
   background-attachment: fixed !important;
   background-size: cover !important;
@@ -917,6 +917,15 @@ input, textarea, [contenteditable="true"], .selectable-text {
 
 /* Translucent Dark Glass Cards with Specular Highlight Rim */
 .glass .bg-white,
+.glass [class*="dark:bg-[#1"],
+.glass [class*="dark:bg-[#0"],
+.glass [class*="dark:bg-slate-900"],
+.glass [class*="dark:bg-slate-950"],
+.glass [class*="dark:bg-slate-800"],
+.glass [class*="dark:bg-gray-900"],
+.glass [class*="dark:bg-gray-800"],
+.glass [class*="dark:bg-neutral-900"],
+.glass [class*="dark:bg-zinc-900"],
 .glass .bg-\[\#18181D\],
 .glass .bg-\[\#16161E\],
 .glass .bg-\[\#1E1F2A\],
@@ -931,9 +940,9 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .bg-\[\#181926\],
 .glass .bg-\[\#161720\],
 .glass .bg-\[\#1F2335\] {
-  background-color: rgba(13, 20, 42, 0.58) !important;
-  backdrop-filter: blur(28px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+  background-color: rgba(10, 16, 35, 0.72) !important;
+  backdrop-filter: blur(32px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(210%) !important;
   border-color: rgba(255, 255, 255, 0.18) !important;
   box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.65),
               0 2px 6px 0 rgba(0, 0, 0, 0.3),
@@ -943,9 +952,14 @@ input, textarea, [contenteditable="true"], .selectable-text {
 
 /* Secondary Sub-cards, Nested Glass Containers & Pills */
 .glass .bg-slate-50,
+.glass .bg-slate-100,
 .glass .bg-slate-50\/90,
 .glass .bg-\[\#F8FAFC\],
 .glass .bg-\[\#F1F5F9\],
+.glass [class*="dark:bg-slate-800\/"],
+.glass [class*="dark:bg-white\/"],
+.glass [class*="dark:bg-[#20"],
+.glass [class*="dark:bg-[#27"],
 .glass .bg-\[\#1A1C2C\],
 .glass .bg-\[\#1B1C28\],
 .glass .bg-\[\#1E202E\],
@@ -960,8 +974,10 @@ input, textarea, [contenteditable="true"], .selectable-text {
 
 /* Glass Specular Caustic Borders */
 .glass .border,
-.glass [class*="border-slate-200"],
+.glass [class*="border-slate-"],
+.glass [class*="border-gray-"],
 .glass [class*="border-white\/"],
+.glass [class*="dark:border-"],
 .glass .border-\[\#E2E8F0\],
 .glass .border-\[\#272730\],
 .glass .border-\[\#272738\],
@@ -978,46 +994,80 @@ input, textarea, [contenteditable="true"], .selectable-text {
   border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
-/* Primary Text: Pure Crisp White (As in Reference Pictures) */
+/* All Headings & Titles in Glass Mode */
+.glass h1,
+.glass h2,
+.glass h3,
+.glass h4,
+.glass h5,
+.glass h6,
+.glass .font-heading,
+.glass .app-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Primary High-Contrast Text */
+.glass .text-slate-900,
+.glass .text-slate-800,
+.glass .text-gray-900,
+.glass .text-gray-800,
+.glass .text-zinc-900,
+.glass .text-zinc-800,
+.glass .text-neutral-900,
+.glass .text-neutral-800,
+.glass .text-black,
 .glass .text-\[\#11120F\],
 .glass .text-\[\#191A17\],
 .glass .text-\[\#0F172A\],
-.glass .text-slate-900,
-.glass .text-black,
 .glass .text-\[\#F5F5F7\],
 .glass .text-white,
 .glass .text-\[\#C0CAF5\] {
   color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Secondary Muted Text: Soft Pale Cyan-Blue */
+/* Secondary Readable Text */
+.glass p,
+.glass .text-slate-700,
+.glass .text-slate-600,
+.glass .text-gray-700,
+.glass .text-gray-600,
+.glass .text-zinc-700,
+.glass .text-zinc-600,
 .glass .text-\[\#65675F\],
 .glass .text-\[\#475569\],
-.glass .text-slate-600,
-.glass .text-slate-700,
 .glass .text-\[\#CBD5E1\],
 .glass .text-\[\#A9B1D6\],
 .glass .text-\[\#3D4039\] {
-  color: #CBD5E1 !important;
+  color: #E2E8F0 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 
+/* Muted / Tertiary Text (Subtitles, Timestamps, Helper Hints) */
+.glass .text-slate-500,
+.glass .text-slate-400,
+.glass .text-gray-500,
+.glass .text-gray-400,
+.glass .text-zinc-500,
+.glass .text-zinc-400,
 .glass .text-\[\#85877E\],
 .glass .text-\[\#64748B\],
-.glass .text-slate-400,
-.glass .text-slate-500,
 .glass .text-\[\#94A3B8\],
 .glass .text-\[\#A1A1AA\] {
   color: #94A3B8 !important;
 }
 
-/* Accents: Vibrant Neon Cyan & Electric Blue */
+/* Luminous Electric Accents for Links, Badges, Highlights */
 .glass .text-\[\#2563EB\],
 .glass .text-\[\#1D4ED8\],
 .glass .text-\[\#7AA2F7\],
 .glass .text-blue-600,
 .glass .text-blue-500,
-.glass .text-indigo-600 {
+.glass .text-indigo-600,
+.glass .text-indigo-500 {
   color: #38BDF8 !important;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.4) !important;
 }
 
 /* Primary Action Buttons */
@@ -1029,6 +1079,30 @@ input, textarea, [contenteditable="true"], .selectable-text {
   background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
   box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45) !important;
   color: #FFFFFF !important;
+}
+
+/* Form Inputs, Search Bars & Textareas */
+.glass input:not([type="checkbox"]):not([type="radio"]),
+.glass textarea,
+.glass select {
+  background-color: rgba(10, 16, 35, 0.78) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.glass input::placeholder,
+.glass textarea::placeholder {
+  color: rgba(226, 232, 240, 0.55) !important;
+}
+
+/* Modals & Drawers Backdrop and Container in Glass */
+.glass .fixed.inset-0.bg-black\/50,
+.glass .fixed.inset-0.bg-black\/60,
+.glass .fixed.inset-0.bg-slate-900\/50 {
+  background-color: rgba(3, 7, 18, 0.75) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
 }
 
 /* Header & Sidebar Translucent Glass */
