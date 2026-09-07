@@ -113,20 +113,20 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
   return (
     <>
-      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3.5 sm:space-y-4 relative overflow-hidden select-none">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] space-y-3.5 sm:space-y-4 relative overflow-hidden">
         
         {/* Subtle Ambient Background Gradient */}
         <div className="absolute -top-24 -right-24 w-80 h-80 bg-amber-500/[0.03] dark:bg-amber-500/[0.04] rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header & Quick Actions */}
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 sm:pb-3.5 border-b border-[#EEEEE8] dark:border-[#242533]">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 sm:pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/20 shrink-0">
               <Target className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.4]" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight uppercase">
                   Top 3 Non-Negotiables<span className="hidden sm:inline"> Targets</span>
                 </h3>
                 {completedTargets.length === 3 ? (
@@ -149,7 +149,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsHistoryModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E1F2A] hover:bg-[#F1F5F9] dark:hover:bg-[#282938] text-[#65675F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3044] text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 tap-bounce"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A1B29] hover:bg-slate-100 dark:hover:bg-[#25283B] text-slate-600 dark:text-[#CBD5E1] border border-slate-200/70 dark:border-white/[0.06] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-[0.97] tap-bounce"
               title="View past reflection journal"
             >
               <History className="w-3.5 h-3.5 text-purple-400" />
@@ -166,7 +166,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsReflectionModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all active:scale-95 cursor-pointer tap-bounce"
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all active:scale-[0.97] cursor-pointer tap-bounce"
             >
               <Moon className="w-3.5 h-3.5 text-amber-300" />
               <span>1-Min Journal</span>
@@ -195,8 +195,8 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                   target.completed
                     ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] border-emerald-500/35 shadow-[0_2px_15px_rgba(16,185,129,0.1)]'
                     : hasText
-                    ? `bg-[#F8FAFC] dark:bg-[#1A1C28] border-[#E2E8F0] dark:border-[#2A2D40] shadow-xs ${meta.accentGlow}`
-                    : 'bg-[#F8FAFC]/50 dark:bg-[#151620] border-dashed border-[#E2E8F0] dark:border-[#282938] hover:border-amber-500/40'
+                    ? `bg-slate-50/90 dark:bg-[#1A1C28] border-slate-200/70 dark:border-white/[0.06] shadow-2xs ${meta.accentGlow}`
+                    : 'bg-slate-50/50 dark:bg-[#151622] border-dashed border-slate-200/90 dark:border-white/[0.08] hover:border-amber-500/40'
                 }`}
               >
                 {/* Slot Header */}
