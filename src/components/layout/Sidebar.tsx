@@ -157,22 +157,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-sm'
       }`}
     >
-      {/* Edge Hover Close Button on the right border */}
-      {onToggleCollapse && !isCollapsed && (
-        <button
-          type="button"
-          onClick={() => {
-            soundManager.playClick();
-            haptics.light();
-            onToggleCollapse();
-          }}
-          className="absolute -right-3 top-14 z-50 hidden md:flex items-center justify-center w-6 h-6 rounded-full bg-white dark:bg-[#181822] border border-slate-200 dark:border-[#333446] shadow-md text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer hover:scale-110 active:scale-95 group"
-          title="Close sidebar (Ctrl+B)"
-          aria-label="Close sidebar"
-        >
-          <PanelLeftClose className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-        </button>
-      )}
 
       <div className="space-y-2.5">
         {/* Tradewise-Style Header Branding & Collapse Button */}
