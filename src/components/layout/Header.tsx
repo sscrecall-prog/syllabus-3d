@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
               haptics.light();
               onOpenMobileMenu?.();
             }}
-            className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
+            className="md:hidden h-9 w-9 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-slate-800 dark:text-[#F5F5F7] hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all cursor-pointer shrink-0 tap-bounce shadow-subtle-depth active:scale-95 flex items-center justify-center"
             title="Open Navigation Menu"
             aria-label="Open navigation menu"
           >
@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
                 haptics.light();
                 onToggleDesktopSidebar();
               }}
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group animate-fade-in"
+              className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-slate-800 dark:text-[#F5F5F7] hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group animate-fade-in"
               title="Open sidebar (Ctrl+B)"
               aria-label="Open sidebar"
             >
@@ -131,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({
                 haptics.light();
                 onGoBack();
               }}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group"
+              className="flex items-center gap-1 sm:gap-1.5 h-9 px-2.5 sm:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-slate-800 dark:text-[#F5F5F7] hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group"
             >
               <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span className="text-xs sm:text-[13px] font-extrabold">Back</span>
@@ -142,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative min-w-0">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth shrink-0 active:scale-95 group"
+              className="flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-slate-900 dark:text-[#F5F5F7] shadow-subtle-depth shrink-0 active:scale-95 group"
               title={`Switch Exam Target: ${rawExamName} (${targetYear})`}
             >
               <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#7AA2F7] shrink-0 group-hover:scale-110 transition-transform" />
@@ -154,7 +154,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {targetYear}
                 </span>
               </div>
-              <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] shrink-0" />
+              <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-slate-400 shrink-0" />
             </button>
 
             {isExamMenuOpen && (
@@ -210,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {!isOnline && (
             <div
-              className="flex items-center gap-1 px-2 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] sm:text-[11px] font-mono font-bold animate-pulse cursor-help shrink-0"
+              className="h-9 flex items-center gap-1 px-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] sm:text-[11px] font-mono font-bold animate-pulse cursor-help shrink-0"
               title="100% Offline Ready: All syllabus topics, notes, PDF highlights, and flashcards are cached locally."
             >
               <WifiOff className="w-3.5 h-3.5 shrink-0" />
@@ -221,23 +221,22 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
-            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95 min-h-[36px]"
+            className="h-9 p-2 sm:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95"
             title="Search Topics (Cmd + K)"
             aria-label="Search topics"
           >
-            <Search className="w-4 h-4 sm:w-4 sm:h-4 text-[#2563EB] dark:text-[#8B5CF6] shrink-0" />
+            <Search className="w-4 h-4 text-[#2563EB] dark:text-[#8B5CF6] shrink-0" />
             <span className="hidden md:inline">Search...</span>
             <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[11px] font-mono bg-[#EEEEE8] dark:bg-[#23232A] rounded text-[#85877E]">⌘K</kbd>
           </button>
 
           {/* Streak Indicator */}
-          <div className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth shrink-0 min-h-[36px]">
+          <div className="h-9 flex items-center gap-1 px-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth shrink-0">
             <Flame className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#C49A3A] fill-[#C49A3A] shrink-0" />
             <span className="text-[11px] sm:text-xs tabular-nums font-black text-[#191A17] dark:text-[#F5F5F7] font-mono">
               {profile.currentStreak}d
             </span>
           </div>
-
 
           {/* PWA Install Button (Shown when installable on desktop/mobile) */}
           {isInstallable && !isInstalled && (
@@ -247,7 +246,7 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playClick();
                 await triggerInstall();
               }}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1d4ed8] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs hover:opacity-95 transition-all cursor-pointer shrink-0 active:scale-95 min-h-[36px]"
+              className="h-9 hidden sm:flex items-center gap-1.5 px-2.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1d4ed8] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs hover:opacity-95 transition-all cursor-pointer shrink-0 active:scale-95"
               title="Install Syllabus 3D App on device"
             >
               <Download className="w-3.5 h-3.5" />
@@ -257,7 +256,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Luxury Theme Active & 1-Click Revert Pill */}
           {isLuxury && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#FBF0E6] border border-[#E2CEBE] shadow-2xs animate-fade-in shrink-0">
+            <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-[#FBF0E6] border border-[#E2CEBE] shadow-2xs animate-fade-in shrink-0">
               <span className="text-[11px] font-bold text-[#B88746] flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Luxury</span>
@@ -284,7 +283,7 @@ export const Header: React.FC<HeaderProps> = ({
               haptics.light();
               handleThemeToggle();
             }}
-            className="p-2 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 min-h-[36px] min-w-[36px] flex items-center justify-center"
+            className="h-9 w-9 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 flex items-center justify-center"
             title={
               isLuxury
                 ? "Current: Luxury Theme (Click for Tokyo Night Dark)"
@@ -322,9 +321,9 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenSettings();
               }
             }}
-            className={`w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-gradient-to-tr ${
+            className={`h-9 w-9 rounded-xl bg-gradient-to-tr ${
               profile.avatarColor || 'from-[#2563EB] to-indigo-600'
-            } border border-[#E2E8F0] dark:border-[#272730] text-white font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0`}
+            } border border-slate-200/80 dark:border-white/[0.08] text-white font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0`}
             title={`Active Profile: ${profile.name || 'Aspirant'} (Click to switch)`}
             aria-label="Switch profile"
           >

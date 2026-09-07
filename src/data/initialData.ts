@@ -614,7 +614,7 @@ export const INITIAL_EXAMS: Exam[] = [
     name: 'SSC CGL 2025',
     code: 'SSC_CGL',
     targetYear: 2025,
-    examDate: '2025-09-15',
+    examDate: '2026-10-15',
     subjects: INITIAL_SSC_SUBJECTS
   },
   {
@@ -622,7 +622,7 @@ export const INITIAL_EXAMS: Exam[] = [
     name: 'SSC CGL 2026',
     code: 'SSC_CGL',
     targetYear: 2026,
-    examDate: '2026-09-15',
+    examDate: '2026-11-20',
     subjects: JSON.parse(JSON.stringify(INITIAL_SSC_SUBJECTS))
   }
 ];

@@ -71,7 +71,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const userName = user?.name || user?.email?.split('@')[0] || profile.name || 'Scholar';
 
   return (
-    <div className="space-y-3.5 sm:space-y-5 pb-8 sm:pb-12">
+    <div className="space-y-3.5 sm:space-y-5 pb-32 sm:pb-16">
       
       {/* 🖨️ PRINT-ONLY DESK REVISION SUMMARY HEADER */}
       <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -107,7 +107,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           {/* Top Row: Phase Pill + Live Date + Quick Metrics */}
           <div className="flex items-center justify-between gap-1.5 sm:gap-2">
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-blue-500/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 text-[#2563EB] dark:text-[#7AA2F7] text-[10px] sm:text-[11px] font-black tracking-wide uppercase truncate">
+              <div className="h-7 sm:h-8 inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 text-[#2563EB] dark:text-[#7AA2F7] text-[10px] sm:text-[11px] font-black tracking-wide uppercase truncate">
                 <span>{greetingIcon}</span>
                 <span>{greetingPhase}</span>
               </div>
@@ -121,7 +121,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               {profile.currentStreak > 0 && (
                 <div 
-                  className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] sm:text-[11px] font-mono font-black tabular-nums shadow-2xs"
+                  className="h-7 sm:h-8 flex items-center gap-1 px-2 sm:px-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] sm:text-[11px] font-mono font-black tabular-nums shadow-2xs"
                   title={`${profile.currentStreak} Day Consistency Streak`}
                 >
                   <Flame className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-500 fill-amber-500 shrink-0" />
@@ -129,14 +129,14 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </div>
               )}
               <div 
-                className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-blue-500/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 text-[#2563EB] dark:text-[#7AA2F7] text-[10px] sm:text-[11px] font-mono font-black tabular-nums shadow-2xs"
+                className="h-7 sm:h-8 flex items-center gap-1 px-2 sm:px-2.5 rounded-lg sm:rounded-xl bg-blue-500/10 dark:bg-[#7AA2F7]/15 border border-blue-500/20 dark:border-[#7AA2F7]/30 text-[#2563EB] dark:text-[#7AA2F7] text-[10px] sm:text-[11px] font-mono font-black tabular-nums shadow-2xs"
                 title={`Level ${profile.level} - ${profile.xp} Total XP`}
               >
                 <TrendingUp className="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
                 <span>Lvl {profile.level}</span>
               </div>
               <div 
-                className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-purple-500/10 dark:bg-purple-500/15 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-[10px] sm:text-[11px] font-mono font-black tabular-nums shadow-2xs"
+                className="h-7 sm:h-8 flex items-center gap-1 px-2 sm:px-2.5 rounded-lg sm:rounded-xl bg-purple-500/10 dark:bg-purple-500/15 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-[10px] sm:text-[11px] font-mono font-black tabular-nums shadow-2xs"
                 title={`${overallStats.completionPercentage}% Syllabus Mastered`}
               >
                 <span>🏆 {overallStats.completionPercentage}%</span>
@@ -147,12 +147,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           {/* Middle Row: Personalized Aspirant Name & Executive Mission Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pt-0.5">
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <span>{greeting},</span>
+              <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center flex-wrap">
+                <span>{greeting},&nbsp;</span>
                 <span className="bg-gradient-to-r from-slate-900 via-blue-800 to-[#2563EB] dark:from-white dark:via-[#93C5FD] dark:to-[#818CF8] bg-clip-text text-transparent">
                   {userName}
                 </span>
-                <span className="inline-flex items-center justify-center w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-amber-400/20 text-amber-500 border border-amber-400/30 text-[10px] sm:text-xs shadow-2xs" title="Verified Aspirant">
+                <span className="inline-flex items-center justify-center w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-amber-400/20 text-amber-500 border border-amber-400/30 text-[10px] sm:text-xs shadow-2xs ml-1.5 align-middle shrink-0" title="Verified Aspirant">
                   ✨
                 </span>
               </h1>
@@ -195,31 +195,31 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       </div>
 
       {/* 2. 3D VISUAL HERO ARTWORK BANNER (Hidden in print to save paper & ink) */}
-      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth bg-[#0B0F19] group print:hidden">
-        <div className="relative w-full aspect-[2.3/1] sm:aspect-[21/9] sm:max-h-[340px] overflow-hidden">
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth bg-gradient-to-b from-[#080A10] via-[#0D101C] to-[#080A10] group print:hidden">
+        <div className="relative w-full h-44 xs:h-52 sm:h-64 md:h-72 overflow-hidden flex items-center justify-center">
           <img
             src="/dashboard-hero.jpg"
             alt="Focus Plan Achieve - Syllabus 3D Mastery"
-            className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-[1.01]"
+            className="w-full h-full object-cover object-center scale-[1.2] xs:scale-110 sm:scale-100 transform transition-transform duration-700 group-hover:scale-105"
             loading="eager"
             decoding="async"
             width={1200}
             height={514}
           />
           {/* Subtle gradient vignette to blend seamlessly */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080A10]/90 via-transparent to-[#080A10]/35 pointer-events-none" />
           
           {/* Bottom Overlay Info Pills */}
-          <div className="absolute bottom-2 left-2 right-2 sm:bottom-3.5 sm:left-4 sm:right-4 flex items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
-            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-black/70 backdrop-blur-md border border-white/20 text-white shadow-xl min-w-0">
+          <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3.5 sm:left-4 sm:right-4 flex items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/15 text-white shadow-xl min-w-0">
               <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <span className="text-[10px] sm:text-[13px] font-mono font-bold tracking-wide truncate">
-                Target: {examName} <span className="hidden sm:inline">({examYear})</span>
+              <span className="text-[11px] sm:text-[13px] font-mono font-bold tracking-wide truncate">
+                {examName} <span className="text-slate-400 font-normal">({examYear})</span>
               </span>
             </div>
             
-            <div className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#FACC15]/20 backdrop-blur-md border border-[#FACC15]/35 text-[#FACC15] text-[10px] sm:text-[13px] font-bold shadow-xl shrink-0">
-              <span>🏆 {overallStats.completionPercentage}% <span className="hidden sm:inline">Mastered</span></span>
+            <div className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-amber-500/20 backdrop-blur-md border border-amber-400/30 text-amber-300 text-[11px] sm:text-[13px] font-bold shadow-xl shrink-0">
+              <span>🏆 {overallStats.completionPercentage}% Mastered</span>
             </div>
           </div>
         </div>
