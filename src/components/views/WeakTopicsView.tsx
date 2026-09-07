@@ -109,10 +109,10 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
   };
 
   return (
-    <div className="space-y-3.5 sm:space-y-6 pb-20 max-w-5xl mx-auto font-sans animate-fade-in">
+    <div className="space-y-3.5 sm:space-y-6 pb-8 sm:pb-12 max-w-5xl mx-auto font-sans animate-fade-in">
       
       {/* 1. TOP HEADER DIAGNOSTICS BANNER WITH 3D CYBER CHESS TRAP MAZE BACKGROUND */}
-      <div className="p-3.5 sm:p-7 rounded-2xl sm:rounded-[32px] bg-white dark:bg-[#0A0B12] border border-slate-200/80 dark:border-[#272738] shadow-2xl relative overflow-hidden text-slate-900 dark:text-white space-y-3 sm:space-y-4">
+      <div className="p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0A0B12] border border-slate-200/80 dark:border-[#272738] shadow-2xl relative overflow-hidden text-slate-900 dark:text-white space-y-3 sm:space-y-4">
         
         {/* Full Uncropped High-Fidelity 3D Strategy & Diagnostics Artwork */}
         <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
@@ -142,10 +142,10 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
               <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-sm xs:text-base sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm truncate">
+              <h1 className="text-sm xs:text-base sm:text-xl font-black text-slate-900 dark:text-white font-sans uppercase tracking-tight drop-shadow-sm truncate">
                 Weak Areas & Examiner Traps
-              </h2>
-              <p className="text-[11px] sm:text-xs text-[#C5C8D8] line-clamp-1 sm:line-clamp-none font-medium">
+              </h1>
+              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-[#C5C8D8] line-clamp-1 sm:line-clamp-none font-medium">
                 Targeted mistake analytics to eliminate blindspots and convert errors into marks.
               </p>
             </div>
@@ -191,14 +191,16 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
               const Icon = tile.icon;
               const isSelected = selectedFallacy === tile.id;
               return (
-                <div
+                <button
+                  type="button"
                   key={tile.id}
                   onClick={() => {
                     soundManager.playClick();
                     setSelectedFallacy(prev => (prev === tile.id ? 'all' : tile.id));
                   }}
+                  aria-pressed={isSelected}
                   className={`min-w-[96px] sm:min-w-0 flex-1 shrink-0 p-2 sm:p-3 rounded-xl sm:rounded-2xl border backdrop-blur-xl transition-all cursor-pointer text-center relative active:scale-95 ${tile.color} ${
-                    isSelected ? 'ring-2 ring-current shadow-lg scale-102 bg-white/20' : 'shadow-sm'
+                    isSelected ? 'ring-2 ring-current shadow-lg scale-[1.02] bg-white/20' : 'shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-0.5">
@@ -207,10 +209,10 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                       {tile.label}
                     </span>
                   </div>
-                  <h4 className="text-lg sm:text-2xl font-black font-mono tracking-tight text-white tabular-nums">
+                  <h4 className="text-lg sm:text-2xl font-black font-mono tracking-tight text-slate-900 dark:text-white tabular-nums">
                     {tile.count}
                   </h4>
-                </div>
+                </button>
               );
             })}
           </div>

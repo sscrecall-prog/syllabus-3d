@@ -66,7 +66,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md select-none animate-fade-in font-sans overflow-hidden"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in font-sans overflow-hidden"
       onClick={() => {
         soundManager.playClick();
         haptics.light();

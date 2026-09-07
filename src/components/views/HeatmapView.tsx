@@ -49,12 +49,12 @@ export const HeatmapView: React.FC = () => {
   const activeDaysCount = activityHistory.filter(day => day.studyMinutes > 0).length;
 
   return (
-    <div className="space-y-4 sm:space-y-8 pb-24 sm:pb-12 select-none animate-fade-in">
+    <div className="space-y-4 sm:space-y-8 pb-8 sm:pb-12 animate-fade-in">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             120-Day Study Consistency Heatmap
-          </h2>
+          </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1">
             Granular visualization of your daily preparation, revisions, and time invested.
           </p>

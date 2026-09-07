@@ -94,7 +94,7 @@ export const Badge3D: React.FC<Badge3DProps> = ({ badge }) => {
             <span>Unlocked</span>
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-[9px] sm:text-[11px] font-mono font-medium text-[#85877E] dark:text-[#71717A] bg-black/5 dark:bg-white/5 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg">
+          <span className="inline-flex items-center gap-1 text-[9px] sm:text-[11px] font-mono font-medium text-[#85877E] dark:text-slate-400 bg-black/5 dark:bg-white/5 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg">
             <Lock className="w-2.5 h-2.5" />
             <span>Locked</span>
           </span>

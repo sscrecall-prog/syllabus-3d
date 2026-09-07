@@ -62,6 +62,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   const [activeTab, setActiveTab] = useState<'content'>('content');
 
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
   const [editingChapter, setEditingChapter] = useState<{ subjectId: string; chapter: Chapter } | null>(null);
 
   // 150ms Debounce for 60 FPS typing and filtering across massive syllabus hierarchies
@@ -434,7 +435,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const ChapterBadgeIcon = chapterBadge.icon;
 
     return (
-      <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+      <div className="space-y-3.5 sm:space-y-5 pb-8 sm:pb-12 animate-fade-in max-w-full overflow-x-hidden font-sans">
         
         {/* 🖨️ PRINT-ONLY CHAPTER REVISION CHEATSHEET HEADER */}
         <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -861,7 +862,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     const SubjectBadgeIcon = subjectBadge.icon;
 
     return (
-      <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+      <div className="space-y-3.5 sm:space-y-5 pb-8 sm:pb-12 animate-fade-in max-w-full overflow-x-hidden font-sans">
         
         {/* 🖨️ PRINT-ONLY SUBJECT REVISION CHEATSHEET HEADER */}
         <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -1186,7 +1187,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   // LEVEL 1: COURSE / BATCH PORTAL & SUBJECTS LIST (Mobile-First Polish)
   // ═══════════════════════════════════════════════════════════════════
   return (
-    <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-16 animate-fade-in select-none max-w-full overflow-x-hidden font-sans">
+    <div className="space-y-3.5 sm:space-y-5 pb-8 sm:pb-12 animate-fade-in max-w-full overflow-x-hidden font-sans">
       
       {/* 🖨️ PRINT-ONLY CLEAN DESK REVISION CHEATSHEET HEADER */}
       <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -1322,8 +1323,21 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-[11px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
-              <span>{filteredSubjects.length} of {currentExam.subjects.length} Subjects</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsAddSubjectOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#2563EB] hover:bg-blue-600 dark:bg-[#7AA2F7] dark:hover:bg-[#6894f6] text-white dark:text-[#0B0C15] text-xs font-black transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                <span>Add Subject</span>
+              </button>
+              <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#383A52] text-[11px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+                <span>{filteredSubjects.length} of {currentExam.subjects.length} Subjects</span>
+              </div>
             </div>
           </div>
 
@@ -1351,7 +1365,46 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
         {/* 3. DYNAMIC SUBJECT CARDS LIST (Executive Bento Architecture) */}
         <div className="space-y-2.5 sm:space-y-3">
-          {filteredSubjects.length === 0 ? (
+          {currentExam.subjects.length === 0 ? (
+            <div className="py-12 sm:py-16 px-4 text-center rounded-3xl bg-white dark:bg-[#151622] border-2 border-dashed border-[#E2E8F0] dark:border-[#262738] shadow-xs space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500/15 to-indigo-500/15 border border-blue-500/30 flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-sm">
+                <Sparkles className="w-8 h-8 stroke-[2]" />
+              </div>
+              <div className="space-y-1.5 max-w-md mx-auto">
+                <h4 className="text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight">
+                  Blank Canvas • No Subjects Yet
+                </h4>
+                <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed">
+                  Start building your custom exam curriculum. Add your first subject like Mathematics, General Studies, or English.
+                </p>
+              </div>
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-sm mx-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setIsAddSubjectOpen(true);
+                  }}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-indigo-400 text-white dark:text-[#0B0C15] text-xs sm:text-[13px] font-black shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                >
+                  <Plus className="w-4 h-4 stroke-[3]" />
+                  <span>Add First Subject</span>
+                </button>
+                {onOpenAddTopic && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playClick();
+                      onOpenAddTopic();
+                    }}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] text-[#191A17] dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#383A52] hover:border-[#2563EB] text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                  >
+                    <span>Bulk Paste Topics</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : filteredSubjects.length === 0 ? (
             <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-[#F8FAFC]/70 dark:bg-[#151622] border border-dashed border-[#E2E8F0] dark:border-[#262738] space-y-3.5">
               <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#1E2030] border border-[#E2E8F0] dark:border-[#2D3045] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
                 <BookOpen className="w-7 h-7 stroke-[1.8]" />
@@ -1442,6 +1495,20 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                         )}
                       </div>
 
+                      {/* Edit Subject Action */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSubject(subject);
+                        }}
+                        className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#7AA2F7] hover:border-[#2563EB]/40 transition-colors shadow-2xs shrink-0"
+                        title="Edit Subject"
+                        aria-label={`Edit ${subject.name}`}
+                      >
+                        <Edit2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2]" />
+                      </button>
+
                       {/* Action Chevron */}
                       <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-[#F8FAFC] dark:bg-[#1E2030] border border-[#E2E8F0]/80 dark:border-[#383A52] flex items-center justify-center text-[#65675F] dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
                         <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[2.5]" />
@@ -1494,12 +1561,15 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* Edit Subject Modal */}
-      {editingSubject && (
+      {/* Edit / Add Subject Modal */}
+      {(editingSubject || isAddSubjectOpen) && (
         <EditSubjectModal
-          isOpen={Boolean(editingSubject)}
+          isOpen={Boolean(editingSubject || isAddSubjectOpen)}
           subject={editingSubject}
-          onClose={() => setEditingSubject(null)}
+          onClose={() => {
+            setEditingSubject(null);
+            setIsAddSubjectOpen(false);
+          }}
         />
       )}
     </div>

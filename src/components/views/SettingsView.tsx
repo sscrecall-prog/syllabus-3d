@@ -326,7 +326,7 @@ export const SettingsView: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-24 sm:pb-20 max-w-4xl mx-auto select-none font-sans animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 pb-8 sm:pb-12 max-w-4xl mx-auto font-sans animate-fade-in">
       
       {/* ═══════════════════════════════════════════════════
           1. EXECUTIVE PROFILE & LEVEL STRIP

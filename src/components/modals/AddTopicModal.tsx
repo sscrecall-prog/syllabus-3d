@@ -60,6 +60,8 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
   const [bulkTextInput, setBulkTextInput] = useState('');
   const [bulkDefaultDifficulty, setBulkDefaultDifficulty] = useState<DifficultyLevel>('Medium');
 
+  const hasNoSubjects = !currentExam || currentExam.subjects.length === 0;
+
   useEffect(() => {
     if (currentExam && currentExam.subjects.length > 0) {
       const firstSub = currentExam.subjects[0];
@@ -67,19 +69,25 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
       if (firstSub.chapters.length > 0) {
         setSelectedChapterId(firstSub.chapters[0].id);
       }
+    } else if (currentExam && currentExam.subjects.length === 0) {
+      setIsNewSubject(true);
+      setIsNewChapter(true);
     }
   }, [currentExam]);
 
   const subjectMatch = currentExam?.subjects.find(s => s.id === selectedSubjectId);
 
   useEffect(() => {
-    if (subjectMatch && subjectMatch.chapters.length > 0) {
+    if (hasNoSubjects) {
+      setIsNewSubject(true);
+      setIsNewChapter(true);
+    } else if (subjectMatch && subjectMatch.chapters.length > 0) {
       setSelectedChapterId(subjectMatch.chapters[0].id);
       setIsNewChapter(false);
     } else if (isNewSubject) {
       setIsNewChapter(true);
     }
-  }, [selectedSubjectId, subjectMatch, isNewSubject]);
+  }, [selectedSubjectId, subjectMatch, isNewSubject, hasNoSubjects]);
 
   if (!isOpen || !currentExam) return null;
 
@@ -117,8 +125,11 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (isNewSubject && !newSubjectName.trim()) return;
-    if (isNewChapter && !newChapterName.trim()) return;
+    const effectiveIsNewSubject = isNewSubject || hasNoSubjects;
+    const effectiveIsNewChapter = isNewChapter || effectiveIsNewSubject;
+
+    if (effectiveIsNewSubject && !newSubjectName.trim()) return;
+    if (effectiveIsNewChapter && !newChapterName.trim()) return;
 
     let topicsToCreate: Array<{
       name: string;
@@ -148,14 +159,14 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
     }
 
     addMultipleCustomTopicsWithHierarchy({
-      isNewSubject,
-      subjectId: isNewSubject ? undefined : selectedSubjectId,
+      isNewSubject: effectiveIsNewSubject,
+      subjectId: effectiveIsNewSubject ? undefined : selectedSubjectId,
       newSubjectName,
       newSubjectColor,
       newSubjectIcon,
 
-      isNewChapter: isNewSubject ? true : isNewChapter,
-      chapterId: isNewChapter || isNewSubject ? undefined : selectedChapterId,
+      isNewChapter: effectiveIsNewChapter,
+      chapterId: effectiveIsNewChapter ? undefined : selectedChapterId,
       newChapterName,
       newChapterDescription: newChapterDesc,
 
@@ -238,16 +249,22 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                     <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
                     <span>Subject</span>
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setIsNewSubject(p => !p)}
-                    className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-                  >
-                    {isNewSubject ? 'Existing' : '+ New Subject'}
-                  </button>
+                  {hasNoSubjects ? (
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                      New Blank Canvas
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsNewSubject(p => !p)}
+                      className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                    >
+                      {isNewSubject ? 'Existing' : '+ New Subject'}
+                    </button>
+                  )}
                 </div>
 
-                {isNewSubject ? (
+                {isNewSubject || hasNoSubjects ? (
                   <div className="space-y-2">
                     <input
                       type="text"
@@ -255,7 +272,8 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                       onChange={(e) => setNewSubjectName(e.target.value)}
                       placeholder="e.g. Quantitative Aptitude"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#101117] border border-slate-200 dark:border-[#2A2B3D] text-xs sm:text-[13px] font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
-                      required={isNewSubject}
+                      required
+                      autoFocus={hasNoSubjects}
                     />
                     <div className="flex items-center gap-1.5 pt-0.5">
                       {PALETTE.map((c) => (
@@ -296,7 +314,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                     <Layers className="w-3.5 h-3.5 text-indigo-500" />
                     <span>Chapter</span>
                   </label>
-                  {!isNewSubject && (
+                  {!isNewSubject && !hasNoSubjects && (
                     <button
                       type="button"
                       onClick={() => setIsNewChapter(p => !p)}
@@ -307,7 +325,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   )}
                 </div>
 
-                {isNewChapter || isNewSubject ? (
+                {isNewChapter || isNewSubject || hasNoSubjects ? (
                   <input
                     type="text"
                     value={newChapterName}

@@ -868,7 +868,7 @@ export const PomodoroFocusModal: React.FC<PomodoroFocusModalProps> = ({
                         : 'text-[#85877E] dark:text-[#94A3B8]'
                     }`}>
                       {isRunning
-                        ? session.mode === 'break'
+                        ? (session.mode === 'break' ? 'Resting' : 'Focus Active')
                         : isPaused
                         ? 'Paused'
                         : 'Ready to Launch'}

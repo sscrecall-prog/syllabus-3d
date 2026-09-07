@@ -306,8 +306,10 @@ interface SyllabusContextType {
   addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
   addMultipleCustomTopicsWithHierarchy: (payload: CreateMultipleCustomTopicsPayload) => void;
 
+  addSubject: (subjectData: { name: string; color?: string; icon?: string; initialChapterName?: string }) => void;
   editSubject: (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => void;
   deleteSubject: (subjectId: string) => void;
+  addChapter: (subjectId: string, chapterData: { name: string; description?: string }) => void;
   editChapter: (subjectId: string, chapterId: string, updates: { name?: string; description?: string }) => void;
   deleteChapter: (subjectId: string, chapterId: string) => void;
   editTopic: (topicId: string, updates: { name?: string; difficulty?: DifficultyLevel; weightage?: number; subtopics?: string[]; accuracy?: number; studyTimeMinutes?: number }) => void;
@@ -1387,6 +1389,37 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     confetti({ particleCount: 45, spread: 60, origin: { y: 0.8 } });
   };
 
+  const addSubject = (subjectData: { name: string; color?: string; icon?: string; initialChapterName?: string }) => {
+    const subName = subjectData.name.trim();
+    if (!subName) return;
+    const newSubId = 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    const newChId = 'ch_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    const newChapter: Chapter = {
+      id: newChId,
+      name: subjectData.initialChapterName?.trim() || 'General Concepts',
+      description: 'Core foundation unit',
+      topics: []
+    };
+    const newSubject: Subject = {
+      id: newSubId,
+      name: subName,
+      icon: subjectData.icon || 'BookOpen',
+      color: subjectData.color || '#3b82f6',
+      totalChapters: 1,
+      chapters: [newChapter]
+    };
+
+    setExams(prev => prev.map(exam => {
+      if (exam.id !== profile.selectedExamId) return exam;
+      return {
+        ...exam,
+        subjects: [...exam.subjects, newSubject]
+      };
+    }));
+
+    soundManager.playCompleteChime();
+  };
+
   const editSubject = (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => {
     setExams(prev => prev.map(exam => ({
       ...exam,
@@ -1414,6 +1447,36 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     })));
     setRevisions(prev => prev.filter(r => r.subjectId !== subjectId));
     soundManager.playClick();
+  };
+
+  const addChapter = (subjectId: string, chapterData: { name: string; description?: string }) => {
+    const chName = chapterData.name.trim();
+    if (!chName) return;
+    const newChId = 'ch_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    const newChapter: Chapter = {
+      id: newChId,
+      name: chName,
+      description: chapterData.description?.trim() || 'Custom study unit',
+      topics: []
+    };
+
+    setExams(prev => prev.map(exam => {
+      if (exam.id !== profile.selectedExamId) return exam;
+      return {
+        ...exam,
+        subjects: exam.subjects.map(subj => {
+          if (subj.id !== subjectId) return subj;
+          const updated = [...subj.chapters, newChapter];
+          return {
+            ...subj,
+            totalChapters: updated.length,
+            chapters: updated
+          };
+        })
+      };
+    }));
+
+    soundManager.playCompleteChime();
   };
 
   const editChapter = (subjectId: string, chapterId: string, updates: { name?: string; description?: string }) => {
@@ -2538,8 +2601,10 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     addTopic,
     addCustomTopicWithHierarchy,
     addMultipleCustomTopicsWithHierarchy,
+    addSubject,
     editSubject,
     deleteSubject,
+    addChapter,
     editChapter,
     deleteChapter,
     editTopic,

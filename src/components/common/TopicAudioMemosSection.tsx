@@ -560,7 +560,7 @@ export const TopicAudioMemosSection: React.FC<TopicAudioMemosSectionProps> = ({
                       </p>
                     )}
 
-                    <div className="flex items-center gap-3 text-[11px] text-[#85877E] dark:text-[#71717A] pt-0.5">
+                    <div className="flex items-center gap-3 text-[11px] text-[#85877E] dark:text-slate-400 pt-0.5">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         <span>Recorded {memo.recordedAt}</span>

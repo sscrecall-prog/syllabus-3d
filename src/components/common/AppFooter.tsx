@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Share2,
   ShieldCheck,
@@ -80,9 +80,24 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
     }, 2200);
   };
 
+  // Escape key handler for footer modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsShareModalOpen(false);
+        setIsPrivacyModalOpen(false);
+        setIsContactModalOpen(false);
+      }
+    };
+    if (isShareModalOpen || isPrivacyModalOpen || isContactModalOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isShareModalOpen, isPrivacyModalOpen, isContactModalOpen]);
+
   return (
     <>
-      <footer className="mt-12 pt-8 pb-6 border-t border-[#E2E8F0] dark:border-[#272732]">
+      <footer className="mt-12 pt-8 pb-6 border-t border-[#E2E8F0] dark:border-[#272732] print:hidden">
         <div className="space-y-8">
           
           {/* TOP ROW: Brand identity + Key Quick Actions */}
@@ -251,7 +266,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
 
       {/* 1. SHARE APP MODAL */}
       {isShareModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
           <div className="relative w-full max-w-md p-6 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl space-y-5">
             {/* Modal Header */}
             <div className="flex items-center justify-between">
@@ -260,13 +275,15 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   <Share2 className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-[#11120F] dark:text-[#F5F5F7]">Share Syllabus 3D</h3>
+                  <h3 id="share-modal-title" className="text-base font-black text-[#11120F] dark:text-[#F5F5F7]">Share Syllabus 3D</h3>
                   <p className="text-xs text-[#85877E]">Help fellow study partners stay disciplined</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsShareModalOpen(false)}
                 className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-[#85877E] cursor-pointer"
+                aria-label="Close share dialog"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -347,7 +364,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
 
       {/* 2. PRIVACY POLICY MODAL */}
       {isPrivacyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
           <div className="relative w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
@@ -356,13 +373,15 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   <ShieldCheck className="w-5 h-5 stroke-[2.4]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-[#11120F] dark:text-[#F5F5F7]">Privacy & Data Policy</h3>
+                  <h3 id="privacy-modal-title" className="text-base font-black text-[#11120F] dark:text-[#F5F5F7]">Privacy & Data Policy</h3>
                   <p className="text-xs text-[#85877E]">Student First • Zero Surveillance Promise</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsPrivacyModalOpen(false)}
                 className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-[#85877E] cursor-pointer"
+                aria-label="Close privacy policy dialog"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -415,7 +434,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
 
       {/* 3. CONTACT US / FEEDBACK MODAL */}
       {isContactModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
           <div className="relative w-full max-w-lg p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-[#EEEEE8] dark:border-[#242533]">
@@ -424,13 +443,15 @@ export const AppFooter: React.FC<AppFooterProps> = ({ onNavigate }) => {
                   <Mail className="w-5 h-5 stroke-[2.4]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-[#11120F] dark:text-[#F5F5F7]">Contact Us & Feedback</h3>
+                  <h3 id="contact-modal-title" className="text-base font-black text-[#11120F] dark:text-[#F5F5F7]">Contact Us & Feedback</h3>
                   <p className="text-xs text-[#85877E]">Direct line to the developer & support team</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsContactModalOpen(false)}
                 className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-[#85877E] cursor-pointer"
+                aria-label="Close contact dialog"
               >
                 <X className="w-4 h-4" />
               </button>

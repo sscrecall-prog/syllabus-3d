@@ -187,7 +187,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
   };
 
   return (
-    <div className="space-y-5 pb-16 animate-fade-in max-w-full overflow-x-hidden font-sans">
+    <div className="space-y-5 pb-8 sm:pb-12 animate-fade-in max-w-full overflow-x-hidden font-sans">
       
       {/* 1. EXECUTIVE HEADER & CONTROLS */}
       <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1E1F2E] border border-[#E2E8F0] dark:border-[#262738] shadow-subtle-depth space-y-3 sm:space-y-4">
@@ -205,9 +205,9 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 <span>•</span>
                 <span>Neural Concept Graph</span>
               </div>
-              <h2 className="text-sm xs:text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
+              <h1 className="text-sm xs:text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Interactive Concept Mind Map
-              </h2>
+              </h1>
               <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
                 Visual constellation displaying subject hierarchies, topic connections & live mastery status
               </p>
@@ -231,10 +231,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white p-0.5 cursor-pointer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#85877E] hover:text-[#11120F] dark:hover:text-white p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                   aria-label="Clear search"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
@@ -248,7 +248,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     setViewLayout('radial');
                     soundManager.playClick();
                   }}
-                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     viewLayout === 'radial'
                       ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
                       : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
@@ -262,7 +262,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                     setViewLayout('tree');
                     soundManager.playClick();
                   }}
-                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     viewLayout === 'tree'
                       ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
                       : 'text-[#65675F] dark:text-[#94A3B8] hover:text-[#11120F] dark:hover:text-white'
@@ -278,7 +278,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 <button
                   type="button"
                   onClick={() => handleZoom(-0.15)}
-                  className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  className="p-1.5 sm:p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer min-w-[28px] min-h-[28px] flex items-center justify-center active:scale-90 transition-transform"
                   title="Zoom Out"
                   aria-label="Zoom out"
                 >
@@ -290,7 +290,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 <button
                   type="button"
                   onClick={() => handleZoom(0.15)}
-                  className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  className="p-1.5 sm:p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer min-w-[28px] min-h-[28px] flex items-center justify-center active:scale-90 transition-transform"
                   title="Zoom In"
                   aria-label="Zoom in"
                 >
@@ -299,7 +299,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                 <button
                   type="button"
                   onClick={handleResetZoom}
-                  className="p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
+                  className="p-1.5 sm:p-1 rounded-lg text-[#65675F] dark:text-[#94A3B8] hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer min-w-[28px] min-h-[28px] flex items-center justify-center active:scale-90 transition-transform"
                   title="Reset Zoom"
                   aria-label="Reset zoom"
                 >

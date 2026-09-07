@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
   const examName = currentExam?.name || 'Syllabus Exam';
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors print:hidden">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
         
         {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}
@@ -80,8 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
                 haptics.light();
                 onGoBack();
               }}
-              className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-[#1A1B26] transition-all cursor-pointer flex items-center gap-1 shadow-sm tap-bounce group shrink-0 min-h-[40px]"
-              title="Navigate Back (Previous Step)"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group"
             >
               <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span className="text-xs sm:text-[13px] font-extrabold">Back</span>
@@ -109,13 +108,13 @@ export const Header: React.FC<HeaderProps> = ({
               title="Switch Exam Target"
             >
               <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
-              <span className="whitespace-nowrap font-bold tracking-tight">{examName}</span>
+              <span className="truncate max-w-[110px] xs:max-w-[160px] sm:max-w-[240px] font-bold tracking-tight">{examName}</span>
               <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] shrink-0" />
             </button>
 
             {isExamMenuOpen && (
               <div className="absolute top-full left-0 mt-1.5 w-64 rounded-2xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-elevated-card p-1.5 z-40 animate-fade-in">
-                <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] dark:text-[#71717A]">
+                <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] dark:text-slate-400">
                   Target Exam
                 </div>
                 {exams.map(ex => (
@@ -168,17 +167,17 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
-            className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95 min-h-[36px]"
             title="Search Topics (Cmd + K)"
             aria-label="Search topics"
           >
-            <Search className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#8B5CF6] shrink-0" />
+            <Search className="w-4 h-4 sm:w-4 sm:h-4 text-[#2563EB] dark:text-[#8B5CF6] shrink-0" />
             <span className="hidden md:inline">Search...</span>
             <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[11px] font-mono bg-[#EEEEE8] dark:bg-[#23232A] rounded text-[#85877E]">⌘K</kbd>
           </button>
 
           {/* Streak Indicator */}
-          <div className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth shrink-0">
+          <div className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth shrink-0 min-h-[36px]">
             <Flame className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#C49A3A] fill-[#C49A3A] shrink-0" />
             <span className="text-[11px] sm:text-xs tabular-nums font-black text-[#191A17] dark:text-[#F5F5F7] font-mono">
               {profile.currentStreak}d
@@ -194,7 +193,7 @@ export const Header: React.FC<HeaderProps> = ({
                 soundManager.playClick();
                 await triggerInstall();
               }}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1d4ed8] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs hover:opacity-95 transition-all cursor-pointer shrink-0 active:scale-95"
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1d4ed8] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs hover:opacity-95 transition-all cursor-pointer shrink-0 active:scale-95 min-h-[36px]"
               title="Install Syllabus 3D App on device"
             >
               <Download className="w-3.5 h-3.5" />
@@ -209,26 +208,26 @@ export const Header: React.FC<HeaderProps> = ({
               haptics.selection();
               window.print();
             }}
-            className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#2563EB] dark:text-[#A1A1AA] dark:hover:text-[#7AA2F7] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 no-print"
+            className="p-2 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#2563EB] dark:text-[#A1A1AA] dark:hover:text-[#7AA2F7] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 no-print min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Print Desk Revision Cheatsheet (Ctrl + P)"
             aria-label="Print revision sheet"
           >
-            <Printer className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+            <Printer className="w-4 h-4" />
           </button>
 
           {/* Theme Toggle (Light / Dark / OLED) */}
           <button
             onClick={toggleTheme}
-            className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0"
+            className="p-2 sm:p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 min-h-[36px] min-w-[36px] flex items-center justify-center"
             title={isOled ? "Current: OLED Pure Black (Click for Pure White)" : isDark ? "Current: Tokyo Night (Click for OLED)" : "Current: Pure White (Click for Dark)"}
             aria-label="Toggle theme"
           >
             {isOled ? (
               <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>
             ) : isDark ? (
-              <Sun className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#F59E0B]" />
+              <Sun className="w-4 h-4 text-[#F59E0B]" />
             ) : (
-              <Moon className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB]" />
+              <Moon className="w-4 h-4 text-[#2563EB]" />
             )}
           </button>
 
@@ -243,7 +242,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenSettings();
               }
             }}
-            className={`w-7 sm:w-8 h-7 sm:h-8 rounded-xl bg-gradient-to-tr ${
+            className={`w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-gradient-to-tr ${
               profile.avatarColor || 'from-[#2563EB] to-indigo-600'
             } border border-[#E2E8F0] dark:border-[#272730] text-white font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0`}
             title={`Active Profile: ${profile.name || 'Aspirant'} (Click to switch)`}

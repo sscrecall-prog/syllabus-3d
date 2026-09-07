@@ -278,7 +278,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
     switch (p) {
       case 'high': return { label: '🔥 High', classes: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30' };
       case 'medium': return { label: '⚡ Med', classes: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30' };
-      case 'low': return { label: '☕ Low', classes: 'bg-slate-200 dark:bg-[#23232A] text-[#6B7280] border-slate-300 dark:border-[#272730]' };
+      case 'low': return { label: '☕ Low', classes: 'bg-slate-200 dark:bg-[#23232A] text-[#6B7280] dark:text-slate-400 border-slate-300 dark:border-[#272730]' };
       default: return { label: '⚡ Med', classes: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30' };
     }
   };
@@ -313,10 +313,28 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 max-w-6xl mx-auto font-sans animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 pb-8 sm:pb-12 max-w-6xl mx-auto font-sans animate-fade-in">
       
+      {/* 🖨️ PRINT-ONLY DAILY STUDY TARGETS CHECKLIST */}
+      <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
+        <div className="flex justify-between items-start">
+          <div>
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-gray-700 block">
+              DAILY STUDY PLANNER • PHYSICAL DESK CHECKLIST
+            </span>
+            <h1 className="text-2xl font-black uppercase tracking-tight text-black mt-1">
+              📅 DAILY TARGET SPRINT &amp; STUDY QUEUE
+            </h1>
+          </div>
+          <div className="text-right text-xs font-mono text-gray-600">
+            <div>DATE: {getTodayDateString()}</div>
+            <div>COMPLETED: {completedTasks.length}/{plannerTasks.length} TARGETS</div>
+          </div>
+        </div>
+      </div>
+
       {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD WITH 3D GLASS CALENDAR BACKGROUND ═══════════════ */}
-      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[32px] bg-white dark:bg-[#0A0D14] border border-slate-200/80 dark:border-[#272738] shadow-xl dark:shadow-2xl relative overflow-hidden text-slate-900 dark:text-white space-y-3.5 sm:space-y-4">
+      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0A0D14] border border-slate-200/80 dark:border-[#272738] shadow-xl dark:shadow-2xl relative overflow-hidden text-slate-900 dark:text-white space-y-3.5 sm:space-y-4">
         
         {/* Full Uncropped High-Fidelity 3D Planner & Stopwatch Artwork (Zero crop, fits card perfectly) */}
         <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
@@ -346,10 +364,10 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               <CalendarCheck className="w-4.5 sm:w-5 h-4.5 sm:h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h2 className="text-sm sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm">
+              <h1 className="text-sm sm:text-xl font-black text-slate-900 dark:text-white font-sans uppercase tracking-tight drop-shadow-sm">
                 Daily Study Planner
-              </h2>
-              <p className="text-[11px] sm:text-xs text-[#C5C8D8]">
+              </h1>
+              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-[#C5C8D8]">
                 Target tracking, daily sprints, and study queue
               </p>
             </div>

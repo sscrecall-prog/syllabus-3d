@@ -183,8 +183,26 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
   const stage4Count = revisions.filter(r => r.stage >= 4 || r.completedDate).length;
 
   return (
-    <div className="space-y-3.5 sm:space-y-6 pb-28 sm:pb-20 max-w-5xl mx-auto font-sans animate-fade-in">
+    <div className="space-y-3.5 sm:space-y-6 pb-8 sm:pb-12 max-w-5xl mx-auto font-sans animate-fade-in">
       
+      {/* 🖨️ PRINT-ONLY SPACED REPETITION DESK CHEATSHEET */}
+      <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
+        <div className="flex justify-between items-start">
+          <div>
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-gray-700 block">
+              EBBINGHAUS RETENTION • PHYSICAL DESK CHEATSHEET
+            </span>
+            <h1 className="text-2xl font-black uppercase tracking-tight text-black mt-1">
+              🔄 SPACED REPETITION &amp; MEMORY RETENTION QUEUE
+            </h1>
+          </div>
+          <div className="text-right text-xs font-mono text-gray-600">
+            <div>DUE: {dueRevisions.length} TOPICS</div>
+            <div>STAGES: 1d({stage1Count}) • 3d({stage2Count}) • 7d({stage3Count}) • 21d+({stage4Count})</div>
+          </div>
+        </div>
+      </div>
+
       {/* 1. EXECUTIVE HERO BANNER */}
       <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
@@ -201,9 +219,9 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
                 <span className="hidden xs:inline">•</span>
                 <span className="hidden xs:inline truncate">Memory Retention Engine</span>
               </div>
-              <h2 className="text-sm xs:text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
+              <h1 className="text-sm xs:text-base sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Spaced Repetition & Revision
-              </h2>
+              </h1>
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
                   Lock concepts into permanent memory with active recall intervals (1d → 3d → 7d → 21d+).
@@ -246,7 +264,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               className={`w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 border tap-bounce ${
                 dueRevisions.length > 0
                   ? 'bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#E2E4F0] border-transparent shadow-[0_4px_15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                  : 'bg-[#F8FAFC] dark:bg-[#1E1F2A] text-[#85877E] dark:text-[#71717A] border-[#E2E8F0] dark:border-[#2E3044] cursor-not-allowed opacity-75'
+                  : 'bg-[#F8FAFC] dark:bg-[#1E1F2A] text-[#85877E] dark:text-slate-400 border-[#E2E8F0] dark:border-[#2E3044] cursor-not-allowed opacity-75'
               }`}
             >
               <Play className={`w-3.5 h-3.5 ${dueRevisions.length > 0 ? 'fill-current' : ''}`} />
@@ -270,14 +288,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
               Stage 1 • 1d
             </span>
-            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 1</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-slate-400 hidden xs:inline">Day 1</span>
           </div>
           <div>
             <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
               {stage1Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-[11px] sm:text-[13px] font-bold text-blue-600 dark:text-blue-400 mt-0.5 sm:mt-1">Initial Recall</p>
-            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Fresh concepts</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-slate-400 truncate mt-0.5 font-medium">Fresh concepts</p>
           </div>
         </div>
 
@@ -288,14 +306,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
               Stage 2 • 3d
             </span>
-            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 3</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-slate-400 hidden xs:inline">Day 3</span>
           </div>
           <div>
             <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
               {stage2Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-[11px] sm:text-[13px] font-bold text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-1">Consolidation</p>
-            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Reinforcing</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-slate-400 truncate mt-0.5 font-medium">Reinforcing</p>
           </div>
         </div>
 
@@ -306,14 +324,14 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
             <span className="px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono font-black rounded-md sm:rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/25">
               Stage 3 • 7d
             </span>
-            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-[#71717A] hidden xs:inline">Day 7</span>
+            <span className="text-[10px] sm:text-[11px] font-mono text-[#85877E] dark:text-slate-400 hidden xs:inline">Day 7</span>
           </div>
           <div>
             <div className="text-xl sm:text-3xl font-black font-mono tabular-nums text-[#191A17] dark:text-[#F5F5F7]">
               {stage3Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-[11px] sm:text-[13px] font-bold text-purple-600 dark:text-purple-400 mt-0.5 sm:mt-1">Long-Term Sync</p>
-            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Core memory</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-slate-400 truncate mt-0.5 font-medium">Core memory</p>
           </div>
         </div>
 
@@ -334,7 +352,7 @@ export const RevisionView: React.FC<RevisionViewProps> = ({
               {stage4Count} <span className="text-[11px] sm:text-xs font-sans font-medium text-[#65675F] dark:text-[#A1A1AA]">cards</span>
             </div>
             <p className="text-[11px] sm:text-[13px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1">Permanently Locked</p>
-            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#71717A] truncate mt-0.5 font-medium">Exam-ready</p>
+            <p className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-slate-400 truncate mt-0.5 font-medium">Exam-ready</p>
           </div>
         </div>
       </div>

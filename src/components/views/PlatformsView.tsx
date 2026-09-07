@@ -167,7 +167,7 @@ export const PlatformsView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-fade-in select-none pb-20 sm:pb-16">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in pb-8 sm:pb-12">
       
       {/* 1. HERO BENTO BANNER WITH 3D AMBIENT NODES */}
       <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#0B0C15] border border-[#242636] shadow-xl relative overflow-hidden text-white">
@@ -299,7 +299,7 @@ export const PlatformsView: React.FC = () => {
       </div>
 
       {/* 2. ADVANCED TOOLBAR: PROMINENT SEARCH & SEGMENTED CATEGORY TRACK */}
-      <div className="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-xs sm:shadow-subtle-depth space-y-2.5 sm:space-y-3 select-none">
+      <div className="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-xs sm:shadow-subtle-depth space-y-2.5 sm:space-y-3">
         
         {/* Row 1: Search Bar + Live Portals Count */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">

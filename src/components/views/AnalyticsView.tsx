@@ -51,7 +51,7 @@ export const AnalyticsView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-24 sm:pb-20 max-w-5xl mx-auto font-sans animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 pb-8 sm:pb-12 max-w-5xl mx-auto font-sans animate-fade-in">
       
       {/* 1. EXECUTIVE HERO HEADER */}
       <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-xs sm:shadow-subtle-depth">
@@ -67,9 +67,9 @@ export const AnalyticsView: React.FC = () => {
                 <span>•</span>
                 <span>Active Retention Index</span>
               </div>
-              <h2 className="text-sm sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
+              <h1 className="text-sm sm:text-xl font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
                 Analytics & Exam Readiness
-              </h2>
+              </h1>
               <p className="text-xs text-[#65675F] dark:text-[#94A3B8] font-medium hidden sm:block">
                 Measurable preparation telemetry, active retention curve & 3D achievement badges
               </p>
@@ -121,7 +121,7 @@ export const AnalyticsView: React.FC = () => {
               }}
             />
           </div>
-          <div className="flex justify-between text-[9px] sm:text-[10px] font-mono font-bold text-[#85877E] dark:text-[#787C99]">
+          <div className="flex justify-between text-[9px] sm:text-[10px] font-mono font-bold text-[#85877E] dark:text-slate-400">
             <span>Level {profile.level}</span>
             <span className="tabular-nums">{300 - xpCurrent} XP to Level {profile.level + 1}</span>
           </div>

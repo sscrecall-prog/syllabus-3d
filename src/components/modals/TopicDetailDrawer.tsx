@@ -1314,7 +1314,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                               : isCurrent
                               ? 'bg-[#11120F] dark:bg-white text-white dark:text-black border-transparent shadow-xs font-black'
-                              : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#85877E] dark:text-[#71717A] border-[#E2E8F0] dark:border-[#272730]'
+                              : 'bg-[#F8FAFC] dark:bg-[#14151F] text-[#85877E] dark:text-slate-400 border-[#E2E8F0] dark:border-[#272730]'
                           }`}
                         >
                           <div className="text-[8.5px] sm:text-[9px] font-mono font-bold uppercase">Stage {stageNum}</div>

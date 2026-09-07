@@ -71,7 +71,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const userName = user?.name || user?.email?.split('@')[0] || profile.name || 'Scholar';
 
   return (
-    <div className="space-y-3.5 sm:space-y-5 pb-28 sm:pb-20">
+    <div className="space-y-3.5 sm:space-y-5 pb-8 sm:pb-12">
       
       {/* 🖨️ PRINT-ONLY DESK REVISION SUMMARY HEADER */}
       <div className="hidden print:block mb-6 pb-4 border-b-2 border-black">
@@ -111,7 +111,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <span>{greetingIcon}</span>
                 <span>{greetingPhase}</span>
               </div>
-              <span className="hidden sm:inline-flex text-[11px] font-bold text-slate-500 dark:text-[#71717A] items-center gap-1.5">
+              <span className="hidden sm:inline-flex text-[11px] font-bold text-slate-500 dark:text-slate-400 items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 {formattedDate}
               </span>
