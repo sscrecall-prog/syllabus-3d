@@ -25,7 +25,9 @@ import {
   Printer,
   RotateCw,
   BrainCircuit,
-  Calendar
+  Calendar,
+  Expand,
+  Shrink
 } from 'lucide-react';
 import { getTodayDateString, formatDateReadable } from '../../utils/dateUtils';
 import { calculateAdaptiveIntervals } from '../../utils/spacedRepetition';
@@ -166,6 +168,8 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
   // Edit Mode state
   const [isEditing, setIsEditing] = useState(false);
+  // Full-Screen Workspace mode (Defaults to true per user request)
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(true);
   const [editName, setEditName] = useState('');
   const [editDifficulty, setEditDifficulty] = useState<DifficultyLevel>('Medium');
   const [editWeightage, setEditWeightage] = useState<number | undefined>(undefined);
@@ -565,22 +569,30 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[120] overflow-hidden flex justify-end topic-drawer-portal">
+    <div className={`fixed inset-0 z-[120] overflow-hidden flex topic-drawer-portal ${
+      isFullScreen ? 'justify-center items-center' : 'justify-end'
+    }`}>
       {/* Explicit Dark Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-fade-in pointer-events-auto transition-opacity topic-drawer-backdrop no-print"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md animate-fade-in pointer-events-auto transition-opacity topic-drawer-backdrop no-print"
         onClick={onClose}
       />
 
-      <div className="relative z-10 max-w-full flex pl-0 sm:pl-10 pointer-events-auto">
+      <div className={`relative z-10 w-full h-full flex pointer-events-auto transition-all duration-300 ${
+        isFullScreen ? 'max-w-full p-0' : 'max-w-2xl sm:pl-10 justify-end'
+      }`}>
         <div
           onClick={e => e.stopPropagation()}
           onMouseDown={e => e.stopPropagation()}
           style={{
-            transform: dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
+            transform: !isFullScreen && dragOffsetY > 0 ? `translateY(${dragOffsetY}px)` : undefined,
             transition: dragOffsetY === 0 ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none'
           }}
-          className="w-screen max-w-2xl bg-white dark:bg-[#0B0B0D] border-l border-[#E2E8F0] dark:border-[#272730] shadow-2xl flex flex-col justify-between transition-colors rounded-t-3xl sm:rounded-t-none topic-drawer-container"
+          className={`w-full h-full bg-white dark:bg-[#0B0B0D] shadow-2xl flex flex-col justify-between transition-colors topic-drawer-container ${
+            isFullScreen
+              ? 'rounded-none border-none'
+              : 'border-l border-[#E2E8F0] dark:border-[#272730] rounded-t-3xl sm:rounded-t-none'
+          }`}
         >
           
           {/* Mobile Pull-Down Drag Handle with Safe-Area Notch Clearance */}
@@ -623,7 +635,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="p-3.5 sm:p-6 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-3 sm:gap-4 relative overflow-hidden print:hidden"
+            className={`border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] flex items-center justify-between gap-3 sm:gap-4 relative overflow-hidden print:hidden transition-all ${
+              isFullScreen ? 'p-3.5 sm:px-8 sm:py-5' : 'p-3.5 sm:p-6'
+            }`}
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
@@ -651,6 +665,25 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
                 aria-label="Print Revision Cheatsheet"
               >
                 <Printer className="w-4 h-4" />
+              </button>
+
+              {/* Fullscreen / Side Drawer Toggle Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  haptics.light();
+                  setIsFullScreen(p => !p);
+                }}
+                className="hidden sm:flex p-2 sm:p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] text-[#65675F] hover:text-[#11120F] dark:hover:text-white hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer items-center justify-center active:scale-95 no-print"
+                title={isFullScreen ? "Switch to Side Drawer" : "Switch to Full Screen Workspace"}
+                aria-label={isFullScreen ? "Exit Full Screen" : "Full Screen"}
+              >
+                {isFullScreen ? (
+                  <Shrink className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                ) : (
+                  <Expand className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                )}
               </button>
 
               <button
@@ -831,7 +864,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
           {/* Tab Navigation */}
           <div
             ref={tabBarRef}
-            className="flex items-center px-2.5 sm:px-6 pt-2 pb-0 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar no-print"
+            className={`flex items-center pt-2 pb-0 border-b border-[#E2E8F0] dark:border-[#272730] bg-white dark:bg-[#18181D] gap-1 overflow-x-auto no-scrollbar no-print ${
+              isFullScreen ? 'px-4 sm:px-8' : 'px-2.5 sm:px-6'
+            }`}
           >
             {[
               { id: 'overview', label: 'Overview & Metrics', mobileLabel: 'Overview', icon: BookOpen },
@@ -970,8 +1005,11 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
             onTouchStart={handleContentTouchStart}
             onTouchMove={handleContentTouchMove}
             onTouchEnd={handleContentTouchEnd}
-            className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-5 overscroll-contain pb-[max(2.5rem,env(safe-area-inset-bottom,0px))] topic-drawer-content"
+            className={`flex-1 overflow-y-auto space-y-5 overscroll-contain pb-[max(2.5rem,env(safe-area-inset-bottom,0px))] topic-drawer-content ${
+              isFullScreen ? 'p-4 sm:p-8' : 'p-4 sm:p-6'
+            }`}
           >
+            <div className={isFullScreen ? 'max-w-6xl mx-auto w-full space-y-5' : 'space-y-5'}>
             {/* Print-Only Concept Checkpoints with Physical Pen Checkboxes */}
             {liveTopic.subtopics && liveTopic.subtopics.length > 0 && (
               <div className="hidden print:block p-4 border border-black rounded-lg mb-4 print-avoid-break">
@@ -1703,6 +1741,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
               </div>
             )}
 
+            </div>
           </div>
         </div>
       </div>
