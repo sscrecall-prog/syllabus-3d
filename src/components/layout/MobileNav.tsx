@@ -36,7 +36,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
       <div
         className={`pointer-events-auto flex items-center justify-between px-2 py-1.5 rounded-3xl backdrop-blur-2xl border transition-all duration-300 relative ${
           isGlass
-            ? 'bg-white/80 border-white/70 shadow-[0_16px_40px_rgba(124,58,237,0.14)] text-slate-900 ring-1 ring-white/60'
+            ? 'bg-[#080E24]/80 border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)] text-white ring-1 ring-white/15'
             : isLuxury
             ? 'bg-[#FAF7F2]/95 border-[#EADBCE] shadow-[0_12px_40px_rgba(200,155,91,0.18)]'
             : isOled

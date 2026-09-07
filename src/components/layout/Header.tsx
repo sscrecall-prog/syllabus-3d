@@ -257,9 +257,9 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Fluid Glass Theme Active & 1-Click Revert Pill */}
           {isGlass && (
-            <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-white/80 dark:bg-[#1E2030]/80 backdrop-blur-md border border-purple-300/70 dark:border-purple-500/40 shadow-2xs animate-fade-in shrink-0">
-              <span className="text-[11px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+            <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-blue-950/40 backdrop-blur-xl border border-cyan-400/30 shadow-[0_0_15px_rgba(56,189,248,0.15)] animate-fade-in shrink-0">
+              <span className="text-[11px] font-black text-cyan-300 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
                 <span className="hidden sm:inline">Fluid Glass</span>
               </span>
               <button
@@ -269,7 +269,7 @@ export const Header: React.FC<HeaderProps> = ({
                   haptics.success();
                   revertToPreviousTheme();
                 }}
-                className="px-2 py-0.5 rounded-lg bg-white/90 border border-purple-200 hover:bg-purple-50 text-[10px] font-bold text-purple-900 cursor-pointer shadow-xs active:scale-95 transition-all"
+                className="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-[10px] font-bold text-white cursor-pointer shadow-xs active:scale-95 transition-all"
                 title={`Revert back to previous theme (${previousTheme})`}
               >
                 ↩ Revert

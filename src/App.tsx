@@ -591,9 +591,9 @@ export const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative ${
-      isGlass ? 'bg-transparent text-slate-900' : 'bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5]'
+      isGlass ? 'bg-transparent text-white' : 'bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5]'
     }`}>
-      {/* 🔮 Fluid Glass Wallpaper Layer (Apple visionOS Specular Acrylic) */}
+      {/* 🔮 Fluid Glass Wallpaper Layer (Deep Cobalt 3D Silk Ribbons) */}
       {isGlass && (
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none print:hidden">
           <img
@@ -601,11 +601,10 @@ export const App: React.FC = () => {
             alt="Fluid Glass Wallpaper"
             className="w-full h-full object-cover object-center fixed inset-0 scale-100"
           />
-          {/* Subtle Ambient Refraction Caustic Glows */}
-          <div className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-[0.5px] pointer-events-none" />
-          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-purple-400/20 blur-3xl pointer-events-none" />
-          <div className="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-sky-300/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 left-1/4 w-96 h-96 rounded-full bg-amber-300/15 blur-3xl pointer-events-none" />
+          {/* Subtle Ambient Depth Lighting & Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050816]/30 via-transparent to-[#050816]/60 pointer-events-none" />
+          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-600/15 blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 -right-32 w-[450px] h-[450px] rounded-full bg-indigo-600/15 blur-[120px] pointer-events-none" />
         </div>
       )}
       

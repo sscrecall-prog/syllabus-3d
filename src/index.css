@@ -889,33 +889,33 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .luxury ::-webkit-scrollbar-thumb:hover { background: #C89B5B; }
 
 /* ═══════════════════════════════════════════════════════════════
-   FLUID GLASS THEME (VisionOS Frosted Acrylic Aesthetic)
-   Inspired by User's Reference Wallpaper:
-   Translucent Floating Glass Bubbles, Specular Refractions,
-   Lavender Mist, Soft Peach/Coral Blush, Crystal Cyan & Sunny Amber
+   FLUID GLASS AURA THEME (Deep Cobalt 3D Silk Glassmorphism)
+   Faithfully Created from User's Reference Pictures:
+   Electric Cobalt & Sapphire Fluid 3D Silk Ribbons,
+   Ultra-Deep Translucent Glass Panels, Luminous Specular Rims,
+   Crisp Pure White Typography & Neon Cyan Glows
    ═══════════════════════════════════════════════════════════════ */
 
 /* Canvas & Body Wallpaper */
 .glass body {
-  background-color: #ECE9F7 !important;
+  background-color: #050816 !important;
   background-image: 
-    radial-gradient(circle at 18% 16%, rgba(196, 181, 253, 0.4) 0%, transparent 45%),
-    radial-gradient(circle at 82% 22%, rgba(186, 230, 253, 0.45) 0%, transparent 40%),
-    radial-gradient(circle at 68% 62%, rgba(254, 215, 170, 0.5) 0%, transparent 45%),
-    radial-gradient(circle at 16% 85%, rgba(253, 186, 116, 0.35) 0%, transparent 40%),
+    radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.22) 0%, transparent 60%),
+    radial-gradient(circle at 10% 40%, rgba(147, 51, 234, 0.18) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.25) 0%, transparent 55%),
     url('/app-wallpaper.jpg') !important;
   background-attachment: fixed !important;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
-  color: #0F172A !important;
+  color: #F8FAFC !important;
 }
 
 .glass #root {
   background-color: transparent !important;
 }
 
-/* Translucent Frosted Glass Cards with Apple VisionOS Specular Rim */
+/* Translucent Dark Glass Cards with Specular Highlight Rim */
 .glass .bg-white,
 .glass .bg-\[\#18181D\],
 .glass .bg-\[\#16161E\],
@@ -931,17 +931,17 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .bg-\[\#181926\],
 .glass .bg-\[\#161720\],
 .glass .bg-\[\#1F2335\] {
-  background-color: rgba(255, 255, 255, 0.74) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border-color: rgba(255, 255, 255, 0.65) !important;
-  box-shadow: 0 10px 32px -4px rgba(99, 102, 241, 0.10),
-              0 1px 2px 0 rgba(0, 0, 0, 0.04),
-              inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95),
-              inset 0 -1px 1px 0 rgba(0, 0, 0, 0.02) !important;
+  background-color: rgba(13, 20, 42, 0.58) !important;
+  backdrop-filter: blur(28px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.65),
+              0 2px 6px 0 rgba(0, 0, 0, 0.3),
+              inset 0 1px 1px 0 rgba(255, 255, 255, 0.38),
+              inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Secondary Sub-cards & Nested Glass Pills */
+/* Secondary Sub-cards, Nested Glass Containers & Pills */
 .glass .bg-slate-50,
 .glass .bg-slate-50\/90,
 .glass .bg-\[\#F8FAFC\],
@@ -952,13 +952,16 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .bg-\[\#1A1B29\],
 .glass .bg-\[\#F7F6F0\],
 .glass .bg-\[\#EEEEE8\] {
-  background-color: rgba(255, 255, 255, 0.60) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border-color: rgba(255, 255, 255, 0.75) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Glass Specular Caustic Borders */
+.glass .border,
+.glass [class*="border-slate-200"],
+.glass [class*="border-white\/"],
 .glass .border-\[\#E2E8F0\],
 .glass .border-\[\#272730\],
 .glass .border-\[\#272738\],
@@ -972,10 +975,10 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .border-\[\#D8D8CF\],
 .glass .border-\[\#D0D0C5\],
 .glass .border-\[\#E5E5DC\] {
-  border-color: rgba(255, 255, 255, 0.60) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
-/* Primary Text for Fluid Glass */
+/* Primary Text: Pure Crisp White (As in Reference Pictures) */
 .glass .text-\[\#11120F\],
 .glass .text-\[\#191A17\],
 .glass .text-\[\#0F172A\],
@@ -984,10 +987,10 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .text-\[\#F5F5F7\],
 .glass .text-white,
 .glass .text-\[\#C0CAF5\] {
-  color: #0F172A !important;
+  color: #FFFFFF !important;
 }
 
-/* Secondary Muted Text */
+/* Secondary Muted Text: Soft Pale Cyan-Blue */
 .glass .text-\[\#65675F\],
 .glass .text-\[\#475569\],
 .glass .text-slate-600,
@@ -995,7 +998,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .text-\[\#CBD5E1\],
 .glass .text-\[\#A9B1D6\],
 .glass .text-\[\#3D4039\] {
-  color: #334155 !important;
+  color: #CBD5E1 !important;
 }
 
 .glass .text-\[\#85877E\],
@@ -1004,36 +1007,62 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .glass .text-slate-500,
 .glass .text-\[\#94A3B8\],
 .glass .text-\[\#A1A1AA\] {
-  color: #64748B !important;
+  color: #94A3B8 !important;
 }
 
-/* Accents: Radiant Royal Indigo & Violet */
+/* Accents: Vibrant Neon Cyan & Electric Blue */
+.glass .text-\[\#2563EB\],
+.glass .text-\[\#1D4ED8\],
 .glass .text-\[\#7AA2F7\],
 .glass .text-blue-600,
 .glass .text-blue-500,
 .glass .text-indigo-600 {
-  color: #4F46E5 !important;
+  color: #38BDF8 !important;
 }
 
-/* Header & Navigation Glass */
+/* Primary Action Buttons */
+.glass .bg-\[\#2563EB\],
+.glass .bg-\[\#1D4ED8\],
+.glass .bg-\[\#7AA2F7\],
+.glass .bg-blue-600,
+.glass .bg-blue-500 {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45) !important;
+  color: #FFFFFF !important;
+}
+
+/* Header & Sidebar Translucent Glass */
 .glass header {
-  background-color: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(28px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background-color: rgba(10, 16, 35, 0.65) !important;
+  backdrop-filter: blur(32px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(210%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 .glass aside {
-  background-color: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(28px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background-color: rgba(10, 16, 35, 0.65) !important;
+  backdrop-filter: blur(36px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(210%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Floating Bottom Navigation Bar in Glass */
+.glass nav {
+  background-color: transparent !important;
+}
+
+.glass nav > div {
+  background-color: rgba(10, 16, 35, 0.75) !important;
+  backdrop-filter: blur(32px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(210%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 24px rgba(37, 99, 235, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Scrollbars for Fluid Glass */
-.glass ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.2); }
-.glass ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.25); border-radius: 9999px; }
-.glass ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.45); }
+.glass ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.25); }
+.glass ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 9999px; }
+.glass ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.55); }
 
 /* ═══════════════════════════════════════════════════════════════
    🖨️ CLEAN DESK REVISION PRINT MODE (Ctrl + P)
