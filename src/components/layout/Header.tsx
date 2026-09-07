@@ -68,7 +68,11 @@ export const Header: React.FC<HeaderProps> = ({
     handleThemeToggle();
   };
 
-  const examName = currentExam?.name || 'Syllabus Exam';
+  const rawExamName = currentExam?.name || 'Syllabus Exam';
+  const hasTrailingYear = /\s+(20\d{2})$/.test(rawExamName);
+  const trailingYearMatch = rawExamName.match(/\s+(20\d{2})$/)?.[1];
+  const targetYear = currentExam?.targetYear || (trailingYearMatch ? Number(trailingYearMatch) : (currentExam?.examDate ? new Date(currentExam.examDate).getFullYear() : 2026));
+  const examDisplayName = hasTrailingYear ? rawExamName.replace(/\s+20\d{2}$/, '') : rawExamName;
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors print:hidden">
@@ -122,15 +126,22 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Responsive Exam Selector (Mobile & Desktop) */}
+          {/* Responsive Exam Selector (Mobile & Desktop) with Target Year */}
           <div className="relative min-w-0">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth shrink-0 active:scale-95"
-              title="Switch Exam Target"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-[#191A17] dark:text-[#F5F5F7] shadow-subtle-depth shrink-0 active:scale-95 group"
+              title={`Switch Exam Target: ${rawExamName} (${targetYear})`}
             >
-              <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
-              <span className="truncate max-w-[110px] xs:max-w-[160px] sm:max-w-[240px] font-bold tracking-tight">{examName}</span>
+              <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#7AA2F7] shrink-0 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="truncate max-w-[100px] xs:max-w-[150px] sm:max-w-[220px] font-bold tracking-tight">
+                  {examDisplayName}
+                </span>
+                <span className="px-1.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-mono font-black bg-[#EFF6FF] dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#BFDBFE]/60 dark:border-[#7AA2F7]/30 shrink-0 tabular-nums leading-none">
+                  {targetYear}
+                </span>
+              </div>
               <ChevronDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#85877E] shrink-0" />
             </button>
 
@@ -139,24 +150,33 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#85877E] dark:text-slate-400">
                   Target Exam
                 </div>
-                {exams.map(ex => (
-                  <button
-                    key={ex.id}
-                    onClick={() => {
-                      soundManager.playClick();
-                      setSelectedExamId(ex.id);
-                      setIsExamMenuOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-[13px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                      ex.id === currentExam?.id
-                        ? 'bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] font-bold'
-                        : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1E2030] text-[#65675F] dark:text-[#A1A1AA]'
-                    }`}
-                  >
-                    <span>{ex.name}</span>
-                    <span className="text-[11px] font-mono text-[#85877E]">{ex.targetYear}</span>
-                  </button>
-                ))}
+                {exams.map(ex => {
+                  const exHasYear = /\s+(20\d{2})$/.test(ex.name);
+                  const exYearMatch = ex.name.match(/\s+(20\d{2})$/)?.[1];
+                  const exTargetYear = ex.targetYear || (exYearMatch ? Number(exYearMatch) : (ex.examDate ? new Date(ex.examDate).getFullYear() : 2026));
+                  const exDisplayName = exHasYear ? ex.name.replace(/\s+20\d{2}$/, '') : ex.name;
+
+                  return (
+                    <button
+                      key={ex.id}
+                      onClick={() => {
+                        soundManager.playClick();
+                        setSelectedExamId(ex.id);
+                        setIsExamMenuOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-[13px] font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                        ex.id === currentExam?.id
+                          ? 'bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#2563EB] dark:text-[#7AA2F7] font-bold'
+                          : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1E2030] text-[#65675F] dark:text-[#A1A1AA]'
+                      }`}
+                    >
+                      <span className="truncate mr-2">{exDisplayName}</span>
+                      <span className="px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold bg-white/60 dark:bg-black/20 text-[#2563EB] dark:text-[#7AA2F7] border border-[#BFDBFE]/40 dark:border-[#7AA2F7]/20 shrink-0 tabular-nums">
+                        {exTargetYear}
+                      </span>
+                    </button>
+                  );
+                })}
                 <div className="my-1 border-t border-[#EEEEE8] dark:border-[#272730]" />
                 <button
                   className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#2563EB] dark:text-[#7AA2F7] hover:bg-[#2563EB]/10 dark:hover:bg-[#7AA2F7]/10 flex items-center gap-2 transition-colors cursor-pointer"
