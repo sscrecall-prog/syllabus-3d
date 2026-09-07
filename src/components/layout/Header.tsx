@@ -52,6 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
     toggleTheme: handleThemeToggle,
     revertToPreviousTheme,
     isLuxury,
+    isGlass,
     isDark,
     isOled,
     isSepia,
@@ -254,6 +255,28 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          {/* Fluid Glass Theme Active & 1-Click Revert Pill */}
+          {isGlass && (
+            <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-white/80 dark:bg-[#1E2030]/80 backdrop-blur-md border border-purple-300/70 dark:border-purple-500/40 shadow-2xs animate-fade-in shrink-0">
+              <span className="text-[11px] font-black bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span className="hidden sm:inline">Fluid Glass</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  haptics.success();
+                  revertToPreviousTheme();
+                }}
+                className="px-2 py-0.5 rounded-lg bg-white/90 border border-purple-200 hover:bg-purple-50 text-[10px] font-bold text-purple-900 cursor-pointer shadow-xs active:scale-95 transition-all"
+                title={`Revert back to previous theme (${previousTheme})`}
+              >
+                ↩ Revert
+              </button>
+            </div>
+          )}
+
           {/* Luxury Theme Active & 1-Click Revert Pill */}
           {isLuxury && (
             <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-[#FBF0E6] border border-[#E2CEBE] shadow-2xs animate-fade-in shrink-0">
@@ -276,7 +299,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          {/* Theme Toggle (Cycle: Luxury -> Dark -> OLED -> Light -> Sepia) */}
+          {/* Theme Toggle (Cycle: Fluid Glass -> Dark -> OLED -> Light -> Sepia -> Luxury) */}
           <button
             onClick={() => {
               soundManager.playClick();
@@ -285,8 +308,10 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="h-9 w-9 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 flex items-center justify-center"
             title={
-              isLuxury
-                ? "Current: Luxury Theme (Click for Tokyo Night Dark)"
+              isGlass
+                ? "Current: Fluid Glass (Click for Tokyo Night Dark)"
+                : isLuxury
+                ? "Current: Luxury Theme (Click for Fluid Glass)"
                 : isOled
                 ? "Current: OLED Pure Black (Click for Pure White)"
                 : isDark
@@ -297,7 +322,9 @@ export const Header: React.FC<HeaderProps> = ({
             }
             aria-label="Toggle theme"
           >
-            {isLuxury ? (
+            {isGlass ? (
+              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            ) : isLuxury ? (
               <Sparkles className="w-4 h-4 text-[#B88746]" />
             ) : isOled ? (
               <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>

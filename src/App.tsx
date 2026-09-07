@@ -99,7 +99,7 @@ export const App: React.FC = () => {
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
 
-  const { toggleTheme } = useTheme();
+  const { toggleTheme, isGlass } = useTheme();
 
   const showShortcutToast = useCallback((msg: string) => {
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
@@ -590,7 +590,24 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5] flex flex-col md:flex-row transition-colors duration-300">
+    <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative ${
+      isGlass ? 'bg-transparent text-slate-900' : 'bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5]'
+    }`}>
+      {/* 🔮 Fluid Glass Wallpaper Layer (Apple visionOS Specular Acrylic) */}
+      {isGlass && (
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none print:hidden">
+          <img
+            src="/app-wallpaper.jpg"
+            alt="Fluid Glass Wallpaper"
+            className="w-full h-full object-cover object-center fixed inset-0 scale-100"
+          />
+          {/* Subtle Ambient Refraction Caustic Glows */}
+          <div className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-[0.5px] pointer-events-none" />
+          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-purple-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-sky-300/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 left-1/4 w-96 h-96 rounded-full bg-amber-300/15 blur-3xl pointer-events-none" />
+        </div>
+      )}
       
       {/* ♿ Skip to Main Content Link for Keyboard & Screen Reader Users */}
       <a href="#main-content" className="skip-link">

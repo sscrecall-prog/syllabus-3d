@@ -889,6 +889,153 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .luxury ::-webkit-scrollbar-thumb:hover { background: #C89B5B; }
 
 /* ═══════════════════════════════════════════════════════════════
+   FLUID GLASS THEME (VisionOS Frosted Acrylic Aesthetic)
+   Inspired by User's Reference Wallpaper:
+   Translucent Floating Glass Bubbles, Specular Refractions,
+   Lavender Mist, Soft Peach/Coral Blush, Crystal Cyan & Sunny Amber
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Canvas & Body Wallpaper */
+.glass body {
+  background-color: #ECE9F7 !important;
+  background-image: 
+    radial-gradient(circle at 18% 16%, rgba(196, 181, 253, 0.4) 0%, transparent 45%),
+    radial-gradient(circle at 82% 22%, rgba(186, 230, 253, 0.45) 0%, transparent 40%),
+    radial-gradient(circle at 68% 62%, rgba(254, 215, 170, 0.5) 0%, transparent 45%),
+    radial-gradient(circle at 16% 85%, rgba(253, 186, 116, 0.35) 0%, transparent 40%),
+    url('/app-wallpaper.jpg') !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  color: #0F172A !important;
+}
+
+.glass #root {
+  background-color: transparent !important;
+}
+
+/* Translucent Frosted Glass Cards with Apple VisionOS Specular Rim */
+.glass .bg-white,
+.glass .bg-\[\#18181D\],
+.glass .bg-\[\#16161E\],
+.glass .bg-\[\#1E1F2A\],
+.glass .bg-\[\#11120F\],
+.glass .bg-\[\#0B0B0D\],
+.glass .bg-\[\#1A1B26\],
+.glass .bg-\[\#0A0D14\],
+.glass .bg-\[\#0A0B12\],
+.glass .bg-\[\#12131F\],
+.glass .bg-\[\#141624\],
+.glass .bg-\[\#151622\],
+.glass .bg-\[\#181926\],
+.glass .bg-\[\#161720\],
+.glass .bg-\[\#1F2335\] {
+  background-color: rgba(255, 255, 255, 0.74) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 10px 32px -4px rgba(99, 102, 241, 0.10),
+              0 1px 2px 0 rgba(0, 0, 0, 0.04),
+              inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95),
+              inset 0 -1px 1px 0 rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Secondary Sub-cards & Nested Glass Pills */
+.glass .bg-slate-50,
+.glass .bg-slate-50\/90,
+.glass .bg-\[\#F8FAFC\],
+.glass .bg-\[\#F1F5F9\],
+.glass .bg-\[\#1A1C2C\],
+.glass .bg-\[\#1B1C28\],
+.glass .bg-\[\#1E202E\],
+.glass .bg-\[\#1A1B29\],
+.glass .bg-\[\#F7F6F0\],
+.glass .bg-\[\#EEEEE8\] {
+  background-color: rgba(255, 255, 255, 0.60) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Glass Specular Caustic Borders */
+.glass .border-\[\#E2E8F0\],
+.glass .border-\[\#272730\],
+.glass .border-\[\#272738\],
+.glass .border-\[\#333446\],
+.glass .border-\[\#232430\],
+.glass .border-\[\#272732\],
+.glass .border-\[\#292E42\],
+.glass .border-\[\#2E344E\],
+.glass .border-\[\#24283B\],
+.glass .border-\[\#EEEEE8\],
+.glass .border-\[\#D8D8CF\],
+.glass .border-\[\#D0D0C5\],
+.glass .border-\[\#E5E5DC\] {
+  border-color: rgba(255, 255, 255, 0.60) !important;
+}
+
+/* Primary Text for Fluid Glass */
+.glass .text-\[\#11120F\],
+.glass .text-\[\#191A17\],
+.glass .text-\[\#0F172A\],
+.glass .text-slate-900,
+.glass .text-black,
+.glass .text-\[\#F5F5F7\],
+.glass .text-white,
+.glass .text-\[\#C0CAF5\] {
+  color: #0F172A !important;
+}
+
+/* Secondary Muted Text */
+.glass .text-\[\#65675F\],
+.glass .text-\[\#475569\],
+.glass .text-slate-600,
+.glass .text-slate-700,
+.glass .text-\[\#CBD5E1\],
+.glass .text-\[\#A9B1D6\],
+.glass .text-\[\#3D4039\] {
+  color: #334155 !important;
+}
+
+.glass .text-\[\#85877E\],
+.glass .text-\[\#64748B\],
+.glass .text-slate-400,
+.glass .text-slate-500,
+.glass .text-\[\#94A3B8\],
+.glass .text-\[\#A1A1AA\] {
+  color: #64748B !important;
+}
+
+/* Accents: Radiant Royal Indigo & Violet */
+.glass .text-\[\#7AA2F7\],
+.glass .text-blue-600,
+.glass .text-blue-500,
+.glass .text-indigo-600 {
+  color: #4F46E5 !important;
+}
+
+/* Header & Navigation Glass */
+.glass header {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+.glass aside {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Scrollbars for Fluid Glass */
+.glass ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.2); }
+.glass ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.25); border-radius: 9999px; }
+.glass ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.45); }
+
+/* ═══════════════════════════════════════════════════════════════
    🖨️ CLEAN DESK REVISION PRINT MODE (Ctrl + P)
    Zero-ink-waste, pure white background, razor-sharp typography,
    no sidebars/buttons/overlays, multi-page unclipped layout.

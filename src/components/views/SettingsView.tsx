@@ -878,11 +878,11 @@ export const SettingsView: React.FC = () => {
                 Color Theme & Palette
               </h3>
               <p className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8]">
-                Switch between high-contrast Tokyo Night Dark, Pure OLED, Sepia, Pure White, and Luxury Haute.
+                Switch between Fluid Glass, Tokyo Night Dark, Pure OLED, Pure White, Sepia, and Luxury Haute.
               </p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">
-              {theme === 'luxury' && (
+              {(theme === 'glass' || theme === 'luxury') && (
                 <button
                   type="button"
                   onClick={() => {
@@ -897,12 +897,12 @@ export const SettingsView: React.FC = () => {
                 </button>
               )}
               <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-mono bg-white dark:bg-[#20212E] border border-slate-200 dark:border-[#272730] text-slate-900 dark:text-[#F5F5F7] capitalize shrink-0">
-                {theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : theme === 'luxury' ? 'Luxury Haute' : 'Pure White Pro'}
+                {theme === 'glass' ? 'Fluid Glass Aura' : theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : theme === 'luxury' ? 'Luxury Haute' : 'Pure White Pro'}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
             {/* Tokyo Night Dark */}
             <button
               type="button"
@@ -1049,6 +1049,40 @@ export const SettingsView: React.FC = () => {
                 </div>
                 <span className="text-[10px] sm:text-[11px] text-[#6D5B52] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
                   Creamy champagne, blush peach &amp; gold aesthetics
+                </span>
+              </div>
+            </button>
+
+            {/* Fluid Glass Ethereal Acrylic Theme Card */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setTheme('glass');
+              }}
+              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
+                theme === 'glass'
+                  ? 'bg-white/80 border-purple-400 ring-2 ring-purple-400/40 shadow-md backdrop-blur-md'
+                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-purple-500/20 via-pink-400/20 to-sky-400/20 border border-purple-300/40 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                {theme === 'glass' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600" />}
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs sm:text-[13px] font-extrabold text-[#0F172A] dark:text-white block">
+                    Fluid Glass
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded-md bg-purple-500/15 border border-purple-400/30 text-[9px] font-bold text-purple-600 dark:text-purple-400 uppercase font-mono">
+                    Aura
+                  </span>
+                </div>
+                <span className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
+                  Translucent acrylic glass with floating pastel bubbles &amp; caustics
                 </span>
               </div>
             </button>
