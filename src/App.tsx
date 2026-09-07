@@ -78,6 +78,15 @@ export const App: React.FC = () => {
   // Mobile Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
+  // Desktop Sidebar Collapse State (Gemini-Style with LocalStorage Persistence)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('syllabus3d_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
@@ -99,6 +108,19 @@ export const App: React.FC = () => {
       setShortcutToast(null);
     }, 1800);
   }, []);
+
+  const toggleDesktopSidebar = useCallback(() => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('syllabus3d_sidebar_collapsed', String(next));
+      } catch {}
+      soundManager.playClick();
+      haptics.light();
+      showShortcutToast(next ? 'Sidebar collapsed [Ctrl+B]' : 'Sidebar expanded [Ctrl+B]');
+      return next;
+    });
+  }, [showShortcutToast]);
 
   // Topic Drawer
   const [selectedTopic, setSelectedTopic] = useState<{
@@ -276,6 +298,13 @@ export const App: React.FC = () => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setIsSearchOpen(prev => !prev);
+        return;
+      }
+
+      // Gemini-Style Sidebar Toggle: Ctrl+B or Cmd+B
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleDesktopSidebar();
         return;
       }
 
@@ -587,6 +616,8 @@ export const App: React.FC = () => {
         onOpenFocus={() => handleLaunchFocus(undefined)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenProfileSwitcher={() => setIsProfileSwitcherOpen(true)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleDesktopSidebar}
       />
 
       {/* Mobile Drawer (Left Hamburger Sheet) */}
@@ -617,8 +648,10 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Main Workspace Frame */}
-      <div className="flex-1 flex flex-col min-w-0 md:pl-64">
+      {/* Main Workspace Frame (Gemini-Style Smooth Width Transition) */}
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+        isSidebarCollapsed ? 'md:pl-0' : 'md:pl-64'
+      }`}>
         <Header
           onOpenSearch={() => {
             setIsSearchOpen(true);
@@ -627,6 +660,8 @@ export const App: React.FC = () => {
           onOpenSettings={() => handleNavigate('settings')}
           onOpenProfileSwitcher={() => setIsProfileSwitcherOpen(true)}
           onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
+          isSidebarCollapsed={isSidebarCollapsed}
+          onToggleDesktopSidebar={toggleDesktopSidebar}
           canGoBack={currentView !== 'overview'}
           onGoBack={handleBack}
         />

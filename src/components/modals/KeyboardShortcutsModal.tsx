@@ -23,7 +23,8 @@ import {
   ArrowLeftRight,
   Save,
   Check,
-  Clock
+  Clock,
+  Menu
 } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { soundManager } from '../../utils/soundEffects';
@@ -205,6 +206,13 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     },
 
     // ⚡ Global Actions
+    {
+      key: 'Ctrl + B',
+      label: 'Toggle Sidebar',
+      description: 'Expand or collapse navigation sidebar (Gemini-style)',
+      icon: Menu,
+      category: 'actions',
+    },
     {
       key: 'Ctrl + K',
       secondaryKey: '/',

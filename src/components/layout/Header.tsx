@@ -26,6 +26,8 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenProfileSwitcher?: () => void;
   onOpenMobileMenu?: () => void;
+  isSidebarCollapsed?: boolean;
+  onToggleDesktopSidebar?: () => void;
   canGoBack?: boolean;
   onGoBack?: () => void;
   currentViewTitle?: string;
@@ -36,6 +38,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onOpenProfileSwitcher,
   onOpenMobileMenu,
+  isSidebarCollapsed = false,
+  onToggleDesktopSidebar,
   canGoBack = false,
   onGoBack,
   currentViewTitle = 'SYLLABUS 3D'
@@ -71,9 +75,41 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0B0B0D]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#272730] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors print:hidden">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
         
-        {/* Left Side: Mobile Menu Button, Back Nav & Exam Selector */}
+        {/* Left Side: Mobile Menu Button, Desktop Gemini Collapse Toggle, Back Nav & Exam Selector */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          {canGoBack && onGoBack ? (
+          {/* Mobile Drawer Button (< md) */}
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              haptics.light();
+              onOpenMobileMenu?.();
+            }}
+            className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
+            title="Open Navigation Menu"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+
+          {/* Desktop Gemini Sidebar Toggle (>= md): Appears when sidebar is collapsed */}
+          {isSidebarCollapsed && onToggleDesktopSidebar && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                haptics.light();
+                onToggleDesktopSidebar();
+              }}
+              className="hidden md:flex items-center justify-center p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer shrink-0 shadow-subtle-depth active:scale-95 group animate-fade-in"
+              title="Expand sidebar (Ctrl+B)"
+              aria-label="Expand sidebar"
+            >
+              <Menu className="w-4 h-4 text-[#191A17] dark:text-[#F5F5F7] group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors group-hover:scale-110" />
+            </button>
+          )}
+
+          {/* Back Navigation Button */}
+          {canGoBack && onGoBack && (
             <button
               onClick={() => {
                 soundManager.playClick();
@@ -84,19 +120,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4 group-hover:-translate-x-0.5 transition-transform" />
               <span className="text-xs sm:text-[13px] font-extrabold">Back</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                soundManager.playClick();
-                haptics.light();
-                onOpenMobileMenu?.();
-              }}
-              className="md:hidden p-2 rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-[#191A17] dark:text-[#F5F5F7] hover:bg-[#F8FAFC] dark:hover:bg-[#1D201A] transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
-              title="Open Navigation Menu"
-              aria-label="Open navigation menu"
-            >
-              <Menu className="w-4 h-4" />
             </button>
           )}
 

@@ -15,7 +15,8 @@ import {
   Sparkles,
   Keyboard,
   Clock,
-  Users
+  Users,
+  Menu
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
@@ -43,6 +44,8 @@ interface SidebarProps {
   onOpenFocus?: () => void;
   onOpenShortcuts?: () => void;
   onOpenProfileSwitcher?: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -51,7 +54,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAddTopic,
   onOpenFocus,
   onOpenShortcuts,
-  onOpenProfileSwitcher
+  onOpenProfileSwitcher,
+  isCollapsed = false,
+  onToggleCollapse
 }) => {
   const { profile, dueRevisions, weakTopics, plannerTasks, platforms } = useSyllabus();
   const { user } = useAuth();
@@ -130,22 +135,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white dark:bg-[#0B0B0D] border-r border-[#E2E8F0] dark:border-[#272730] p-3 justify-between transition-colors z-30 select-none overflow-y-auto custom-scrollbar">
+    <aside
+      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white dark:bg-[#0B0B0D] border-r border-[#E2E8F0] dark:border-[#272730] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
+        isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-sm'
+      }`}
+    >
       <div className="space-y-2.5">
         
-        {/* Compact App Branding */}
-        <div className="flex items-center gap-2.5 px-1.5 py-1 group cursor-pointer">
-          <div className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] border border-[#E2E8F0] dark:border-[#333446] shadow-xs flex items-center justify-center p-1.5 shrink-0 group-hover:scale-105 transition-transform">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+        {/* Gemini-Style App Branding with Collapse Trigger */}
+        <div className="flex items-center justify-between gap-2 px-1 py-1">
+          <div
+            className="flex items-center gap-2.5 min-w-0 group cursor-pointer"
+            onClick={() => {
+              soundManager.playClick();
+              onSelectView('overview');
+            }}
+            title="Go to Dashboard"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] border border-[#E2E8F0] dark:border-[#333446] shadow-xs flex items-center justify-center p-1.5 shrink-0 group-hover:scale-105 transition-transform">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none truncate">
+                SYLLABUS 3D
+              </h1>
+              <p className="text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] mt-0.5 truncate">
+                Mastery System
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none">
-              SYLLABUS 3D
-            </h1>
-            <p className="text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7] mt-0.5">
-              Syllabus Mastery System
-            </p>
-          </div>
+
+          {onToggleCollapse && (
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                haptics.light();
+                onToggleCollapse();
+              }}
+              className="p-1.5 rounded-xl text-[#65675F] dark:text-[#CBD5E1] hover:text-[#11120F] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#181822] border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#333446] transition-all cursor-pointer shrink-0 active:scale-95 group"
+              title="Collapse sidebar (Ctrl+B)"
+              aria-label="Collapse sidebar"
+            >
+              <Menu className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            </button>
+          )}
         </div>
 
         {/* Action Buttons: Add Topic & Focus Chamber */}
