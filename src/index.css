@@ -142,6 +142,129 @@
       inset 0 0 50px rgba(0, 0, 0, 0.015);
   }
 
+  /* ══════════════════════════════════════════════════════════════════
+     📖 E-Reader Themes (Paper, Sepia, Sage, Candle, OLED)
+     ══════════════════════════════════════════════════════════════════ */
+
+  /* 1. 📄 Paper White */
+  .reader-theme-paper {
+    background-color: #FAF9F6 !important;
+    color: #1E293B !important;
+    border-color: #E2E0D8 !important;
+  }
+  html.dark .reader-theme-paper {
+    background-color: #141622 !important;
+    color: #E2E8F0 !important;
+    border-color: #26293B !important;
+  }
+  .reader-theme-paper h1, .reader-theme-paper h2, .reader-theme-paper h3, .reader-theme-paper h4 {
+    color: #0F172A !important;
+  }
+  html.dark .reader-theme-paper h1, html.dark .reader-theme-paper h2, html.dark .reader-theme-paper h3, html.dark .reader-theme-paper h4 {
+    color: #FFFFFF !important;
+  }
+  .reader-theme-paper p, .reader-theme-paper li, .reader-theme-paper .reading-column {
+    color: #334155 !important;
+  }
+  html.dark .reader-theme-paper p, html.dark .reader-theme-paper li, html.dark .reader-theme-paper .reading-column {
+    color: #CBD5E1 !important;
+  }
+
+  /* 2. 📜 Warm Kindle Sepia */
+  .reader-theme-sepia {
+    background-color: #F8EED8 !important;
+    color: #3C2E1E !important;
+    border-color: #E2CFAC !important;
+    box-shadow: 0 4px 20px -2px rgba(92, 64, 30, 0.1), inset 0 0 60px rgba(184, 138, 77, 0.05) !important;
+  }
+  html.dark .reader-theme-sepia {
+    background-color: #241C15 !important;
+    color: #EAD8C3 !important;
+    border-color: #483726 !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6) !important;
+  }
+  .reader-theme-sepia h1, .reader-theme-sepia h2, .reader-theme-sepia h3, .reader-theme-sepia h4 {
+    color: #26170A !important;
+  }
+  html.dark .reader-theme-sepia h1, html.dark .reader-theme-sepia h2, html.dark .reader-theme-sepia h3, html.dark .reader-theme-sepia h4 {
+    color: #FDF2E2 !important;
+  }
+  .reader-theme-sepia p, .reader-theme-sepia li, .reader-theme-sepia .reading-column {
+    color: #43301B !important;
+  }
+  html.dark .reader-theme-sepia p, html.dark .reader-theme-sepia li, html.dark .reader-theme-sepia .reading-column {
+    color: #E2CFB8 !important;
+  }
+
+  /* 3. 🌿 Sage Mint (Eye Fatigue Relief) */
+  .reader-theme-sage {
+    background-color: #EDF5EC !important;
+    color: #1F3824 !important;
+    border-color: #C8DEC6 !important;
+    box-shadow: 0 4px 20px -2px rgba(35, 71, 41, 0.08), inset 0 0 60px rgba(50, 99, 58, 0.04) !important;
+  }
+  html.dark .reader-theme-sage {
+    background-color: #152317 !important;
+    color: #D3E7D5 !important;
+    border-color: #273F2B !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6) !important;
+  }
+  .reader-theme-sage h1, .reader-theme-sage h2, .reader-theme-sage h3, .reader-theme-sage h4 {
+    color: #112615 !important;
+  }
+  html.dark .reader-theme-sage h1, html.dark .reader-theme-sage h2, html.dark .reader-theme-sage h3, html.dark .reader-theme-sage h4 {
+    color: #E8F7EA !important;
+  }
+  .reader-theme-sage p, .reader-theme-sage li, .reader-theme-sage .reading-column {
+    color: #203624 !important;
+  }
+  html.dark .reader-theme-sage p, html.dark .reader-theme-sage li, html.dark .reader-theme-sage .reading-column {
+    color: #CCE2CE !important;
+  }
+
+  /* 4. 🕯️ Candlelight Amber (Night Study) */
+  .reader-theme-candle {
+    background-color: #F9EFE1 !important;
+    color: #442B15 !important;
+    border-color: #E6D2B8 !important;
+    box-shadow: 0 4px 20px -2px rgba(115, 68, 25, 0.1), inset 0 0 60px rgba(217, 137, 56, 0.05) !important;
+  }
+  html.dark .reader-theme-candle {
+    background-color: #261A11 !important;
+    color: #EED7BF !important;
+    border-color: #442D1C !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6) !important;
+  }
+  .reader-theme-candle h1, .reader-theme-candle h2, .reader-theme-candle h3, .reader-theme-candle h4 {
+    color: #2E1705 !important;
+  }
+  html.dark .reader-theme-candle h1, html.dark .reader-theme-candle h2, html.dark .reader-theme-candle h3, html.dark .reader-theme-candle h4 {
+    color: #FDEEDC !important;
+  }
+  .reader-theme-candle p, .reader-theme-candle li, .reader-theme-candle .reading-column {
+    color: #462D17 !important;
+  }
+  html.dark .reader-theme-candle p, html.dark .reader-theme-candle li, html.dark .reader-theme-candle .reading-column {
+    color: #E6CEAF !important;
+  }
+
+  /* 5. 🖤 Pitch Dark OLED */
+  .reader-theme-oled,
+  html.dark .reader-theme-oled {
+    background-color: #000000 !important;
+    color: #F8FAFC !important;
+    border-color: #222533 !important;
+    box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.9) !important;
+  }
+  .reader-theme-oled h1, .reader-theme-oled h2, .reader-theme-oled h3, .reader-theme-oled h4,
+  html.dark .reader-theme-oled h1, html.dark .reader-theme-oled h2, html.dark .reader-theme-oled h3, html.dark .reader-theme-oled h4 {
+    color: #FFFFFF !important;
+  }
+  .reader-theme-oled p, .reader-theme-oled li, .reader-theme-oled .reading-column,
+  html.dark .reader-theme-oled p, html.dark .reader-theme-oled li, html.dark .reader-theme-oled .reading-column {
+    color: #E2E8F0 !important;
+  }
+
   h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; }
   h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.025em; }
   h3 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
@@ -842,8 +965,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
    ═══════════════════════════════════════════════════════════════ */
 
 /* 1. Specular Elevated Light Cards & Panels */
-html:not(.dark) .shadow-elevated-card,
-html:not(.dark) .book-page-sheet {
+html:not(.dark) .shadow-elevated-card {
   background-color: #FFFFFF !important;
   border-color: rgba(226, 232, 240, 0.9) !important;
   box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 8px 24px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;

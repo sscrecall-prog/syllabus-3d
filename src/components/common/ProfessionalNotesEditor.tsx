@@ -196,7 +196,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     return (localStorage.getItem('syllabus3d_notes_font') as ReaderFontFamily) || 'serif';
   });
   const [readerTheme, setReaderTheme] = useState<ReaderTheme>(() => {
-    return (localStorage.getItem('syllabus3d_notes_theme') as ReaderTheme) || 'default';
+    const saved = localStorage.getItem('syllabus3d_notes_theme') as ReaderTheme;
+    if (saved && (['paper', 'sepia', 'sage', 'candle', 'oled'] as ReaderTheme[]).includes(saved)) {
+      return saved;
+    }
+    return 'paper';
   });
 
   // Book Study Mode Layout & Ergonomics (Persisted)
@@ -1316,20 +1320,44 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const getThemeContainerClass = () => {
     switch (readerTheme) {
       case 'sepia':
-        return 'bg-[#FBF0D9] text-[#2C2416] border-[#E8DCC0] dark:bg-[#1E1912] dark:text-[#E8DCBA] dark:border-[#3D3325] shadow-md book-page-sheet';
-      case 'paper':
-        return 'bg-[#FAF9F6] text-[#1E1F24] border-[#E2E0D8] dark:bg-[#161720] dark:text-[#E6EDF3] dark:border-[#282B3E] shadow-md book-page-sheet';
+        return 'reader-theme-sepia book-page-sheet border shadow-md transition-all duration-300';
       case 'sage':
-        return 'bg-[#F0F5EE] text-[#1C2D20] border-[#D4E3D2] dark:bg-[#141F17] dark:text-[#D1E6D3] dark:border-[#233526] shadow-md book-page-sheet';
+        return 'reader-theme-sage book-page-sheet border shadow-md transition-all duration-300';
       case 'candle':
-        return 'bg-[#FAF2E6] text-[#332314] border-[#EBDCC5] dark:bg-[#201812] dark:text-[#F0DCBA] dark:border-[#3B2C20] shadow-md book-page-sheet';
-      case 'midnight':
-        return 'bg-[#0F172A] text-[#E2E8F0] border-[#1E293B] dark:bg-[#0A0E17] dark:text-[#F1F5F9] dark:border-[#1E293B] shadow-md book-page-sheet';
+        return 'reader-theme-candle book-page-sheet border shadow-md transition-all duration-300';
       case 'oled':
-        return 'bg-[#050608] text-[#E2E8F0] border-[#1E2028] dark:bg-[#000000] dark:text-[#F8FAFC] dark:border-[#1E2028] shadow-md';
+      case 'midnight':
+        return 'reader-theme-oled border shadow-xl transition-all duration-300';
+      case 'paper':
       case 'default':
       default:
-        return 'bg-white/95 dark:bg-[#141520] text-[#11120F] dark:text-[#F5F5F7] border-[#E2E8F0] dark:border-[#272730] shadow-sm';
+        return 'reader-theme-paper book-page-sheet border shadow-md transition-all duration-300';
+    }
+  };
+
+  const getThemeInlineStyle = (): React.CSSProperties => {
+    const isDarkMode = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+    switch (readerTheme) {
+      case 'sepia':
+        return isDarkMode
+          ? { backgroundColor: '#241C15', color: '#EAD8C3', borderColor: '#483726' }
+          : { backgroundColor: '#F8EED8', color: '#3C2E1E', borderColor: '#E2CFAC' };
+      case 'sage':
+        return isDarkMode
+          ? { backgroundColor: '#152317', color: '#D3E7D5', borderColor: '#273F2B' }
+          : { backgroundColor: '#EDF5EC', color: '#1F3824', borderColor: '#C8DEC6' };
+      case 'candle':
+        return isDarkMode
+          ? { backgroundColor: '#261A11', color: '#EED7BF', borderColor: '#442D1C' }
+          : { backgroundColor: '#F9EFE1', color: '#442B15', borderColor: '#E6D2B8' };
+      case 'oled':
+      case 'midnight':
+        return { backgroundColor: '#000000', color: '#F8FAFC', borderColor: '#222533' };
+      case 'paper':
+      default:
+        return isDarkMode
+          ? { backgroundColor: '#141622', color: '#E2E8F0', borderColor: '#26293B' }
+          : { backgroundColor: '#FAF9F6', color: '#1E293B', borderColor: '#E2E0D8' };
     }
   };
 
@@ -2182,7 +2210,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <div key={i} className="flex items-start gap-3 my-2 pl-1 leading-relaxed">
             <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-2.5 shrink-0" />
-            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] max-w-[68ch] leading-relaxed`}>
+            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] leading-relaxed`}>
               {parseInlineMarkdown(rawBullet, `bullet-${i}`)}
             </div>
           </div>
@@ -2199,7 +2227,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             <span className="px-1.5 py-0.2 rounded-md bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] text-[11px] font-mono font-black mt-0.5 shrink-0">
               {num}.
             </span>
-            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] max-w-[68ch] leading-relaxed`}>
+            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] leading-relaxed`}>
               {parseInlineMarkdown(numText, `num-${i}`)}
             </div>
           </div>
@@ -3296,33 +3324,39 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   </button>
                 </div>
 
-                {/* 🎨 Eye-Care Theme Switcher (Paper, Sepia, Sage, Candle, Midnight, OLED) */}
-                <div className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold">
+                {/* 🎨 Eye-Care Theme Switcher (Paper, Sepia, Sage, Candle, OLED) */}
+                <div className="flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#151620] p-1 rounded-xl border border-[#CBD5E1] dark:border-[#272738] text-xs font-bold shadow-xs">
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('paper')}
-                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                      readerTheme === 'paper' ? 'bg-white text-black shadow-xs border border-black/10' : 'text-[#85877E] hover:text-black dark:hover:text-white'
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                      readerTheme === 'paper' || readerTheme === 'default'
+                        ? 'bg-white dark:bg-[#252838] text-slate-900 dark:text-white shadow-xs border border-slate-300/80 dark:border-white/20 font-black ring-1 ring-slate-400/40 dark:ring-white/25'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                     }`}
-                    title="Paper White"
+                    title="Paper White (Day Study)"
                   >
                     📄 Paper
                   </button>
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('sepia')}
-                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                      readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs border border-[#D9C4A1]' : 'text-[#85877E] hover:text-[#4A3B22]'
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                      readerTheme === 'sepia'
+                        ? 'bg-[#F4E6C8] dark:bg-[#3D2C1C] text-[#3E2B1A] dark:text-[#F3E3CE] shadow-xs border border-[#DEC4A5] dark:border-[#6B4B2E] font-black ring-1 ring-[#D8B994] dark:ring-[#8C623C]'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-[#3E2B1A] dark:hover:text-[#F3E3CE] hover:bg-[#F4E6C8]/40 dark:hover:bg-[#3D2C1C]/40'
                     }`}
-                    title="Kindle Book Warm Sepia"
+                    title="Warm Kindle Sepia (Eye Comfort)"
                   >
                     📜 Sepia
                   </button>
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('sage')}
-                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                      readerTheme === 'sage' ? 'bg-[#E2EFE0] text-[#1D3B22] shadow-xs border border-[#BDD6BA]' : 'text-[#85877E] hover:text-[#1D3B22]'
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                      readerTheme === 'sage'
+                        ? 'bg-[#DCEDDC] dark:bg-[#1A3320] text-[#1A3820] dark:text-[#E0F2E2] shadow-xs border border-[#BED9BC] dark:border-[#35613B] font-black ring-1 ring-[#A7CBA4] dark:ring-[#447C4C]'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-[#1A3820] dark:hover:text-[#E0F2E2] hover:bg-[#DCEDDC]/40 dark:hover:bg-[#1A3320]/40'
                     }`}
                     title="Sage Mint (Eye Fatigue Relief)"
                   >
@@ -3331,8 +3365,10 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   <button
                     type="button"
                     onClick={() => handleSelectTheme('candle')}
-                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                      readerTheme === 'candle' ? 'bg-[#F4E8D5] text-[#422C17] shadow-xs border border-[#DEC4A5]' : 'text-[#85877E] hover:text-[#422C17]'
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                      readerTheme === 'candle'
+                        ? 'bg-[#F7E6D0] dark:bg-[#3D2614] text-[#3F2510] dark:text-[#F9E2CA] shadow-xs border border-[#E0C5A3] dark:border-[#6C4221] font-black ring-1 ring-[#D4B38A] dark:ring-[#8F572C]'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-[#3F2510] dark:hover:text-[#F9E2CA] hover:bg-[#F7E6D0]/40 dark:hover:bg-[#3D2614]/40'
                     }`}
                     title="Candlelight Amber (Night Study)"
                   >
@@ -3340,21 +3376,13 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleSelectTheme('midnight')}
-                    className={`hidden xl:inline-block px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                      readerTheme === 'midnight' ? 'bg-[#1E293B] text-slate-100 shadow-xs border border-slate-700' : 'text-[#85877E] hover:text-white'
-                    }`}
-                    title="Midnight Navy"
-                  >
-                    🌙 Mid
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => handleSelectTheme('oled')}
-                    className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
-                      readerTheme === 'oled' ? 'bg-black text-white shadow-xs border border-white/20' : 'text-[#85877E] hover:text-white'
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                      readerTheme === 'oled' || readerTheme === 'midnight'
+                        ? 'bg-black text-white shadow-xs border border-black dark:border-white/30 font-black ring-1 ring-black/40 dark:ring-white/40'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'
                     }`}
-                    title="Pitch Dark OLED"
+                    title="Pitch Dark OLED (AMOLED)"
                   >
                     🖤 OLED
                   </button>
@@ -3544,7 +3572,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
           <div className={`mx-auto ${getReaderWidthClass()}`}>
             {viewMode === 'study' && (
               <div className="relative" ref={fsNotesContainerRef}>
-                <div className={`p-6 sm:p-12 rounded-3xl ${getThemeContainerClass()} min-h-[70vh] select-text cursor-text relative z-10`}>
+                <div className={`p-6 sm:p-12 rounded-3xl ${getThemeContainerClass()} min-h-[70vh] select-text cursor-text relative z-10`} style={getThemeInlineStyle()}>
                   {renderFormattedNotes(getFontSizeClass())}
                 </div>
 
@@ -3588,7 +3616,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   rows={26}
                   className="w-full p-5 rounded-3xl bg-white dark:bg-[#12131C] border border-[#E2E8F0] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-xl"
                 />
-                <div className={`p-6 rounded-3xl ${getThemeContainerClass()} overflow-y-auto max-h-[80vh] custom-scrollbar select-text`}>
+                <div className={`p-6 rounded-3xl ${getThemeContainerClass()} overflow-y-auto max-h-[80vh] custom-scrollbar select-text`} style={getThemeInlineStyle()}>
                   {renderFormattedNotes(getFontSizeClass())}
                 </div>
               </div>
@@ -3809,56 +3837,66 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               <span>{promptCopied ? '✓ Copied' : 'AI Prompt'}</span>
             </button>
 
-            {/* Theme Switcher in Normal Toolbar */}
-            {viewMode === 'study' && (
-              <div className="flex items-center gap-0.5 bg-[#F8FAFC] dark:bg-[#0D0E15] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold">
+            {/* Theme Switcher in Normal Toolbar (Study & Split Preview) */}
+            {(viewMode === 'study' || viewMode === 'split') && (
+              <div className="flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#151620] p-1 rounded-xl border border-[#CBD5E1] dark:border-[#272738] text-xs font-bold shadow-xs">
                 <button
                   type="button"
                   onClick={() => handleSelectTheme('paper')}
-                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
-                    readerTheme === 'paper' ? 'bg-white text-black shadow-xs' : 'text-[#85877E] hover:text-black dark:hover:text-white'
+                  className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                    readerTheme === 'paper' || readerTheme === 'default'
+                      ? 'bg-white dark:bg-[#252838] text-slate-900 dark:text-white shadow-xs border border-slate-300/80 dark:border-white/20 font-black ring-1 ring-slate-400/40 dark:ring-white/25'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
-                  title="Paper White"
+                  title="Paper White (Day Study)"
                 >
                   📄 Paper
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSelectTheme('sepia')}
-                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
-                    readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#4A3B22] shadow-xs' : 'text-[#85877E] hover:text-[#4A3B22]'
+                  className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                    readerTheme === 'sepia'
+                      ? 'bg-[#F4E6C8] dark:bg-[#3D2C1C] text-[#3E2B1A] dark:text-[#F3E3CE] shadow-xs border border-[#DEC4A5] dark:border-[#6B4B2E] font-black ring-1 ring-[#D8B994] dark:ring-[#8C623C]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-[#3E2B1A] dark:hover:text-[#F3E3CE] hover:bg-[#F4E6C8]/40 dark:hover:bg-[#3D2C1C]/40'
                   }`}
-                  title="Sepia"
+                  title="Warm Kindle Sepia (Eye Comfort)"
                 >
                   📜 Sepia
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSelectTheme('sage')}
-                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
-                    readerTheme === 'sage' ? 'bg-[#E2EFE0] text-[#1D3B22] shadow-xs' : 'text-[#85877E] hover:text-[#1D3B22]'
+                  className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                    readerTheme === 'sage'
+                      ? 'bg-[#DCEDDC] dark:bg-[#1A3320] text-[#1A3820] dark:text-[#E0F2E2] shadow-xs border border-[#BED9BC] dark:border-[#35613B] font-black ring-1 ring-[#A7CBA4] dark:ring-[#447C4C]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-[#1A3820] dark:hover:text-[#E0F2E2] hover:bg-[#DCEDDC]/40 dark:hover:bg-[#1A3320]/40'
                   }`}
-                  title="Sage Mint"
+                  title="Sage Mint (Eye Fatigue Relief)"
                 >
                   🌿 Sage
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSelectTheme('candle')}
-                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
-                    readerTheme === 'candle' ? 'bg-[#F4E8D5] text-[#422C17] shadow-xs' : 'text-[#85877E] hover:text-[#422C17]'
+                  className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                    readerTheme === 'candle'
+                      ? 'bg-[#F7E6D0] dark:bg-[#3D2614] text-[#3F2510] dark:text-[#F9E2CA] shadow-xs border border-[#E0C5A3] dark:border-[#6C4221] font-black ring-1 ring-[#D4B38A] dark:ring-[#8F572C]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-[#3F2510] dark:hover:text-[#F9E2CA] hover:bg-[#F7E6D0]/40 dark:hover:bg-[#3D2614]/40'
                   }`}
-                  title="Candlelight"
+                  title="Candlelight Amber (Night Study)"
                 >
                   🕯️ Candle
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSelectTheme('oled')}
-                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
-                    readerTheme === 'oled' ? 'bg-black text-white shadow-xs' : 'text-[#85877E] hover:text-white'
+                  className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
+                    readerTheme === 'oled' || readerTheme === 'midnight'
+                      ? 'bg-black text-white shadow-xs border border-black dark:border-white/30 font-black ring-1 ring-black/40 dark:ring-white/40'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'
                   }`}
-                  title="OLED Dark"
+                  title="Pitch Dark OLED (AMOLED)"
                 >
                   🖤 OLED
                 </button>
@@ -4323,7 +4361,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             <div className="text-[11px] font-bold text-[#85877E] uppercase font-mono px-1">
               <span>Live Visual Notes Preview ({activeNote.title})</span>
             </div>
-            <div className={`flex-1 p-4 sm:p-5 rounded-2xl ${getThemeContainerClass()} overflow-y-auto max-h-[480px] custom-scrollbar select-text`}>
+            <div className={`flex-1 p-4 sm:p-5 rounded-2xl ${getThemeContainerClass()} overflow-y-auto max-h-[480px] custom-scrollbar select-text`} style={getThemeInlineStyle()}>
               {renderFormattedNotes()}
             </div>
           </div>
@@ -4343,7 +4381,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
         /* Study Mode (Clean, magazine-quality visual notes with Freefall & Box Overlay) */
         <div className="space-y-4">
           <div className="relative" ref={notesContainerRef}>
-            <div className={`p-4 sm:p-7 rounded-3xl ${getThemeContainerClass()} min-h-[220px] select-text cursor-text relative z-10 print:p-0 print:border-none print:shadow-none`}>
+            <div className={`p-4 sm:p-7 rounded-3xl ${getThemeContainerClass()} min-h-[220px] select-text cursor-text relative z-10 print:p-0 print:border-none print:shadow-none`} style={getThemeInlineStyle()}>
               {renderFormattedNotes()}
             </div>
 
