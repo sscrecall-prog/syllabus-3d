@@ -74,14 +74,14 @@ export default {
         mono: ['"JetBrains Mono"', 'Menlo', 'Consolas', 'monospace']
       },
       boxShadow: {
-        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-        '2xs': '0 1px 1px 0 rgba(0, 0, 0, 0.03)',
-        'subtle-depth': '0 2px 8px -2px rgba(17, 18, 15, 0.05), 0 8px 16px -4px rgba(17, 18, 15, 0.04)',
-        'elevated-card': '0 4px 20px -2px rgba(17, 18, 15, 0.08), 0 1px 3px 0 rgba(17, 18, 15, 0.04)',
-        'olive-glow': '0 0 20px -3px rgba(89, 107, 53, 0.35)',
-        'accent-glow': '0 0 20px -3px rgba(122, 162, 247, 0.35)',
-        'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.6)',
-        'card-hover': '0 8px 30px -4px rgba(17, 18, 15, 0.12), 0 2px 6px 0 rgba(17, 18, 15, 0.06)',
+        'xs': '0 1px 2px 0 rgba(15, 23, 42, 0.04)',
+        '2xs': '0 1px 1px 0 rgba(15, 23, 42, 0.02)',
+        'subtle-depth': '0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.03), inset 0 1px 0 0 rgba(255, 255, 255, 0.8)',
+        'elevated-card': '0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 8px 24px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.9)',
+        'olive-glow': '0 0 20px -3px rgba(37, 99, 235, 0.25)',
+        'accent-glow': '0 0 20px -3px rgba(37, 99, 235, 0.35)',
+        'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.9)',
+        'card-hover': '0 12px 32px -4px rgba(15, 23, 42, 0.08), 0 2px 6px 0 rgba(15, 23, 42, 0.03)',
       },
       borderRadius: {
         '2xl': '18px',

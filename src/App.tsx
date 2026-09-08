@@ -598,6 +598,13 @@ export const App: React.FC = () => {
         <div className="absolute top-2/3 -right-48 w-[550px] h-[550px] bg-indigo-600/6 rounded-full blur-[170px]" />
       </div>
 
+      {/* ☀️ Pristine Atmospheric Ambient Mesh (Light Mode Only, GPU-Accelerated) */}
+      <div className="block dark:hidden fixed inset-0 pointer-events-none z-0 overflow-hidden select-none print:hidden">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-400/[0.02] to-transparent rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 -left-48 w-[500px] h-[500px] bg-sky-400/[0.025] rounded-full blur-[160px]" />
+        <div className="absolute top-2/3 -right-48 w-[550px] h-[550px] bg-indigo-400/[0.025] rounded-full blur-[170px]" />
+      </div>
+
       {/* ♿ Skip to Main Content Link for Keyboard & Screen Reader Users */}
       <a href="#main-content" className="skip-link">
         Skip to main content (Press Enter)

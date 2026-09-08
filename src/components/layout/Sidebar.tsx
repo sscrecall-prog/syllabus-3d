@@ -151,8 +151,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white dark:bg-[#090C15]/90 backdrop-blur-2xl border-r border-[#E2E8F0] dark:border-white/[0.08] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
-        isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-sm'
+      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white/80 dark:bg-[#090C15]/90 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
+        isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-[1px_0_12px_rgba(15,23,42,0.03)]'
       }`}
     >
 
@@ -207,7 +207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
-              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 hover:bg-[#2563EB] text-white font-bold text-[13px] shadow-xs dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent tap-bounce"
+              className="group relative w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-blue-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:bg-[#7AA2F7] text-white font-bold text-[13px] shadow-[0_2px_8px_rgba(15,23,42,0.12)] dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-slate-800 dark:border-transparent tap-bounce"
               title="Add Custom Topic"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -221,15 +221,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 soundManager.playClick();
                 onOpenFocus();
               }}
-              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EFF6FF] dark:bg-[#141A2E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#1B2340] text-[#1D4ED8] dark:text-[#7AA2F7] border border-[#BFDBFE] dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-xs transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
+              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 hover:from-blue-100 hover:to-indigo-100 dark:bg-[#141A2E] dark:hover:bg-[#1B2340] text-blue-700 dark:text-[#7AA2F7] border border-blue-200/80 dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-[0_1px_3px_rgba(37,99,235,0.06)] transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
               title="3D Focus Chamber"
             >
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] group-hover:bg-white animate-pulse" />
-                <Timer className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] group-hover:text-white" />
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-[#7AA2F7] group-hover:bg-blue-700 dark:group-hover:bg-white animate-pulse" />
+                <Timer className="w-3.5 h-3.5 text-blue-600 dark:text-[#7AA2F7]" />
                 <span>3D Focus Chamber</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white">
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/80 dark:bg-[#7AA2F7]/20 text-blue-700 dark:text-[#7AA2F7] border border-blue-200/50 dark:border-transparent">
                 Timer
               </span>
             </button>
@@ -256,13 +256,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={`group relative w-full flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-bold transition-all duration-150 cursor-pointer ${
                         isActive
-                          ? 'bg-[#11120F] dark:bg-gradient-to-r dark:from-blue-600/25 dark:to-indigo-600/20 text-white dark:text-[#7AA2F7] font-black shadow-xs dark:border dark:border-[#7AA2F7]/30 dark:shadow-[0_0_15px_rgba(122,162,247,0.15)]'
-                          : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-white/[0.05] hover:text-[#11120F] dark:hover:text-white'
+                          ? 'bg-slate-900 text-white font-black shadow-[0_2px_8px_rgba(15,23,42,0.14)] dark:bg-gradient-to-r dark:from-blue-600/25 dark:to-indigo-600/20 dark:text-[#7AA2F7] dark:border dark:border-[#7AA2F7]/30 dark:shadow-[0_0_15px_rgba(122,162,247,0.15)]'
+                          : 'text-slate-600 dark:text-[#CBD5E1] hover:bg-slate-100/90 dark:hover:bg-white/[0.05] hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
                       {/* Active Left Indicator Bar */}
                       {isActive && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-emerald-400 dark:bg-[#7AA2F7]" />
+                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-blue-500 dark:bg-[#7AA2F7]" />
                       )}
 
                       <div className="flex items-center gap-2.5 min-w-0">

@@ -883,7 +883,7 @@ export const SettingsView: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">
               <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-mono bg-white dark:bg-[#20212E] border border-slate-200 dark:border-[#272730] text-slate-900 dark:text-[#F5F5F7] capitalize shrink-0">
-                {theme === 'dark' ? 'Tokyo Night Dark' : 'Pure White Pro'}
+                {theme === 'dark' ? 'Tokyo Night Dark' : 'Pure Pro Alabaster'}
               </span>
             </div>
           </div>
@@ -918,7 +918,7 @@ export const SettingsView: React.FC = () => {
               </div>
             </button>
 
-            {/* Pure White Pro (Light) */}
+            {/* Pure Pro Alabaster (Light) */}
             <button
               type="button"
               onClick={() => {
@@ -939,10 +939,10 @@ export const SettingsView: React.FC = () => {
               </div>
               <div>
                 <span className="text-xs sm:text-[14px] font-extrabold text-slate-900 dark:text-white block">
-                  Pure White Pro (Light Mode)
+                  Pure Pro Alabaster (Light Mode)
                 </span>
                 <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-[#94A3B8] block mt-0.5">
-                  Crisp, high-contrast modern white workspace for daylight clarity
+                  Ultra-crisp, high-contrast alabaster workspace with specular elevation &amp; daylight clarity
                 </span>
               </div>
             </button>
