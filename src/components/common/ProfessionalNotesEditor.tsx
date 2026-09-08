@@ -83,6 +83,7 @@ import {
   getDefaultSampleQuiz,
   extractGeminiShareUrl
 } from '../../utils/quizUtils';
+import { NotionAiNotesStudioModal } from '../modals/NotionAiNotesStudioModal';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -258,6 +259,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [quizPromptCopied, setQuizPromptCopied] = useState<boolean>(false);
   const [userQuizAnswers, setUserQuizAnswers] = useState<Record<string, Record<string, string>>>({});
 
+  // Notion AI Notes Studio State
+  const [isNotionAiModalOpen, setIsNotionAiModalOpen] = useState<boolean>(false);
+  const [notionAiPastedText, setNotionAiPastedText] = useState<string>('');
+  const [showAiPastePromptToast, setShowAiPastePromptToast] = useState<boolean>(false);
+  const [pendingAiPastedText, setPendingAiPastedText] = useState<string>('');
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const speechRecognitionRef = useRef<any>(null);
   const fileInputImageRef = useRef<HTMLInputElement>(null);
@@ -385,6 +392,14 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         e.preventDefault();
         setIsFocusRulerActive(prev => !prev);
         soundManager.playClick();
+      }
+
+      // Universal Notion AI Studio Shortcut (Ctrl + J or Cmd + J)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'j') {
+        e.preventDefault();
+        soundManager.playClick();
+        setNotionAiPastedText(content);
+        setIsNotionAiModalOpen(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -876,6 +891,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     const htmlText = e.clipboardData?.getData('text/html');
 
     if (plainText) {
+      // Offer 1-Click Notion AI Studio when user pastes notes from Gemini / ChatGPT / Claude (>80 chars)
+      if (plainText.length > 80) {
+        setPendingAiPastedText(plainText);
+        setShowAiPastePromptToast(true);
+        setTimeout(() => setShowAiPastePromptToast(false), 10000);
+      }
+
       const isTargetInput = e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement;
       const processed = processPastedNotesContent(plainText, htmlText);
 
@@ -3746,16 +3768,22 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
 
           {/* Right Cluster: AI Tools, Utilities & Status */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {/* Format AI Notes */}
+            {/* ✨ Notion AI Note Studio */}
             <button
               type="button"
-              onClick={handleFormatAiNotes}
-              disabled={!content.trim()}
-              title="Auto-format copied text from Gemini/ChatGPT"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm disabled:opacity-50"
+              onClick={() => {
+                soundManager.playClick();
+                setNotionAiPastedText(content);
+                setIsNotionAiModalOpen(true);
+              }}
+              title="Notion AI Note Studio (Ctrl + J) — Select from 6 formats for Gemini / ChatGPT notes"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-md hover:shadow-violet-500/25 shrink-0"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Format AI</span>
+              <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-300" />
+              <span>Notion AI</span>
+              <span className="hidden sm:inline-block px-1 py-0.2 rounded text-[9px] bg-white/20 font-mono font-normal">
+                Ctrl+J
+              </span>
             </button>
 
             {/* Fix Tables & Formulas */}
@@ -4265,7 +4293,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             value={content}
             onChange={e => updateContentAndSave(e.target.value)}
             onPaste={handlePaste}
-            placeholder={`Paste your notes from Gemini or ChatGPT here, or write your own!\n\n💡 Pro-Tip: After pasting from Gemini/ChatGPT, click "✨ Format AI Notes" in the toolbar above to instantly generate structured callouts, formulas, traps & tables!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
+            placeholder={`Paste your notes from Gemini, ChatGPT, or Claude here, or write your own!\n\n✨ Notion AI Studio: After pasting, press Ctrl+J or click "✨ Notion AI" in the toolbar above to choose from 6 formats (Notion Master, Cornell, Active Recall Q&A, Speed Cheat Sheet, Deep Outline, Zero-Loss Normalizer) with 100% data preservation!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
             rows={14}
             className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#E2E8F0] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-[#7AA2F7] shadow-inner select-text"
           />
@@ -4559,6 +4587,64 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
         </div>,
         document.body
       )}
+
+      {/* ✨ Floating Notion AI Paste Prompt Banner */}
+      {showAiPastePromptToast && (
+        <div className="fixed bottom-24 right-6 z-[190] animate-slide-in flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-700 text-white shadow-2xl border border-white/20 backdrop-blur-md">
+          <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+          </div>
+          <div className="text-xs">
+            <p className="font-black flex items-center gap-1.5">
+              <span>Pasted AI Notes?</span>
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-white/20">Notion AI</span>
+            </p>
+            <p className="text-[11px] text-white/80">Structure into Notion, Cornell, or Cheat Sheet format</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playCompleteChime();
+              setNotionAiPastedText(pendingAiPastedText);
+              setShowAiPastePromptToast(false);
+              setIsNotionAiModalOpen(true);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-white text-violet-800 hover:bg-slate-100 text-xs font-black transition-all cursor-pointer shadow-sm active:scale-95 shrink-0"
+          >
+            Open Studio
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowAiPastePromptToast(false)}
+            className="p-1 text-white/70 hover:text-white cursor-pointer"
+            title="Dismiss"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* ✨ Notion AI Notes Studio Modal */}
+      <NotionAiNotesStudioModal
+        isOpen={isNotionAiModalOpen}
+        onClose={() => setIsNotionAiModalOpen(false)}
+        topicName={topicName}
+        subjectName={subjectName}
+        chapterName={chapterName}
+        examName={examName}
+        currentNoteContent={content}
+        initialPastedText={notionAiPastedText}
+        onApplyFormattedNotes={(formatted, mode) => {
+          if (mode === 'append') {
+            const updated = content.trim() ? `${content}\n\n${formatted}` : formatted;
+            updateContentAndSave(updated);
+          } else {
+            updateContentAndSave(formatted);
+          }
+          setPasteNotice('✓ Notion AI Notes Applied with 100% Data Preservation!');
+          setTimeout(() => setPasteNotice(null), 3500);
+        }}
+      />
     </div>
   );
 };
