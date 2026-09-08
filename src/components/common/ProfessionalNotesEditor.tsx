@@ -3015,128 +3015,153 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
 
         {/* Quick Note Templates Dropdown */}
         {showAddTemplatesMenu && (
-          <div
-            className="absolute right-0 top-full mt-2 w-60 rounded-2xl bg-white dark:bg-[#181822] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="px-2.5 py-1.5 text-[11px] uppercase font-mono text-slate-400 border-b border-[#E2E8F0] dark:border-[#272730]">
-              Choose Note Template:
+          <>
+            {/* Click-outside backdrop */}
+            <div
+              className="fixed inset-0 z-[80]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAddTemplatesMenu(false);
+              }}
+            />
+            <div
+              className="absolute right-0 top-full mt-2 w-68 sm:w-72 max-h-[min(420px,calc(100vh-200px))] overflow-y-auto overscroll-contain rounded-2xl bg-white dark:bg-[#181822] border border-[#E2E8F0] dark:border-[#272730] shadow-2xl p-1.5 z-[100] animate-fade-in text-xs font-bold custom-scrollbar"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-white/95 dark:bg-[#181822]/95 backdrop-blur-xs px-2.5 py-1.5 text-[11px] uppercase font-mono text-slate-400 border-b border-[#E2E8F0] dark:border-[#272730] flex items-center justify-between z-10">
+                <span>Choose Note Template:</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">7 templates</span>
+              </div>
+              
+              <div className="py-1 space-y-0.5">
+                {/* 🎯 Interactive Quiz / MCQ Practice */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    setShowQuizImportModal(true);
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-indigo-100 dark:border-indigo-900/40"
+                >
+                  <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-indigo-600 dark:text-indigo-400">🎯 Interactive Quiz / MCQ</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Import Gemini link or test</div>
+                  </div>
+                </button>
+
+                {/* 🔤 Smart Notion Vocabulary Flashcards */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    handleAddNewNote(`Smart Vocab: ${topicName}`, getDefaultSampleVocab(topicName));
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-amber-50/70 dark:hover:bg-amber-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-amber-100 dark:border-amber-900/40"
+                >
+                  <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-amber-500 via-orange-500 to-rose-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                    <BookMarked className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-amber-700 dark:text-amber-400">🔤 Smart Vocabulary Note</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Auto-format AI Vocab to Notion Cards</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    handleAddNewNote();
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F8FAFC] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+                >
+                  <img src="/notes_icon_3d.png" alt="Notes" className="w-5 h-5 object-contain shrink-0 drop-shadow-xs pointer-events-none" />
+                  <div>
+                    <div className="font-bold">📄 Blank Notes Page</div>
+                    <div className="text-[11px] text-slate-400 font-normal">Start with clean canvas</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    handleAddNewNote(
+                      'Formula Sheet',
+                      `# Key Formulas & Speed Shortcuts\n> [!FORMULA]\n> Standard Equation: Speed = Distance / Time\n> Average Speed = 2xy / (x + y)\n\n> [!TIP]\n> Ratio Trick: Speed ratio a:b equals Time ratio b:a.\n\n### Revision Checklist\n- [ ] Memorize 5 key unit conversions\n- [ ] Practice 5 previous year exam questions`
+                    );
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+                >
+                  <Sigma className="w-4 h-4 text-purple-500" />
+                  <div>
+                    <div className="font-bold">🧮 Formula & Shortcuts</div>
+                    <div className="text-[11px] text-slate-400 font-normal">Formulas, equations & tricks</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    handleAddNewNote(
+                      'Comparison Table',
+                      `# Concept Comparison Table\n| Case / Parameter | Formula | Shortcut Rule |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed | $S_{rel} = s_1 + s_2$ | Opposite directions: add speeds |`
+                    );
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+                >
+                  <TableIcon className="w-4 h-4 text-cyan-500" />
+                  <div>
+                    <div className="font-bold">📊 Comparison Table</div>
+                    <div className="text-[11px] text-slate-400 font-normal">Side-by-side concept matrix</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    handleAddNewNote(
+                      'Rules & Traps Guide',
+                      `# Golden Rules & Exam Traps\n> [!RULE]\n> Golden Rule: Fundamental concept definition and rules.\n\n> [!WARNING]\n> High-Frequency Trap: Watch out for negative markings in tricky exceptions!\n\n### High-Yield Questions\n- [ ] Check subject-verb agreement\n- [ ] Verify standard conversions`
+                    );
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+                >
+                  <AlertTriangle className="w-4 h-4 text-rose-500" />
+                  <div>
+                    <div className="font-bold">⚠️ Rules & Traps Guide</div>
+                    <div className="text-[11px] text-slate-400 font-normal">Mistakes & examiner traps</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddTemplatesMenu(false);
+                    handleAddNewNote(
+                      'PYQ & Solved Tricks',
+                      `# Solved Previous Year Exam Questions (PYQ)\n> [!EXAMPLE]\n> Question: A train crosses a 300m bridge in 20 seconds. Speed = ?\n> Solution: Total distance = train + bridge.\n\n### Self Practice Checklist\n- [ ] Solve 2023 Tier 1 Questions\n- [ ] Solve 2024 Tier 2 Questions`
+                    );
+                    soundManager.playClick();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <div>
+                    <div className="font-bold">🎯 PYQ & Solved Tricks</div>
+                    <div className="text-[11px] text-slate-400 font-normal">Previous year questions</div>
+                  </div>
+                </button>
+              </div>
             </div>
-            
-            {/* 🎯 Interactive Quiz / MCQ Practice */}
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddTemplatesMenu(false);
-                setShowQuizImportModal(true);
-                soundManager.playClick();
-              }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-indigo-100 dark:border-indigo-900/40"
-            >
-              <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-indigo-500 via-blue-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-xs">
-                <Sparkles className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <div className="font-bold text-indigo-600 dark:text-indigo-400">🎯 Interactive Quiz / MCQ</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Import Gemini link or test</div>
-              </div>
-            </button>
-
-            {/* 🔤 Smart Notion Vocabulary Flashcards */}
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddTemplatesMenu(false);
-                handleAddNewNote(`Smart Vocab: ${topicName}`, getDefaultSampleVocab(topicName));
-                soundManager.playClick();
-              }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-amber-50/70 dark:hover:bg-amber-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-amber-100 dark:border-amber-900/40"
-            >
-              <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-amber-500 via-orange-500 to-rose-600 flex items-center justify-center text-white shrink-0 shadow-xs">
-                <BookMarked className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <div className="font-bold text-amber-700 dark:text-amber-400">🔤 Smart Vocabulary Note</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Auto-format AI Vocab to Notion Cards</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleAddNewNote()}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F8FAFC] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-            >
-              <img src="/notes_icon_3d.png" alt="Notes" className="w-5 h-5 object-contain shrink-0 drop-shadow-xs pointer-events-none" />
-              <div>
-                <div className="font-bold">📄 Blank Notes Page</div>
-                <div className="text-[11px] text-slate-400 font-normal">Start with clean canvas</div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                handleAddNewNote(
-                  'Formula Sheet',
-                  `# Key Formulas & Speed Shortcuts\n> [!FORMULA]\n> Standard Equation: Speed = Distance / Time\n> Average Speed = 2xy / (x + y)\n\n> [!TIP]\n> Ratio Trick: Speed ratio a:b equals Time ratio b:a.\n\n### Revision Checklist\n- [ ] Memorize 5 key unit conversions\n- [ ] Practice 5 previous year exam questions`
-                )
-              }
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-            >
-              <Sigma className="w-4 h-4 text-purple-500" />
-              <div>
-                <div className="font-bold">🧮 Formula & Shortcuts</div>
-                <div className="text-[11px] text-slate-400 font-normal">Formulas, equations & tricks</div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                handleAddNewNote(
-                  'Comparison Table',
-                  `# Concept Comparison Table\n| Case / Parameter | Formula | Shortcut Rule |\n| :--- | :--- | :--- |\n| Case 1: Constant Distance | $t_1 / t_2 = s_2 / s_1$ | Time inversely proportional to speed |\n| Case 2: Constant Time | $d_1 / d_2 = s_1 / s_2$ | Distance directly proportional to speed |\n| Case 3: Relative Speed | $S_{rel} = s_1 + s_2$ | Opposite directions: add speeds |`
-                )
-              }
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-            >
-              <TableIcon className="w-4 h-4 text-cyan-500" />
-              <div>
-                <div className="font-bold">📊 Comparison Table</div>
-                <div className="text-[11px] text-slate-400 font-normal">Side-by-side concept matrix</div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                handleAddNewNote(
-                  'Rules & Traps Guide',
-                  `# Golden Rules & Exam Traps\n> [!RULE]\n> Golden Rule: Fundamental concept definition and rules.\n\n> [!WARNING]\n> High-Frequency Trap: Watch out for negative markings in tricky exceptions!\n\n### High-Yield Questions\n- [ ] Check subject-verb agreement\n- [ ] Verify standard conversions`
-                )
-              }
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-            >
-              <AlertTriangle className="w-4 h-4 text-rose-500" />
-              <div>
-                <div className="font-bold">⚠️ Rules & Traps Guide</div>
-                <div className="text-[11px] text-slate-400 font-normal">Mistakes & examiner traps</div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                handleAddNewNote(
-                  'PYQ & Solved Tricks',
-                  `# Solved Previous Year Exam Questions (PYQ)\n> [!EXAMPLE]\n> Question: A train crosses a 300m bridge in 20 seconds. Speed = ?\n> Solution: Total distance = train + bridge.\n\n### Self Practice Checklist\n- [ ] Solve 2023 Tier 1 Questions\n- [ ] Solve 2024 Tier 2 Questions`
-                )
-              }
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-[#F7F6F0] dark:hover:bg-[#232330] text-slate-800 dark:text-white cursor-pointer transition-colors"
-            >
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <div>
-                <div className="font-bold">🎯 PYQ & Solved Tricks</div>
-                <div className="text-[11px] text-slate-400 font-normal">Previous year questions</div>
-              </div>
-            </button>
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -4053,15 +4078,15 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
     <div className="space-y-3" onPaste={handlePaste} onMouseUp={handleMouseUpSelection} onTouchEnd={handleMouseUpSelection}>
       
       {/* 🌟 UNIFIED MASTER HEADER CARD (Clean Tabs & Organized Toolbar) */}
-      <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-sm overflow-hidden divide-y divide-[#E2E8F0]/60 dark:divide-[#272730] no-print">
+      <div className="rounded-2xl bg-white dark:bg-[#151620] border border-[#E2E8F0] dark:border-[#272730] shadow-sm relative divide-y divide-[#E2E8F0]/60 dark:divide-[#272730] no-print">
         
         {/* Tier 1: Modern Multi-Note Tabs Track */}
-        <div className="p-2 px-3 bg-[#F8FAFC]/80 dark:bg-[#12131C]/60 flex items-center justify-between gap-3">
+        <div className="p-2 px-3 rounded-t-2xl bg-[#F8FAFC]/80 dark:bg-[#12131C]/60 flex items-center justify-between gap-3">
           {renderNoteTabs(false)}
         </div>
 
         {/* Tier 2: Sleek, Categorized Master Toolbar */}
-        <div className="p-2 px-3 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="p-2 px-3 rounded-b-2xl flex flex-wrap items-center justify-between gap-2.5">
           
           {/* Left Cluster: View Modes & Full Screen */}
           <div className="flex items-center gap-1.5 flex-wrap">
