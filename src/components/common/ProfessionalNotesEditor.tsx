@@ -195,8 +195,20 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   // Pure Notes Zen Focus Mode (Hides all top bars/sections/buttons)
   const [isZenMode, setIsZenMode] = useState(false);
 
-  const [readerFontSize, setReaderFontSize] = useState<ReaderFontSize>('base');
+  const [readerFontSize, setReaderFontSize] = useState<ReaderFontSize>(() => {
+    const saved = localStorage.getItem('syllabus3d_reader_font_size') as ReaderFontSize;
+    if (saved && (['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).includes(saved)) {
+      return saved;
+    }
+    return 'base';
+  });
   const [readerWidth, setReaderWidth] = useState<ReaderWidth>('normal');
+
+  const handleSelectFontSize = (size: ReaderFontSize) => {
+    setReaderFontSize(size);
+    localStorage.setItem('syllabus3d_reader_font_size', size);
+    soundManager.playClick();
+  };
 
   // Reader Typography & Color Theme Customization (Persisted)
   const [readerFontFamily, setReaderFontFamily] = useState<ReaderFontFamily>(() => {
@@ -1162,24 +1174,35 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   };
 
   // Toggle checklist item in rendered view
-  const toggleCheckboxInText = (lineIndex: number) => {
+  const toggleCheckboxInText = (boxIndex: number) => {
     const lines = content.split('\n');
-    let taskCount = 0;
+    let currentBoxCount = 0;
     const newLines = lines.map((l) => {
       const isBox =
         l.trim().startsWith('- [ ] ') ||
         l.trim().startsWith('- [x] ') ||
+        l.trim().startsWith('- [X] ') ||
+        l.trim().startsWith('* [ ] ') ||
+        l.trim().startsWith('* [x] ') ||
+        l.trim().startsWith('* [X] ') ||
         l.trim().startsWith('> - [ ] ') ||
-        l.trim().startsWith('> - [x] ');
+        l.trim().startsWith('> - [x] ') ||
+        l.trim().startsWith('> - [X] ') ||
+        l.trim().startsWith('> * [ ] ') ||
+        l.trim().startsWith('> * [x] ') ||
+        l.trim().startsWith('> * [X] ');
       if (isBox) {
-        if (taskCount === lineIndex) {
-          if (l.includes('- [ ] ')) {
-            return l.replace('- [ ] ', '- [x] ');
-          } else {
-            return l.replace('- [x] ', '- [ ] ');
+        const thisIdx = currentBoxCount;
+        currentBoxCount++;
+        if (thisIdx === boxIndex) {
+          if (l.includes('[ ]')) {
+            return l.replace('[ ]', '[x]');
+          } else if (l.includes('[x]')) {
+            return l.replace('[x]', '[ ]');
+          } else if (l.includes('[X]')) {
+            return l.replace('[X]', '[ ]');
           }
         }
-        taskCount++;
       }
       return l;
     });
@@ -1583,6 +1606,88 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const renderFormattedNotes = (customFontSizeClass?: string) => {
     const fontSize = customFontSizeClass || getFontSizeClass();
     const fontFam = getFontFamilyClass();
+
+    // Dynamic text & geometry scaling for Vocabulary Cards based on readerFontSize
+    const getVocabSize = () => {
+      switch (readerFontSize) {
+        case 'sm':
+          return {
+            index: 'w-6 h-6 text-xs',
+            word: 'text-base sm:text-lg',
+            pos: 'text-xs sm:text-[12px]',
+            hindi: 'text-xs sm:text-sm',
+            def: 'text-xs sm:text-[13px]',
+            header: 'text-xs sm:text-[13.5px]',
+            item: 'text-xs sm:text-[12.5px]',
+            icon: 'w-4 h-4 text-xs',
+            iconInner: 'w-3 h-3',
+            checkbox: 'w-3.5 h-3.5',
+            checkIcon: 'w-2.5 h-2.5',
+            exampleHi: 'text-xs sm:text-[11.5px]'
+          };
+        case 'base':
+          return {
+            index: 'w-7 h-7 text-xs sm:text-sm',
+            word: 'text-lg sm:text-xl',
+            pos: 'text-xs sm:text-[13.5px]',
+            hindi: 'text-sm sm:text-base',
+            def: 'text-xs sm:text-[14.5px]',
+            header: 'text-sm sm:text-base',
+            item: 'text-xs sm:text-[14px]',
+            icon: 'w-5 h-5 text-xs',
+            iconInner: 'w-3.5 h-3.5',
+            checkbox: 'w-4 h-4',
+            checkIcon: 'w-3 h-3',
+            exampleHi: 'text-xs sm:text-[13px]'
+          };
+        case 'lg':
+          return {
+            index: 'w-8 h-8 text-sm sm:text-base',
+            word: 'text-xl sm:text-2xl',
+            pos: 'text-sm sm:text-[15px]',
+            hindi: 'text-base sm:text-lg',
+            def: 'text-sm sm:text-[16.5px]',
+            header: 'text-base sm:text-lg',
+            item: 'text-sm sm:text-[16px]',
+            icon: 'w-6 h-6 text-sm',
+            iconInner: 'w-4 h-4',
+            checkbox: 'w-5 h-5',
+            checkIcon: 'w-3.5 h-3.5',
+            exampleHi: 'text-xs sm:text-[14.5px]'
+          };
+        case 'xl':
+          return {
+            index: 'w-9 h-9 text-base sm:text-lg',
+            word: 'text-2xl sm:text-3xl',
+            pos: 'text-base sm:text-[17px]',
+            hindi: 'text-lg sm:text-xl',
+            def: 'text-base sm:text-[18.5px]',
+            header: 'text-lg sm:text-xl',
+            item: 'text-base sm:text-[18px]',
+            icon: 'w-7 h-7 text-base',
+            iconInner: 'w-4.5 h-4.5',
+            checkbox: 'w-6 h-6',
+            checkIcon: 'w-4 h-4',
+            exampleHi: 'text-sm sm:text-[16px]'
+          };
+        default:
+          return {
+            index: 'w-7 h-7 text-xs sm:text-sm',
+            word: 'text-lg sm:text-xl',
+            pos: 'text-xs sm:text-[13.5px]',
+            hindi: 'text-sm sm:text-base',
+            def: 'text-xs sm:text-[14.5px]',
+            header: 'text-sm sm:text-base',
+            item: 'text-xs sm:text-[14px]',
+            icon: 'w-5 h-5 text-xs',
+            iconInner: 'w-3.5 h-3.5',
+            checkbox: 'w-4 h-4',
+            checkIcon: 'w-3 h-3',
+            exampleHi: 'text-xs sm:text-[13px]'
+          };
+      }
+    };
+    const vSize = getVocabSize();
 
     if ((!content || content.trim().length === 0) && (!images || images.length === 0)) {
       return (
@@ -2085,20 +2190,20 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               key={'vocab-word-' + i}
               className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm flex items-center gap-3 flex-wrap [break-inside:avoid]"
             >
-              <div className="w-6 h-6 rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-black text-xs font-mono shadow-xs shrink-0">
+              <div className={`${vSize.index} rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-black font-mono shadow-xs shrink-0`}>
                 {indexNum}
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-extrabold text-[#F59E0B] text-base sm:text-lg tracking-tight">
+                <span className={`font-extrabold text-[#F59E0B] ${vSize.word} tracking-tight`}>
                   {wordText}
                 </span>
                 {posText && (
-                  <span className="text-xs sm:text-[13px] text-[#D97706]/90 dark:text-[#FBBF24]/80 font-medium">
+                  <span className={`${vSize.pos} text-[#D97706]/90 dark:text-[#FBBF24]/80 font-medium`}>
                     {posText}
                   </span>
                 )}
                 {hindiText && (
-                  <span className="text-sm sm:text-base font-semibold text-[#38BDF8] dark:text-[#60A5FA]">
+                  <span className={`${vSize.hindi} font-semibold text-[#38BDF8] dark:text-[#60A5FA]`}>
                     {hindiText}
                   </span>
                 )}
@@ -2115,10 +2220,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               key={'vocab-def-' + i}
               className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm flex items-start gap-3 [break-inside:avoid]"
             >
-              <div className="w-6 h-6 rounded-lg bg-[#2563EB] text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
-                <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              <div className={`${vSize.index} rounded-lg bg-[#2563EB] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs`}>
+                <ArrowRight className={`${vSize.iconInner} stroke-[2.5]`} />
               </div>
-              <div className={`${fontSize} font-medium text-[#F59E0B] dark:text-[#FBBF24] leading-relaxed flex-1`}>
+              <div className={`${vSize.def} font-medium text-[#F59E0B] dark:text-[#FBBF24] leading-relaxed flex-1`}>
                 {parseInlineMarkdown(defText, `vdef-${i}`)}
               </div>
             </div>
@@ -2127,53 +2232,45 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         }
 
         if (calloutType === 'VOCAB-SYNONYMS') {
-          const categoryTag = calloutArg || 'One Word Substitution';
-
           elements.push(
             <div
               key={'vocab-syn-' + i}
               className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
             >
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-md bg-[#2563EB] text-white flex items-center justify-center text-xs shrink-0">
-                  <CornerDownRight className="w-3 h-3 stroke-[2.5]" />
+                <div className={`${vSize.icon} rounded-md bg-[#2563EB] text-white flex items-center justify-center shrink-0`}>
+                  <CornerDownRight className={`${vSize.iconInner} stroke-[2.5]`} />
                 </div>
-                <span className="text-[#E05252] font-extrabold text-sm tracking-wide">Synonyms</span>
+                <span className={`text-[#E05252] font-extrabold ${vSize.header} tracking-wide`}>Synonyms</span>
               </div>
 
               <div className="space-y-1.5 pl-1">
                 {calloutLines.map((cl, clIdx) => {
-                  const currentBoxIdx = taskCounter++;
-                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ');
-                  const rawItemText = cl.replace(/^[-*]\s*\[[ x]\]\s*/i, '');
+                  const isCheckLine = cl.trim().startsWith('- [ ] ') || cl.trim().startsWith('- [x] ') || cl.trim().startsWith('- [X] ') || cl.trim().startsWith('* [ ] ') || cl.trim().startsWith('* [x] ') || cl.trim().startsWith('* [X] ');
+                  const currentBoxIdx = isCheckLine ? taskCounter++ : -1;
+                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ') || cl.startsWith('- [X] ');
+                  const rawItemText = cl.replace(/^[-*]\s*\[[ xX]\]\s*/i, '');
                   return (
                     <div
                       key={clIdx}
-                      onClick={() => toggleCheckboxInText(currentBoxIdx)}
+                      onClick={() => currentBoxIdx >= 0 && toggleCheckboxInText(currentBoxIdx)}
                       className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
                     >
                       <div
-                        className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                        className={`${vSize.checkbox} rounded-md border flex items-center justify-center transition-colors shrink-0 ${
                           isChecked
                             ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
                             : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
                         }`}
                       >
-                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                        {isChecked && <Check className={`${vSize.checkIcon} stroke-[3]`} />}
                       </div>
-                      <span className={`text-xs sm:text-[13px] font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
                         {parseInlineMarkdown(rawItemText, `syn-${i}-${clIdx}`)}
                       </span>
                     </div>
                   );
                 })}
-              </div>
-
-              <div className="pt-2">
-                <div className="w-full py-2 px-3 rounded-xl bg-[#1B273E] dark:bg-[#172338] border border-[#2E4166] text-[#93C5FD] font-semibold text-xs flex items-center gap-2 shadow-xs">
-                  <BookOpen className="w-3.5 h-3.5 text-[#60A5FA]" />
-                  <span>{categoryTag}</span>
-                </div>
               </div>
             </div>
           );
@@ -2187,33 +2284,34 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#3D2C1E] shadow-sm space-y-3 [break-inside:avoid]"
             >
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
-                  <Zap className="w-3 h-3 stroke-[2.5]" />
+                <div className={`${vSize.icon} rounded-md bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs`}>
+                  <Zap className={`${vSize.iconInner} stroke-[2.5]`} />
                 </div>
-                <span className="text-[#F59E0B] font-extrabold text-sm tracking-wide">🔥 Advanced Synonyms</span>
+                <span className={`text-[#F59E0B] font-extrabold ${vSize.header} tracking-wide`}>🔥 Advanced Synonyms</span>
               </div>
 
               <div className="space-y-1.5 pl-1">
                 {calloutLines.map((cl, clIdx) => {
-                  const currentBoxIdx = taskCounter++;
-                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ');
-                  const rawItemText = cl.replace(/^[-*]\s*\[[ x]\]\s*/i, '');
+                  const isCheckLine = cl.trim().startsWith('- [ ] ') || cl.trim().startsWith('- [x] ') || cl.trim().startsWith('- [X] ') || cl.trim().startsWith('* [ ] ') || cl.trim().startsWith('* [x] ') || cl.trim().startsWith('* [X] ');
+                  const currentBoxIdx = isCheckLine ? taskCounter++ : -1;
+                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ') || cl.startsWith('- [X] ');
+                  const rawItemText = cl.replace(/^[-*]\s*\[[ xX]\]\s*/i, '');
                   return (
                     <div
                       key={clIdx}
-                      onClick={() => toggleCheckboxInText(currentBoxIdx)}
+                      onClick={() => currentBoxIdx >= 0 && toggleCheckboxInText(currentBoxIdx)}
                       className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
                     >
                       <div
-                        className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                        className={`${vSize.checkbox} rounded-md border flex items-center justify-center transition-colors shrink-0 ${
                           isChecked
                             ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
                             : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
                         }`}
                       >
-                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                        {isChecked && <Check className={`${vSize.checkIcon} stroke-[3]`} />}
                       </div>
-                      <span className={`text-xs sm:text-[13px] font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
                         {parseInlineMarkdown(rawItemText, `adv-${i}-${clIdx}`)}
                       </span>
                     </div>
@@ -2226,53 +2324,45 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         }
 
         if (calloutType === 'VOCAB-ANTONYMS') {
-          const categoryTag = calloutArg || 'High-Yield Antonyms';
-
           elements.push(
             <div
               key={'vocab-ant-' + i}
               className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
             >
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-md bg-[#2563EB] text-white flex items-center justify-center text-xs shrink-0">
-                  <CornerDownRight className="w-3 h-3 stroke-[2.5]" />
+                <div className={`${vSize.icon} rounded-md bg-[#2563EB] text-white flex items-center justify-center shrink-0`}>
+                  <CornerDownRight className={`${vSize.iconInner} stroke-[2.5]`} />
                 </div>
-                <span className="text-[#E05252] font-extrabold text-sm tracking-wide">Antonyms</span>
+                <span className={`text-[#E05252] font-extrabold ${vSize.header} tracking-wide`}>Antonyms</span>
               </div>
 
               <div className="space-y-1.5 pl-1">
                 {calloutLines.map((cl, clIdx) => {
-                  const currentBoxIdx = taskCounter++;
-                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ');
-                  const rawItemText = cl.replace(/^[-*]\s*\[[ x]\]\s*/i, '');
+                  const isCheckLine = cl.trim().startsWith('- [ ] ') || cl.trim().startsWith('- [x] ') || cl.trim().startsWith('- [X] ') || cl.trim().startsWith('* [ ] ') || cl.trim().startsWith('* [x] ') || cl.trim().startsWith('* [X] ');
+                  const currentBoxIdx = isCheckLine ? taskCounter++ : -1;
+                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ') || cl.startsWith('- [X] ');
+                  const rawItemText = cl.replace(/^[-*]\s*\[[ xX]\]\s*/i, '');
                   return (
                     <div
                       key={clIdx}
-                      onClick={() => toggleCheckboxInText(currentBoxIdx)}
+                      onClick={() => currentBoxIdx >= 0 && toggleCheckboxInText(currentBoxIdx)}
                       className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
                     >
                       <div
-                        className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                        className={`${vSize.checkbox} rounded-md border flex items-center justify-center transition-colors shrink-0 ${
                           isChecked
                             ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
                             : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
                         }`}
                       >
-                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                        {isChecked && <Check className={`${vSize.checkIcon} stroke-[3]`} />}
                       </div>
-                      <span className={`text-xs sm:text-[13px] font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
                         {parseInlineMarkdown(rawItemText, `ant-${i}-${clIdx}`)}
                       </span>
                     </div>
                   );
                 })}
-              </div>
-
-              <div className="pt-2">
-                <div className="w-full py-2 px-3 rounded-xl bg-[#1B273E] dark:bg-[#172338] border border-[#2E4166] text-[#93C5FD] font-semibold text-xs flex items-center gap-2 shadow-xs">
-                  <BookOpen className="w-3.5 h-3.5 text-[#60A5FA]" />
-                  <span>{categoryTag}</span>
-                </div>
               </div>
             </div>
           );
@@ -2286,11 +2376,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               key={'vocab-conf-' + i}
               className="my-3 p-4 sm:p-5 rounded-2xl bg-[#161726] dark:bg-[#121320] border border-indigo-500/40 shadow-sm space-y-2.5 [break-inside:avoid]"
             >
-              <div className="flex items-center gap-2 font-bold text-sm text-indigo-400">
-                <HelpCircle className="w-4 h-4 text-indigo-400 shrink-0" />
+              <div className={`flex items-center gap-2 font-bold ${vSize.header} text-indigo-400`}>
+                <HelpCircle className={`${vSize.icon} text-indigo-400 shrink-0`} />
                 <span className="font-extrabold text-indigo-300">🤔 Confusing Word: {titleRest}</span>
               </div>
-              <div className="space-y-1.5 text-xs sm:text-[13px] text-slate-300 leading-relaxed pl-6">
+              <div className={`space-y-1.5 ${vSize.item} text-slate-300 leading-relaxed pl-6`}>
                 {calloutLines.map((cl, clIdx) => (
                   <div key={clIdx}>
                     {parseInlineMarkdown(cl, `conf-${i}-${clIdx}`)}
@@ -2309,7 +2399,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 if (cl.startsWith('| →') || cl.startsWith('| ->') || cl.startsWith('→')) {
                   const hiText = cl.replace(/^[|→\->\s]+/, '').trim();
                   return (
-                    <div key={clIdx} className="text-xs sm:text-[12.5px] text-slate-400 dark:text-slate-400 pl-4 italic -mt-1.5">
+                    <div key={clIdx} className={`${vSize.exampleHi} text-slate-400 dark:text-slate-400 pl-4 italic -mt-1.5`}>
                       → {hiText}
                     </div>
                   );
@@ -2318,7 +2408,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 return (
                   <div key={clIdx} className="flex items-start gap-2.5 pl-1">
                     <div className="w-[3px] self-stretch min-h-[20px] bg-slate-300 dark:bg-slate-500 rounded-full shrink-0" />
-                    <div className="text-xs sm:text-[13.5px] font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
+                    <div className={`${vSize.def} font-medium text-slate-800 dark:text-slate-200 leading-relaxed`}>
                       <span className="text-[#E05252] font-bold mr-2">Usage:</span>
                       <span>{parseInlineMarkdown(enText, `use-${i}-${clIdx}`)}</span>
                     </div>
@@ -2336,11 +2426,11 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               key={'vocab-rel-' + i}
               className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-emerald-500/30 shadow-sm space-y-1.5 [break-inside:avoid]"
             >
-              <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-emerald-400 font-mono">
-                <Bookmark className="w-3.5 h-3.5" />
+              <div className={`flex items-center gap-2 font-bold ${vSize.header} uppercase tracking-wider text-emerald-400 font-mono`}>
+                <Bookmark className={`${vSize.iconInner}`} />
                 <span>🔰 Related Word (Exam-Oriented)</span>
               </div>
-              <div className="space-y-1 text-xs sm:text-[13px] text-slate-300 leading-relaxed pl-5">
+              <div className={`space-y-1 ${vSize.item} text-slate-300 leading-relaxed pl-5`}>
                 {calloutLines.map((cl, clIdx) => (
                   <div key={clIdx}>
                     {parseInlineMarkdown(cl.replace(/^[*•\-]\s*/, ''), `rel-${i}-${clIdx}`)}
@@ -3857,9 +3947,9 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                     <button
                       key={size}
                       type="button"
-                      onClick={() => setReaderFontSize(size)}
-                      className={`px-1.5 py-0.5 rounded uppercase cursor-pointer ${
-                        readerFontSize === size ? 'bg-[#2563EB] text-white dark:bg-[#7AA2F7] dark:text-black' : 'text-[#85877E] hover:text-[#11120F]'
+                      onClick={() => handleSelectFontSize(size)}
+                      className={`px-1.5 py-0.5 rounded uppercase cursor-pointer transition-all active:scale-95 ${
+                        readerFontSize === size ? 'bg-[#2563EB] text-white dark:bg-[#7AA2F7] dark:text-black font-black shadow-xs' : 'text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
                       }`}
                     >
                       {size}
@@ -4296,6 +4386,26 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               >
                 Sans
               </button>
+            </div>
+
+            {/* Font Size Adjuster (Visible in normal drawer toolbar) */}
+            <div className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#0D0E15] px-2 py-1 rounded-xl border border-[#E2E8F0] dark:border-[#272730] text-xs font-mono font-bold">
+              <span className="text-[10px] text-[#85877E]">Size:</span>
+              {(['sm', 'base', 'lg', 'xl'] as ReaderFontSize[]).map(size => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => handleSelectFontSize(size)}
+                  className={`px-1.5 py-0.5 rounded uppercase cursor-pointer transition-all active:scale-95 ${
+                    readerFontSize === size
+                      ? 'bg-[#2563EB] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs font-black'
+                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                  title={`Set text size to ${size.toUpperCase()}`}
+                >
+                  {size}
+                </button>
+              ))}
             </div>
 
             {/* Split PDF (if exists) */}

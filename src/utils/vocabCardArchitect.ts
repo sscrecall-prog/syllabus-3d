@@ -491,9 +491,9 @@ export function formatVocabToMarkdown(cards: VocabCardItem[]): string {
       lines.push('');
     }
 
-    // 3. ⤵️ Synonyms Card with interactive checkboxes & tag
+    // 3. ⤵️ Synonyms Card with interactive checkboxes
     if (card.synonyms.length > 0) {
-      lines.push(`> [!VOCAB-SYNONYMS] ${card.categoryTag || 'One Word Substitution'}`);
+      lines.push(`> [!VOCAB-SYNONYMS]`);
       card.synonyms.forEach(syn => {
         const checkMarker = syn.checked ? '[x]' : '[ ]';
         const hindiPart = syn.hindi ? ` — ${syn.hindi}` : '';
@@ -504,7 +504,7 @@ export function formatVocabToMarkdown(cards: VocabCardItem[]): string {
 
     // 4. 🔥 Advanced Synonyms Card (if present)
     if (card.advancedSynonyms && card.advancedSynonyms.length > 0) {
-      lines.push(`> [!VOCAB-ADVANCED] High-Level Exam Synonyms`);
+      lines.push(`> [!VOCAB-ADVANCED]`);
       card.advancedSynonyms.forEach(adv => {
         const checkMarker = adv.checked ? '[x]' : '[ ]';
         const hindiPart = adv.hindi ? ` — ${adv.hindi}` : '';
@@ -513,9 +513,9 @@ export function formatVocabToMarkdown(cards: VocabCardItem[]): string {
       lines.push('');
     }
 
-    // 5. ⤵️ Antonyms Card with interactive checkboxes & tag
+    // 5. ⤵️ Antonyms Card with interactive checkboxes
     if (card.antonyms.length > 0) {
-      lines.push(`> [!VOCAB-ANTONYMS] High-Yield Antonyms`);
+      lines.push(`> [!VOCAB-ANTONYMS]`);
       card.antonyms.forEach(ant => {
         const checkMarker = ant.checked ? '[x]' : '[ ]';
         const hindiPart = ant.hindi ? ` — ${ant.hindi}` : '';
