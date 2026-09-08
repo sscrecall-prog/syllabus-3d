@@ -151,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white dark:bg-[#0B0B0D] border-r border-[#E2E8F0] dark:border-[#272730] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
+      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white dark:bg-[#090C15]/90 backdrop-blur-2xl border-r border-[#E2E8F0] dark:border-white/[0.08] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
         isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-sm'
       }`}
     >
@@ -207,7 +207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
-              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-[#1E1F2A] hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-[#F5F5F7] dark:hover:text-black font-bold text-[13px] shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent dark:border-[#2F3042] tap-bounce"
+              className="group relative w-full py-2 px-3 rounded-xl bg-[#11120F] dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 hover:bg-[#2563EB] text-white font-bold text-[13px] shadow-xs dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-transparent tap-bounce"
               title="Add Custom Topic"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -221,15 +221,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 soundManager.playClick();
                 onOpenFocus();
               }}
-              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EFF6FF] dark:bg-[#7AA2F7]/15 hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] text-[#1D4ED8] dark:text-[#7AA2F7] dark:hover:text-black border border-[#BFDBFE] dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-xs transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
+              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-[#EFF6FF] dark:bg-[#141A2E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#1B2340] text-[#1D4ED8] dark:text-[#7AA2F7] border border-[#BFDBFE] dark:border-[#7AA2F7]/30 text-[13px] font-extrabold shadow-xs transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
               title="3D Focus Chamber"
             >
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] group-hover:bg-white animate-pulse" />
-                <Timer className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] group-hover:text-white dark:group-hover:text-black" />
+                <Timer className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7] group-hover:text-white" />
                 <span>3D Focus Chamber</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-black/30 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white dark:group-hover:text-black">
+              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/60 dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] group-hover:bg-white/20 group-hover:text-white">
                 Timer
               </span>
             </button>
@@ -256,13 +256,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={`group relative w-full flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-bold transition-all duration-150 cursor-pointer ${
                         isActive
-                          ? 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#090C15] font-black shadow-xs'
-                          : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161722] hover:text-[#11120F] dark:hover:text-white'
+                          ? 'bg-[#11120F] dark:bg-gradient-to-r dark:from-blue-600/25 dark:to-indigo-600/20 text-white dark:text-[#7AA2F7] font-black shadow-xs dark:border dark:border-[#7AA2F7]/30 dark:shadow-[0_0_15px_rgba(122,162,247,0.15)]'
+                          : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-white/[0.05] hover:text-[#11120F] dark:hover:text-white'
                       }`}
                     >
                       {/* Active Left Indicator Bar */}
                       {isActive && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-emerald-400 dark:bg-[#090C15]" />
+                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-emerald-400 dark:bg-[#7AA2F7]" />
                       )}
 
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -278,7 +278,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <Icon
                             className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
                               isActive
-                                ? 'text-white dark:text-[#090C15]'
+                                ? 'text-white dark:text-[#7AA2F7]'
                                 : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
                             }`}
                           />
@@ -291,7 +291,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
                             isActive
-                              ? 'bg-white/20 dark:bg-black/20 text-white dark:text-[#090C15]'
+                              ? 'bg-white/20 dark:bg-[#7AA2F7]/25 text-white dark:text-[#7AA2F7]'
                               : item.badgeColor
                           }`}
                         >

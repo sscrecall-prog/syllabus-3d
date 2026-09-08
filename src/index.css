@@ -28,68 +28,21 @@
   }
 
   .dark {
-    /* Requested Dark Palette: Background #1A1B26, Foreground #C0CAF5, Accent #7AA2F7 */
-    --color-background: #1A1B26;
+    /* 🌌 Ultra-Advanced Obsidian Dark System */
+    --color-background: #090B10;
     --color-primary: #FFFFFF;
     --color-primary-accent: #7AA2F7;
     --color-accent-light: #7DCFFF;
     --color-secondary-accent: #BB9AF7;
-    --color-surface: #24283B;
-    --color-surface-soft: #292E42;
-    --color-border: #2E344E;
+    --color-surface: #101422;
+    --color-surface-soft: #171C2E;
+    --color-border: rgba(255, 255, 255, 0.09);
     --color-text-primary: #FFFFFF;
     --color-text-secondary: #CBD5E1;
     --color-text-muted: #94A3B8;
-    --color-success: #9ECE6A;
-    --color-warning: #E0AF68;
-    --color-error: #F7768E;
-  }
-
-  .dark.oled {
-    /* Pure Pitch Black OLED for Late-Night Eye Comfort & Battery Saving */
-    --color-background: #000000;
-    --color-surface: #0A0B10;
-    --color-surface-soft: #12131C;
-    --color-border: #1C1E2C;
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #E2E4F0;
-    --color-text-muted: #8E90A6;
-  }
-
-  .sepia {
-    /* Warm Sepia — Eye-Soothing Parchment Theme for Long Study Sessions */
-    --color-background: #F5F0E8;
-    --color-primary: #3B3022;
-    --color-primary-accent: #8B6914;
-    --color-accent-light: #E8D5A3;
-    --color-secondary-accent: #A07D2E;
-    --color-surface: #FBF7F0;
-    --color-surface-soft: #EDE6D6;
-    --color-border: #D5C9AD;
-    --color-text-primary: #3B3022;
-    --color-text-secondary: #5C4E3A;
-    --color-text-muted: #8A7D6B;
-    --color-success: #5A7A2E;
-    --color-warning: #B38622;
-    --color-error: #A0463E;
-  }
-
-  .luxury {
-    /* Haute Couture Luxury Aesthetic — Inspired by Creamy Champagne, Blush Peach & Warm Gold */
-    --color-background: #FAF7F2;
-    --color-primary: #2C221E;
-    --color-primary-accent: #C89B5B;
-    --color-accent-light: #FBF0E6;
-    --color-secondary-accent: #D4AF37;
-    --color-surface: #FFFDFB;
-    --color-surface-soft: #F6F0E8;
-    --color-border: #EADBCE;
-    --color-text-primary: #2C221E;
-    --color-text-secondary: #6B584C;
-    --color-text-muted: #9E8B7D;
-    --color-success: #2E7D5B;
-    --color-warning: #C87D28;
-    --color-error: #B8473D;
+    --color-success: #34D399;
+    --color-warning: #FBBF24;
+    --color-error: #FB7185;
   }
 
   ::selection {
@@ -123,8 +76,13 @@
   }
 
   .dark body {
-    background-color: #1A1B26;
-    color: #CBD5E1;
+    background-color: #090B10 !important;
+    background-image: 
+      radial-gradient(ellipse at 50% -20%, rgba(59, 130, 246, 0.12) 0%, transparent 65%),
+      radial-gradient(ellipse at 95% 45%, rgba(99, 102, 241, 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 5% 85%, rgba(14, 165, 233, 0.05) 0%, transparent 50%) !important;
+    background-attachment: fixed !important;
+    color: #F1F5F9 !important;
   }
 
   /* App Titles & Headings → Plus Jakarta Sans Bold with editorial tracking */
@@ -668,6 +626,183 @@ input, textarea, [contenteditable="true"], .selectable-text {
 
 .animate-slide-in-left {
   animation: slideInLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   🌌 ADVANCED DARK MODE 2.0 (Obsidian Aura & Specular Elevation)
+   - Deep Cosmic Obsidian canvas with radial illumination
+   - Frosted specular cards with diamond rim highlights
+   - WCAG AAA high-contrast crisp typography
+   - Ambient luminous badges & interactive tactile glows
+   - Custom ultra-sleek translucent scrollbars
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 1. Frosted Specular Elevated Dark Cards & Containers */
+.dark .bg-white,
+.dark [class*="dark:bg-[#18181D]"],
+.dark [class*="dark:bg-[#16161E]"],
+.dark [class*="dark:bg-[#1E1F2A]"],
+.dark [class*="dark:bg-[#11120F]"],
+.dark [class*="dark:bg-[#0B0B0D]"],
+.dark [class*="dark:bg-[#1A1B26]"],
+.dark [class*="dark:bg-[#0A0D14]"],
+.dark [class*="dark:bg-[#0A0B12]"],
+.dark [class*="dark:bg-[#12131F]"],
+.dark [class*="dark:bg-[#141624]"],
+.dark [class*="dark:bg-[#151622]"],
+.dark [class*="dark:bg-[#181926]"],
+.dark [class*="dark:bg-[#161720]"],
+.dark [class*="dark:bg-[#1F2335]"],
+.dark [class*="dark:bg-slate-900"],
+.dark [class*="dark:bg-slate-800"],
+.dark [class*="dark:bg-[#12141A]"] {
+  background-color: #101422 !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 2. Secondary Sub-cards, Nested Containers & Active Pills */
+.dark [class*="dark:bg-[#20212E]"],
+.dark [class*="dark:bg-[#1A1C2C]"],
+.dark [class*="dark:bg-[#1B1C28]"],
+.dark [class*="dark:bg-[#1E202E]"],
+.dark [class*="dark:bg-[#1A1B29]"],
+.dark [class*="dark:bg-[#202028]"],
+.dark [class*="dark:bg-[#292E42]"],
+.dark [class*="dark:bg-slate-800/50"],
+.dark [class*="dark:bg-white/[0.03]"] {
+  background-color: #151A2C !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 3. Specular Micro-Borders in Dark Mode */
+.dark [class*="dark:border-[#272730]"],
+.dark [class*="dark:border-[#272738]"],
+.dark [class*="dark:border-[#333446]"],
+.dark [class*="dark:border-[#232430]"],
+.dark [class*="dark:border-[#272732]"],
+.dark [class*="dark:border-[#292E42]"],
+.dark [class*="dark:border-[#2E344E]"],
+.dark [class*="dark:border-[#24283B]"],
+.dark [class*="dark:border-[#242533]"],
+.dark [class*="dark:border-slate-800"],
+.dark [class*="dark:border-slate-700"] {
+  border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+/* 4. Razor-Sharp High-Contrast Typography */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark .font-heading,
+.dark .app-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.dark [class*="text-[#11120F]"],
+.dark [class*="text-[#191A17]"],
+.dark [class*="text-[#0F172A]"],
+.dark .dark\:text-white,
+.dark [class*="dark:text-[#F5F5F7]"],
+.dark [class*="dark:text-[#C0CAF5]"] {
+  color: #F8FAFC !important;
+}
+
+.dark [class*="dark:text-[#CBD5E1]"],
+.dark .dark\:text-slate-200,
+.dark .dark\:text-slate-300 {
+  color: #E2E8F0 !important;
+}
+
+.dark [class*="dark:text-[#94A3B8]"],
+.dark [class*="dark:text-[#85877E]"],
+.dark .dark\:text-slate-400,
+.dark .dark\:text-slate-500 {
+  color: #94A3B8 !important;
+}
+
+/* 5. Luminous Interactive Accents */
+.dark [class*="text-[#2563EB]"],
+.dark [class*="dark:text-[#7AA2F7]"] {
+  color: #7AA2F7 !important;
+  text-shadow: 0 0 12px rgba(122, 162, 247, 0.3);
+}
+
+/* 6. Form Inputs, Search Bars & Textareas */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background-color: #0C101C !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #7AA2F7 !important;
+  box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(148, 163, 184, 0.6) !important;
+}
+
+/* 7. Modals & Drawers Backdrop & Sheet */
+.dark .fixed.inset-0.bg-black\/50,
+.dark .fixed.inset-0.bg-black\/60,
+.dark .fixed.inset-0.bg-slate-900\/50,
+.dark .topic-drawer-backdrop {
+  background-color: rgba(5, 7, 14, 0.78) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+/* 8. Header & Sidebar Translucent Frost */
+.dark header {
+  background-color: rgba(9, 12, 21, 0.85) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark aside {
+  background-color: rgba(9, 12, 21, 0.9) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 9. Floating Mobile Nav */
+.dark nav > div {
+  background-color: rgba(15, 20, 36, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 10. Ultra-Sleek Scrollbars in Dark Mode */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(122, 162, 247, 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════════════

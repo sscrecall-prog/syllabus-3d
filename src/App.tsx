@@ -590,7 +590,14 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5]">
+    <div className="min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative bg-[#F8FAFC] dark:bg-[#090B10] text-[#0F172A] dark:text-[#F1F5F9]">
+      {/* 🌌 Atmospheric Depth Ambient Aurora Glows (Dark Mode Only, GPU-Accelerated) */}
+      <div className="hidden dark:block fixed inset-0 pointer-events-none z-0 overflow-hidden select-none print:hidden">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-blue-600/10 via-indigo-500/5 to-transparent rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 -left-48 w-[500px] h-[500px] bg-sky-500/5 rounded-full blur-[160px]" />
+        <div className="absolute top-2/3 -right-48 w-[550px] h-[550px] bg-indigo-600/6 rounded-full blur-[170px]" />
+      </div>
+
       {/* ♿ Skip to Main Content Link for Keyboard & Screen Reader Users */}
       <a href="#main-content" className="skip-link">
         Skip to main content (Press Enter)
