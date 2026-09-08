@@ -586,7 +586,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   {subjectStats.length} Subjects
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#A1A1AA] font-medium mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-300 font-medium mt-0.5">
                 Target coverage, topic counts & diagnostic weak spots by subject
               </p>
             </div>
@@ -661,7 +661,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <div className="flex items-center justify-between text-xs font-medium">
                   <span className="font-mono text-slate-600 dark:text-[#A1A1B2]">
                     <strong className="text-slate-900 dark:text-white font-black">{subj.completedTopics}</strong>
-                    <span className="text-slate-500 text-[11px]">/{subj.totalTopics} Topics</span>
+                    <span className="text-slate-500 dark:text-slate-300 text-[11px]">/{subj.totalTopics} Topics</span>
                   </span>
 
                   {subj.weakCount > 0 ? (
@@ -673,7 +673,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       ✓ Mastered
                     </span>
                   ) : (
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                    <span className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
                       In Progress
                     </span>
                   )}

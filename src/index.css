@@ -80,7 +80,7 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01', 'liga', 'calt';
   }
 
-  body:not(.dark) {
+  html:not(.dark) body {
     background-color: #F8FAFC !important;
     background-image: 
       radial-gradient(ellipse at 50% -10%, rgba(59, 130, 246, 0.045) 0%, transparent 60%),
@@ -705,7 +705,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
   border-color: rgba(255, 255, 255, 0.09) !important;
 }
 
-/* 4. Razor-Sharp High-Contrast Typography */
+/* 4. Razor-Sharp High-Contrast Typography in Dark Mode */
 .dark h1,
 .dark h2,
 .dark h3,
@@ -718,33 +718,45 @@ input, textarea, [contenteditable="true"], .selectable-text {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+/* Primary High-Contrast Text in Dark Mode */
 .dark [class*="text-[#11120F]"],
 .dark [class*="text-[#191A17]"],
 .dark [class*="text-[#0F172A]"],
+.dark [class*="text-slate-900"],
+.dark [class*="text-slate-800"],
+.dark [class*="text-black"],
 .dark .dark\:text-white,
 .dark [class*="dark:text-[#F5F5F7]"],
 .dark [class*="dark:text-[#C0CAF5]"] {
-  color: #F8FAFC !important;
+  color: #FFFFFF !important;
 }
 
+/* Secondary & Muted Text in Dark Mode (High-Legibility Light Silver/Slate) */
+.dark [class*="text-[#65675F]"],
+.dark [class*="text-[#85877E]"],
+.dark [class*="text-[#454740]"],
+.dark [class*="text-slate-700"],
+.dark [class*="text-slate-600"],
+.dark [class*="text-slate-500"],
+.dark [class*="text-gray-500"],
+.dark [class*="text-gray-600"],
 .dark [class*="dark:text-[#CBD5E1]"],
-.dark .dark\:text-slate-200,
-.dark .dark\:text-slate-300 {
+.dark [class*="dark:text-slate-200"],
+.dark [class*="dark:text-slate-300"],
+.dark [class*="dark:text-[#94A3B8]"],
+.dark [class*="dark:text-[#85877E]"],
+.dark [class*="dark:text-slate-400"],
+.dark [class*="dark:text-[#A1A1AA]"],
+.dark [class*="dark:text-[#A1A1B2]"] {
   color: #E2E8F0 !important;
 }
 
-.dark [class*="dark:text-[#94A3B8]"],
-.dark [class*="dark:text-[#85877E]"],
-.dark .dark\:text-slate-400,
-.dark .dark\:text-slate-500 {
-  color: #94A3B8 !important;
-}
-
-/* 5. Luminous Interactive Accents */
+/* 5. Luminous Interactive Accents (Electric Sky Blue with Aura Glow) */
 .dark [class*="text-[#2563EB]"],
-.dark [class*="dark:text-[#7AA2F7]"] {
-  color: #7AA2F7 !important;
-  text-shadow: 0 0 12px rgba(122, 162, 247, 0.3);
+.dark [class*="dark:text-[#7AA2F7]"],
+.dark [class*="dark:text-blue-400"] {
+  color: #93C5FD !important;
+  text-shadow: 0 0 12px rgba(147, 197, 253, 0.35);
 }
 
 /* 6. Form Inputs, Search Bars & Textareas */
@@ -830,96 +842,96 @@ input, textarea, [contenteditable="true"], .selectable-text {
    ═══════════════════════════════════════════════════════════════ */
 
 /* 1. Specular Elevated Light Cards & Panels */
-:not(.dark) .shadow-elevated-card,
-:not(.dark) .book-page-sheet {
+html:not(.dark) .shadow-elevated-card,
+html:not(.dark) .book-page-sheet {
   background-color: #FFFFFF !important;
   border-color: rgba(226, 232, 240, 0.9) !important;
   box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 8px 24px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;
 }
 
-:not(.dark) .shadow-subtle-depth {
+html:not(.dark) .shadow-subtle-depth {
   box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03), 0 3px 10px -2px rgba(15, 23, 42, 0.03), inset 0 1px 0 0 rgba(255, 255, 255, 0.85) !important;
 }
 
 /* 2. Secondary Sub-cards, Nested Containers & Active Pills */
-:not(.dark) .bg-slate-50,
-:not(.dark) [class*="bg-slate-50/"],
-:not(.dark) [class*="bg-[#F8FAFC]"],
-:not(.dark) [class*="bg-[#F1F5F9]"] {
+html:not(.dark) .bg-slate-50,
+html:not(.dark) [class*="bg-slate-50/"],
+html:not(.dark) [class*="bg-[#F8FAFC]"],
+html:not(.dark) [class*="bg-[#F1F5F9]"] {
   border-color: rgba(226, 232, 240, 0.85) !important;
 }
 
 /* 3. Hairline Micro-Borders in Light Mode */
-:not(.dark) [class*="border-[#E2E8F0]"],
-:not(.dark) [class*="border-slate-200"] {
+html:not(.dark) [class*="border-[#E2E8F0]"],
+html:not(.dark) [class*="border-slate-200"] {
   border-color: rgba(226, 232, 240, 0.9) !important;
 }
 
-/* 4. Razor-Sharp High-Contrast Slate Typography */
-:not(.dark) h1,
-:not(.dark) h2,
-:not(.dark) h3,
-:not(.dark) h4,
-:not(.dark) h5,
-:not(.dark) h6,
-:not(.dark) .font-heading,
-:not(.dark) .app-title {
+/* 4. Razor-Sharp High-Contrast Slate Typography in Light Mode */
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6,
+html:not(.dark) .font-heading,
+html:not(.dark) .app-title {
   color: #0F172A !important;
   letter-spacing: -0.022em;
 }
 
-:not(.dark) [class*="text-[#11120F]"],
-:not(.dark) [class*="text-[#191A17]"],
-:not(.dark) [class*="text-[#0F172A]"] {
+html:not(.dark) [class*="text-[#11120F]"],
+html:not(.dark) [class*="text-[#191A17]"],
+html:not(.dark) [class*="text-[#0F172A]"] {
   color: #0F172A !important;
 }
 
-:not(.dark) [class*="text-[#65675F]"],
-:not(.dark) [class*="text-[#85877E]"] {
+html:not(.dark) [class*="text-[#65675F]"],
+html:not(.dark) [class*="text-[#85877E]"] {
   color: #64748B !important;
 }
 
 /* 5. Electric Sapphire Interactive Accents */
-:not(.dark) [class*="text-[#2563EB]"],
-:not(.dark) [class*="text-blue-600"] {
+html:not(.dark) [class*="text-[#2563EB]"],
+html:not(.dark) [class*="text-blue-600"] {
   color: #2563EB !important;
 }
 
 /* 6. Form Inputs, Search Bars & Textareas */
-:not(.dark) input:not([type="checkbox"]):not([type="radio"]),
-:not(.dark) textarea,
-:not(.dark) select {
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) textarea,
+html:not(.dark) select {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
   border: 1px solid rgba(203, 213, 225, 0.9) !important;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), inset 0 1px 2px rgba(15, 23, 42, 0.02) !important;
 }
 
-:not(.dark) input:focus,
-:not(.dark) textarea:focus,
-:not(.dark) select:focus {
+html:not(.dark) input:focus,
+html:not(.dark) textarea:focus,
+html:not(.dark) select:focus {
   border-color: #2563EB !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 1px 2px rgba(15, 23, 42, 0.03) !important;
   outline: none !important;
 }
 
-:not(.dark) input::placeholder,
-:not(.dark) textarea::placeholder {
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
   color: #94A3B8 !important;
 }
 
 /* 7. Modals & Drawers Backdrop & Sheet */
-:not(.dark) .fixed.inset-0.bg-black\/50,
-:not(.dark) .fixed.inset-0.bg-black\/60,
-:not(.dark) .fixed.inset-0.bg-slate-900\/50,
-:not(.dark) .topic-drawer-backdrop {
+html:not(.dark) .fixed.inset-0.bg-black\/50,
+html:not(.dark) .fixed.inset-0.bg-black\/60,
+html:not(.dark) .fixed.inset-0.bg-slate-900\/50,
+html:not(.dark) .topic-drawer-backdrop {
   background-color: rgba(15, 23, 42, 0.42) !important;
   backdrop-filter: blur(18px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
 }
 
 /* 8. Header & Sidebar Translucent Frost in Light Mode */
-:not(.dark) header {
+html:not(.dark) header {
   background-color: rgba(255, 255, 255, 0.82) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
@@ -927,7 +939,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 12px -2px rgba(15, 23, 42, 0.02) !important;
 }
 
-:not(.dark) aside {
+html:not(.dark) aside {
   background-color: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
@@ -936,7 +948,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
 }
 
 /* 9. Floating Mobile Nav */
-:not(.dark) nav > div {
+html:not(.dark) nav > div {
   background-color: rgba(255, 255, 255, 0.88) !important;
   backdrop-filter: blur(28px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
@@ -945,18 +957,18 @@ input, textarea, [contenteditable="true"], .selectable-text {
 }
 
 /* 10. Ultra-Sleek Scrollbars in Light Mode */
-:not(.dark) ::-webkit-scrollbar {
+html:not(.dark) ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-:not(.dark) ::-webkit-scrollbar-track {
+html:not(.dark) ::-webkit-scrollbar-track {
   background: transparent;
 }
-:not(.dark) ::-webkit-scrollbar-thumb {
+html:not(.dark) ::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.35);
   border-radius: 9999px;
 }
-:not(.dark) ::-webkit-scrollbar-thumb:hover {
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.6);
 }
 
