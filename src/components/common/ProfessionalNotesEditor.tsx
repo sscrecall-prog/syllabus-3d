@@ -60,7 +60,9 @@ import {
   XCircle,
   ExternalLink,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ArrowRight,
+  CornerDownRight
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -83,6 +85,11 @@ import {
   getDefaultSampleQuiz,
   extractGeminiShareUrl
 } from '../../utils/quizUtils';
+import {
+  isVocabContent,
+  transformToVocabNotionCards,
+  getDefaultSampleVocab
+} from '../../utils/vocabCardArchitect';
 import { NotionAiNotesStudioModal } from '../modals/NotionAiNotesStudioModal';
 
 interface ProfessionalNotesEditorProps {
@@ -895,6 +902,35 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     const htmlText = e.clipboardData?.getData('text/html');
 
     if (plainText) {
+      // 🔤 Smart Vocabulary Auto-Detection & Instant Notion Card Transform
+      if (isVocabContent(plainText)) {
+        e.preventDefault();
+        soundManager.playClick();
+        const vocabMarkdown = transformToVocabNotionCards(plainText);
+
+        const targetEl = e.target instanceof HTMLTextAreaElement ? e.target : textareaRef.current;
+        if (targetEl) {
+          const start = targetEl.selectionStart ?? content.length;
+          const end = targetEl.selectionEnd ?? content.length;
+          const newContent = content.substring(0, start) + vocabMarkdown + content.substring(end);
+          updateContentAndSave(newContent);
+          setTimeout(() => {
+            if (targetEl) {
+              targetEl.selectionStart = start + vocabMarkdown.length;
+              targetEl.selectionEnd = start + vocabMarkdown.length;
+            }
+          }, 0);
+        } else {
+          const newContent = content.trim() ? `${content}\n\n${vocabMarkdown}` : vocabMarkdown;
+          updateContentAndSave(newContent);
+        }
+
+        soundManager.playCompleteChime();
+        setPasteNotice('✓ Smart Notion Vocabulary Flashcards Auto-Created!');
+        setTimeout(() => setPasteNotice(null), 4000);
+        return;
+      }
+
       // Offer 1-Click Notion AI Studio when user pastes notes from Gemini / ChatGPT / Claude (>80 chars)
       if (plainText.length > 80) {
         setPendingAiPastedText(plainText);
@@ -1130,7 +1166,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     const lines = content.split('\n');
     let taskCount = 0;
     const newLines = lines.map((l) => {
-      if (l.trim().startsWith('- [ ] ') || l.trim().startsWith('- [x] ')) {
+      const isBox =
+        l.trim().startsWith('- [ ] ') ||
+        l.trim().startsWith('- [x] ') ||
+        l.trim().startsWith('> - [ ] ') ||
+        l.trim().startsWith('> - [x] ');
+      if (isBox) {
         if (taskCount === lineIndex) {
           if (l.includes('- [ ] ')) {
             return l.replace('- [ ] ', '- [x] ');
@@ -2017,8 +2058,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
       // 3. Callout Blocks (> [!TYPE] ...)
       if (line.trim().startsWith('> [!')) {
-        const match = line.trim().match(/^>\s*\[!([A-Z]+)\]/i);
+        const match = line.trim().match(/^>\s*\[!([A-Z0-9_\-]+)(?:\s+([^\]]*))?\]/i);
         const calloutType = match ? match[1].toUpperCase() : 'NOTE';
+        const calloutArg = match && match[2] ? match[2].trim() : '';
+        const afterCalloutTag = line.replace(/^>\s*\[![A-Z0-9_\-]+(?:\s+[^\]]*)?\]\s*/i, '').trim();
         const calloutLines: string[] = [];
 
         while (i < lines.length && lines[i].trim().startsWith('>')) {
@@ -2027,6 +2070,286 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             calloutLines.push(l);
           }
           i++;
+        }
+
+        // 🔤 Smart Notion Vocabulary Flashcard Components
+        if (calloutType.startsWith('VOCAB-WORD')) {
+          const parts = afterCalloutTag.split('|').map(s => s.trim());
+          const wordText = cleanHeadingText(parts[0] || 'Word');
+          const posText = parts[1] || '';
+          const hindiText = parts[2] || '';
+          const indexNum = calloutArg || '1';
+
+          elements.push(
+            <div
+              key={'vocab-word-' + i}
+              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm flex items-center gap-3 flex-wrap [break-inside:avoid]"
+            >
+              <div className="w-6 h-6 rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-black text-xs font-mono shadow-xs shrink-0">
+                {indexNum}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-extrabold text-[#F59E0B] text-base sm:text-lg tracking-tight">
+                  {wordText}
+                </span>
+                {posText && (
+                  <span className="text-xs sm:text-[13px] text-[#D97706]/90 dark:text-[#FBBF24]/80 font-medium">
+                    {posText}
+                  </span>
+                )}
+                {hindiText && (
+                  <span className="text-sm sm:text-base font-semibold text-[#38BDF8] dark:text-[#60A5FA]">
+                    {hindiText}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-DEF') {
+          const defText = calloutLines.join(' ').trim();
+          elements.push(
+            <div
+              key={'vocab-def-' + i}
+              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm flex items-start gap-3 [break-inside:avoid]"
+            >
+              <div className="w-6 h-6 rounded-lg bg-[#2563EB] text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <div className={`${fontSize} font-medium text-[#F59E0B] dark:text-[#FBBF24] leading-relaxed flex-1`}>
+                {parseInlineMarkdown(defText, `vdef-${i}`)}
+              </div>
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-SYNONYMS') {
+          const categoryTag = calloutArg || 'One Word Substitution';
+
+          elements.push(
+            <div
+              key={'vocab-syn-' + i}
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md bg-[#2563EB] text-white flex items-center justify-center text-xs shrink-0">
+                  <CornerDownRight className="w-3 h-3 stroke-[2.5]" />
+                </div>
+                <span className="text-[#E05252] font-extrabold text-sm tracking-wide">Synonyms</span>
+              </div>
+
+              <div className="space-y-1.5 pl-1">
+                {calloutLines.map((cl, clIdx) => {
+                  const currentBoxIdx = taskCounter++;
+                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ');
+                  const rawItemText = cl.replace(/^[-*]\s*\[[ x]\]\s*/i, '');
+                  return (
+                    <div
+                      key={clIdx}
+                      onClick={() => toggleCheckboxInText(currentBoxIdx)}
+                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                          isChecked
+                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
+                            : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
+                        }`}
+                      >
+                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <span className={`text-xs sm:text-[13px] font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                        {parseInlineMarkdown(rawItemText, `syn-${i}-${clIdx}`)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2">
+                <div className="w-full py-2 px-3 rounded-xl bg-[#1B273E] dark:bg-[#172338] border border-[#2E4166] text-[#93C5FD] font-semibold text-xs flex items-center gap-2 shadow-xs">
+                  <BookOpen className="w-3.5 h-3.5 text-[#60A5FA]" />
+                  <span>{categoryTag}</span>
+                </div>
+              </div>
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-ADVANCED') {
+          elements.push(
+            <div
+              key={'vocab-adv-' + i}
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#3D2C1E] shadow-sm space-y-3 [break-inside:avoid]"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                  <Zap className="w-3 h-3 stroke-[2.5]" />
+                </div>
+                <span className="text-[#F59E0B] font-extrabold text-sm tracking-wide">🔥 Advanced Synonyms</span>
+              </div>
+
+              <div className="space-y-1.5 pl-1">
+                {calloutLines.map((cl, clIdx) => {
+                  const currentBoxIdx = taskCounter++;
+                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ');
+                  const rawItemText = cl.replace(/^[-*]\s*\[[ x]\]\s*/i, '');
+                  return (
+                    <div
+                      key={clIdx}
+                      onClick={() => toggleCheckboxInText(currentBoxIdx)}
+                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                          isChecked
+                            ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
+                            : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
+                        }`}
+                      >
+                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <span className={`text-xs sm:text-[13px] font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                        {parseInlineMarkdown(rawItemText, `adv-${i}-${clIdx}`)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-ANTONYMS') {
+          const categoryTag = calloutArg || 'High-Yield Antonyms';
+
+          elements.push(
+            <div
+              key={'vocab-ant-' + i}
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md bg-[#2563EB] text-white flex items-center justify-center text-xs shrink-0">
+                  <CornerDownRight className="w-3 h-3 stroke-[2.5]" />
+                </div>
+                <span className="text-[#E05252] font-extrabold text-sm tracking-wide">Antonyms</span>
+              </div>
+
+              <div className="space-y-1.5 pl-1">
+                {calloutLines.map((cl, clIdx) => {
+                  const currentBoxIdx = taskCounter++;
+                  const isChecked = cl.startsWith('- [x] ') || cl.startsWith('* [x] ');
+                  const rawItemText = cl.replace(/^[-*]\s*\[[ x]\]\s*/i, '');
+                  return (
+                    <div
+                      key={clIdx}
+                      onClick={() => toggleCheckboxInText(currentBoxIdx)}
+                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors shrink-0 ${
+                          isChecked
+                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
+                            : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
+                        }`}
+                      >
+                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <span className={`text-xs sm:text-[13px] font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                        {parseInlineMarkdown(rawItemText, `ant-${i}-${clIdx}`)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2">
+                <div className="w-full py-2 px-3 rounded-xl bg-[#1B273E] dark:bg-[#172338] border border-[#2E4166] text-[#93C5FD] font-semibold text-xs flex items-center gap-2 shadow-xs">
+                  <BookOpen className="w-3.5 h-3.5 text-[#60A5FA]" />
+                  <span>{categoryTag}</span>
+                </div>
+              </div>
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-CONFUSING') {
+          const titleRest = calloutArg || 'Confusing Words';
+          elements.push(
+            <div
+              key={'vocab-conf-' + i}
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#161726] dark:bg-[#121320] border border-indigo-500/40 shadow-sm space-y-2.5 [break-inside:avoid]"
+            >
+              <div className="flex items-center gap-2 font-bold text-sm text-indigo-400">
+                <HelpCircle className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span className="font-extrabold text-indigo-300">🤔 Confusing Word: {titleRest}</span>
+              </div>
+              <div className="space-y-1.5 text-xs sm:text-[13px] text-slate-300 leading-relaxed pl-6">
+                {calloutLines.map((cl, clIdx) => (
+                  <div key={clIdx}>
+                    {parseInlineMarkdown(cl, `conf-${i}-${clIdx}`)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-USAGE') {
+          elements.push(
+            <div key={'vocab-usage-' + i} className="my-3 space-y-3 [break-inside:avoid]">
+              {calloutLines.map((cl, clIdx) => {
+                if (cl.startsWith('| →') || cl.startsWith('| ->') || cl.startsWith('→')) {
+                  const hiText = cl.replace(/^[|→\->\s]+/, '').trim();
+                  return (
+                    <div key={clIdx} className="text-xs sm:text-[12.5px] text-slate-400 dark:text-slate-400 pl-4 italic -mt-1.5">
+                      → {hiText}
+                    </div>
+                  );
+                }
+                const enText = cl.replace(/^[|*•\-\s]+/, '').replace(/^\*\*Usage:\*\*\s*/i, '').replace(/^Usage:\s*/i, '').trim();
+                return (
+                  <div key={clIdx} className="flex items-start gap-2.5 pl-1">
+                    <div className="w-[3px] self-stretch min-h-[20px] bg-slate-300 dark:bg-slate-500 rounded-full shrink-0" />
+                    <div className="text-xs sm:text-[13.5px] font-medium text-slate-800 dark:text-slate-200 leading-relaxed">
+                      <span className="text-[#E05252] font-bold mr-2">Usage:</span>
+                      <span>{parseInlineMarkdown(enText, `use-${i}-${clIdx}`)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+          continue;
+        }
+
+        if (calloutType === 'VOCAB-RELATED') {
+          elements.push(
+            <div
+              key={'vocab-rel-' + i}
+              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-emerald-500/30 shadow-sm space-y-1.5 [break-inside:avoid]"
+            >
+              <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-emerald-400 font-mono">
+                <Bookmark className="w-3.5 h-3.5" />
+                <span>🔰 Related Word (Exam-Oriented)</span>
+              </div>
+              <div className="space-y-1 text-xs sm:text-[13px] text-slate-300 leading-relaxed pl-5">
+                {calloutLines.map((cl, clIdx) => (
+                  <div key={clIdx}>
+                    {parseInlineMarkdown(cl.replace(/^[*•\-]\s*/, ''), `rel-${i}-${clIdx}`)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+          continue;
         }
 
         let borderCol = 'border-cyan-500/40 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300';
@@ -2716,6 +3039,25 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               <div>
                 <div className="font-bold text-indigo-600 dark:text-indigo-400">🎯 Interactive Quiz / MCQ</div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Import Gemini link or test</div>
+              </div>
+            </button>
+
+            {/* 🔤 Smart Notion Vocabulary Flashcards */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowAddTemplatesMenu(false);
+                handleAddNewNote(`Smart Vocab: ${topicName}`, getDefaultSampleVocab(topicName));
+                soundManager.playClick();
+              }}
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left hover:bg-amber-50/70 dark:hover:bg-amber-950/40 text-slate-800 dark:text-white cursor-pointer transition-colors border-b border-amber-100 dark:border-amber-900/40"
+            >
+              <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-amber-500 via-orange-500 to-rose-600 flex items-center justify-center text-white shrink-0 shadow-xs">
+                <BookMarked className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <div className="font-bold text-amber-700 dark:text-amber-400">🔤 Smart Vocabulary Note</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Auto-format AI Vocab to Notion Cards</div>
               </div>
             </button>
 

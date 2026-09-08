@@ -25,7 +25,8 @@ import {
   Minimize2,
   CheckCircle2,
   Sigma,
-  Table as TableIcon
+  Table as TableIcon,
+  BookMarked
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import {
@@ -35,7 +36,8 @@ import {
   verifyDataIntegrity,
   getSavedGeminiApiKey,
   saveGeminiApiKey,
-  generateNotesWithLiveGemini
+  generateNotesWithLiveGemini,
+  isVocabContent
 } from '../../utils/notionAiArchitect';
 import { MathBlock, InlineMath } from '../../utils/mathRenderer';
 
@@ -115,6 +117,15 @@ const FORMAT_OPTIONS: FormatCardOption[] = [
     icon: ShieldCheck,
     accentColor: 'from-slate-600 to-slate-800',
     bestFor: 'Exact Text Preservation'
+  },
+  {
+    id: 'vocab_card',
+    title: 'Smart Vocab Cards',
+    badge: 'NOTION VOCAB',
+    description: 'Transforms English & Hindi vocab into Notion-style flashcards with checkboxes & usage.',
+    icon: BookMarked,
+    accentColor: 'from-amber-500 to-rose-600',
+    bestFor: 'English & Hindi Vocab Mastery'
   }
 ];
 
@@ -151,6 +162,9 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
       setRawText(initial);
       setGeminiApiKey(getSavedGeminiApiKey());
       setLiveError(null);
+      if (initial && isVocabContent(initial)) {
+        setSelectedFormat('vocab_card');
+      }
       // Auto-switch to input tab if empty
       if (!initial) {
         setActiveTab('input');

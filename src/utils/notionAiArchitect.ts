@@ -19,6 +19,10 @@ import {
   repairAllTablesInDocument,
   sanitizeAiCitations
 } from './tableUtils';
+import {
+  transformToVocabNotionCards,
+  isVocabContent
+} from './vocabCardArchitect';
 
 export type NoteFormatType =
   | 'notion_master'       // 🌟 Notion Pro Master Notes (High-Yield Callouts, Tables, Formulas)
@@ -26,7 +30,8 @@ export type NoteFormatType =
   | 'active_recall'       // 🧠 Active Recall & Exam Q&A Deck (Questions, High-Yield Answers, Trap Alerts)
   | 'cheat_sheet'         // ⚡ High-Yield Speed Cheat Sheet (Formulas, Matrix, Rapid Review)
   | 'hierarchical_outline'// 📋 Deep-Dive Hierarchical Outline (Systematic Tree 1.0 -> 1.1)
-  | 'zero_loss_clean';    // 🛡️ 100% Zero-Loss Precision Normalizer (Exact Text Preserved 1:1)
+  | 'zero_loss_clean'     // 🛡️ 100% Zero-Loss Precision Normalizer (Exact Text Preserved 1:1)
+  | 'vocab_card';         // 🔤 Smart Notion Vocabulary Flashcards (Checklists, Synonyms, Antonyms, Usage)
 
 export type NoteToneDensity = 'high_yield' | 'comprehensive' | 'concise';
 
@@ -727,6 +732,8 @@ export function transformNotesWithAiArchitect(
       return transformToHierarchicalOutline(rawText, options);
     case 'zero_loss_clean':
       return transformToZeroLossNormalizer(rawText, options);
+    case 'vocab_card':
+      return transformToVocabNotionCards(rawText);
     default:
       return transformToNotionMaster(rawText, options);
   }
@@ -900,3 +907,5 @@ Zero conversational pleasantries, zero intro/outro chatter.`;
   // Pass generated notes through our table & formula healer
   return repairAllTablesInDocument(textOutput.trim());
 }
+
+export { isVocabContent, transformToVocabNotionCards } from './vocabCardArchitect';
