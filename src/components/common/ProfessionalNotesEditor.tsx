@@ -173,6 +173,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [tempTitle, setTempTitle] = useState('');
   const [showAddTemplatesMenu, setShowAddTemplatesMenu] = useState(false);
+  const [showMoreToolsMenu, setShowMoreToolsMenu] = useState(false);
 
   // Active Note computation
   const activeNote = noteItems.find(n => n.id === activeNoteId) || noteItems[0] || {
@@ -1147,6 +1148,121 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }, 50);
   };
 
+  // Smart Editor: Auto-continue lists, checkboxes, and numbered items on Enter
+  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const el = e.currentTarget;
+    const { selectionStart, selectionEnd, value } = el;
+    
+    // Tab indentation
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+      const lineEnd = value.indexOf('\n', selectionStart);
+      const currentLine = value.substring(lineStart, lineEnd === -1 ? value.length : lineEnd);
+      
+      if (e.shiftKey) {
+        // Shift+Tab: dedent
+        if (currentLine.startsWith('  ')) {
+          const newContent = value.substring(0, lineStart) + currentLine.substring(2) + value.substring(lineEnd === -1 ? value.length : lineEnd);
+          updateContentAndSave(newContent);
+          setTimeout(() => { el.selectionStart = el.selectionEnd = Math.max(lineStart, selectionStart - 2); }, 0);
+        }
+      } else {
+        // Tab: indent
+        const newContent = value.substring(0, selectionStart) + '  ' + value.substring(selectionEnd);
+        updateContentAndSave(newContent);
+        setTimeout(() => { el.selectionStart = el.selectionEnd = selectionStart + 2; }, 0);
+      }
+      return;
+    }
+    
+    // Enter: Smart list continuation
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+      const currentLine = value.substring(lineStart, selectionStart);
+      
+      // Checkbox continuation
+      const checkboxMatch = currentLine.match(/^(\s*)(- \[ \] |\* \[ \] )/);
+      if (checkboxMatch) {
+        const prefix = checkboxMatch[1] + '- [ ] ';
+        // If current line is just the empty checkbox, remove it
+        if (currentLine.trim() === '- [ ]' || currentLine.trim() === '* [ ]') {
+          e.preventDefault();
+          const newContent = value.substring(0, lineStart) + '\n' + value.substring(selectionEnd);
+          updateContentAndSave(newContent);
+          setTimeout(() => { el.selectionStart = el.selectionEnd = lineStart + 1; }, 0);
+          return;
+        }
+        e.preventDefault();
+        const insertion = '\n' + prefix;
+        const newContent = value.substring(0, selectionStart) + insertion + value.substring(selectionEnd);
+        updateContentAndSave(newContent);
+        setTimeout(() => { el.selectionStart = el.selectionEnd = selectionStart + insertion.length; }, 0);
+        return;
+      }
+      
+      // Bullet list continuation
+      const bulletMatch = currentLine.match(/^(\s*)([-*] )/);
+      if (bulletMatch) {
+        const prefix = bulletMatch[1] + bulletMatch[2];
+        // If line is just the empty bullet, remove it
+        if (currentLine.trim() === '-' || currentLine.trim() === '*') {
+          e.preventDefault();
+          const newContent = value.substring(0, lineStart) + '\n' + value.substring(selectionEnd);
+          updateContentAndSave(newContent);
+          setTimeout(() => { el.selectionStart = el.selectionEnd = lineStart + 1; }, 0);
+          return;
+        }
+        e.preventDefault();
+        const insertion = '\n' + prefix;
+        const newContent = value.substring(0, selectionStart) + insertion + value.substring(selectionEnd);
+        updateContentAndSave(newContent);
+        setTimeout(() => { el.selectionStart = el.selectionEnd = selectionStart + insertion.length; }, 0);
+        return;
+      }
+      
+      // Numbered list continuation
+      const numMatch = currentLine.match(/^(\s*)(\d+)\. /);
+      if (numMatch) {
+        const indent = numMatch[1];
+        const nextNum = parseInt(numMatch[2]) + 1;
+        // If line is just the empty number, remove it
+        if (currentLine.trim() === `${numMatch[2]}.`) {
+          e.preventDefault();
+          const newContent = value.substring(0, lineStart) + '\n' + value.substring(selectionEnd);
+          updateContentAndSave(newContent);
+          setTimeout(() => { el.selectionStart = el.selectionEnd = lineStart + 1; }, 0);
+          return;
+        }
+        e.preventDefault();
+        const insertion = `\n${indent}${nextNum}. `;
+        const newContent = value.substring(0, selectionStart) + insertion + value.substring(selectionEnd);
+        updateContentAndSave(newContent);
+        setTimeout(() => { el.selectionStart = el.selectionEnd = selectionStart + insertion.length; }, 0);
+        return;
+      }
+      
+      // Blockquote continuation
+      const quoteMatch = currentLine.match(/^(\s*)(> )/);
+      if (quoteMatch) {
+        const prefix = quoteMatch[1] + '> ';
+        if (currentLine.trim() === '>') {
+          e.preventDefault();
+          const newContent = value.substring(0, lineStart) + '\n' + value.substring(selectionEnd);
+          updateContentAndSave(newContent);
+          setTimeout(() => { el.selectionStart = el.selectionEnd = lineStart + 1; }, 0);
+          return;
+        }
+        e.preventDefault();
+        const insertion = '\n' + prefix;
+        const newContent = value.substring(0, selectionStart) + insertion + value.substring(selectionEnd);
+        updateContentAndSave(newContent);
+        setTimeout(() => { el.selectionStart = el.selectionEnd = selectionStart + insertion.length; }, 0);
+        return;
+      }
+    }
+  };
+
   // Insert Templates
   const insertFormulaTemplate = () => {
     const tpl = `\n# Key Formulas & Definitions\n> [!FORMULA]\n> Standard Speed Formula: $$\\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}}$$\n> Average Speed (Constant Distance): $$\\text{Average Speed} = \\frac{2xy}{x + y}$$\n\n> [!TIP]\n> Shortcut Method: Ratio method converts speed ratio $a:b$ to time ratio $b:a$.\n\n> [!WARNING]\n> Common Trap: Don't take simple arithmetic average $(x+y)/2$ when distance is constant!\n\n### High-Yield Action Checklist\n- [ ] Memorize basic conversion: $1\\text{ km/h} = \\frac{5}{18}\\text{ m/s}$\n- [ ] Practice 5 previous year exam questions\n`;
@@ -1976,9 +2092,9 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <div
             key={'code-' + i}
-            className="my-4 rounded-2xl border border-slate-700/80 bg-[#0F1017] shadow-md overflow-hidden text-slate-200 [break-inside:avoid]"
+            className="my-4 rounded-2xl border border-slate-700/80 bg-[#0D1117] shadow-md overflow-hidden text-slate-200 [break-inside:avoid]"
           >
-            <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#181926] border-b border-slate-800 text-[11px] font-mono">
+            <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#161B22] border-b border-slate-800 text-[11px] font-mono">
               <span className="font-bold text-slate-400 flex items-center gap-1.5">
                 <Code className="w-3.5 h-3.5 text-purple-400" />
                 {lang}
@@ -1997,7 +2113,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 <span>{isCodeCopied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
-            <pre className="p-3.5 overflow-x-auto text-xs font-mono leading-relaxed text-emerald-400/90 selection:bg-purple-500/30">
+            <pre className="p-3.5 overflow-x-auto text-xs font-mono leading-relaxed text-[#E6EDF3] selection:bg-purple-500/30">
               <code>{fullCode}</code>
             </pre>
           </div>
@@ -2121,7 +2237,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               <div className="overflow-x-auto scrollbar-thin">
                 <table className="w-full border-collapse min-w-[380px] font-sans">
                   <thead>
-                    <tr className="bg-gradient-to-r from-[#F8FAFC] via-[#F1F5F9] to-[#F8FAFC] dark:from-[#181926] dark:via-[#1E2030] dark:to-[#181926] border-b border-[#E2E8F0] dark:border-[#272730] text-[11px] font-black uppercase tracking-wider text-[#11120F] dark:text-[#C0CAF5] font-mono">
+                    <tr className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-800/40 border-b border-[#E2E8F0] dark:border-[#272730] text-[11px] font-black uppercase tracking-wider text-[#11120F] dark:text-[#C0CAF5] font-mono">
                       {rawHeaders.map((h, hIdx) => (
                         <th
                           key={hIdx}
@@ -2474,7 +2590,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             className={`my-4 p-4 sm:p-5 rounded-2xl border backdrop-blur-sm shadow-sm ${borderCol} [break-inside:avoid]`}
           >
             <div className="flex items-center gap-2 mb-2">
-              <IconComp className="w-4 h-4 shrink-0 stroke-[2.5]" />
+              <IconComp className="w-[18px] h-[18px] shrink-0 stroke-[2.5]" />
               <span className="text-xs font-black uppercase tracking-wider font-mono">{title}</span>
             </div>
             <div className={`${fontSize} ${fontFam} font-medium space-y-2 pl-6 leading-relaxed`}>
@@ -2505,7 +2621,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className={`${fontFam} text-xl sm:text-2xl font-black mt-7 mb-3 pb-2.5 border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-[#11120F] dark:text-white scroll-mt-28 [break-inside:avoid]`}
+              className={`${fontFam} text-xl sm:text-2xl font-black mt-7 mb-3 pb-2.5 border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-slate-900 dark:text-white tracking-tight scroll-mt-28 [break-inside:avoid]`}
             >
               <span className="w-1.5 h-6 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] inline-block shrink-0" />
               <span>{parseInlineMarkdown(rawHeading, `h1-${i}`)}</span>
@@ -2538,7 +2654,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               data-heading-index={currentIndex}
               className={`${fontFam} text-xs sm:text-sm font-black text-[#2563EB] dark:text-[#7AA2F7] mt-5 mb-2 uppercase tracking-wide flex items-center gap-1.5 font-mono scroll-mt-28 [break-inside:avoid]`}
             >
-              <span>▶</span>
+              <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>{parseInlineMarkdown(rawHeading, `h3-${i}`)}</span>
             </h3>
           );
@@ -2622,7 +2738,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         const rawBullet = line.trim().substring(2);
         elements.push(
           <div key={i} className="flex items-start gap-3 my-2 pl-1 leading-relaxed">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-2.5 shrink-0" />
+            <span className="w-[5px] h-[5px] rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-[9px] shrink-0" />
             <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] leading-relaxed`}>
               {parseInlineMarkdown(rawBullet, `bullet-${i}`)}
             </div>
@@ -2637,7 +2753,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
 
         elements.push(
           <div key={i} className="flex items-start gap-3 my-2 pl-1 leading-relaxed">
-            <span className="px-1.5 py-0.2 rounded-md bg-[#2563EB]/15 dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] text-[11px] font-mono font-black mt-0.5 shrink-0">
+            <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
               {num}.
             </span>
             <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] leading-relaxed`}>
@@ -2648,7 +2764,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       }
       // 8. Horizontal Rule
       else if (line.trim() === '---' || line.trim() === '***') {
-        elements.push(<hr key={i} className="my-5 border-slate-200 dark:border-slate-800" />);
+        elements.push(
+          <div key={i} className="flex items-center justify-center gap-2 my-6 select-none" aria-hidden="true">
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+          </div>
+        );
       }
       // 9. Blank Line
       else if (line.trim() === '') {
@@ -2719,7 +2841,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     return (
       <div className="book-reader-view w-full">
         {/* Book Editorial Running Header */}
-        <div className="flex items-center justify-between pb-3.5 mb-6 border-b border-black/10 dark:border-white/10 text-[11px] font-serif uppercase tracking-widest text-[#65675F] dark:text-[#94A3B8] select-none [break-inside:avoid] print:hidden">
+        <div className="flex items-center justify-between pb-3.5 mb-6 border-b border-slate-200/60 dark:border-slate-800/60 text-[11px] sm:text-xs font-serif uppercase tracking-widest text-[#65675F] dark:text-[#94A3B8] select-none [break-inside:avoid] print:hidden">
           <div className="flex items-center gap-2 truncate">
             <span className="font-bold text-amber-600 dark:text-amber-400">§ CHAPTER STUDY</span>
             <span>•</span>
@@ -2748,7 +2870,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           <div className="flex items-center gap-2 truncate">
             <span className="font-semibold text-slate-800 dark:text-slate-200">{activeNote.title}</span>
             <span>—</span>
-            <span className="italic text-slate-500">Antigravity Reader Edition</span>
+            <span className="italic text-slate-400 dark:text-slate-500 tracking-wide">Antigravity Reader Edition</span>
           </div>
           <div className="flex items-center gap-2 font-mono text-[10px] shrink-0 tabular-nums">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500/80" />
@@ -2981,11 +3103,16 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                 }}
                 className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all select-none shrink-0 ${
                   isActive
-                    ? 'bg-white dark:bg-[#1E1F2B] text-slate-900 dark:text-white border-slate-300/80 dark:border-purple-500/40 shadow-sm ring-1 ring-black/5 dark:ring-purple-500/20'
-                    : 'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
+                    ? 'bg-white dark:bg-[#1E1F2B] text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 shadow-sm border-b-2 border-b-blue-500 dark:border-b-indigo-400'
+                    : 'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                 }`}
               >
-                <img src="/notes_icon_3d.png" alt="Note" className="w-4 h-4 object-contain shrink-0 drop-shadow-xs pointer-events-none" />
+                <span className="text-sm leading-none shrink-0 pointer-events-none" aria-hidden="true">
+                  {note.content.includes('[!QUIZ') || note.title.toLowerCase().includes('quiz') ? '🎯'
+                    : note.content.includes('[!VOCAB-') || note.title.toLowerCase().includes('vocab') ? '🔤'
+                    : note.content.includes('[!FORMULA') || note.title.toLowerCase().includes('formula') ? '🧮'
+                    : '📝'}
+                </span>
 
                 {isEditing ? (
                   <form
@@ -3033,7 +3160,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                       className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
                       title="Rename Note"
                     >
-                      <Edit3 className="w-3 h-3" />
+                      <Edit3 className="w-3.5 h-3.5" />
                     </button>
 
                     <button
@@ -3045,7 +3172,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                       className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
                       title="Duplicate Note"
                     >
-                      <CopyPlus className="w-3 h-3" />
+                      <CopyPlus className="w-3.5 h-3.5" />
                     </button>
 
                     {noteItems.length > 1 && (
@@ -3058,7 +3185,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                         className="p-1 rounded-md hover:bg-rose-500/20 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
                         title="Delete Note"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
@@ -3788,7 +3915,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                     onClick={() => handleSelectTheme('paper')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
                       readerTheme === 'paper' || readerTheme === 'default'
-                        ? 'bg-white dark:bg-[#252838] text-slate-900 dark:text-white shadow-xs border border-slate-300/80 dark:border-white/20 font-black ring-1 ring-slate-400/40 dark:ring-white/25'
+                        ? 'bg-white dark:bg-[#252838] text-slate-900 dark:text-white shadow-sm border border-slate-300 dark:border-white/20 font-black'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                     }`}
                     title="Paper White (Day Study)"
@@ -3800,7 +3927,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                     onClick={() => handleSelectTheme('sepia')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
                       readerTheme === 'sepia'
-                        ? 'bg-[#F4E6C8] dark:bg-[#3D2C1C] text-[#3E2B1A] dark:text-[#F3E3CE] shadow-xs border border-[#DEC4A5] dark:border-[#6B4B2E] font-black ring-1 ring-[#D8B994] dark:ring-[#8C623C]'
+                        ? 'bg-[#F4E6C8] dark:bg-[#3D2C1C] text-[#3E2B1A] dark:text-[#F3E3CE] shadow-sm border border-[#DEC4A5] dark:border-[#6B4B2E] font-black'
                         : 'text-slate-600 dark:text-slate-400 hover:text-[#3E2B1A] dark:hover:text-[#F3E3CE] hover:bg-[#F4E6C8]/40 dark:hover:bg-[#3D2C1C]/40'
                     }`}
                     title="Warm Kindle Sepia (Eye Comfort)"
@@ -3812,7 +3939,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                     onClick={() => handleSelectTheme('sage')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
                       readerTheme === 'sage'
-                        ? 'bg-[#DCEDDC] dark:bg-[#1A3320] text-[#1A3820] dark:text-[#E0F2E2] shadow-xs border border-[#BED9BC] dark:border-[#35613B] font-black ring-1 ring-[#A7CBA4] dark:ring-[#447C4C]'
+                        ? 'bg-[#DCEDDC] dark:bg-[#1A3320] text-[#1A3820] dark:text-[#E0F2E2] shadow-sm border border-[#BED9BC] dark:border-[#35613B] font-black'
                         : 'text-slate-600 dark:text-slate-400 hover:text-[#1A3820] dark:hover:text-[#E0F2E2] hover:bg-[#DCEDDC]/40 dark:hover:bg-[#1A3320]/40'
                     }`}
                     title="Sage Mint (Eye Fatigue Relief)"
@@ -3824,7 +3951,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                     onClick={() => handleSelectTheme('candle')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
                       readerTheme === 'candle'
-                        ? 'bg-[#F7E6D0] dark:bg-[#3D2614] text-[#3F2510] dark:text-[#F9E2CA] shadow-xs border border-[#E0C5A3] dark:border-[#6C4221] font-black ring-1 ring-[#D4B38A] dark:ring-[#8F572C]'
+                        ? 'bg-[#F7E6D0] dark:bg-[#3D2614] text-[#3F2510] dark:text-[#F9E2CA] shadow-sm border border-[#E0C5A3] dark:border-[#6C4221] font-black'
                         : 'text-slate-600 dark:text-slate-400 hover:text-[#3F2510] dark:hover:text-[#F9E2CA] hover:bg-[#F7E6D0]/40 dark:hover:bg-[#3D2614]/40'
                     }`}
                     title="Candlelight Amber (Night Study)"
@@ -3836,7 +3963,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                     onClick={() => handleSelectTheme('oled')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer active:scale-95 ${
                       readerTheme === 'oled' || readerTheme === 'midnight'
-                        ? 'bg-black text-white shadow-xs border border-black dark:border-white/30 font-black ring-1 ring-black/40 dark:ring-white/40'
+                        ? 'bg-black text-white shadow-sm border border-black dark:border-white/30 font-black'
                         : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'
                     }`}
                     title="Pitch Dark OLED (AMOLED)"
@@ -4058,8 +4185,11 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   value={content}
                   onChange={e => updateContentAndSave(e.target.value)}
                   onPaste={handlePaste}
-                  rows={24}
-                  className="w-full p-6 rounded-3xl bg-white dark:bg-[#12131C] border border-[#E2E8F0] dark:border-[#272730] font-mono text-sm text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-xl"
+                  onKeyDown={handleEditorKeyDown}
+                  onInput={(e) => { const el = e.currentTarget; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }}
+                  style={{ minHeight: '200px', height: 'auto' }}
+                  rows={8}
+                  className="w-full p-6 rounded-3xl bg-white dark:bg-[#12131C] border border-[#E2E8F0] dark:border-[#272730] font-sans tracking-tight text-sm text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-sm resize-none"
                 />
               </div>
             )}
@@ -4070,8 +4200,11 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   value={content}
                   onChange={e => updateContentAndSave(e.target.value)}
                   onPaste={handlePaste}
-                  rows={26}
-                  className="w-full p-5 rounded-3xl bg-white dark:bg-[#12131C] border border-[#E2E8F0] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-xl"
+                  onKeyDown={handleEditorKeyDown}
+                  onInput={(e) => { const el = e.currentTarget; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }}
+                  style={{ minHeight: '200px', height: 'auto' }}
+                  rows={8}
+                  className="w-full p-5 rounded-3xl bg-white dark:bg-[#12131C] border border-[#E2E8F0] dark:border-[#272730] font-sans tracking-tight text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-sm resize-none"
                 />
                 <div className={`p-6 rounded-3xl ${getThemeContainerClass()} overflow-y-auto max-h-[80vh] custom-scrollbar select-text`} style={getThemeInlineStyle()}>
                   {renderFormattedNotes(getFontSizeClass())}
@@ -4264,35 +4397,99 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               title="Notion AI Note Studio (Ctrl + J) — Select from 6 formats for Gemini / ChatGPT notes"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-xs font-black transition-all active:scale-95 cursor-pointer shadow-md hover:shadow-violet-500/25 shrink-0"
             >
-              <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-300" />
+              <Sparkles className="w-3.5 h-3.5 animate-[pulse_3s_ease-in-out_infinite] text-amber-300" />
               <span>Notion AI</span>
               <span className="hidden sm:inline-block px-1 py-0.2 rounded text-[9px] bg-white/20 font-mono font-normal">
                 Ctrl+J
               </span>
             </button>
 
-            {/* Fix Tables & Formulas */}
-            <button
-              type="button"
-              onClick={handleRepairTablesAndFormulas}
-              disabled={!content.trim()}
-              title="Auto-repair broken tables, missing pipes, and format formulas"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-            >
-              <TableIcon className="w-3.5 h-3.5 text-blue-500" />
-              <span>Fix Tables</span>
-            </button>
+            {/* ⋯ More Tools Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { soundManager.playClick(); setShowMoreToolsMenu(prev => !prev); }}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  showMoreToolsMenu
+                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white'
+                    : 'bg-slate-50 dark:bg-[#0D0E15] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1E1F2B] border border-slate-200 dark:border-[#272730]'
+                }`}
+                title="More tools"
+              >
+                <MoreVertical className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">More</span>
+              </button>
 
-            {/* Copy AI Prompt */}
-            <button
-              type="button"
-              onClick={handleCopyAiPrompt}
-              title="Copy structured notes prompt for Gemini / ChatGPT"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/25 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all active:scale-95 cursor-pointer"
-            >
-              <Bot className="w-3.5 h-3.5" />
-              <span>{promptCopied ? '✓ Copied' : 'AI Prompt'}</span>
-            </button>
+              {showMoreToolsMenu && (
+                <>
+                  <div className="fixed inset-0 z-[80]" onClick={() => setShowMoreToolsMenu(false)} />
+                  <div className="absolute right-0 top-full mt-1.5 z-[90] w-52 rounded-xl bg-white dark:bg-[#1A1B26] border border-slate-200 dark:border-slate-700 shadow-xl py-1 animate-fade-in">
+                    <button
+                      type="button"
+                      onClick={() => { handleRepairTablesAndFormulas(); setShowMoreToolsMenu(false); }}
+                      disabled={!content.trim()}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 cursor-pointer"
+                    >
+                      <TableIcon className="w-4 h-4 text-blue-500" />
+                      <span>Fix Tables & Formulas</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { handleCopyAiPrompt(); setShowMoreToolsMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                    >
+                      <Bot className="w-4 h-4 text-purple-500" />
+                      <span>{promptCopied ? '✓ AI Prompt Copied' : 'Copy AI Prompt'}</span>
+                    </button>
+                    {onOpenSplitPdf && hasPdfAttachments && (
+                      <button
+                        type="button"
+                        onClick={() => { onOpenSplitPdf(); setShowMoreToolsMenu(false); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                      >
+                        <Columns className="w-4 h-4 text-purple-500" />
+                        <span>Split PDF Sync</span>
+                      </button>
+                    )}
+                    {onOpenSplitLecture && (
+                      <button
+                        type="button"
+                        onClick={() => { onOpenSplitLecture(lectures?.[0]?.id, 0); setShowMoreToolsMenu(false); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                      >
+                        <Clock className="w-4 h-4 text-red-500" />
+                        <span>Watch Lecture</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => { toggleVoiceTyping(); setShowMoreToolsMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                    >
+                      {isListening ? <MicOff className="w-4 h-4 text-rose-500" /> : <Mic className="w-4 h-4 text-slate-500" />}
+                      <span>{isListening ? 'Stop Voice Typing' : 'Voice Typing'}</span>
+                    </button>
+                    <div className="mx-2 my-1 border-t border-slate-100 dark:border-slate-800" />
+                    <button
+                      type="button"
+                      onClick={() => { handleExportPdf(); setShowMoreToolsMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                    >
+                      <FileDown className="w-4 h-4 text-slate-500" />
+                      <span>Download PDF</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { handleCopy(); setShowMoreToolsMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-slate-500" />}
+                      <span>{copied ? 'Copied!' : 'Copy Notes'}</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Theme Switcher in Normal Toolbar (Study & Split Preview) */}
             {(viewMode === 'study' || viewMode === 'split') && (
@@ -4302,7 +4499,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   onClick={() => handleSelectTheme('paper')}
                   className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
                     readerTheme === 'paper' || readerTheme === 'default'
-                      ? 'bg-white dark:bg-[#252838] text-slate-900 dark:text-white shadow-xs border border-slate-300/80 dark:border-white/20 font-black ring-1 ring-slate-400/40 dark:ring-white/25'
+                      ? 'bg-white dark:bg-[#252838] text-slate-900 dark:text-white shadow-sm border border-slate-300 dark:border-white/20 font-black'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
                   title="Paper White (Day Study)"
@@ -4314,7 +4511,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   onClick={() => handleSelectTheme('sepia')}
                   className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
                     readerTheme === 'sepia'
-                      ? 'bg-[#F4E6C8] dark:bg-[#3D2C1C] text-[#3E2B1A] dark:text-[#F3E3CE] shadow-xs border border-[#DEC4A5] dark:border-[#6B4B2E] font-black ring-1 ring-[#D8B994] dark:ring-[#8C623C]'
+                      ? 'bg-[#F4E6C8] dark:bg-[#3D2C1C] text-[#3E2B1A] dark:text-[#F3E3CE] shadow-sm border border-[#DEC4A5] dark:border-[#6B4B2E] font-black'
                       : 'text-slate-600 dark:text-slate-400 hover:text-[#3E2B1A] dark:hover:text-[#F3E3CE] hover:bg-[#F4E6C8]/40 dark:hover:bg-[#3D2C1C]/40'
                   }`}
                   title="Warm Kindle Sepia (Eye Comfort)"
@@ -4326,7 +4523,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   onClick={() => handleSelectTheme('sage')}
                   className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
                     readerTheme === 'sage'
-                      ? 'bg-[#DCEDDC] dark:bg-[#1A3320] text-[#1A3820] dark:text-[#E0F2E2] shadow-xs border border-[#BED9BC] dark:border-[#35613B] font-black ring-1 ring-[#A7CBA4] dark:ring-[#447C4C]'
+                      ? 'bg-[#DCEDDC] dark:bg-[#1A3320] text-[#1A3820] dark:text-[#E0F2E2] shadow-sm border border-[#BED9BC] dark:border-[#35613B] font-black'
                       : 'text-slate-600 dark:text-slate-400 hover:text-[#1A3820] dark:hover:text-[#E0F2E2] hover:bg-[#DCEDDC]/40 dark:hover:bg-[#1A3320]/40'
                   }`}
                   title="Sage Mint (Eye Fatigue Relief)"
@@ -4338,7 +4535,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   onClick={() => handleSelectTheme('candle')}
                   className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
                     readerTheme === 'candle'
-                      ? 'bg-[#F7E6D0] dark:bg-[#3D2614] text-[#3F2510] dark:text-[#F9E2CA] shadow-xs border border-[#E0C5A3] dark:border-[#6C4221] font-black ring-1 ring-[#D4B38A] dark:ring-[#8F572C]'
+                      ? 'bg-[#F7E6D0] dark:bg-[#3D2614] text-[#3F2510] dark:text-[#F9E2CA] shadow-sm border border-[#E0C5A3] dark:border-[#6C4221] font-black'
                       : 'text-slate-600 dark:text-slate-400 hover:text-[#3F2510] dark:hover:text-[#F9E2CA] hover:bg-[#F7E6D0]/40 dark:hover:bg-[#3D2614]/40'
                   }`}
                   title="Candlelight Amber (Night Study)"
@@ -4350,7 +4547,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   onClick={() => handleSelectTheme('oled')}
                   className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer active:scale-95 ${
                     readerTheme === 'oled' || readerTheme === 'midnight'
-                      ? 'bg-black text-white shadow-xs border border-black dark:border-white/30 font-black ring-1 ring-black/40 dark:ring-white/40'
+                      ? 'bg-black text-white shadow-sm border border-black dark:border-white/30 font-black'
                       : 'text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'
                   }`}
                   title="Pitch Dark OLED (AMOLED)"
@@ -4408,62 +4605,6 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               ))}
             </div>
 
-            {/* Split PDF (if exists) */}
-            {onOpenSplitPdf && hasPdfAttachments && (
-              <button
-                onClick={onOpenSplitPdf}
-                title="Split screen with attached PDF"
-                className="p-1.5 px-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/25 text-xs font-bold flex items-center gap-1 cursor-pointer"
-              >
-                <Columns className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">PDF Sync</span>
-              </button>
-            )}
-
-            {/* Lecture Sync (if exists) */}
-            {onOpenSplitLecture && (
-              <button
-                onClick={() => onOpenSplitLecture(lectures?.[0]?.id, 0)}
-                title="Watch lecture video"
-                className="p-1.5 px-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 text-xs font-bold flex items-center gap-1 cursor-pointer"
-              >
-                <Clock className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Lecture</span>
-              </button>
-            )}
-
-            {/* Voice Typing */}
-            <button
-              type="button"
-              onClick={toggleVoiceTyping}
-              title={isListening ? 'Stop Voice Typing' : 'Voice Typing'}
-              className={`p-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
-                isListening
-                  ? 'bg-rose-600 text-white animate-pulse'
-                  : 'bg-[#F8FAFC] dark:bg-[#0D0E15] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1E1F2B] border border-[#E2E8F0] dark:border-[#272730]'
-              }`}
-            >
-              {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-              <span className="hidden sm:inline">{isListening ? 'Listening' : 'Voice'}</span>
-            </button>
-
-            {/* Export PDF */}
-            <button
-              onClick={handleExportPdf}
-              title="Download PDF"
-              className="p-1.5 px-2 rounded-xl bg-[#F8FAFC] dark:bg-[#0D0E15] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1E1F2B] border border-[#E2E8F0] dark:border-[#272730] text-xs font-semibold cursor-pointer"
-            >
-              <FileDown className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Copy */}
-            <button
-              onClick={handleCopy}
-              title="Copy notes"
-              className="p-1.5 px-2 rounded-xl bg-[#F8FAFC] dark:bg-[#0D0E15] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1E1F2B] border border-[#E2E8F0] dark:border-[#272730] text-xs font-semibold cursor-pointer"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-            </button>
 
             {/* Auto-Save Status */}
             <div className="flex items-center gap-1 px-2 py-1 rounded-xl bg-[#F8FAFC] dark:bg-[#0D0E15] border border-[#E2E8F0] dark:border-[#272730] text-[11px] font-mono font-bold">
@@ -4526,7 +4667,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             <button
               type="button"
               onClick={() => insertText('**', '**', 'Bold Text')}
-              className="px-2 py-1 rounded-lg text-xs font-black bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300"
+              className="px-2 py-1 rounded-lg text-xs font-black bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
               title="Bold (**text**)"
             >
               B
@@ -4534,7 +4675,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             <button
               type="button"
               onClick={() => insertText('*', '*', 'Italic Text')}
-              className="px-2 py-1 rounded-lg text-xs font-serif italic bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300"
+              className="px-2 py-1 rounded-lg text-xs font-serif italic bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
               title="Italic (*text*)"
             >
               I
@@ -4570,7 +4711,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             <button
               type="button"
               onClick={() => insertText('# ', '', 'Main Heading')}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300 flex items-center gap-0.5"
+              className="px-2 py-1 rounded-lg text-xs font-bold bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 flex items-center gap-0.5"
               title="Heading 1"
             >
               <Hash className="w-3 h-3" /> 1
@@ -4578,7 +4719,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             <button
               type="button"
               onClick={() => insertText('## ', '', 'Subheading')}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300 flex items-center gap-0.5"
+              className="px-2 py-1 rounded-lg text-xs font-bold bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 flex items-center gap-0.5"
               title="Heading 2"
             >
               <Hash className="w-3 h-3" /> 2
@@ -4632,7 +4773,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             <button
               type="button"
               onClick={() => insertText('- [ ] ', '', 'High-yield practice question or concept')}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-[#E5E5DC] dark:hover:bg-[#2F303B] text-slate-700 dark:text-slate-300 flex items-center gap-1"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 flex items-center gap-1"
               title="Insert Checklist Item"
             >
               <CheckSquare className="w-3 h-3" />
@@ -4689,34 +4830,6 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               <ImageIcon className="w-3 h-3" />
               <span>+ Image</span>
             </button>
-          </div>
-
-          {/* Quick Preset Templates */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#E2E8F0] dark:border-[#272730]">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">1-Click Templates:</span>
-              <button
-                type="button"
-                onClick={insertFormulaTemplate}
-                className="px-2 py-0.5 rounded-md bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-bold transition-colors cursor-pointer"
-              >
-                + Formula Sheet
-              </button>
-              <button
-                type="button"
-                onClick={insertComparisonTableTemplate}
-                className="px-2 py-0.5 rounded-md bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-bold transition-colors cursor-pointer"
-              >
-                + Comparison Table
-              </button>
-              <button
-                type="button"
-                onClick={insertGrammarRuleTemplate}
-                className="px-2 py-0.5 rounded-md bg-[#F7F6F0] dark:bg-[#23232A] hover:bg-brand-500/10 hover:text-brand-500 text-slate-600 dark:text-slate-400 text-[11px] font-bold transition-colors cursor-pointer"
-              >
-                + Rules & Traps Guide
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -4808,10 +4921,17 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             value={content}
             onChange={e => updateContentAndSave(e.target.value)}
             onPaste={handlePaste}
+            onKeyDown={handleEditorKeyDown}
+            onInput={(e) => { const el = e.currentTarget; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }}
+            style={{ minHeight: '200px', height: 'auto' }}
             placeholder={`Paste your notes from Gemini, ChatGPT, or Claude here, or write your own!\n\n✨ Notion AI Studio: After pasting, press Ctrl+J or click "✨ Notion AI" in the toolbar above to choose from 6 formats (Notion Master, Cornell, Active Recall Q&A, Speed Cheat Sheet, Deep Outline, Zero-Loss Normalizer) with 100% data preservation!\n\n> [!FORMULA]\n> Your formulas here\n\n> [!TIP]\n> Your shortcuts here\n\n> [!WARNING]\n> Exam traps here\n\n- [ ] Checklist items`}
-            rows={14}
-            className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#E2E8F0] dark:border-[#272730] font-mono text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-[#7AA2F7] shadow-inner select-text"
+            rows={8}
+            className="w-full p-4 rounded-2xl bg-white dark:bg-[#12131A] border border-[#E2E8F0] dark:border-[#272730] font-sans tracking-tight text-xs sm:text-[13px] text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-[#7AA2F7] shadow-sm resize-none select-text"
           />
+          <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-mono text-slate-400 dark:text-slate-500 select-none">
+            <span>{wordCount} words · {charCount} chars</span>
+            <span className="hidden sm:inline">Markdown · UTF-8</span>
+          </div>
         </div>
       )}
 
@@ -4828,9 +4948,12 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
               value={content}
               onChange={e => updateContentAndSave(e.target.value)}
               onPaste={handlePaste}
+              onKeyDown={handleEditorKeyDown}
+              onInput={(e) => { const el = e.currentTarget; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }}
+              style={{ minHeight: '200px', height: 'auto' }}
               placeholder="Type or paste markdown..."
-              rows={16}
-              className="flex-1 w-full p-3.5 rounded-2xl bg-white dark:bg-[#12131A] border border-[#E2E8F0] dark:border-[#272730] font-mono text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-inner resize-none select-text"
+              rows={8}
+              className="flex-1 w-full p-3.5 rounded-2xl bg-white dark:bg-[#12131A] border border-[#E2E8F0] dark:border-[#272730] font-sans tracking-tight text-xs text-[#11120F] dark:text-white leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#2563EB] shadow-sm resize-none select-text"
             />
           </div>
 
@@ -5068,6 +5191,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   rows={6}
                   value={quizInputText}
                   onChange={e => setQuizInputText(e.target.value)}
+                  onKeyDown={handleEditorKeyDown}
                   placeholder={`Paste your quiz here, for example:\n\n### Q1: What is the capital of India?\n- [A] Mumbai\n- [B] New Delhi\n- [C] Kolkata\n- [D] Chennai\n**Answer:** B\n**Explanation:** New Delhi is the national capital.`}
                   className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
                 />
