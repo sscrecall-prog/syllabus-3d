@@ -81,7 +81,7 @@ export const SettingsView: React.FC = () => {
 
   const { user, logout, updateUserSession } = useAuth();
   const { updateSettings, showFloatingOverlay, settings } = useTimer();
-  const { theme, setTheme, revertToPreviousTheme, previousTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { isInstalled,} = usePWA();
   const [showPwaModal, setShowPwaModal] = useState(false);
 
@@ -878,31 +878,17 @@ export const SettingsView: React.FC = () => {
                 Color Theme & Palette
               </h3>
               <p className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8]">
-                Switch between Fluid Glass, Tokyo Night Dark, Pure OLED, Pure White, Sepia, and Luxury Haute.
+                Switch between Light Mode and Dark Mode for your study workspace.
               </p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">
-              {(theme === 'glass' || theme === 'luxury') && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundManager.playClick();
-                    haptics.success();
-                    revertToPreviousTheme();
-                  }}
-                  className="px-2.5 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold bg-[#FAF7F2] dark:bg-[#20212E] border border-[#EADBCE] dark:border-[#272730] text-[#B88746] dark:text-[#7AA2F7] hover:bg-[#F5ECE0] transition-colors cursor-pointer shadow-xs active:scale-95"
-                  title={`Revert immediately to previous theme (${previousTheme})`}
-                >
-                  ↩ Revert to {previousTheme === 'dark' ? 'Dark' : previousTheme}
-                </button>
-              )}
               <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold font-mono bg-white dark:bg-[#20212E] border border-slate-200 dark:border-[#272730] text-slate-900 dark:text-[#F5F5F7] capitalize shrink-0">
-                {theme === 'glass' ? 'Fluid Glass Aura' : theme === 'dark' ? 'Tokyo Night' : theme === 'oled' ? 'Pure OLED' : theme === 'sepia' ? 'Sepia Parchment' : theme === 'luxury' ? 'Luxury Haute' : 'Pure White Pro'}
+                {theme === 'dark' ? 'Tokyo Night Dark' : 'Pure White Pro'}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5 sm:pt-1">
             {/* Tokyo Night Dark */}
             <button
               type="button"
@@ -910,179 +896,53 @@ export const SettingsView: React.FC = () => {
                 soundManager.playClick();
                 setTheme('dark');
               }}
-              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
+              className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'dark'
                   ? 'bg-[#1F2335] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/30 shadow-sm'
                   : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#16161E] border border-[#292E42] flex items-center justify-center text-[#7AA2F7] shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#16161E] border border-[#292E42] flex items-center justify-center text-[#7AA2F7] shrink-0">
                   <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                {theme === 'dark' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7AA2F7]" />}
+                {theme === 'dark' && <Check className="w-4 h-4 text-[#7AA2F7]" />}
               </div>
               <div>
-                <span className="text-xs sm:text-[13px] font-extrabold text-[#11120F] dark:text-white block">
+                <span className="text-xs sm:text-[14px] font-extrabold text-[#11120F] dark:text-white block">
                   Tokyo Night Dark
                 </span>
-                <span className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  Deep dark glassmorphism for focused study
+                <span className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5">
+                  Deep dark glassmorphism for focused night study and reduced eye fatigue
                 </span>
               </div>
             </button>
 
-            {/* Pure OLED Pitch Black (Eye-Comfort) */}
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setTheme('oled');
-              }}
-              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
-                theme === 'oled'
-                  ? 'bg-[#0A0B10] border-[#7AA2F7] ring-2 ring-[#7AA2F7]/40 shadow-sm'
-                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-black border border-[#292E42] flex items-center justify-center text-cyan-400 shrink-0">
-                  <span className="text-[10px] sm:text-xs font-mono font-bold">OLED</span>
-                </div>
-                {theme === 'oled' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />}
-              </div>
-              <div>
-                <span className="text-xs sm:text-[13px] font-extrabold text-[#11120F] dark:text-white block">
-                  Pure OLED Black
-                </span>
-                <span className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  100% pitch black for zero eye fatigue & battery saving
-                </span>
-              </div>
-            </button>
-
-            {/* Pure White Pro */}
+            {/* Pure White Pro (Light) */}
             <button
               type="button"
               onClick={() => {
                 soundManager.playClick();
                 setTheme('light');
               }}
-              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
+              className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                 theme === 'light'
                   ? 'bg-white border-[#2563EB] ring-2 ring-[#2563EB]/30 shadow-md'
                   : 'bg-white dark:bg-[#18181D] border-slate-200 dark:border-[#272730] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-[#2563EB] shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-[#2563EB] shrink-0">
                   <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                {theme === 'light' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2563EB]" />}
+                {theme === 'light' && <Check className="w-4 h-4 text-[#2563EB]" />}
               </div>
               <div>
-                <span className="text-xs sm:text-[13px] font-extrabold text-slate-900 dark:text-white block">
-                  Pure White Pro
+                <span className="text-xs sm:text-[14px] font-extrabold text-slate-900 dark:text-white block">
+                  Pure White Pro (Light Mode)
                 </span>
-                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
+                <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-[#94A3B8] block mt-0.5">
                   Crisp, high-contrast modern white workspace for daylight clarity
-                </span>
-              </div>
-            </button>
-
-            {/* Sepia — Eye-Soothing Warm Parchment */}
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setTheme('sepia');
-              }}
-              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
-                theme === 'sepia'
-                  ? 'bg-[#FBF7F0] border-[#8B6914] ring-2 ring-[#8B6914]/30 shadow-sm'
-                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#F5F0E8] border border-[#D5C9AD] flex items-center justify-center text-[#8B6914] shrink-0">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                {theme === 'sepia' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B6914]" />}
-              </div>
-              <div>
-                <span className="text-xs sm:text-[13px] font-extrabold text-[#11120F] dark:text-white block">
-                  Sepia Parchment
-                </span>
-                <span className="text-[10px] sm:text-[11px] text-[#85877E] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  Eye-soothing warm tones for long study sessions
-                </span>
-              </div>
-            </button>
-
-            {/* Luxury Haute Couture Theme Card */}
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setTheme('luxury');
-              }}
-              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
-                theme === 'luxury'
-                  ? 'bg-[#FAF7F2] border-[#C89B5B] ring-2 ring-[#C89B5B]/40 shadow-md'
-                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#FBF0E6] border border-[#EADBCE] flex items-center justify-center text-[#B88746] shrink-0">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#B88746]" />
-                </div>
-                {theme === 'luxury' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C89B5B]" />}
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs sm:text-[13px] font-extrabold text-[#2C221E] dark:text-white block">
-                    Luxury Haute
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded-md bg-[#FBF0E6] border border-[#EADBCE] text-[9px] font-bold text-[#B88746] uppercase font-mono">
-                    New
-                  </span>
-                </div>
-                <span className="text-[10px] sm:text-[11px] text-[#6D5B52] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  Creamy champagne, blush peach &amp; gold aesthetics
-                </span>
-              </div>
-            </button>
-
-            {/* Fluid Glass Ethereal Acrylic Theme Card */}
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setTheme('glass');
-              }}
-              className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 sm:gap-3 ${
-                theme === 'glass'
-                  ? 'bg-white/80 border-purple-400 ring-2 ring-purple-400/40 shadow-md backdrop-blur-md'
-                  : 'bg-[#F8FAFC] dark:bg-[#18181D] border-[#E2E8F0] dark:border-[#272730] opacity-70 hover:opacity-100'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-purple-500/20 via-pink-400/20 to-sky-400/20 border border-purple-300/40 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                {theme === 'glass' && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600" />}
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs sm:text-[13px] font-extrabold text-[#0F172A] dark:text-white block">
-                    Fluid Glass
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded-md bg-purple-500/15 border border-purple-400/30 text-[9px] font-bold text-purple-600 dark:text-purple-400 uppercase font-mono">
-                    Aura
-                  </span>
-                </div>
-                <span className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8] block mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  Translucent acrylic glass with floating pastel bubbles &amp; caustics
                 </span>
               </div>
             </button>

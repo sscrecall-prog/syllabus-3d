@@ -48,15 +48,8 @@ export const Header: React.FC<HeaderProps> = ({
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
   const { user } = useAuth();
   const {
-    theme,
-    toggleTheme: handleThemeToggle,
-    revertToPreviousTheme,
-    isLuxury,
-    isGlass,
     isDark,
-    isOled,
-    isSepia,
-    previousTheme
+    toggleTheme: handleThemeToggle,
   } = useTheme();
   const { isInstallable, isInstalled, triggerInstall } = usePWA();
   const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
@@ -255,51 +248,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Fluid Glass Theme Active & 1-Click Revert Pill */}
-          {isGlass && (
-            <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-blue-950/40 backdrop-blur-xl border border-cyan-400/30 shadow-[0_0_15px_rgba(56,189,248,0.15)] animate-fade-in shrink-0">
-              <span className="text-[11px] font-black text-cyan-300 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                <span className="hidden sm:inline">Fluid Glass</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  haptics.success();
-                  revertToPreviousTheme();
-                }}
-                className="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-[10px] font-bold text-white cursor-pointer shadow-xs active:scale-95 transition-all"
-                title={`Revert back to previous theme (${previousTheme})`}
-              >
-                ↩ Revert
-              </button>
-            </div>
-          )}
-
-          {/* Luxury Theme Active & 1-Click Revert Pill */}
-          {isLuxury && (
-            <div className="h-9 flex items-center gap-1.5 px-2.5 rounded-xl bg-[#FBF0E6] border border-[#E2CEBE] shadow-2xs animate-fade-in shrink-0">
-              <span className="text-[11px] font-bold text-[#B88746] flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Luxury</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  haptics.success();
-                  revertToPreviousTheme();
-                }}
-                className="px-2 py-0.5 rounded-lg bg-white border border-[#E2CEBE] hover:bg-[#F6ECE0] text-[10px] font-bold text-[#2C221E] cursor-pointer shadow-xs active:scale-95 transition-all"
-                title={`Revert back to previous theme (${previousTheme})`}
-              >
-                ↩ Revert
-              </button>
-            </div>
-          )}
-
-          {/* Theme Toggle (Cycle: Fluid Glass -> Dark -> OLED -> Light -> Sepia -> Luxury) */}
+          {/* Theme Toggle (Light <-> Dark) */}
           <button
             onClick={() => {
               soundManager.playClick();
@@ -307,31 +256,11 @@ export const Header: React.FC<HeaderProps> = ({
               handleThemeToggle();
             }}
             className="h-9 w-9 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#64748B] hover:text-[#0F172A] dark:text-[#A1A1AA] dark:hover:text-white transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 flex items-center justify-center"
-            title={
-              isGlass
-                ? "Current: Fluid Glass (Click for Tokyo Night Dark)"
-                : isLuxury
-                ? "Current: Luxury Theme (Click for Fluid Glass)"
-                : isOled
-                ? "Current: OLED Pure Black (Click for Pure White)"
-                : isDark
-                ? "Current: Tokyo Night (Click for OLED)"
-                : isSepia
-                ? "Current: Sepia (Click for Luxury)"
-                : "Current: Pure White (Click for Sepia)"
-            }
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             aria-label="Toggle theme"
           >
-            {isGlass ? (
-              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-            ) : isLuxury ? (
-              <Sparkles className="w-4 h-4 text-[#B88746]" />
-            ) : isOled ? (
-              <span className="text-[11px] font-mono font-black text-cyan-400">OL</span>
-            ) : isDark ? (
+            {isDark ? (
               <Sun className="w-4 h-4 text-[#F59E0B]" />
-            ) : isSepia ? (
-              <span className="text-[11px] font-mono font-black text-[#8B6914]">SE</span>
             ) : (
               <Moon className="w-4 h-4 text-[#2563EB]" />
             )}

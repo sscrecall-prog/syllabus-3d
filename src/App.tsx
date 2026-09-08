@@ -99,7 +99,7 @@ export const App: React.FC = () => {
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
 
-  const { toggleTheme, isGlass } = useTheme();
+  const { toggleTheme } = useTheme();
 
   const showShortcutToast = useCallback((msg: string) => {
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
@@ -590,24 +590,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative ${
-      isGlass ? 'bg-transparent text-white' : 'bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5]'
-    }`}>
-      {/* 🔮 Fluid Glass Wallpaper Layer (Deep Cobalt 3D Silk Ribbons) */}
-      {isGlass && (
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none print:hidden">
-          <img
-            src="/app-wallpaper.jpg"
-            alt="Fluid Glass Wallpaper"
-            className="w-full h-full object-cover object-center fixed inset-0 scale-100"
-          />
-          {/* Subtle Ambient Depth Lighting & Vignette */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050816]/30 via-transparent to-[#050816]/60 pointer-events-none" />
-          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-600/15 blur-[120px] pointer-events-none" />
-          <div className="absolute top-1/2 -right-32 w-[450px] h-[450px] rounded-full bg-indigo-600/15 blur-[120px] pointer-events-none" />
-        </div>
-      )}
-      
+    <div className="min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative bg-[#F8FAFC] dark:bg-[#12141A] text-[#0F172A] dark:text-[#C0CAF5]">
       {/* ♿ Skip to Main Content Link for Keyboard & Screen Reader Users */}
       <a href="#main-content" className="skip-link">
         Skip to main content (Press Enter)

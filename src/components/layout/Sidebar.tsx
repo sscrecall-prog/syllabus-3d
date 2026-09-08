@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 import { soundManager } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
 
@@ -60,7 +59,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { profile, dueRevisions, weakTopics, plannerTasks, platforms, overallStats } = useSyllabus();
   const { user } = useAuth();
-  const { isLuxury } = useTheme();
 
   const navSections = [
     {
@@ -258,21 +256,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={`group relative w-full flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-bold transition-all duration-150 cursor-pointer ${
                         isActive
-                          ? isLuxury
-                            ? 'bg-gradient-to-r from-[#C89B5B] to-[#B88746] text-white shadow-sm font-black'
-                            : 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#090C15] font-black shadow-xs'
+                          ? 'bg-[#11120F] dark:bg-[#7AA2F7] text-white dark:text-[#090C15] font-black shadow-xs'
                           : 'text-[#65675F] dark:text-[#CBD5E1] hover:bg-slate-100 dark:hover:bg-[#161722] hover:text-[#11120F] dark:hover:text-white'
                       }`}
                     >
                       {/* Active Left Indicator Bar */}
                       {isActive && (
-                        <div
-                          className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full ${
-                            isLuxury
-                              ? 'bg-[#FFE8D6]'
-                              : 'bg-emerald-400 dark:bg-[#090C15]'
-                          }`}
-                        />
+                        <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-emerald-400 dark:bg-[#090C15]" />
                       )}
 
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -288,9 +278,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <Icon
                             className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
                               isActive
-                                ? isLuxury
-                                  ? 'text-white'
-                                  : 'text-white dark:text-[#090C15]'
+                                ? 'text-white dark:text-[#090C15]'
                                 : 'text-[#85877E] dark:text-[#94A3B8] group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
                             }`}
                           />
@@ -303,9 +291,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black shrink-0 ${
                             isActive
-                              ? isLuxury
-                                ? 'bg-white/25 text-white'
-                                : 'bg-white/20 dark:bg-black/20 text-white dark:text-[#090C15]'
+                              ? 'bg-white/20 dark:bg-black/20 text-white dark:text-[#090C15]'
                               : item.badgeColor
                           }`}
                         >
