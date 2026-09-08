@@ -2188,22 +2188,22 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-word-' + i}
-              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm flex items-center gap-3 flex-wrap [break-inside:avoid]"
+              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#10121C] border border-slate-200/90 dark:border-[#272B3E] shadow-sm flex items-center gap-3 flex-wrap [break-inside:avoid]"
             >
               <div className={`${vSize.index} rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-black font-mono shadow-xs shrink-0`}>
                 {indexNum}
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`font-extrabold text-[#F59E0B] ${vSize.word} tracking-tight`}>
+                <span className={`font-black text-amber-600 dark:text-[#F59E0B] ${vSize.word} tracking-tight`}>
                   {wordText}
                 </span>
                 {posText && (
-                  <span className={`${vSize.pos} text-[#D97706]/90 dark:text-[#FBBF24]/80 font-medium`}>
+                  <span className={`${vSize.pos} text-slate-500 dark:text-[#FBBF24]/80 font-medium`}>
                     {posText}
                   </span>
                 )}
                 {hindiText && (
-                  <span className={`${vSize.hindi} font-semibold text-[#38BDF8] dark:text-[#60A5FA]`}>
+                  <span className={`${vSize.hindi} font-bold text-sky-700 dark:text-[#38BDF8]`}>
                     {hindiText}
                   </span>
                 )}
@@ -2218,12 +2218,12 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-def-' + i}
-              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm flex items-start gap-3 [break-inside:avoid]"
+              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-amber-50/70 dark:bg-[#10121C] border border-amber-200/80 dark:border-[#272B3E] shadow-sm flex items-start gap-3 [break-inside:avoid]"
             >
               <div className={`${vSize.index} rounded-lg bg-[#2563EB] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs`}>
                 <ArrowRight className={`${vSize.iconInner} stroke-[2.5]`} />
               </div>
-              <div className={`${vSize.def} font-medium text-[#F59E0B] dark:text-[#FBBF24] leading-relaxed flex-1`}>
+              <div className={`${vSize.def} font-medium text-amber-900 dark:text-[#FBBF24] leading-relaxed flex-1`}>
                 {parseInlineMarkdown(defText, `vdef-${i}`)}
               </div>
             </div>
@@ -2235,10 +2235,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-syn-' + i}
-              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#10121C] border border-slate-200/90 dark:border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
             >
               <div className="flex items-center gap-2">
-                <div className={`${vSize.icon} rounded-md bg-[#2563EB] text-white flex items-center justify-center shrink-0`}>
+                <div className={`${vSize.icon} rounded-md bg-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs`}>
                   <CornerDownRight className={`${vSize.iconInner} stroke-[2.5]`} />
                 </div>
                 <span className={`text-[#E05252] font-extrabold ${vSize.header} tracking-wide`}>Synonyms</span>
@@ -2254,18 +2254,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     <div
                       key={clIdx}
                       onClick={() => currentBoxIdx >= 0 && toggleCheckboxInText(currentBoxIdx)}
-                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-slate-100/80 dark:hover:bg-white/[0.04] cursor-pointer transition-colors group"
                     >
                       <div
                         className={`${vSize.checkbox} rounded-md border flex items-center justify-center transition-colors shrink-0 ${
                           isChecked
                             ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
-                            : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
+                            : 'border-slate-300 dark:border-slate-500/80 bg-white dark:bg-transparent group-hover:border-slate-500'
                         }`}
                       >
                         {isChecked && <Check className={`${vSize.checkIcon} stroke-[3]`} />}
                       </div>
-                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200'}`}>
                         {parseInlineMarkdown(rawItemText, `syn-${i}-${clIdx}`)}
                       </span>
                     </div>
@@ -2281,13 +2281,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-adv-' + i}
-              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#3D2C1E] shadow-sm space-y-3 [break-inside:avoid]"
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50/50 via-orange-50/30 to-amber-50/40 dark:from-[#141620] dark:to-[#10121C] border border-amber-200/80 dark:border-[#3D2C1E] shadow-sm space-y-3 [break-inside:avoid]"
             >
               <div className="flex items-center gap-2">
                 <div className={`${vSize.icon} rounded-md bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs`}>
                   <Zap className={`${vSize.iconInner} stroke-[2.5]`} />
                 </div>
-                <span className={`text-[#F59E0B] font-extrabold ${vSize.header} tracking-wide`}>🔥 Advanced Synonyms</span>
+                <span className={`text-amber-700 dark:text-[#F59E0B] font-extrabold ${vSize.header} tracking-wide`}>🔥 Advanced Synonyms</span>
               </div>
 
               <div className="space-y-1.5 pl-1">
@@ -2300,18 +2300,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     <div
                       key={clIdx}
                       onClick={() => currentBoxIdx >= 0 && toggleCheckboxInText(currentBoxIdx)}
-                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-amber-100/50 dark:hover:bg-white/[0.04] cursor-pointer transition-colors group"
                     >
                       <div
                         className={`${vSize.checkbox} rounded-md border flex items-center justify-center transition-colors shrink-0 ${
                           isChecked
                             ? 'bg-amber-500 border-amber-500 text-white shadow-xs'
-                            : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
+                            : 'border-amber-300 dark:border-slate-500/80 bg-white dark:bg-transparent group-hover:border-amber-500'
                         }`}
                       >
                         {isChecked && <Check className={`${vSize.checkIcon} stroke-[3]`} />}
                       </div>
-                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200'}`}>
                         {parseInlineMarkdown(rawItemText, `adv-${i}-${clIdx}`)}
                       </span>
                     </div>
@@ -2327,10 +2327,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-ant-' + i}
-              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#10121C] border border-slate-200/90 dark:border-[#272B3E] shadow-sm space-y-3 [break-inside:avoid]"
             >
               <div className="flex items-center gap-2">
-                <div className={`${vSize.icon} rounded-md bg-[#2563EB] text-white flex items-center justify-center shrink-0`}>
+                <div className={`${vSize.icon} rounded-md bg-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs`}>
                   <CornerDownRight className={`${vSize.iconInner} stroke-[2.5]`} />
                 </div>
                 <span className={`text-[#E05252] font-extrabold ${vSize.header} tracking-wide`}>Antonyms</span>
@@ -2346,18 +2346,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                     <div
                       key={clIdx}
                       onClick={() => currentBoxIdx >= 0 && toggleCheckboxInText(currentBoxIdx)}
-                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                      className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-slate-100/80 dark:hover:bg-white/[0.04] cursor-pointer transition-colors group"
                     >
                       <div
                         className={`${vSize.checkbox} rounded-md border flex items-center justify-center transition-colors shrink-0 ${
                           isChecked
                             ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
-                            : 'border-slate-500/80 bg-transparent group-hover:border-slate-300'
+                            : 'border-slate-300 dark:border-slate-500/80 bg-white dark:bg-transparent group-hover:border-slate-500'
                         }`}
                       >
                         {isChecked && <Check className={`${vSize.checkIcon} stroke-[3]`} />}
                       </div>
-                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-200 dark:text-slate-200'}`}>
+                      <span className={`${vSize.item} font-medium leading-normal ${isChecked ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200'}`}>
                         {parseInlineMarkdown(rawItemText, `ant-${i}-${clIdx}`)}
                       </span>
                     </div>
@@ -2374,13 +2374,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-conf-' + i}
-              className="my-3 p-4 sm:p-5 rounded-2xl bg-[#161726] dark:bg-[#121320] border border-indigo-500/40 shadow-sm space-y-2.5 [break-inside:avoid]"
+              className="my-3 p-4 sm:p-5 rounded-2xl bg-indigo-50/70 dark:bg-[#121320] border border-indigo-200/80 dark:border-indigo-500/40 shadow-sm space-y-2.5 [break-inside:avoid]"
             >
-              <div className={`flex items-center gap-2 font-bold ${vSize.header} text-indigo-400`}>
-                <HelpCircle className={`${vSize.icon} text-indigo-400 shrink-0`} />
-                <span className="font-extrabold text-indigo-300">🤔 Confusing Word: {titleRest}</span>
+              <div className={`flex items-center gap-2 font-bold ${vSize.header} text-indigo-700 dark:text-indigo-400`}>
+                <HelpCircle className={`${vSize.icon} text-indigo-600 dark:text-indigo-400 shrink-0`} />
+                <span className="font-extrabold text-indigo-900 dark:text-indigo-300">🤔 Confusing Word: {titleRest}</span>
               </div>
-              <div className={`space-y-1.5 ${vSize.item} text-slate-300 leading-relaxed pl-6`}>
+              <div className={`space-y-1.5 ${vSize.item} text-slate-800 dark:text-slate-300 leading-relaxed pl-6`}>
                 {calloutLines.map((cl, clIdx) => (
                   <div key={clIdx}>
                     {parseInlineMarkdown(cl, `conf-${i}-${clIdx}`)}
@@ -2399,7 +2399,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 if (cl.startsWith('| →') || cl.startsWith('| ->') || cl.startsWith('→')) {
                   const hiText = cl.replace(/^[|→\->\s]+/, '').trim();
                   return (
-                    <div key={clIdx} className={`${vSize.exampleHi} text-slate-400 dark:text-slate-400 pl-4 italic -mt-1.5`}>
+                    <div key={clIdx} className={`${vSize.exampleHi} text-sky-800 dark:text-slate-400 pl-4 font-semibold italic -mt-1.5`}>
                       → {hiText}
                     </div>
                   );
@@ -2407,8 +2407,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                 const enText = cl.replace(/^[|*•\-\s]+/, '').replace(/^\*\*Usage:\*\*\s*/i, '').replace(/^Usage:\s*/i, '').trim();
                 return (
                   <div key={clIdx} className="flex items-start gap-2.5 pl-1">
-                    <div className="w-[3px] self-stretch min-h-[20px] bg-slate-300 dark:bg-slate-500 rounded-full shrink-0" />
-                    <div className={`${vSize.def} font-medium text-slate-800 dark:text-slate-200 leading-relaxed`}>
+                    <div className="w-[3px] self-stretch min-h-[20px] bg-red-400 dark:bg-slate-500 rounded-full shrink-0" />
+                    <div className={`${vSize.def} font-medium text-slate-900 dark:text-slate-200 leading-relaxed`}>
                       <span className="text-[#E05252] font-bold mr-2">Usage:</span>
                       <span>{parseInlineMarkdown(enText, `use-${i}-${clIdx}`)}</span>
                     </div>
@@ -2424,13 +2424,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           elements.push(
             <div
               key={'vocab-rel-' + i}
-              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-[#141620] dark:bg-[#10121C] border border-emerald-500/30 shadow-sm space-y-1.5 [break-inside:avoid]"
+              className="my-3 p-3.5 sm:p-4 rounded-2xl bg-emerald-50/70 dark:bg-[#10121C] border border-emerald-200/80 dark:border-emerald-500/30 shadow-sm space-y-1.5 [break-inside:avoid]"
             >
-              <div className={`flex items-center gap-2 font-bold ${vSize.header} uppercase tracking-wider text-emerald-400 font-mono`}>
-                <Bookmark className={`${vSize.iconInner}`} />
+              <div className={`flex items-center gap-2 font-bold ${vSize.header} uppercase tracking-wider text-emerald-800 dark:text-emerald-400 font-mono`}>
+                <Bookmark className={`${vSize.iconInner} text-emerald-700 dark:text-emerald-400`} />
                 <span>🔰 Related Word (Exam-Oriented)</span>
               </div>
-              <div className={`space-y-1 ${vSize.item} text-slate-300 leading-relaxed pl-5`}>
+              <div className={`space-y-1 ${vSize.item} text-emerald-950 dark:text-slate-300 leading-relaxed pl-5`}>
                 {calloutLines.map((cl, clIdx) => (
                   <div key={clIdx}>
                     {parseInlineMarkdown(cl.replace(/^[*•\-]\s*/, ''), `rel-${i}-${clIdx}`)}
