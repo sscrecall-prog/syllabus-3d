@@ -44,6 +44,7 @@ import { PlannerColumnStatus, PlannerTask, Topic, TaskPriority, TaskCategory } f
 import { getTodayDateString } from '../../utils/dateUtils';
 import { soundManager } from '../../utils/soundEffects';
 import { Top3TargetsWidget } from '../dashboard/Top3TargetsWidget';
+import { RoutineMakerView } from '../routine/RoutineMakerView';
 import confetti from 'canvas-confetti';
 
 interface PlannerViewProps {
@@ -78,7 +79,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
   } = useSyllabus();
 
   // View Mode
-  const [viewMode, setViewMode] = useState<'kanban' | 'calendar'>('kanban');
+  const [viewMode, setViewMode] = useState<'kanban' | 'calendar' | 'routine'>('kanban');
   const [mobileActiveColumn, setMobileActiveColumn] = useState<PlannerColumnStatus | 'all'>('all');
 
   // Modal State
@@ -476,9 +477,9 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       <Top3TargetsWidget />
 
       {/* ═══════════════ 2. VIEW CONTROLS & SUBJECT FILTER BAR ═══════════════ */}
-      <div className="flex flex-row items-center justify-between gap-2">
+      <div className="flex flex-row items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar">
         
-        {/* Kanban vs Calendar Switcher */}
+        {/* Kanban vs Calendar vs Master Routine Switcher */}
         <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-2xs shrink-0">
           <button
             onClick={() => {
@@ -509,10 +510,25 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
             <CalendarDays className="w-3.5 h-3.5" />
             <span>Weekly Calendar</span>
           </button>
+
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              setViewMode('routine');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              viewMode === 'routine'
+                ? 'bg-white dark:bg-[#202234] text-blue-600 dark:text-blue-400 shadow-xs font-black'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5 text-blue-500" />
+            <span>Master Routine & Timetable</span>
+          </button>
         </div>
 
         {/* Clear Conquered Button (if any) */}
-        {completedTasks.length > 0 && (
+        {viewMode !== 'routine' && completedTasks.length > 0 && (
           <button
             onClick={() => {
               soundManager.playClick();
@@ -527,7 +543,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       </div>
 
       {/* ═══════════════ 3. SUBJECT FILTER PILLS ═══════════════ */}
-      {currentExam && currentExam.subjects.length > 0 && (
+      {viewMode !== 'routine' && currentExam && currentExam.subjects.length > 0 && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
           <button
             onClick={() => {
@@ -578,8 +594,10 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         </div>
       )}
 
-      {/* ═══════════════ 4. MAIN WORKSPACE VIEW (KANBAN / CALENDAR) ═══════════════ */}
-      {viewMode === 'kanban' ? (
+      {/* ═══════════════ 4. MAIN WORKSPACE VIEW (KANBAN / CALENDAR / ROUTINE) ═══════════════ */}
+      {viewMode === 'routine' ? (
+        <RoutineMakerView onOpenFocusChamber={onOpenFocusChamber} />
+      ) : viewMode === 'kanban' ? (
         <div className="space-y-3">
           {/* Mobile Column Segmented Filter (Hidden on Desktop) */}
           <div className="sm:hidden flex items-center gap-1 p-1 rounded-xl bg-white dark:bg-[#151622] border border-[#E2E8F0] dark:border-[#262738] overflow-x-auto no-scrollbar shadow-2xs">

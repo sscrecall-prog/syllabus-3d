@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { SyllabusProvider } from './context/SyllabusContext';
 import { TimerProvider } from './context/TimerContext';
+import { RoutineProvider } from './context/RoutineContext';
 import './index.css';
 import 'katex/dist/katex.min.css';
 
@@ -78,9 +79,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <AuthProvider>
         <SyllabusProvider>
-          <TimerProvider>
-            <App />
-          </TimerProvider>
+          <RoutineProvider>
+            <TimerProvider>
+              <App />
+            </TimerProvider>
+          </RoutineProvider>
         </SyllabusProvider>
       </AuthProvider>
     </ThemeProvider>

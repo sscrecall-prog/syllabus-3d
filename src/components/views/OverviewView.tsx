@@ -21,6 +21,7 @@ import { ExamCountdown3D } from '../3d/ExamCountdown3D';
 import { Top3TargetsWidget } from '../dashboard/Top3TargetsWidget';
 import { AppFooter } from '../common/AppFooter';
 import { soundManager } from '../../utils/soundEffects';
+import { useRoutine, format12Hour } from '../../context/RoutineContext';
 
 interface OverviewViewProps {
   onNavigate: (view: AppView) => void;
@@ -45,6 +46,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     platforms
   } = useSyllabus();
   const { user } = useAuth();
+  const { activeSlot, nextSlot } = useRoutine();
 
   const todayPlannerTasks = plannerTasks.filter(t => t.status === 'today' || t.status === 'in_progress');
   const completedTodayTasks = plannerTasks.filter(t => t.status === 'completed');
@@ -148,7 +150,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <div className="min-w-0">
               <h1 className="text-base sm:text-xl md:text-2xl font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center flex-wrap">
                 <span>{greeting},&nbsp;</span>
-                <span className="bg-gradient-to-r from-slate-900 via-blue-800 to-[#2563EB] dark:from-white dark:via-[#93C5FD] dark:to-[#818CF8] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#38370D] via-[#5C5006] to-[#8D7A02] dark:from-white dark:via-[#93C5FD] dark:to-[#818CF8] bg-clip-text text-transparent font-black">
                   {userName}
                 </span>
               </h1>
@@ -429,6 +431,55 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               />
             </div>
           </div>
+
+          {/* Live Active Routine Slot Widget */}
+          {activeSlot ? (
+            <div
+              onClick={() => {
+                soundManager.playClick();
+                onNavigate('planner');
+              }}
+              className="relative z-10 p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border border-blue-500/40 hover:border-blue-500/70 transition-all cursor-pointer group shadow-2xs"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping shrink-0" />
+                  <span className="text-[10px] font-mono font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                    ACTIVE ROUTINE BLOCK
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                    ({format12Hour(activeSlot.startTime)} - {format12Hour(activeSlot.endTime)})
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform shrink-0">
+                  <span>Routine</span>
+                  <ArrowRight className="w-3 h-3" />
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate mt-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {activeSlot.title}
+              </p>
+            </div>
+          ) : nextSlot ? (
+            <div
+              onClick={() => {
+                soundManager.playClick();
+                onNavigate('planner');
+              }}
+              className="relative z-10 p-2 px-3 rounded-xl bg-slate-50 dark:bg-[#1A1B29] border border-slate-200/70 dark:border-white/[0.06] hover:border-blue-500/40 transition-all cursor-pointer flex items-center justify-between text-xs group"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Next slot at <strong className="text-slate-800 dark:text-slate-200 font-mono">{format12Hour(nextSlot.startTime)}</strong>:
+                </span>
+                <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
+                  {nextSlot.title}
+                </span>
+              </div>
+              <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-blue-500 shrink-0" />
+            </div>
+          ) : null}
 
           {/* Focus Queue List */}
           <div className="relative z-10 space-y-2 flex-1">

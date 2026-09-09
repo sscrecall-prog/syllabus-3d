@@ -16,27 +16,43 @@ export default {
     },
     extend: {
       colors: {
-        // Executive Pure White System (Light Mode)
+        // Custom Warm Golden Cream & High-Contrast Bistre Palette
+        palette: {
+          canvas: '#FAEED9',
+          'canvas-soft': '#F5E8CF',
+          surface: '#FFFDF8',
+          'surface-soft': '#F7EAD2',
+          accent: '#E1A837',
+          'accent-hover': '#C99126',
+          secondary: '#8D7A02',
+          ink: '#38370D',
+          'ink-secondary': '#4E4B11',
+          'ink-muted': '#6B6615',
+          border: '#E6D3B1',
+          'border-strong': '#D8C29A'
+        },
+        // Executive Golden Cream System (Light Mode)
         academic: {
-          bg: '#F8FAFC',
-          primary: '#0F172A',
-          accent: '#2563EB',
-          'accent-light': '#EFF6FF',
-          'accent-secondary': '#3B82F6',
-          surface: '#FFFFFF',
-          'surface-soft': '#F1F5F9',
-          border: '#E2E8F0',
-          'text-primary': '#0F172A',
-          'text-secondary': '#475569',
-          'text-muted': '#64748B',
+          bg: '#FAEED9',
+          primary: '#38370D',
+          accent: '#E1A837',
+          'accent-light': '#FFF9EE',
+          'accent-secondary': '#8D7A02',
+          surface: '#FFFDF8',
+          'surface-soft': '#F5E8CF',
+          border: '#E6D3B1',
+          'text-primary': '#38370D',
+          'text-secondary': '#4E4B11',
+          'text-muted': '#6B6615',
           success: '#16A34A',
-          warning: '#D97706',
+          warning: '#E1A837',
           error: '#DC2626',
         },
         brand: {
-          400: '#3B82F6',
-          500: '#2563EB',
-          600: '#1D4ED8',
+          400: '#E1A837',
+          500: '#BF871B',
+          600: '#8D7A02',
+          900: '#38370D'
         },
         // Dark Mode System: Background #1A1B26, Foreground #C0CAF5, Accent #7AA2F7
         dark: {
