@@ -151,8 +151,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white/80 dark:bg-[#090C15]/90 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
-        isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-[1px_0_12px_rgba(15,23,42,0.03)]'
+      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white/90 dark:bg-[#0A0D16]/95 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
+        isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-[1px_0_20px_rgba(15,23,42,0.04)]'
       }`}
     >
 
@@ -172,15 +172,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <h1 className="text-[13px] font-black tracking-wider text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none truncate">
+                <h1 className="text-sm font-black tracking-wide text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none truncate">
                   SYLLABUS 3D
                 </h1>
-                <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[9px] font-black tracking-widest font-mono">
+                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black tracking-widest font-mono">
                   PRO
                 </span>
               </div>
-              <p className="text-[10px] font-bold text-[#65675F] dark:text-[#94A3B8] mt-0.5 truncate">
-                Discipline &amp; Mastery
+              <p className="text-[11px] font-medium text-slate-500 dark:text-[#94A3B8] mt-0.5 truncate">
+                Discipline & Mastery
               </p>
             </div>
           </div>
@@ -207,7 +207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
-              className="group relative w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-blue-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:bg-[#7AA2F7] text-white font-bold text-[13px] shadow-[0_2px_8px_rgba(15,23,42,0.12)] dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-slate-800 dark:border-transparent tap-bounce"
+              className="group relative w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:bg-[#7AA2F7] text-white font-bold text-[13px] shadow-[0_2px_8px_rgba(15,23,42,0.12)] dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-blue-700 dark:border-transparent tap-bounce"
               title="Add Custom Topic"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -240,7 +240,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="space-y-3 pt-1 border-t border-[#E2E8F0] dark:border-[#232430]">
           {navSections.map(section => (
             <div key={section.title} className="space-y-0.5">
-              <div className="px-2 pt-1 pb-1 text-[10px] font-mono font-bold tracking-wider text-[#85877E] dark:text-slate-300 uppercase">
+              <div className="px-2 pt-1 pb-1 text-[10px] font-medium tracking-wider text-slate-400 dark:text-slate-500 uppercase">
                 {section.title}
               </div>
               <nav className="space-y-0.5">
@@ -256,7 +256,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={`group relative w-full flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-bold transition-all duration-150 cursor-pointer ${
                         isActive
-                          ? 'bg-slate-900 text-white font-black shadow-[0_2px_8px_rgba(15,23,42,0.14)] dark:bg-gradient-to-r dark:from-blue-600/25 dark:to-indigo-600/20 dark:text-[#93C5FD] dark:border dark:border-[#7AA2F7]/40 dark:shadow-[0_0_15px_rgba(122,162,247,0.2)]'
+                          ? 'bg-blue-50 text-blue-700 font-black border border-blue-200/60 shadow-sm dark:bg-gradient-to-r dark:from-blue-600/20 dark:to-indigo-600/15 dark:text-[#93C5FD] dark:border dark:border-[#7AA2F7]/30'
                           : 'text-slate-600 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
@@ -277,9 +277,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ) : (
                           <Icon
                             className={`w-4 h-4 stroke-[2] shrink-0 transition-transform ${
-                              isActive
-                                ? 'text-white dark:text-[#93C5FD]'
-                                : 'text-[#85877E] dark:text-slate-300 group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
+                                isActive
+                                  ? 'text-blue-600 dark:text-[#93C5FD]'
+                                  : 'text-[#85877E] dark:text-slate-300 group-hover:scale-110 group-hover:text-[#11120F] dark:group-hover:text-white'
                             }`}
                           />
                         )}
@@ -326,7 +326,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             />
           </div>
           <p className="text-[10px] text-slate-500 dark:text-slate-300 leading-tight">
-            Process &gt; Speed. Stick to your goals today.
+            Keep pushing — consistency beats intensity.
           </p>
         </div>
 
@@ -403,12 +403,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          <div className="w-full h-1 rounded-full bg-[#E2E8F0] dark:bg-[#232430] overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#8B5CF6] rounded-full"
-              style={{ width: `${Math.min(100, Math.max(5, (profile.xp % 300) / 3))}%` }}
-            />
-          </div>
+
         </div>
 
         {/* Keyboard Shortcuts Trigger */}
@@ -424,7 +419,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             aria-label="Keyboard Shortcuts Cheatsheet"
           >
             <Keyboard className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
-            <span className="text-[12px] font-semibold">Shortcuts</span>
+            <span className="text-[12px] font-semibold">Keyboard Shortcuts</span>
           </button>
         )}
       </div>
