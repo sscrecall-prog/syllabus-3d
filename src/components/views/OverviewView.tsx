@@ -193,19 +193,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       </div>
 
       {/* 2. 3D VISUAL HERO ARTWORK BANNER (Hidden in print to save paper & ink) */}
-      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth bg-gradient-to-b from-[#080A10] via-[#0D101C] to-[#080A10] group print:hidden">
-        <div className="relative w-full h-36 xs:h-40 sm:h-44 md:h-48 lg:h-[185px] max-h-[190px] overflow-hidden flex items-center justify-center">
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth bg-[#060810] group print:hidden">
+        <div className="relative w-full h-36 xs:h-40 sm:h-44 md:h-48 lg:h-[195px] xl:h-[205px] overflow-hidden flex items-center justify-center">
           <img
             src="/dashboard-hero.jpg"
             alt="Focus Plan Achieve - Syllabus 3D Mastery"
-            className="w-full h-full object-cover object-center scale-[1.1] xs:scale-105 sm:scale-100 transform transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover object-[center_48%] transform transition-transform duration-700 group-hover:scale-[1.02]"
             loading="eager"
             decoding="async"
             width={1200}
             height={514}
           />
           {/* Subtle gradient vignette to blend seamlessly */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
           
           {/* Bottom Overlay Info Pills */}
           <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-4 sm:right-4 flex items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
