@@ -18,6 +18,9 @@ import { haptics } from '../../utils/haptics';
 interface AddTopicModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialSubjectId?: string;
+  initialChapterId?: string;
+  defaultMode?: 'single' | 'bulk';
 }
 
 const PALETTE = [
@@ -31,22 +34,28 @@ const PALETTE = [
   '#f97316', // Orange
 ];
 
-export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose }) => {
+export const AddTopicModal: React.FC<AddTopicModalProps> = ({
+  isOpen,
+  onClose,
+  initialSubjectId,
+  initialChapterId,
+  defaultMode = 'single'
+}) => {
   const { currentExam, addMultipleCustomTopicsWithHierarchy } = useSyllabus();
 
-  // Mode: Single Topic vs Bulk Multi-Topic
-  const [creationMode, setCreationMode] = useState<'single' | 'bulk'>('bulk');
+  // Mode: Single Topic vs Bulk Multi-Topic (defaults to single for targeted topic creation)
+  const [creationMode, setCreationMode] = useState<'single' | 'bulk'>(defaultMode);
 
   // Subject state
   const [isNewSubject, setIsNewSubject] = useState(false);
-  const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState(initialSubjectId || '');
   const [newSubjectName, setNewSubjectName] = useState('');
   const [newSubjectColor, setNewSubjectColor] = useState(PALETTE[0]);
   const [newSubjectIcon, setNewSubjectIcon] = useState('BookOpen');
 
   // Chapter state
   const [isNewChapter, setIsNewChapter] = useState(false);
-  const [selectedChapterId, setSelectedChapterId] = useState('');
+  const [selectedChapterId, setSelectedChapterId] = useState(initialChapterId || '');
   const [newChapterName, setNewChapterName] = useState('');
   const [newChapterDesc, setNewChapterDesc] = useState('');
 
@@ -62,32 +71,63 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
 
   const hasNoSubjects = !currentExam || currentExam.subjects.length === 0;
 
+  // Initialize or update selection whenever modal opens or target props change
   useEffect(() => {
-    if (currentExam && currentExam.subjects.length > 0) {
-      const firstSub = currentExam.subjects[0];
-      setSelectedSubjectId(firstSub.id);
-      if (firstSub.chapters.length > 0) {
-        setSelectedChapterId(firstSub.chapters[0].id);
-      }
-    } else if (currentExam && currentExam.subjects.length === 0) {
-      setIsNewSubject(true);
-      setIsNewChapter(true);
-    }
-  }, [currentExam]);
+    if (!isOpen || !currentExam) return;
 
-  const subjectMatch = currentExam?.subjects.find(s => s.id === selectedSubjectId);
-
-  useEffect(() => {
     if (hasNoSubjects) {
       setIsNewSubject(true);
       setIsNewChapter(true);
-    } else if (subjectMatch && subjectMatch.chapters.length > 0) {
-      setSelectedChapterId(subjectMatch.chapters[0].id);
+      setSelectedSubjectId('');
+      setSelectedChapterId('');
+      return;
+    }
+
+    // Determine target subject
+    let targetSub = initialSubjectId
+      ? currentExam.subjects.find(s => s.id === initialSubjectId)
+      : null;
+    if (!targetSub) {
+      targetSub = currentExam.subjects.find(s => s.id === selectedSubjectId) || currentExam.subjects[0];
+    }
+
+    if (targetSub) {
+      setSelectedSubjectId(targetSub.id);
+      setIsNewSubject(false);
+
+      // Determine target chapter
+      let targetCh = initialChapterId
+        ? targetSub.chapters.find(c => c.id === initialChapterId)
+        : null;
+      if (!targetCh && targetSub.chapters.length > 0) {
+        targetCh = targetSub.chapters[0];
+      }
+
+      if (targetCh) {
+        setSelectedChapterId(targetCh.id);
+        setIsNewChapter(false);
+      } else {
+        setSelectedChapterId('');
+        setIsNewChapter(true);
+      }
+    }
+  }, [isOpen, initialSubjectId, initialChapterId, currentExam]);
+
+  const subjectMatch = currentExam?.subjects.find(s => s.id === selectedSubjectId);
+  const chapterMatch = subjectMatch?.chapters.find(c => c.id === selectedChapterId);
+
+  const handleSelectSubject = (subId: string) => {
+    setSelectedSubjectId(subId);
+    setIsNewSubject(false);
+    const sub = currentExam?.subjects.find(s => s.id === subId);
+    if (sub && sub.chapters.length > 0) {
+      setSelectedChapterId(sub.chapters[0].id);
       setIsNewChapter(false);
-    } else if (isNewSubject) {
+    } else {
+      setSelectedChapterId('');
       setIsNewChapter(true);
     }
-  }, [selectedSubjectId, subjectMatch, isNewSubject, hasNoSubjects]);
+  };
 
   if (!isOpen || !currentExam) return null;
 
@@ -237,8 +277,15 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
           
           {/* CURRICULUM PLACEMENT (Bento Section for Subject & Chapter) */}
           <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-[#171823] border border-slate-200/70 dark:border-[#252636] space-y-3.5">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-              <span>Target Location</span>
+            <div className="flex items-center justify-between">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                <span>Target Location</span>
+              </div>
+              {!isNewSubject && !isNewChapter && subjectMatch && chapterMatch && (
+                <span className="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                  {chapterMatch.topics.length} topics currently
+                </span>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -256,7 +303,19 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setIsNewSubject(p => !p)}
+                      onClick={() => {
+                        setIsNewSubject(p => {
+                          const next = !p;
+                          if (next) {
+                            setIsNewChapter(true);
+                            setSelectedChapterId('');
+                          } else if (subjectMatch && subjectMatch.chapters.length > 0) {
+                            setSelectedChapterId(subjectMatch.chapters[0].id);
+                            setIsNewChapter(false);
+                          }
+                          return next;
+                        });
+                      }}
                       className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
                     >
                       {isNewSubject ? 'Existing' : '+ New Subject'}
@@ -293,7 +352,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   <div className="relative">
                     <select
                       value={selectedSubjectId}
-                      onChange={(e) => setSelectedSubjectId(e.target.value)}
+                      onChange={(e) => handleSelectSubject(e.target.value)}
                       className="w-full appearance-none pl-3.5 pr-9 py-2.5 rounded-xl bg-white dark:bg-[#101117] border border-slate-200 dark:border-[#2A2B3D] text-xs sm:text-[13px] font-medium text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 cursor-pointer shadow-2xs truncate"
                     >
                       {currentExam.subjects.map((sub) => (
@@ -317,7 +376,17 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   {!isNewSubject && !hasNoSubjects && (
                     <button
                       type="button"
-                      onClick={() => setIsNewChapter(p => !p)}
+                      onClick={() => {
+                        setIsNewChapter(p => {
+                          const next = !p;
+                          if (!next && subjectMatch && subjectMatch.chapters.length > 0) {
+                            setSelectedChapterId(subjectMatch.chapters[0].id);
+                          } else if (next) {
+                            setSelectedChapterId('');
+                          }
+                          return next;
+                        });
+                      }}
                       className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
                     >
                       {isNewChapter ? 'Existing' : '+ New Chapter'}
@@ -325,7 +394,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                   )}
                 </div>
 
-                {isNewChapter || isNewSubject || hasNoSubjects ? (
+                {isNewChapter || isNewSubject || hasNoSubjects || !subjectMatch || subjectMatch.chapters.length === 0 ? (
                   <input
                     type="text"
                     value={newChapterName}
@@ -341,7 +410,7 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                       onChange={(e) => setSelectedChapterId(e.target.value)}
                       className="w-full appearance-none pl-3.5 pr-9 py-2.5 rounded-xl bg-white dark:bg-[#101117] border border-slate-200 dark:border-[#2A2B3D] text-xs sm:text-[13px] font-medium text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 cursor-pointer shadow-2xs truncate"
                     >
-                      {subjectMatch?.chapters.map((ch) => (
+                      {subjectMatch.chapters.map((ch) => (
                         <option key={ch.id} value={ch.id}>
                           {ch.name} ({ch.topics.length} topics)
                         </option>
@@ -352,6 +421,16 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({ isOpen, onClose })
                 )}
               </div>
             </div>
+
+            {/* Active Destination Breadcrumb */}
+            {!isNewSubject && !isNewChapter && subjectMatch && chapterMatch && (
+              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-50/80 dark:bg-indigo-500/10 border border-indigo-200/70 dark:border-indigo-500/20 text-xs font-semibold text-indigo-900 dark:text-indigo-300">
+                <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3] shrink-0" />
+                <span className="truncate">
+                  Adding to: <strong className="text-slate-900 dark:text-white">{subjectMatch.name}</strong> &rsaquo; <strong className="text-slate-900 dark:text-white">{chapterMatch.name}</strong>
+                </span>
+              </div>
+            )}
           </div>
 
           {/* MODE SEGMENTED SELECTOR */}

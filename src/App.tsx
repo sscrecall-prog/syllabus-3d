@@ -90,6 +90,7 @@ export const App: React.FC = () => {
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
+  const [addTopicTarget, setAddTopicTarget] = useState<{ subjectId?: string; chapterId?: string } | null>(null);
   const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isProfileSwitcherOpen, setIsProfileSwitcherOpen] = useState(false);
@@ -100,6 +101,17 @@ export const App: React.FC = () => {
   const [focusTopicId, setFocusTopicId] = useState<string | undefined>(undefined);
 
   const { toggleTheme } = useTheme();
+
+  const handleOpenAddTopic = useCallback((subjectId?: string, chapterId?: string) => {
+    setAddTopicTarget(subjectId ? { subjectId, chapterId } : null);
+    setIsAddTopicOpen(true);
+    window.history.pushState({ modal: 'add_topic' }, '');
+  }, []);
+
+  const handleCloseAddTopic = useCallback(() => {
+    setIsAddTopicOpen(false);
+    setAddTopicTarget(null);
+  }, []);
 
   const showShortcutToast = useCallback((msg: string) => {
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
@@ -167,7 +179,7 @@ export const App: React.FC = () => {
       return;
     }
     if (isAddTopicOpen) {
-      setIsAddTopicOpen(false);
+      handleCloseAddTopic();
       return;
     }
     if (isRevisionSessionOpen) {
@@ -212,7 +224,8 @@ export const App: React.FC = () => {
     isFullModalOpen,
     currentView,
     viewHistory,
-    closeFullModal
+    closeFullModal,
+    handleCloseAddTopic
   ]);
 
   // Browser History / Android Back Button Support
@@ -227,7 +240,7 @@ export const App: React.FC = () => {
         return;
       }
       if (isAddTopicOpen) {
-        setIsAddTopicOpen(false);
+        handleCloseAddTopic();
         return;
       }
       if (isRevisionSessionOpen) {
@@ -622,10 +635,7 @@ export const App: React.FC = () => {
       <Sidebar
         activeView={currentView}
         onSelectView={handleNavigate}
-        onOpenAddTopic={() => {
-          setIsAddTopicOpen(true);
-          window.history.pushState({ modal: 'add_topic' }, '');
-        }}
+        onOpenAddTopic={() => handleOpenAddTopic()}
         onOpenFocus={() => handleLaunchFocus(undefined)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenProfileSwitcher={() => setIsProfileSwitcherOpen(true)}
@@ -644,8 +654,7 @@ export const App: React.FC = () => {
         }}
         onOpenAddTopic={() => {
           setIsMobileDrawerOpen(false);
-          setIsAddTopicOpen(true);
-          window.history.pushState({ modal: 'add_topic' }, '');
+          handleOpenAddTopic();
         }}
         onOpenFocus={() => {
           setIsMobileDrawerOpen(false);
@@ -699,10 +708,7 @@ export const App: React.FC = () => {
                     setIsRevisionSessionOpen(true);
                     window.history.pushState({ modal: 'revision' }, '');
                   }}
-                  onOpenAddTopic={() => {
-                    setIsAddTopicOpen(true);
-                    window.history.pushState({ modal: 'add_topic' }, '');
-                  }}
+                  onOpenAddTopic={() => handleOpenAddTopic()}
                   onOpenFocus={() => handleLaunchFocus(undefined)}
                 />
               </ViewErrorBoundary>
@@ -729,10 +735,7 @@ export const App: React.FC = () => {
                 <ViewErrorBoundary sectionName="Syllabus Browser" showHomeButton onNavigateHome={() => handleNavigate('overview')}>
                   <SyllabusView
                     onOpenTopicDrawer={handleOpenTopicDrawer}
-                    onOpenAddTopic={() => {
-                      setIsAddTopicOpen(true);
-                      window.history.pushState({ modal: 'add_topic' }, '');
-                    }}
+                    onOpenAddTopic={handleOpenAddTopic}
                     initialSubjectId={targetSubjectId}
                     onSelectSubjectId={setTargetSubjectId}
                     onBackToDashboard={() => handleNavigate('overview')}
@@ -817,10 +820,7 @@ export const App: React.FC = () => {
       <MobileNav
         activeView={currentView}
         onSelectView={handleNavigate}
-        onOpenAddTopic={() => {
-          setIsAddTopicOpen(true);
-          window.history.pushState({ modal: 'add_topic' }, '');
-        }}
+        onOpenAddTopic={() => handleOpenAddTopic()}
         onOpenFocus={() => handleLaunchFocus(undefined)}
         onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
       />
@@ -870,10 +870,12 @@ export const App: React.FC = () => {
         )}
 
         {isAddTopicOpen && (
-          <ViewErrorBoundary sectionName="Add Topic Modal" onReset={() => setIsAddTopicOpen(false)}>
+          <ViewErrorBoundary sectionName="Add Topic Modal" onReset={handleCloseAddTopic}>
             <AddTopicModal
               isOpen={isAddTopicOpen}
-              onClose={() => setIsAddTopicOpen(false)}
+              onClose={handleCloseAddTopic}
+              initialSubjectId={addTopicTarget?.subjectId}
+              initialChapterId={addTopicTarget?.chapterId}
             />
           </ViewErrorBoundary>
         )}
@@ -900,7 +902,7 @@ export const App: React.FC = () => {
               }}
               onOpenAddTopic={() => {
                 setIsShortcutsOpen(false);
-                setTimeout(() => setIsAddTopicOpen(true), 50);
+                setTimeout(() => handleOpenAddTopic(), 50);
               }}
               onOpenFocus={() => {
                 setIsShortcutsOpen(false);

@@ -1250,7 +1250,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const newT: Topic = {
       id: 'top_' + Math.random().toString(36).substr(2, 9),
       name: topicData.name,
-      subtopics: topicData.subtopics || [],
+      subtopics: topicData.subtopics || ['Core Concepts'],
       status: 'not_started' as TopicStatus,
       completionPercentage: 0,
       studyTimeMinutes: 0,
@@ -1265,22 +1265,28 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       mistakes: []
     };
 
-    setExams(prevExams => prevExams.map(exam => ({
-      ...exam,
-      subjects: exam.subjects.map(subj => {
-        if (subj.id !== subjectId) return subj;
+    setExams(prevExams => {
+      const targetExamId = currentExam?.id || profile.selectedExamId || (prevExams[0]?.id);
+      return prevExams.map(exam => {
+        if (targetExamId && exam.id !== targetExamId) return exam;
         return {
-          ...subj,
-          chapters: subj.chapters.map(chap => {
-            if (chap.id !== chapterId) return chap;
+          ...exam,
+          subjects: exam.subjects.map(subj => {
+            if (subj.id !== subjectId) return subj;
             return {
-              ...chap,
-              topics: [...chap.topics, newT]
+              ...subj,
+              chapters: subj.chapters.map(chap => {
+                if (chap.id !== chapterId) return chap;
+                return {
+                  ...chap,
+                  topics: [...chap.topics, newT]
+                };
+              })
             };
           })
         };
-      })
-    })));
+      });
+    });
   };
 
   const addCustomTopicWithHierarchy = (payload: CreateCustomTopicPayload) => {
@@ -1324,66 +1330,73 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       mistakes: []
     }));
 
-    setExams(prevExams => prevExams.map(exam => {
-      if (exam.id !== profile.selectedExamId) return exam;
+    setExams(prevExams => {
+      const targetExamId = currentExam?.id || profile.selectedExamId || (prevExams[0]?.id);
 
-      let subjects = [...exam.subjects];
+      return prevExams.map(exam => {
+        if (targetExamId && exam.id !== targetExamId) return exam;
 
-      // 1. Determine Subject
-      let targetSubjectId = payload.subjectId;
-      if (payload.isNewSubject || !targetSubjectId) {
-        const newSubId = 'sub_' + Math.random().toString(36).substr(2, 9);
-        targetSubjectId = newSubId;
-        const newSubject: Subject = {
-          id: newSubId,
-          name: payload.newSubjectName?.trim() || 'Custom Subject',
-          icon: payload.newSubjectIcon || 'BookOpen',
-          color: payload.newSubjectColor || '#D4AF37',
-          totalChapters: 1,
-          chapters: []
-        };
-        subjects.push(newSubject);
-      }
+        let subjects = [...exam.subjects];
 
-      // 2. Determine Chapter inside Subject
-      subjects = subjects.map(subj => {
-        if (subj.id !== targetSubjectId) return subj;
+        // 1. Determine Subject
+        let targetSubjectId = payload.subjectId;
+        const subjectExists = subjects.some(s => s.id === targetSubjectId);
 
-        let chapters = [...subj.chapters];
-        let targetChapterId = payload.chapterId;
-
-        if (payload.isNewChapter || !targetChapterId || payload.isNewSubject) {
-          const newChId = 'ch_' + Math.random().toString(36).substr(2, 9);
-          targetChapterId = newChId;
-          const newChapter: Chapter = {
-            id: newChId,
-            name: payload.newChapterName?.trim() || 'General Concepts',
-            description: payload.newChapterDescription?.trim() || 'Custom study unit',
-            topics: newTopicObjects
+        if (payload.isNewSubject || !targetSubjectId || !subjectExists) {
+          const newSubId = 'sub_' + Math.random().toString(36).substr(2, 9);
+          targetSubjectId = newSubId;
+          const newSubject: Subject = {
+            id: newSubId,
+            name: payload.newSubjectName?.trim() || 'Custom Subject',
+            icon: payload.newSubjectIcon || 'BookOpen',
+            color: payload.newSubjectColor || '#D4AF37',
+            totalChapters: 1,
+            chapters: []
           };
-          chapters.push(newChapter);
-        } else {
-          chapters = chapters.map(ch => {
-            if (ch.id !== targetChapterId) return ch;
-            return {
-              ...ch,
-              topics: [...ch.topics, ...newTopicObjects]
-            };
-          });
+          subjects.push(newSubject);
         }
 
+        // 2. Determine Chapter inside Subject
+        subjects = subjects.map(subj => {
+          if (subj.id !== targetSubjectId) return subj;
+
+          let chapters = [...subj.chapters];
+          let targetChapterId = payload.chapterId;
+          const chapterExists = chapters.some(ch => ch.id === targetChapterId);
+
+          if (payload.isNewChapter || !targetChapterId || payload.isNewSubject || !chapterExists) {
+            const newChId = 'ch_' + Math.random().toString(36).substr(2, 9);
+            targetChapterId = newChId;
+            const newChapter: Chapter = {
+              id: newChId,
+              name: payload.newChapterName?.trim() || (chapters.length === 0 ? 'General Concepts' : `Chapter ${chapters.length + 1}`),
+              description: payload.newChapterDescription?.trim() || 'Custom study unit',
+              topics: newTopicObjects
+            };
+            chapters.push(newChapter);
+          } else {
+            chapters = chapters.map(ch => {
+              if (ch.id !== targetChapterId) return ch;
+              return {
+                ...ch,
+                topics: [...ch.topics, ...newTopicObjects]
+              };
+            });
+          }
+
+          return {
+            ...subj,
+            totalChapters: chapters.length,
+            chapters
+          };
+        });
+
         return {
-          ...subj,
-          totalChapters: chapters.length,
-          chapters
+          ...exam,
+          subjects
         };
       });
-
-      return {
-        ...exam,
-        subjects
-      };
-    }));
+    });
 
     soundManager.playCompleteChime();
     confetti({ particleCount: 45, spread: 60, origin: { y: 0.8 } });
@@ -1409,13 +1422,16 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       chapters: [newChapter]
     };
 
-    setExams(prev => prev.map(exam => {
-      if (exam.id !== profile.selectedExamId) return exam;
-      return {
-        ...exam,
-        subjects: [...exam.subjects, newSubject]
-      };
-    }));
+    setExams(prev => {
+      const targetExamId = currentExam?.id || profile.selectedExamId || (prev[0]?.id);
+      return prev.map(exam => {
+        if (targetExamId && exam.id !== targetExamId) return exam;
+        return {
+          ...exam,
+          subjects: [...exam.subjects, newSubject]
+        };
+      });
+    });
 
     soundManager.playCompleteChime();
   };
@@ -1460,21 +1476,24 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       topics: []
     };
 
-    setExams(prev => prev.map(exam => {
-      if (exam.id !== profile.selectedExamId) return exam;
-      return {
-        ...exam,
-        subjects: exam.subjects.map(subj => {
-          if (subj.id !== subjectId) return subj;
-          const updated = [...subj.chapters, newChapter];
-          return {
-            ...subj,
-            totalChapters: updated.length,
-            chapters: updated
-          };
-        })
-      };
-    }));
+    setExams(prev => {
+      const targetExamId = currentExam?.id || profile.selectedExamId || (prev[0]?.id);
+      return prev.map(exam => {
+        if (targetExamId && exam.id !== targetExamId) return exam;
+        return {
+          ...exam,
+          subjects: exam.subjects.map(subj => {
+            if (subj.id !== subjectId) return subj;
+            const updated = [...subj.chapters, newChapter];
+            return {
+              ...subj,
+              totalChapters: updated.length,
+              chapters: updated
+            };
+          })
+        };
+      });
+    });
 
     soundManager.playCompleteChime();
   };

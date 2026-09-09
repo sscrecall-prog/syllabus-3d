@@ -35,7 +35,7 @@ import { calculatePacingForecast } from '../../utils/pacingCalculator';
 
 interface SyllabusViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
-  onOpenAddTopic: () => void;
+  onOpenAddTopic: (subjectId?: string, chapterId?: string) => void;
   onOpenFocus?: (topicId?: string) => void;
   initialSubjectId?: string;
   onSelectSubjectId?: (id: string) => void;
@@ -593,7 +593,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               </div>
 
               <button
-                onClick={onOpenAddTopic}
+                onClick={() => onOpenAddTopic(activeSubject.id, activeChapter.id)}
                 className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#0F172A] dark:bg-white hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-black text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-[0.97] tap-bounce shrink-0"
               >
                 <Plus className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[3]" />
@@ -697,7 +697,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     </button>
                   ) : (
                     <button
-                      onClick={onOpenAddTopic}
+                      onClick={() => onOpenAddTopic(activeSubject.id, activeChapter.id)}
                       className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#2563EB] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-[0.97] shadow-2xs tap-bounce"
                     >
                       <Plus className="w-4 h-4 stroke-[3]" />
@@ -990,8 +990,19 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-slate-50 dark:bg-[#1A1B29] border border-slate-200/70 dark:border-white/[0.06] text-[11px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
-                <span>{filteredChapters.length} of {activeSubject.chapters.length} Chapters</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A1B29] border border-slate-200/70 dark:border-white/[0.06] text-[11px] sm:text-xs font-mono font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+                  <span>{filteredChapters.length} of {activeSubject.chapters.length} Chapters</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onOpenAddTopic(activeSubject.id)}
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-[#0F172A] dark:bg-white hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] text-white dark:text-black text-[11px] sm:text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-[0.97] tap-bounce shrink-0"
+                  title={`Add new topic to ${activeSubject.name}`}
+                >
+                  <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                  <span>Add Topic</span>
+                </button>
               </div>
             </div>
 
@@ -1144,6 +1155,20 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                           <span>{weakInChapter} Weak</span>
                         </span>
                       )}
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          soundManager.playClick();
+                          onOpenAddTopic(activeSubject.id, chapter.id);
+                        }}
+                        className="flex items-center gap-1 bg-indigo-50/80 dark:bg-indigo-500/15 hover:bg-indigo-100 dark:hover:bg-indigo-500/25 px-2 py-0.5 rounded-md sm:rounded-lg border border-indigo-200/70 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-[10px] sm:text-[11px] font-mono font-bold shrink-0 whitespace-nowrap cursor-pointer transition-colors tap-bounce"
+                        title={`Add new topic directly to ${chapter.name}`}
+                      >
+                        <Plus className="w-3 h-3 stroke-[3]" />
+                        <span>Add Topic</span>
+                      </button>
                     </div>
 
                     {/* Sleek Integrated Progress Track */}
