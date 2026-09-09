@@ -141,7 +141,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
         color: '#10B981',
         label: 'Mastered',
         icon: CheckCircle2,
-        badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+        badgeClass: 'chip-completed bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30 hover:text-white'
       };
     }
     if (status === 'in_progress') {
@@ -149,7 +149,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
         color: '#F59E0B',
         label: 'In Progress',
         icon: Zap,
-        badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+        badgeClass: 'chip-in_progress bg-amber-500/20 text-amber-200 border-amber-500/40 hover:bg-amber-500/30 hover:text-white'
       };
     }
     if (status === 'revision_due') {
@@ -157,7 +157,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
         color: '#A855F7',
         label: 'Revise Due',
         icon: Clock,
-        badgeClass: 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+        badgeClass: 'chip-revision_due bg-purple-500/20 text-purple-200 border-purple-500/40 hover:bg-purple-500/30 hover:text-white'
       };
     }
     if (status === 'weak' || isWeak) {
@@ -165,14 +165,14 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
         color: '#F43F5E',
         label: 'Weak Focus',
         icon: AlertTriangle,
-        badgeClass: 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+        badgeClass: 'chip-weak bg-rose-500/20 text-rose-200 border-rose-500/40 hover:bg-rose-500/30 hover:text-white'
       };
     }
     return {
-      color: '#64748B',
+      color: '#94A3B8',
       label: 'Not Started',
       icon: Circle,
-      badgeClass: 'bg-slate-800/80 text-slate-300 border-slate-700/80'
+      badgeClass: 'chip-not_started bg-slate-800/90 text-slate-100 border-slate-600/60 hover:bg-slate-700 hover:text-white'
     };
   };
 
@@ -385,7 +385,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
       </div>
 
       {/* 3. MAIN CONSTELLATION CANVAS CONTAINER */}
-      <div className="relative w-full min-h-[480px] sm:min-h-[680px] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#080B14] via-[#0D1120] to-[#080B14] border border-[#1E2640] shadow-2xl overflow-hidden flex flex-col items-center justify-start p-2.5 sm:p-6">
+      <div className="mindmap-canvas-container relative w-full min-h-[480px] sm:min-h-[680px] rounded-2xl sm:rounded-3xl bg-gradient-to-b from-[#080B14] via-[#0D1120] to-[#080B14] border border-[#1E2640] shadow-2xl overflow-hidden flex flex-col items-center justify-start p-2.5 sm:p-6">
         
         {/* Futuristic Cosmic Grid & Ambient Glows */}
         <div className="absolute inset-0 bg-[radial-gradient(#253352_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
@@ -454,7 +454,7 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                       TARGET CORE
                     </span>
 
-                    <h3 className="text-[11px] sm:text-[14px] font-black text-white leading-tight mt-0.5 sm:mt-1 uppercase tracking-tight line-clamp-1">
+                    <h3 className="mindmap-core-title text-[11px] sm:text-[14px] font-black text-white leading-tight mt-0.5 sm:mt-1 uppercase tracking-tight line-clamp-1">
                       {currentExam.name}
                     </h3>
 
@@ -521,10 +521,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                           </div>
 
                           <div className="min-w-0">
-                            <h4 className="text-xs sm:text-base font-black text-white tracking-tight uppercase truncate group-hover:text-cyan-300 transition-colors">
+                            <h4 className="mindmap-subj-title text-xs sm:text-base font-black text-white tracking-tight uppercase truncate group-hover:text-cyan-300 transition-colors">
                               {subj.name}
                             </h4>
-                            <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
+                            <span className="mindmap-meta-text text-[9px] sm:text-[10px] font-mono text-slate-300">
                               {subj.chapters.length} {subj.chapters.length === 1 ? 'Chapter' : 'Chapters'} · {totalInSubj} Concepts
                             </span>
                           </div>
@@ -551,10 +551,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                             <div key={chap.id} className="space-y-1.5 sm:space-y-2">
                               
                               {/* Chapter Branch Tag */}
-                              <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+                              <div className="mindmap-chap-header flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider">
                                 <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400 shrink-0" />
-                                <span className="truncate">{chap.name}</span>
-                                <span className="text-slate-600 text-[9px] sm:text-[10px]">({matchingTopics.length})</span>
+                                <span className="mindmap-chap-name truncate text-slate-200">{chap.name}</span>
+                                <span className="mindmap-chap-count text-slate-400 text-[9px] sm:text-[10px]">({matchingTopics.length})</span>
                               </div>
 
                               {/* Interactive Concept Node Chips */}
@@ -573,14 +573,14 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                                       }}
                                       onMouseEnter={() => setHoveredNode({ topic: top, subjectName: subj.name, chapterName: chap.name })}
                                       onMouseLeave={() => setHoveredNode(null)}
-                                      className={`group/chip flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-medium transition-all duration-150 cursor-pointer active:scale-95 border ${node.badgeClass} ${
+                                      className={`group/chip flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-150 cursor-pointer active:scale-95 border ${node.badgeClass} ${
                                         isQueryMatch
-                                          ? 'ring-2 ring-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)] bg-cyan-950/80 text-white'
-                                          : 'hover:bg-white/10 hover:text-white'
+                                          ? 'is-query-match ring-2 ring-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)] bg-cyan-950/80 text-white'
+                                          : ''
                                       }`}
                                     >
                                       <NodeIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 stroke-[2.2]" style={{ color: node.color }} />
-                                      <span className="truncate max-w-[120px] xs:max-w-[140px] sm:max-w-[160px]">{top.name}</span>
+                                      <span className="truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">{top.name}</span>
                                     </button>
                                   );
                                 })}
@@ -622,10 +622,10 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                           <SubjIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
                         </div>
                         <div>
-                          <h3 className="text-xs sm:text-base font-black text-white tracking-tight uppercase">
+                          <h3 className="mindmap-subj-title text-xs sm:text-base font-black text-white tracking-tight uppercase">
                             {subj.name}
                           </h3>
-                          <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
+                          <span className="mindmap-meta-text text-[9px] sm:text-[10px] font-mono text-slate-300">
                             {subj.chapters.length} Chapters · {totalInSubj} Topics
                           </span>
                         </div>
@@ -652,12 +652,12 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                             key={chap.id}
                             className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#080B16]/80 border border-white/5 space-y-1.5 sm:space-y-2"
                           >
-                            <div className="flex items-center justify-between text-[11px] sm:text-xs font-bold text-slate-300 font-mono">
-                              <span className="flex items-center gap-1 truncate uppercase">
+                            <div className="mindmap-chap-header flex items-center justify-between text-[11px] sm:text-xs font-bold text-slate-200 font-mono">
+                              <span className="mindmap-chap-name flex items-center gap-1 truncate uppercase">
                                 <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400 shrink-0" />
                                 {chap.name}
                               </span>
-                              <span className="text-[9px] sm:text-[10px] text-slate-500">
+                              <span className="mindmap-chap-count text-[9px] sm:text-[10px] text-slate-400">
                                 {matchingTopics.length}
                               </span>
                             </div>
@@ -674,13 +674,13 @@ export const MindMapView: React.FC<MindMapViewProps> = ({ onOpenTopicDrawer }) =
                                       soundManager.playClick();
                                       onOpenTopicDrawer(top, subj.name, chap.name);
                                     }}
-                                    className="flex items-center justify-between p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 text-[11px] sm:text-xs text-slate-200 cursor-pointer transition-colors group"
+                                    className="mindmap-tree-item flex items-center justify-between p-1.5 sm:p-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs cursor-pointer transition-colors group"
                                   >
                                     <div className="flex items-center gap-1.5 sm:gap-2 truncate pr-2">
                                       <NodeIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" style={{ color: node.color }} />
-                                      <span className="truncate group-hover:text-white">{top.name}</span>
+                                      <span className="truncate group-hover:text-white font-medium">{top.name}</span>
                                     </div>
-                                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono text-slate-400 shrink-0">
+                                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono text-slate-300 shrink-0">
                                       <span className="px-1 rounded bg-black/40 text-slate-300">{top.weightage || 0}m</span>
                                     </div>
                                   </div>

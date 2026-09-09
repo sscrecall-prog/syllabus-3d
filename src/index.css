@@ -360,7 +360,6 @@ html:not(.dark):not(.sepia):not(.luxury) [class*="bg-[#F8FAFC]"] {
 
 /* Clean Ivory Card Surfaces on Warm Canvas */
 html:not(.dark):not(.sepia):not(.luxury) .bg-white,
-html:not(.dark):not(.sepia):not(.luxury) [class*="bg-white"],
 html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#FAF9F5\],
 html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#FAF8F5\],
 html:not(.dark):not(.sepia):not(.luxury) .bg-\[\#F4F6EE\],
@@ -1172,6 +1171,162 @@ html:not(.dark) ::-webkit-scrollbar-thumb {
 }
 html:not(.dark) ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.6);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   🌌 MINDMAP CONSTELLATION CANVAS - HIGH-CONTRAST TEXT & NODE VISIBILITY
+   Guarantees Subject titles, chapter tags, node text, and metadata
+   are crisp, legible, and vibrant regardless of active theme.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Headings: Subject Names, Exam Names, HUD Titles - Pure White & Crisp */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container h1,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container h2,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container h3,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container h4,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container h5,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container h6,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-subj-title,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-core-title,
+.mindmap-canvas-container h1,
+.mindmap-canvas-container h2,
+.mindmap-canvas-container h3,
+.mindmap-canvas-container h4,
+.mindmap-canvas-container .mindmap-subj-title,
+.mindmap-canvas-container .mindmap-core-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Meta info: Chapter count, Concept count */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-meta-text,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-subj-meta,
+.mindmap-canvas-container .mindmap-meta-text,
+.mindmap-canvas-container .mindmap-subj-meta {
+  color: #CBD5E1 !important;
+  font-weight: 600 !important;
+}
+
+/* Chapter Headers & Branch Tags */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-chap-header,
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-chap-name,
+.mindmap-canvas-container .mindmap-chap-header,
+.mindmap-canvas-container .mindmap-chap-name {
+  color: #E2E8F0 !important;
+  font-weight: 700 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-chap-count,
+.mindmap-canvas-container .mindmap-chap-count {
+  color: #94A3B8 !important;
+  font-weight: 600 !important;
+}
+
+/* Topic Node Chips in Constellation Web Mode */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .group\/chip,
+.mindmap-canvas-container .group\/chip {
+  background-color: rgba(15, 23, 42, 0.92) !important;
+  border-width: 1px !important;
+  font-weight: 600 !important;
+  backdrop-filter: blur(8px);
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .group\/chip span,
+.mindmap-canvas-container .group\/chip span {
+  font-weight: 600 !important;
+}
+
+/* Default / Not Started Chips */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-not_started,
+.mindmap-canvas-container .chip-not_started {
+  background-color: rgba(30, 41, 59, 0.95) !important;
+  border-color: rgba(100, 116, 139, 0.6) !important;
+  color: #F1F5F9 !important;
+}
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-not_started:hover,
+.mindmap-canvas-container .chip-not_started:hover {
+  background-color: rgba(51, 65, 85, 1) !important;
+  border-color: rgba(56, 189, 248, 0.8) !important;
+  color: #FFFFFF !important;
+}
+
+/* Mastered Chips */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-completed,
+.mindmap-canvas-container .chip-completed {
+  background-color: rgba(6, 78, 59, 0.65) !important;
+  border-color: rgba(16, 185, 129, 0.6) !important;
+  color: #A7F3D0 !important;
+}
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-completed:hover,
+.mindmap-canvas-container .chip-completed:hover {
+  background-color: rgba(6, 95, 70, 0.9) !important;
+  border-color: #34D399 !important;
+  color: #FFFFFF !important;
+}
+
+/* In Progress Chips */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-in_progress,
+.mindmap-canvas-container .chip-in_progress {
+  background-color: rgba(120, 53, 15, 0.65) !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  color: #FDE68A !important;
+}
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-in_progress:hover,
+.mindmap-canvas-container .chip-in_progress:hover {
+  background-color: rgba(146, 64, 14, 0.9) !important;
+  border-color: #FBBF24 !important;
+  color: #FFFFFF !important;
+}
+
+/* Revision Due Chips */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-revision_due,
+.mindmap-canvas-container .chip-revision_due {
+  background-color: rgba(88, 28, 135, 0.65) !important;
+  border-color: rgba(168, 85, 247, 0.6) !important;
+  color: #E9D5FF !important;
+}
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-revision_due:hover,
+.mindmap-canvas-container .chip-revision_due:hover {
+  background-color: rgba(107, 33, 168, 0.9) !important;
+  border-color: #C084FC !important;
+  color: #FFFFFF !important;
+}
+
+/* Weak Focus Chips */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-weak,
+.mindmap-canvas-container .chip-weak {
+  background-color: rgba(136, 19, 55, 0.65) !important;
+  border-color: rgba(244, 63, 94, 0.6) !important;
+  color: #FECDD3 !important;
+}
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .chip-weak:hover,
+.mindmap-canvas-container .chip-weak:hover {
+  background-color: rgba(159, 18, 57, 0.9) !important;
+  border-color: #FB7185 !important;
+  color: #FFFFFF !important;
+}
+
+/* Search Query Matches */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .group\/chip.is-query-match,
+.mindmap-canvas-container .group\/chip.is-query-match {
+  background-color: rgba(8, 145, 178, 0.85) !important;
+  border-color: #22D3EE !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.6) !important;
+}
+
+/* Hierarchy Tree View Topic Items */
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-tree-item,
+.mindmap-canvas-container .mindmap-tree-item {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #F1F5F9 !important;
+}
+html:not(.dark):not(.sepia):not(.luxury) .mindmap-canvas-container .mindmap-tree-item:hover,
+.mindmap-canvas-container .mindmap-tree-item:hover {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  color: #FFFFFF !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
