@@ -80,11 +80,11 @@ export const Header: React.FC<HeaderProps> = ({
   const examDisplayName = hasTrailingYear ? rawExamName.replace(/\s+20\d{2}$/, '') : rawExamName;
 
   return (
-    <header className="sticky top-0 z-30 bg-[#FAEED9]/90 dark:bg-[#090C15]/85 backdrop-blur-2xl border-b border-[#E6D3B1] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(56,55,13,0.04),0_4px_12px_-2px_rgba(56,55,13,0.03)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.6)] px-2.5 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors print:hidden">
-      <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full min-w-0">
+    <header className="sticky top-0 z-30 bg-[#FAEED9]/90 dark:bg-[#090C15]/85 backdrop-blur-2xl border-b border-[#E6D3B1] dark:border-white/[0.08] shadow-[0_1px_3px_rgba(56,55,13,0.04),0_4px_12px_-2px_rgba(56,55,13,0.03)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.6)] px-2 sm:px-6 py-2 sm:py-2.5 pt-safe pl-safe pr-safe transition-colors print:hidden">
+      <div className="flex items-center justify-between gap-1 sm:gap-3 w-full min-w-0">
         
         {/* Left Side: Mobile Menu Button, Desktop Gemini Collapse Toggle, Back Nav & Exam Selector */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1 sm:flex-initial">
           {/* Mobile Drawer Button (< md) */}
           <button
             onClick={() => {
@@ -136,15 +136,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative min-w-0">
             <button
               onClick={() => setIsExamMenuOpen(prev => !prev)}
-              className="flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-slate-900 dark:text-[#F5F5F7] shadow-subtle-depth shrink-0 active:scale-95 group"
+              className="flex items-center gap-1 sm:gap-2 h-9 px-1.5 sm:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all cursor-pointer text-xs sm:text-[13px] font-bold text-slate-900 dark:text-[#F5F5F7] shadow-subtle-depth active:scale-95 group min-w-0"
               title={`Switch Exam Target: ${rawExamName} (${targetYear})`}
             >
               <GraduationCap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#2563EB] dark:text-[#7AA2F7] shrink-0 group-hover:scale-110 transition-transform" />
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="truncate max-w-[100px] xs:max-w-[150px] sm:max-w-[220px] font-bold tracking-tight">
+              <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                <span className="truncate max-w-[50px] min-[375px]:max-w-[65px] xs:max-w-[130px] sm:max-w-[220px] font-bold tracking-tight">
                   {examDisplayName}
                 </span>
-                <span className="px-1.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-mono font-black bg-[#EFF6FF] dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#BFDBFE]/60 dark:border-[#7AA2F7]/30 shrink-0 tabular-nums leading-none">
+                <span className="px-1 sm:px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono font-black bg-[#EFF6FF] dark:bg-[#7AA2F7]/15 text-[#2563EB] dark:text-[#7AA2F7] border border-[#BFDBFE]/60 dark:border-[#7AA2F7]/30 shrink-0 tabular-nums leading-none">
                   {targetYear}
                 </span>
               </div>
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
-            className="h-9 p-2 sm:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95"
+            className="h-9 w-9 md:w-auto p-0 md:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center justify-center md:justify-start gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95"
             title="Search Topics (Cmd + K)"
             aria-label="Search topics"
           >
@@ -225,7 +225,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* Streak Indicator */}
-          <div className="h-9 flex items-center gap-1 px-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth shrink-0">
+          <div className="h-9 flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth shrink-0">
             <Flame className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#C49A3A] fill-[#C49A3A] shrink-0" />
             <span className="text-[11px] sm:text-xs tabular-nums font-black text-[#191A17] dark:text-[#F5F5F7] font-mono">
               {profile.currentStreak}d
