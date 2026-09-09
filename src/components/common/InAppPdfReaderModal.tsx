@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowLeft,
   X,
@@ -61,6 +62,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   initialAttachmentId,
   onOpenSplitStudy
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
   const [selectedAttachmentId, setSelectedAttachmentId] = useState<string>(
     initialAttachmentId || (attachments.length > 0 ? attachments[0].id : '')
   );
@@ -73,6 +75,24 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   const [scale, setScale] = useState<number>(1.0);
   const [fitMode, setFitMode] = useState<PdfFitMode>('fit-width');
   const [showZoomDropdown, setShowZoomDropdown] = useState<boolean>(false);
+
+  // Floating HUD auto-dim in fullscreen
+  const [isHudVisible, setIsHudVisible] = useState(true);
+  const hudTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetHudTimer = () => {
+    setIsHudVisible(true);
+    if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
+    hudTimeoutRef.current = setTimeout(() => {
+      setIsHudVisible(false);
+    }, 2500);
+  };
+
+  const handleMouseMove = () => {
+    if (isFullscreen) {
+      resetHudTimer();
+    }
+  };
 
   // Highlighter State
   const [isHighlightMode, setIsHighlightMode] = useState<boolean>(false);
@@ -150,14 +170,53 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
     };
   }, [isOpen, selectedAttachmentId, attachments]);
 
-  // Keyboard shortcut listener (ESC to go back, H to toggle highlighter, Ctrl+Z to undo)
+  // Fullscreen Change Listener to keep isFullscreen state synced
+  useEffect(() => {
+    const handleFsChange = () => {
+      const isFs = Boolean(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+      setIsFullscreen(isFs);
+      if (isFs) {
+        setIsHudVisible(true);
+        resetHudTimer();
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    document.addEventListener('mozfullscreenchange', handleFsChange);
+    document.addEventListener('MSFullscreenChange', handleFsChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+      document.removeEventListener('mozfullscreenchange', handleFsChange);
+      document.removeEventListener('MSFullscreenChange', handleFsChange);
+      if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
+    };
+  }, []);
+
+  // Keyboard shortcut listener (ESC to exit fullscreen or close, H to toggle highlighter, Ctrl+Z to undo)
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         soundManager.playClick();
-        onClose();
+        if (isFullscreen || document.fullscreenElement) {
+          if (document.fullscreenElement) {
+            document.exitFullscreen?.().catch(() => {});
+          } else if ((document as any).webkitExitFullscreen) {
+            (document as any).webkitExitFullscreen();
+          }
+          setIsFullscreen(false);
+        } else {
+          onClose();
+        }
       } else if (e.key === 'h' || e.key === 'H') {
         // Toggle highlight mode if not focusing an input
         if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
@@ -172,7 +231,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, highlights, selectedAttachmentId]);
+  }, [isOpen, onClose, isFullscreen, highlights, selectedAttachmentId]);
 
   // Highlighter Handlers
   const handleAddHighlight = (newHighlight: PdfHighlight) => {
@@ -210,13 +269,43 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
     }
   };
 
-  // Fullscreen API toggle
+  // Fullscreen API toggle - Targets modalRef directly for pure PDF view
   const toggleFullscreen = () => {
     soundManager.playClick();
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    const el = modalRef.current;
+
+    const isCurrentlyFs = Boolean(
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement
+    );
+
+    if (!isCurrentlyFs && !isFullscreen) {
+      setIsFullscreen(true);
+      setIsHudVisible(true);
+      resetHudTimer();
+      if (el?.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+      } else if ((el as any)?.webkitRequestFullscreen) {
+        try { (el as any).webkitRequestFullscreen(); } catch {}
+      }
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+      setIsFullscreen(false);
+      if (document.fullscreenElement) {
+        document.exitFullscreen?.().catch(() => {});
+      } else if ((document as any)?.webkitExitFullscreen) {
+        try { (document as any).webkitExitFullscreen(); } catch {}
+      }
+    }
+  };
+
+  // Smooth scroll to specific page
+  const scrollToPage = (pageNum: number) => {
+    if (pageNum < 1 || (totalPages > 0 && pageNum > totalPages)) return;
+    soundManager.playClick();
+    const el = modalRef.current?.querySelector<HTMLDivElement>(`[data-page-number="${pageNum}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setCurrentPage(pageNum);
     }
   };
 
@@ -239,242 +328,277 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#16161E] text-[#C0CAF5] animate-fade-in select-none overflow-hidden font-sans">
+  return createPortal(
+    <div
+      ref={modalRef}
+      onMouseMove={handleMouseMove}
+      onClick={e => e.stopPropagation()}
+      onMouseDown={e => e.stopPropagation()}
+      onTouchStart={e => e.stopPropagation()}
+      className={`fixed inset-0 z-[9999] flex flex-col bg-[#16161E] text-[#C0CAF5] animate-fade-in select-none overflow-hidden font-sans ${
+        isFullscreen ? 'w-screen h-screen' : ''
+      }`}
+    >
       
-      {/* 1. SINGLE SLEEK COMPACT TOP HEADER BAR */}
-      <div className="px-3 sm:px-5 py-2 bg-[#1F2335]/95 backdrop-blur-md border-b border-[#292E42] flex items-center justify-between gap-2 shrink-0 z-30 shadow-md">
-        
-        {/* Left: Back Arrow & Document Info */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              onClose();
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#24283B] hover:bg-[#7AA2F7] hover:text-[#1A1B26] text-white text-xs font-bold transition-all border border-[#292E42] hover:border-[#7AA2F7] cursor-pointer shadow-sm active:scale-95 group shrink-0"
-            title="Go back to Topic Notes (Esc)"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="hidden sm:inline">Back</span>
-          </button>
-
-          <div className="min-w-0 flex items-center gap-2">
-            {attachments.length > 1 ? (
-              <div className="relative max-w-[180px] sm:max-w-xs">
-                <select
-                  value={selectedAttachmentId}
-                  onChange={e => {
-                    soundManager.playClick();
-                    setSelectedAttachmentId(e.target.value);
-                  }}
-                  className="w-full pl-2.5 pr-7 py-1 rounded-xl bg-[#24283B] border border-[#292E42] text-xs font-bold text-white focus:outline-none focus:border-[#7AA2F7] appearance-none cursor-pointer truncate"
-                >
-                  {attachments.map(att => (
-                    <option key={att.id} value={att.id}>
-                      📑 {att.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-[#A9B1D6] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            ) : (
-              <div className="truncate flex items-center gap-2">
-                <img src="/pdf_icon_3d.png" alt="PDF" className="w-5 h-5 object-contain shrink-0 drop-shadow-sm" />
-                <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[150px] sm:max-w-sm">
-                  {currentAttachment?.name || topicName}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Center: Live Page Tracker */}
-        {totalPages > 0 && (
-          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#24283B] border border-[#292E42] text-xs font-mono font-bold text-[#A9B1D6]">
-            <span>Page</span>
-            <span className="text-white">{currentPage}</span>
-            <span>/</span>
-            <span className="text-[#7AA2F7]">{totalPages}</span>
-          </div>
-        )}
-
-        {/* Right Action Tools: Highlighter, Chrome Fit Mode, Zoom, Split Study, Download & Close */}
-        <div className="flex items-center gap-1.5 shrink-0">
+      {/* 1. SINGLE SLEEK COMPACT TOP HEADER BAR (HIDDEN IN FULLSCREEN) */}
+      {!isFullscreen && (
+        <div className="px-3 sm:px-5 py-2 bg-[#1F2335]/95 backdrop-blur-md border-b border-[#292E42] flex items-center justify-between gap-2 shrink-0 z-30 shadow-md">
           
-          {/* HIGHLIGHTER MAIN TOGGLE */}
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              setIsHighlightMode(prev => !prev);
-            }}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
-              isHighlightMode
-                ? 'bg-amber-400 text-[#12131A] border-amber-300 font-black shadow-[0_0_18px_rgba(251,191,36,0.5)]'
-                : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
-            }`}
-            title="Toggle PDF Highlighter (Shortcut: H)"
-          >
-            <Highlighter className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
-            <span className="hidden sm:inline">Highlight</span>
-            {highlights.length > 0 && (
-              <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono font-bold ${
-                isHighlightMode ? 'bg-[#12131A] text-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-              }`}>
-                {highlights.length}
-              </span>
-            )}
-          </button>
-
-          {/* CHROME-STYLE FIT TO PAGE / FIT TO WIDTH TOGGLE */}
-          <button
-            type="button"
-            onClick={() => {
-              soundManager.playClick();
-              if (fitMode === 'fit-page') {
-                setFitMode('fit-width');
-              } else {
-                setFitMode('fit-page');
-                setScale(1.0);
-              }
-            }}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
-              fitMode === 'fit-page'
-                ? 'bg-[#7AA2F7] text-[#1A1B26] border-[#7AA2F7] font-black'
-                : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
-            }`}
-            title={fitMode === 'fit-page' ? 'Switch to Fit Width (100% full-width view)' : 'Fit Entire Page to Screen (Chrome style full page view)'}
-          >
-            {fitMode === 'fit-page' ? <Shrink className="w-3.5 h-3.5" /> : <Expand className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{fitMode === 'fit-page' ? 'Fit Page' : 'Fit to Page'}</span>
-          </button>
-
-          {/* Zoom Controls with Presets Dropdown */}
-          <div className="relative flex items-center bg-[#24283B] p-0.5 rounded-xl border border-[#292E42]">
+          {/* Left: Back Arrow & Document Info */}
+          <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
-              onClick={() => {
-                setFitMode('custom');
-                setScale(s => Math.max(s - 0.2, 0.4));
-              }}
-              className="p-1.5 rounded-lg hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white cursor-pointer"
-              title="Zoom Out (-)"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowZoomDropdown(p => !p)}
-              className="px-2 py-0.5 text-[11px] font-mono font-bold text-[#7AA2F7] hover:bg-[#2F354D] rounded-md cursor-pointer flex items-center gap-0.5"
-              title="Zoom Presets"
-            >
-              <span>{Math.round(scale * 100)}%</span>
-              <ChevronDown className="w-2.5 h-2.5 opacity-70" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setFitMode('custom');
-                setScale(s => Math.min(s + 0.2, 3.0));
-              }}
-              className="p-1.5 rounded-lg hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white cursor-pointer"
-              title="Zoom In (+)"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Zoom Presets Menu */}
-            {showZoomDropdown && (
-              <div className="absolute right-0 top-full mt-2 w-36 rounded-xl bg-[#1F2335] border border-[#292E42] shadow-2xl p-1.5 space-y-1 z-50 animate-fade-in">
-                {[
-                  { label: 'Fit to Width (↔)', mode: 'fit-width' as PdfFitMode, scale: 1.0 },
-                  { label: 'Fit to Page (↕)', mode: 'fit-page' as PdfFitMode, scale: 1.0 },
-                  { label: '50%', mode: 'custom' as PdfFitMode, scale: 0.5 },
-                  { label: '75%', mode: 'custom' as PdfFitMode, scale: 0.75 },
-                  { label: '100% (Actual)', mode: 'custom' as PdfFitMode, scale: 1.0 },
-                  { label: '125%', mode: 'custom' as PdfFitMode, scale: 1.25 },
-                  { label: '150%', mode: 'custom' as PdfFitMode, scale: 1.5 },
-                  { label: '200%', mode: 'custom' as PdfFitMode, scale: 2.0 },
-                ].map(opt => (
-                  <button
-                    key={opt.label}
-                    type="button"
-                    onClick={() => {
-                      soundManager.playClick();
-                      setFitMode(opt.mode);
-                      setScale(opt.scale);
-                      setShowZoomDropdown(false);
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#24283B] text-xs font-semibold text-[#A9B1D6] hover:text-white flex items-center justify-between cursor-pointer"
-                  >
-                    <span>{opt.label}</span>
-                    {((opt.mode === 'fit-page' && fitMode === 'fit-page') ||
-                      (opt.mode === 'fit-width' && fitMode === 'fit-width') ||
-                      (opt.mode === 'custom' && fitMode === 'custom' && Math.abs(scale - opt.scale) < 0.05)) && (
-                      <Check className="w-3.5 h-3.5 text-[#7AA2F7]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Split Study Quick Switch */}
-          {onOpenSplitStudy && (
-            <button
               onClick={() => {
                 soundManager.playClick();
                 onClose();
-                onOpenSplitStudy(selectedAttachmentId);
               }}
-              title="Open Split-Screen to read this PDF and take notes side-by-side"
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#7AA2F7]/15 hover:bg-[#7AA2F7]/25 border border-[#7AA2F7]/30 text-[#7AA2F7] text-xs font-bold transition-all cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#24283B] hover:bg-[#7AA2F7] hover:text-[#1A1B26] text-white text-xs font-bold transition-all border border-[#292E42] hover:border-[#7AA2F7] cursor-pointer shadow-sm active:scale-95 group shrink-0"
+              title="Go back to Topic Notes (Esc)"
             >
-              <Columns className="w-3.5 h-3.5" />
-              <span>Split Study</span>
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Back</span>
             </button>
+
+            <div className="min-w-0 flex items-center gap-2">
+              {attachments.length > 1 ? (
+                <div className="relative max-w-[180px] sm:max-w-xs">
+                  <select
+                    value={selectedAttachmentId}
+                    onChange={e => {
+                      soundManager.playClick();
+                      setSelectedAttachmentId(e.target.value);
+                    }}
+                    className="w-full pl-2.5 pr-7 py-1 rounded-xl bg-[#24283B] border border-[#292E42] text-xs font-bold text-white focus:outline-none focus:border-[#7AA2F7] appearance-none cursor-pointer truncate"
+                  >
+                    {attachments.map(att => (
+                      <option key={att.id} value={att.id}>
+                        📑 {att.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#A9B1D6] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              ) : (
+                <div className="truncate flex items-center gap-2">
+                  <img src="/pdf_icon_3d.png" alt="PDF" className="w-5 h-5 object-contain shrink-0 drop-shadow-sm" />
+                  <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[150px] sm:max-w-sm">
+                    {currentAttachment?.name || topicName}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Center: Live Page Tracker & Quick Stepper */}
+          {totalPages > 0 && (
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#24283B] border border-[#292E42] text-xs font-mono font-bold text-[#A9B1D6]">
+              <button
+                type="button"
+                disabled={currentPage <= 1}
+                onClick={() => scrollToPage(currentPage - 1)}
+                className="p-0.5 hover:text-white disabled:opacity-30 cursor-pointer"
+                title="Previous Page"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <span>Page</span>
+              <span className="text-white">{currentPage}</span>
+              <span>/</span>
+              <span className="text-[#7AA2F7]">{totalPages}</span>
+              <button
+                type="button"
+                disabled={currentPage >= totalPages}
+                onClick={() => scrollToPage(currentPage + 1)}
+                className="p-0.5 hover:text-white disabled:opacity-30 cursor-pointer"
+                title="Next Page"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           )}
 
-          {/* Download PDF Button */}
-          {currentAttachment && (
+          {/* Right Action Tools: Highlighter, Chrome Fit Mode, Zoom, Split Study, Download & Fullscreen */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            
+            {/* HIGHLIGHTER MAIN TOGGLE */}
             <button
-              onClick={handleDownload}
-              title={`Download ${currentAttachment.name}`}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                setIsHighlightMode(prev => !prev);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
+                isHighlightMode
+                  ? 'bg-amber-400 text-[#12131A] border-amber-300 font-black shadow-[0_0_18px_rgba(251,191,36,0.5)]'
+                  : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
+              }`}
+              title="Toggle PDF Highlighter (Shortcut: H)"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Download</span>
+              <Highlighter className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+              <span className="hidden sm:inline">Highlight</span>
+              {highlights.length > 0 && (
+                <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono font-bold ${
+                  isHighlightMode ? 'bg-[#12131A] text-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                }`}>
+                  {highlights.length}
+                </span>
+              )}
             </button>
-          )}
 
-          {/* Fullscreen Toggle */}
-          <button
-            onClick={toggleFullscreen}
-            title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            className="p-1.5 rounded-xl bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border border-[#292E42] transition-colors cursor-pointer hidden sm:flex"
-          >
-            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-          </button>
+            {/* CHROME-STYLE FIT TO PAGE / FIT TO WIDTH TOGGLE */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                if (fitMode === 'fit-page') {
+                  setFitMode('fit-width');
+                } else {
+                  setFitMode('fit-page');
+                  setScale(1.0);
+                }
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
+                fitMode === 'fit-page'
+                  ? 'bg-[#7AA2F7] text-[#1A1B26] border-[#7AA2F7] font-black'
+                  : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
+              }`}
+              title={fitMode === 'fit-page' ? 'Switch to Fit Width (100% full-width view)' : 'Fit Entire Page to Screen (Chrome style full page view)'}
+            >
+              {fitMode === 'fit-page' ? <Shrink className="w-3.5 h-3.5" /> : <Expand className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{fitMode === 'fit-page' ? 'Fit Page' : 'Fit to Page'}</span>
+            </button>
 
-          {/* Close Button */}
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              onClose();
-            }}
-            className="p-1.5 rounded-xl bg-[#24283B] hover:bg-rose-500/20 text-[#A9B1D6] hover:text-rose-400 border border-[#292E42] transition-colors cursor-pointer"
-            title="Close PDF View (Esc)"
-          >
-            <X className="w-4 h-4" />
-          </button>
+            {/* Zoom Controls with Presets Dropdown */}
+            <div className="relative flex items-center bg-[#24283B] p-0.5 rounded-xl border border-[#292E42]">
+              <button
+                type="button"
+                onClick={() => {
+                  setFitMode('custom');
+                  setScale(s => Math.max(s - 0.2, 0.4));
+                }}
+                className="p-1.5 rounded-lg hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white cursor-pointer"
+                title="Zoom Out (-)"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowZoomDropdown(p => !p)}
+                className="px-2 py-0.5 text-[11px] font-mono font-bold text-[#7AA2F7] hover:bg-[#2F354D] rounded-md cursor-pointer flex items-center gap-0.5"
+                title="Zoom Presets"
+              >
+                <span>{Math.round(scale * 100)}%</span>
+                <ChevronDown className="w-2.5 h-2.5 opacity-70" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setFitMode('custom');
+                  setScale(s => Math.min(s + 0.2, 3.0));
+                }}
+                className="p-1.5 rounded-lg hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white cursor-pointer"
+                title="Zoom In (+)"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Zoom Presets Menu */}
+              {showZoomDropdown && (
+                <div className="absolute right-0 top-full mt-2 w-36 rounded-xl bg-[#1F2335] border border-[#292E42] shadow-2xl p-1.5 space-y-1 z-50 animate-fade-in">
+                  {[
+                    { label: 'Fit to Width (↔)', mode: 'fit-width' as PdfFitMode, scale: 1.0 },
+                    { label: 'Fit to Page (↕)', mode: 'fit-page' as PdfFitMode, scale: 1.0 },
+                    { label: '50%', mode: 'custom' as PdfFitMode, scale: 0.5 },
+                    { label: '75%', mode: 'custom' as PdfFitMode, scale: 0.75 },
+                    { label: '100% (Actual)', mode: 'custom' as PdfFitMode, scale: 1.0 },
+                    { label: '125%', mode: 'custom' as PdfFitMode, scale: 1.25 },
+                    { label: '150%', mode: 'custom' as PdfFitMode, scale: 1.5 },
+                    { label: '200%', mode: 'custom' as PdfFitMode, scale: 2.0 },
+                  ].map(opt => (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        setFitMode(opt.mode);
+                        setScale(opt.scale);
+                        setShowZoomDropdown(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#24283B] text-xs font-semibold text-[#A9B1D6] hover:text-white flex items-center justify-between cursor-pointer"
+                    >
+                      <span>{opt.label}</span>
+                      {((opt.mode === 'fit-page' && fitMode === 'fit-page') ||
+                        (opt.mode === 'fit-width' && fitMode === 'fit-width') ||
+                        (opt.mode === 'custom' && fitMode === 'custom' && Math.abs(scale - opt.scale) < 0.05)) && (
+                        <Check className="w-3.5 h-3.5 text-[#7AA2F7]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Split Study Quick Switch */}
+            {onOpenSplitStudy && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  onClose();
+                  onOpenSplitStudy(selectedAttachmentId);
+                }}
+                title="Open Split-Screen to read this PDF and take notes side-by-side"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#7AA2F7]/15 hover:bg-[#7AA2F7]/25 border border-[#7AA2F7]/30 text-[#7AA2F7] text-xs font-bold transition-all cursor-pointer shadow-sm"
+              >
+                <Columns className="w-3.5 h-3.5" />
+                <span>Split Study</span>
+              </button>
+            )}
+
+            {/* Download PDF Button */}
+            {currentAttachment && (
+              <button
+                type="button"
+                onClick={handleDownload}
+                title={`Download ${currentAttachment.name}`}
+                className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Download</span>
+              </button>
+            )}
+
+            {/* Fullscreen Toggle Button */}
+            <button
+              type="button"
+              data-testid="pdf-fullscreen-btn"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Enter 100% Fullscreen PDF (Only PDF)'}
+              className="p-1.5 rounded-xl bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border border-[#292E42] transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+            >
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
+                onClose();
+              }}
+              className="p-1.5 rounded-xl bg-[#24283B] hover:bg-rose-500/20 text-[#A9B1D6] hover:text-rose-400 border border-[#292E42] transition-colors cursor-pointer"
+              title="Close PDF View (Esc)"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 2. DEDICATED HIGHLIGHTER PALETTE SUB-TOOLBAR (VISIBLE WHEN HIGHLIGHTER ACTIVE) */}
-      {isHighlightMode && (
+      {/* 2. DEDICATED HIGHLIGHTER PALETTE SUB-TOOLBAR (HIDDEN IN FULLSCREEN) */}
+      {!isFullscreen && isHighlightMode && (
         <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-[#181A28] via-[#1F2335] to-[#181A28] border-b border-amber-500/30 flex items-center justify-between gap-3 shrink-0 z-25 shadow-lg animate-fade-in flex-wrap">
           
           {/* Left: Color Palette Picker */}
@@ -596,13 +720,140 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         </div>
       )}
 
-      {/* 3. PURE FULLSCREEN PDF CANVAS VIEWER */}
-      <div className="flex-1 relative min-h-0 bg-[#16161E] flex flex-col overflow-hidden" onClick={() => setShowZoomDropdown(false)}>
+      {/* 3. SLEEK FLOATING ZEN CONTROLS HUD (ONLY VISIBLE IN FULLSCREEN) */}
+      {isFullscreen && (
+        <div
+          className={`fixed top-4 right-4 sm:top-5 sm:right-6 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-[#16161E]/85 backdrop-blur-xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.7)] text-white transition-all duration-300 ${
+            isHudVisible ? 'opacity-100 translate-y-0' : 'opacity-20 hover:opacity-100 translate-y-0'
+          }`}
+          onMouseEnter={() => setIsHudVisible(true)}
+        >
+          {/* Document Title Tag */}
+          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-white/90 max-w-[180px] truncate">
+            <FileText className="w-3.5 h-3.5 text-[#7AA2F7] shrink-0" />
+            <span className="truncate">{currentAttachment?.name || topicName}</span>
+          </div>
+
+          {/* Page Counter & Quick Navigation */}
+          {totalPages > 0 && (
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-xs font-mono font-bold">
+              <button
+                type="button"
+                disabled={currentPage <= 1}
+                onClick={() => scrollToPage(currentPage - 1)}
+                className="p-0.5 hover:text-white disabled:opacity-30 cursor-pointer"
+                title="Previous Page"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <span>{currentPage}</span>
+              <span className="text-white/40">/</span>
+              <span className="text-[#7AA2F7]">{totalPages}</span>
+              <button
+                type="button"
+                disabled={currentPage >= totalPages}
+                onClick={() => scrollToPage(currentPage + 1)}
+                className="p-0.5 hover:text-white disabled:opacity-30 cursor-pointer"
+                title="Next Page"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          {/* Chrome Fit Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              if (fitMode === 'fit-page') {
+                setFitMode('fit-width');
+              } else {
+                setFitMode('fit-page');
+                setScale(1.0);
+              }
+            }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              fitMode === 'fit-page'
+                ? 'bg-[#7AA2F7] text-[#1A1B26] font-black'
+                : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+            title={fitMode === 'fit-page' ? 'Switch to Fit Width' : 'Fit Entire Page to Screen'}
+          >
+            {fitMode === 'fit-page' ? <Shrink className="w-3.5 h-3.5" /> : <Expand className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">{fitMode === 'fit-page' ? 'Fit Page' : 'Fit'}</span>
+          </button>
+
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-0.5 bg-white/10 px-1 py-0.5 rounded-full">
+            <button
+              type="button"
+              onClick={() => {
+                setFitMode('custom');
+                setScale(s => Math.max(s - 0.2, 0.4));
+              }}
+              className="p-1 rounded-full hover:bg-white/20 text-white/80 hover:text-white cursor-pointer"
+              title="Zoom Out (-)"
+            >
+              <ZoomOut className="w-3 h-3" />
+            </button>
+
+            <span className="text-[11px] font-mono font-bold text-[#7AA2F7] px-1">
+              {Math.round(scale * 100)}%
+            </span>
+
+            <button
+              type="button"
+              onClick={() => {
+                setFitMode('custom');
+                setScale(s => Math.min(s + 0.2, 3.0));
+              }}
+              className="p-1 rounded-full hover:bg-white/20 text-white/80 hover:text-white cursor-pointer"
+              title="Zoom In (+)"
+            >
+              <ZoomIn className="w-3 h-3" />
+            </button>
+          </div>
+
+          <div className="w-[1px] h-4 bg-white/20 mx-0.5" />
+
+          {/* Exit Fullscreen Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7AA2F7] hover:bg-[#6090F5] text-[#1A1B26] text-xs font-black transition-all cursor-pointer shadow-md active:scale-95"
+            title="Exit Fullscreen (Esc)"
+          >
+            <Minimize2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Exit Fullscreen</span>
+          </button>
+
+          {/* Close Entire Modal */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              if (document.fullscreenElement) {
+                document.exitFullscreen?.().catch(() => {});
+              }
+              setIsFullscreen(false);
+              onClose();
+            }}
+            className="p-1.5 rounded-full hover:bg-rose-500/20 text-white/70 hover:text-rose-400 transition-all cursor-pointer"
+            title="Close PDF View (Esc)"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* 4. PURE 100% FULLSCREEN PDF CANVAS VIEWER */}
+      <div className="flex-1 relative min-h-0 w-full h-full bg-[#16161E] flex flex-col overflow-hidden" onClick={() => setShowZoomDropdown(false)}>
         {isLoading ? (
           <div className="m-auto flex flex-col items-center gap-3.5 text-center p-6">
             <div className="w-10 h-10 rounded-full border-3 border-[#7AA2F7] border-t-transparent animate-spin" />
             <div>
-              <h4 className="text-sm font-bold text-white">Opening Full Screen PDF...</h4>
+              <h4 className="text-sm font-bold text-white">Opening PDF Viewer...</h4>
               <p className="text-xs text-[#A9B1D6] mt-1 font-mono">Loading high-resolution pages</p>
             </div>
           </div>
@@ -614,6 +865,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             <h4 className="text-sm sm:text-base font-bold text-white">Unable to Display PDF</h4>
             <p className="text-xs text-[#A9B1D6] leading-relaxed">{loadError}</p>
             <button
+              type="button"
               onClick={() => {
                 soundManager.playClick();
                 onClose();
@@ -629,7 +881,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               <div className="m-auto flex flex-col items-center gap-3.5 text-center p-6">
                 <div className="w-10 h-10 rounded-full border-3 border-[#7AA2F7] border-t-transparent animate-spin" />
                 <div>
-                  <h4 className="text-sm font-bold text-white">Opening Full Screen PDF...</h4>
+                  <h4 className="text-sm font-bold text-white">Opening PDF Viewer...</h4>
                   <p className="text-xs text-[#A9B1D6] mt-1 font-mono">Initializing viewer engine</p>
                 </div>
               </div>
@@ -654,7 +906,7 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               onAddHighlight={handleAddHighlight}
               onDeleteHighlight={handleDeleteHighlight}
               showInlineControls={false}
-              className="flex-1 min-h-0 w-full"
+              className="flex-1 min-h-0 w-full h-full"
             />
           </React.Suspense>
         ) : (
@@ -665,19 +917,23 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         )}
       </div>
 
-      {/* 3. FLOATING QUICK-BACK PILL FOR MOBILE */}
-      <button
-        onClick={() => {
-          soundManager.playClick();
-          onClose();
-        }}
-        className="fixed bottom-6 right-6 sm:hidden px-4 py-2.5 rounded-full bg-[#7AA2F7] hover:bg-[#6090F5] text-[#1A1B26] text-xs font-bold shadow-2xl flex items-center gap-1.5 z-50 active:scale-95 cursor-pointer border border-white/20"
-        title="Back to Topic"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Topic</span>
-      </button>
-    </div>
+      {/* 5. FLOATING QUICK-BACK PILL FOR MOBILE (HIDDEN IN FULLSCREEN) */}
+      {!isFullscreen && (
+        <button
+          type="button"
+          onClick={() => {
+            soundManager.playClick();
+            onClose();
+          }}
+          className="fixed bottom-6 right-6 sm:hidden px-4 py-2.5 rounded-full bg-[#7AA2F7] hover:bg-[#6090F5] text-[#1A1B26] text-xs font-bold shadow-2xl flex items-center gap-1.5 z-50 active:scale-95 cursor-pointer border border-white/20"
+          title="Back to Topic"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Topic</span>
+        </button>
+      )}
+    </div>,
+    document.body
   );
 };
 

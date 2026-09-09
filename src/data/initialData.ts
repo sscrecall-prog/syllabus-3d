@@ -169,6 +169,16 @@ const INITIAL_SSC_SUBJECTS: Subject[] = [
                     dateLogged: '2026-08-10',
                     resolved: true
                   }
+                ],
+                pdfAttachments: [
+                  {
+                    id: 'pdf_sample_si',
+                    name: '06. SIMPLE INTEREST FRB - BY BHUTANI SIR.pdf',
+                    fileSize: 1048576,
+                    uploadedAt: '2026-08-15T00:00:00.000Z',
+                    url: 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
+                    type: 'pdf'
+                  }
                 ]
               },
               {
