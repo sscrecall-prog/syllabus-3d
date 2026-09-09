@@ -731,7 +731,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
    ═══════════════════════════════════════════════════════════════ */
 .reading-column {
   max-width: 68ch;
-  line-height: 1.75;
+  line-height: var(--reader-line-height, 1.75);
   letter-spacing: -0.011em;
 }
 

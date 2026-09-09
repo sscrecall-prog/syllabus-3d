@@ -1503,31 +1503,89 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }
   };
 
-  const getLineHeightClass = () => {
+  const getSpacingConfig = () => {
     switch (readerLineHeight) {
       case 'compact':
-        return 'leading-[1.65]';
+        return {
+          lineHeight: 1.45,
+          lineHeightClass: 'leading-[1.45]',
+          paragraphMargin: 'my-1.5 sm:my-2',
+          paragraphStyle: { marginTop: '0.4rem', marginBottom: '0.4rem' },
+          listItemMargin: 'my-1 sm:my-1.5',
+          listItemStyle: { marginTop: '0.2rem', marginBottom: '0.2rem' },
+          listItemGap: 'gap-2 sm:gap-2.5',
+          bulletDotMt: 'mt-[6px]',
+          blankLineHeight: 'h-1.5',
+          h1Margin: 'mt-5 mb-2.5 pb-2',
+          h2Margin: 'my-3.5',
+          h3Margin: 'mt-3.5 mb-1',
+          h4Margin: 'mt-3 mb-1',
+          calloutMargin: 'my-3 p-3.5 sm:p-4',
+          tableMargin: 'my-3.5',
+          tableCellPadding: 'py-2 px-3.5',
+          checkboxMargin: 'my-1 p-2 sm:p-2.5',
+        };
       case 'spacious':
-        return 'leading-[2.2]';
+        return {
+          lineHeight: 2.25,
+          lineHeightClass: 'leading-[2.25]',
+          paragraphMargin: 'my-5 sm:my-6',
+          paragraphStyle: { marginTop: '1.5rem', marginBottom: '1.5rem' },
+          listItemMargin: 'my-3.5 sm:my-4',
+          listItemStyle: { marginTop: '0.9rem', marginBottom: '0.9rem' },
+          listItemGap: 'gap-3.5 sm:gap-4',
+          bulletDotMt: 'mt-[13px]',
+          blankLineHeight: 'h-6 sm:h-7',
+          h1Margin: 'mt-10 mb-5 pb-3.5',
+          h2Margin: 'my-7',
+          h3Margin: 'mt-7 mb-3',
+          h4Margin: 'mt-6 mb-3',
+          calloutMargin: 'my-6 p-5 sm:p-6',
+          tableMargin: 'my-6',
+          tableCellPadding: 'py-4 px-5',
+          checkboxMargin: 'my-3 p-3 sm:p-3.5',
+        };
       case 'relaxed':
       default:
-        return 'leading-[1.9]';
+        return {
+          lineHeight: 1.8,
+          lineHeightClass: 'leading-[1.8]',
+          paragraphMargin: 'my-3 sm:my-4',
+          paragraphStyle: { marginTop: '0.75rem', marginBottom: '0.75rem' },
+          listItemMargin: 'my-2 sm:my-2.5',
+          listItemStyle: { marginTop: '0.45rem', marginBottom: '0.45rem' },
+          listItemGap: 'gap-3',
+          bulletDotMt: 'mt-[9px]',
+          blankLineHeight: 'h-3 sm:h-4',
+          h1Margin: 'mt-7 mb-3 pb-2.5',
+          h2Margin: 'my-5',
+          h3Margin: 'mt-5 mb-2',
+          h4Margin: 'mt-4 mb-2',
+          calloutMargin: 'my-4 p-4 sm:p-5',
+          tableMargin: 'my-5',
+          tableCellPadding: 'py-3 px-4',
+          checkboxMargin: 'my-1.5 p-2.5 sm:p-3',
+        };
     }
   };
 
+  const getLineHeightClass = () => {
+    return getSpacingConfig().lineHeightClass;
+  };
+
   const getFontSizeClass = () => {
-    const lh = getLineHeightClass();
+    const spacing = getSpacingConfig();
     switch (readerFontSize) {
       case 'sm':
-        return `text-xs sm:text-[13px] ${lh}`;
+        return `text-xs sm:text-[13px] ${spacing.lineHeightClass}`;
       case 'base':
-        return `text-xs sm:text-[14.5px] ${lh}`;
+        return `text-xs sm:text-[14.5px] ${spacing.lineHeightClass}`;
       case 'lg':
-        return `text-sm sm:text-[16px] ${lh}`;
+        return `text-sm sm:text-[16px] ${spacing.lineHeightClass}`;
       case 'xl':
-        return `text-base sm:text-[18px] ${lh}`;
+        return `text-base sm:text-[18px] ${spacing.lineHeightClass}`;
       default:
-        return `text-xs sm:text-[14.5px] ${lh}`;
+        return `text-xs sm:text-[14.5px] ${spacing.lineHeightClass}`;
     }
   };
 
@@ -1684,6 +1742,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
   const renderFormattedNotes = (customFontSizeClass?: string) => {
     const fontSize = customFontSizeClass || getFontSizeClass();
     const fontFam = getFontFamilyClass();
+    const spacing = getSpacingConfig();
 
     if ((!content || content.trim().length === 0) && (!images || images.length === 0)) {
       return (
@@ -2139,7 +2198,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
                         {row.map((cell, cIdx) => (
                           <td
                             key={cIdx}
-                            className={`py-3 px-4 ${fontSize} font-medium border-r border-[#E2E8F0]/30 dark:border-[#272730]/30 last:border-r-0 leading-relaxed ${getAlignClass(alignments[cIdx])}`}
+                            style={{ lineHeight: spacing.lineHeight }}
+                            className={`${spacing.tableCellPadding} ${fontSize} font-medium border-r border-[#E2E8F0]/30 dark:border-[#272730]/30 last:border-r-0 ${spacing.lineHeightClass} ${getAlignClass(alignments[cIdx])}`}
                           >
                             {parseInlineMarkdown(cell, `td-${i}-${rIdx}-${cIdx}`)}
                           </td>
@@ -2202,13 +2262,16 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <div
             key={'callout-' + i}
-            className={`my-4 p-4 sm:p-5 rounded-2xl border backdrop-blur-sm shadow-sm ${borderCol} [break-inside:avoid]`}
+            className={`${spacing.calloutMargin} rounded-2xl border backdrop-blur-sm shadow-sm ${borderCol} [break-inside:avoid]`}
           >
             <div className="flex items-center gap-2 mb-2">
               <IconComp className="w-[18px] h-[18px] shrink-0 stroke-[2.5]" />
               <span className="text-xs font-black uppercase tracking-wider font-mono">{title}</span>
             </div>
-            <div className={`${fontSize} ${fontFam} font-medium space-y-2 pl-6 leading-relaxed`}>
+            <div
+              style={{ lineHeight: spacing.lineHeight }}
+              className={`${fontSize} ${fontFam} font-medium space-y-2 pl-6 ${spacing.lineHeightClass}`}
+            >
               {calloutLines.map((cl, cIdx) => (
                 <p key={cIdx}>
                   {parseInlineMarkdown(cl, `callout-${i}-${cIdx}`)}
@@ -2236,7 +2299,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className={`${fontFam} text-xl sm:text-2xl font-black mt-7 mb-3 pb-2.5 border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-slate-900 dark:text-white tracking-tight scroll-mt-28 [break-inside:avoid]`}
+              className={`${fontFam} text-xl sm:text-2xl font-black ${spacing.h1Margin} border-b-2 border-[#2563EB]/30 dark:border-[#7AA2F7]/30 flex items-center gap-2.5 text-slate-900 dark:text-white tracking-tight scroll-mt-28 [break-inside:avoid]`}
             >
               <span className="w-1.5 h-6 rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] inline-block shrink-0" />
               <span>{parseInlineMarkdown(rawHeading, `h1-${i}`)}</span>
@@ -2250,7 +2313,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className="my-5 rounded-2xl border border-indigo-200/90 dark:border-indigo-800/60 border-l-4 border-l-indigo-600 dark:border-l-indigo-400 bg-gradient-to-r from-indigo-50/90 via-blue-50/40 to-white/30 dark:from-[#1A1C2E]/90 dark:via-[#161726]/60 dark:to-[#11121A]/30 p-3.5 sm:p-4 shadow-xs scroll-mt-28 [break-inside:avoid]"
+              className={`${spacing.h2Margin} rounded-2xl border border-indigo-200/90 dark:border-indigo-800/60 border-l-4 border-l-indigo-600 dark:border-l-indigo-400 bg-gradient-to-r from-indigo-50/90 via-blue-50/40 to-white/30 dark:from-[#1A1C2E]/90 dark:via-[#161726]/60 dark:to-[#11121A]/30 p-3.5 sm:p-4 shadow-xs scroll-mt-28 [break-inside:avoid]`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-2 h-5 sm:h-6 rounded-full bg-indigo-600 dark:bg-indigo-400 shrink-0" />
@@ -2267,7 +2330,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className={`${fontFam} text-xs sm:text-sm font-black text-[#2563EB] dark:text-[#7AA2F7] mt-5 mb-2 uppercase tracking-wide flex items-center gap-1.5 font-mono scroll-mt-28 [break-inside:avoid]`}
+              className={`${fontFam} text-xs sm:text-sm font-black text-[#2563EB] dark:text-[#7AA2F7] ${spacing.h3Margin} uppercase tracking-wide flex items-center gap-1.5 font-mono scroll-mt-28 [break-inside:avoid]`}
             >
               <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>{parseInlineMarkdown(rawHeading, `h3-${i}`)}</span>
@@ -2281,7 +2344,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className={`${fontFam} text-sm sm:text-base font-bold text-amber-700 dark:text-amber-400 mt-4 mb-2 flex items-center gap-2 scroll-mt-28 [break-inside:avoid]`}
+              className={`${fontFam} text-sm sm:text-base font-bold text-amber-700 dark:text-amber-400 ${spacing.h4Margin} flex items-center gap-2 scroll-mt-28 [break-inside:avoid]`}
             >
               <span className="w-1.5 h-3.5 rounded-full bg-amber-500 shrink-0" />
               <span>{parseInlineMarkdown(rawHeading, `h4-${i}`)}</span>
@@ -2295,7 +2358,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className={`${fontFam} text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-400 mt-3.5 mb-1.5 flex items-center gap-1.5 scroll-mt-28 [break-inside:avoid]`}
+              className={`${fontFam} text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-400 ${spacing.h4Margin} flex items-center gap-1.5 scroll-mt-28 [break-inside:avoid]`}
             >
               <span className="w-1.5 h-3 rounded-full bg-emerald-500 shrink-0" />
               <span>{parseInlineMarkdown(rawHeading, `h5-${i}`)}</span>
@@ -2309,7 +2372,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
               id={headingId}
               data-heading-id={headingId}
               data-heading-index={currentIndex}
-              className={`${fontFam} text-xs font-semibold text-slate-600 dark:text-slate-400 mt-3 mb-1 uppercase tracking-wider flex items-center gap-1.5 scroll-mt-28 [break-inside:avoid]`}
+              className={`${fontFam} text-xs font-semibold text-slate-600 dark:text-slate-400 ${spacing.h4Margin} uppercase tracking-wider flex items-center gap-1.5 scroll-mt-28 [break-inside:avoid]`}
             >
               <span className="w-1 h-2.5 rounded-full bg-slate-400 dark:bg-slate-500 shrink-0" />
               <span>{parseInlineMarkdown(rawHeading, `h6-${i}`)}</span>
@@ -2327,7 +2390,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           <div
             key={i}
             onClick={() => toggleCheckboxInText(currentTaskIdx)}
-            className={`flex items-center gap-3 p-2.5 sm:p-3 my-1.5 rounded-xl cursor-pointer transition-all active:scale-[0.99] [break-inside:avoid] ${
+            style={spacing.listItemStyle}
+            className={`flex items-center gap-3 ${spacing.checkboxMargin} rounded-xl cursor-pointer transition-all active:scale-[0.99] [break-inside:avoid] ${
               isDone
                 ? 'bg-emerald-500/10 text-slate-400 line-through'
                 : 'bg-white dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-[#E2E8F0] dark:border-[#272730]'
@@ -2342,7 +2406,10 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
             >
               {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </div>
-            <span className={`${fontSize} ${fontFam} font-semibold leading-relaxed`}>
+            <span
+              style={{ lineHeight: spacing.lineHeight }}
+              className={`${fontSize} ${fontFam} font-semibold ${spacing.lineHeightClass}`}
+            >
               {parseInlineMarkdown(taskText, `task-${i}`)}
             </span>
           </div>
@@ -2352,9 +2419,16 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       else if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
         const rawBullet = line.trim().substring(2);
         elements.push(
-          <div key={i} className="flex items-start gap-3 my-2 pl-1 leading-relaxed">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] mt-[9px] shrink-0" />
-            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] leading-relaxed`}>
+          <div
+            key={i}
+            style={spacing.listItemStyle}
+            className={`flex items-start ${spacing.listItemGap} ${spacing.listItemMargin} pl-1`}
+          >
+            <span className={`w-[5px] h-[5px] rounded-full bg-[#2563EB] dark:bg-[#7AA2F7] ${spacing.bulletDotMt} shrink-0`} />
+            <div
+              style={{ lineHeight: spacing.lineHeight }}
+              className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] ${spacing.lineHeightClass}`}
+            >
               {parseInlineMarkdown(rawBullet, `bullet-${i}`)}
             </div>
           </div>
@@ -2367,11 +2441,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         const numText = numMatch ? numMatch[2] : line.trim();
 
         elements.push(
-          <div key={i} className="flex items-start gap-3 my-2 pl-1 leading-relaxed">
+          <div
+            key={i}
+            style={spacing.listItemStyle}
+            className={`flex items-start ${spacing.listItemGap} ${spacing.listItemMargin} pl-1`}
+          >
             <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
               {num}.
             </span>
-            <div className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] leading-relaxed`}>
+            <div
+              style={{ lineHeight: spacing.lineHeight }}
+              className={`${fontSize} ${fontFam} font-medium text-[#334155] dark:text-[#CBD5E1] reading-column max-w-[68ch] ${spacing.lineHeightClass}`}
+            >
               {parseInlineMarkdown(numText, `num-${i}`)}
             </div>
           </div>
@@ -2389,7 +2470,7 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
       }
       // 9. Blank Line
       else if (line.trim() === '') {
-        elements.push(<div key={i} className="h-2.5" />);
+        elements.push(<div key={i} className={spacing.blankLineHeight} />);
       }
       // 10. Inline Images
       else if (line.trim().match(/^!\[(.*?)\]\((.*?)\)$/)) {
@@ -2441,7 +2522,8 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         elements.push(
           <p
             key={i}
-            className={`${fontSize} ${fontFam} text-[#334155] dark:text-[#CBD5E1] my-3 leading-relaxed reading-column max-w-[68ch] ${
+            style={{ lineHeight: spacing.lineHeight, ...spacing.paragraphStyle }}
+            className={`${fontSize} ${fontFam} text-[#334155] dark:text-[#CBD5E1] ${spacing.paragraphMargin} ${spacing.lineHeightClass} reading-column max-w-[68ch] ${
               isFirstParagraph && readerFontFamily === 'serif' ? 'book-drop-cap' : ''
             }`}
           >
@@ -2454,7 +2536,13 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
     }
 
     return (
-      <div className="book-reader-view w-full">
+      <div
+        className="book-reader-view w-full"
+        style={{
+          lineHeight: spacing.lineHeight,
+          ['--reader-line-height' as any]: String(spacing.lineHeight)
+        }}
+      >
         {/* Book Editorial Running Header */}
         <div className="flex items-center justify-between pb-3.5 mb-6 border-b border-slate-200/60 dark:border-slate-800/60 text-[11px] sm:text-xs font-serif uppercase tracking-widest text-[#65675F] dark:text-[#94A3B8] select-none [break-inside:avoid] print:hidden">
           <div className="flex items-center gap-2 truncate">
@@ -3604,7 +3692,7 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                 </div>
 
                 {/* Line Spacing / Leading Selector */}
-                <div className="hidden 2xl:flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold">
+                <div className="hidden xl:flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1C1D26] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold">
                   <span className="text-[10px] text-[#85877E] px-1 font-mono">Spacing:</span>
                   {(['compact', 'relaxed', 'spacious'] as ReaderLineHeight[]).map(lh => (
                     <button
@@ -3615,11 +3703,12 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                         localStorage.setItem('syllabus3d_reader_line_height', lh);
                         soundManager.playClick();
                       }}
-                      className={`px-1.5 py-0.5 rounded capitalize text-[11px] cursor-pointer ${
+                      className={`px-2 py-0.5 rounded capitalize text-[11px] cursor-pointer transition-all active:scale-95 ${
                         readerLineHeight === lh
-                          ? 'bg-[#2563EB] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs'
-                          : 'text-[#85877E] hover:text-[#11120F]'
+                          ? 'bg-[#2563EB] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs font-black'
+                          : 'text-[#85877E] hover:text-[#11120F] dark:hover:text-white'
                       }`}
+                      title={`Set line spacing to ${lh}`}
                     >
                       {lh}
                     </button>
@@ -4196,6 +4285,30 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
                   title={`Set text size to ${size.toUpperCase()}`}
                 >
                   {size}
+                </button>
+              ))}
+            </div>
+
+            {/* Spacing / Leading Selector (Visible in drawer toolbar) */}
+            <div className="hidden sm:flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#0D0E15] px-2 py-1 rounded-xl border border-[#E2E8F0] dark:border-[#272730] text-xs font-mono font-bold">
+              <span className="text-[10px] text-[#85877E]">Spacing:</span>
+              {(['compact', 'relaxed', 'spacious'] as ReaderLineHeight[]).map(lh => (
+                <button
+                  key={lh}
+                  type="button"
+                  onClick={() => {
+                    setReaderLineHeight(lh);
+                    localStorage.setItem('syllabus3d_reader_line_height', lh);
+                    soundManager.playClick();
+                  }}
+                  className={`px-1.5 py-0.5 rounded capitalize text-[11px] cursor-pointer transition-all active:scale-95 ${
+                    readerLineHeight === lh
+                      ? 'bg-[#2563EB] text-white dark:bg-[#7AA2F7] dark:text-black shadow-xs font-black'
+                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                  title={`Set line spacing to ${lh}`}
+                >
+                  {lh}
                 </button>
               ))}
             </div>
