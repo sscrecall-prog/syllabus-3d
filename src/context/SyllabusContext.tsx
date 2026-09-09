@@ -319,7 +319,15 @@ interface SyllabusContextType {
   deleteSubtopic: (topicId: string, subtopicIndex: number) => void;
   addTopicPdfAttachment?: (topicId: string, attachment: TopicPdfAttachment) => void;
   deleteTopicPdfAttachment?: (topicId: string, attachmentId: string) => void;
-  addTopicLecture?: (topicId: string, lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => void;
+  addTopicLecture?: (topicId: string, lecture: {
+    title: string;
+    youtubeUrl: string;
+    duration?: string;
+    notes?: string;
+    platform?: 'youtube' | 'telegram';
+    telegramUrl?: string;
+    channelName?: string;
+  }) => void;
   deleteTopicLecture?: (topicId: string, lectureId: string) => void;
   addLectureTimestamp?: (topicId: string, lectureId: string, timestamp: { timeSeconds: number; timeLabel: string; title: string }) => void;
   deleteLectureTimestamp?: (topicId: string, lectureId: string, timestampId: string) => void;
@@ -1723,11 +1731,25 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     soundManager.playClick();
   };
 
-  const addTopicLecture = (topicId: string, lecture: { title: string; youtubeUrl: string; duration?: string; notes?: string }) => {
+  const addTopicLecture = (topicId: string, lecture: {
+    title: string;
+    youtubeUrl: string;
+    duration?: string;
+    notes?: string;
+    platform?: 'youtube' | 'telegram';
+    telegramUrl?: string;
+    channelName?: string;
+  }) => {
+    const rawUrl = (lecture.telegramUrl || lecture.youtubeUrl || '').trim();
+    const isTg = lecture.platform === 'telegram' || rawUrl.includes('t.me') || rawUrl.includes('telegram') || rawUrl.startsWith('tg://');
+
     const newLecture: TopicLecture = {
       id: `lec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       title: lecture.title.trim(),
-      youtubeUrl: lecture.youtubeUrl.trim(),
+      youtubeUrl: rawUrl,
+      platform: isTg ? 'telegram' : 'youtube',
+      telegramUrl: isTg ? rawUrl : undefined,
+      channelName: lecture.channelName?.trim() || undefined,
       addedAt: getTodayDateString(),
       duration: lecture.duration,
       notes: lecture.notes

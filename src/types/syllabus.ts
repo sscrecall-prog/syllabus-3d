@@ -24,6 +24,9 @@ export interface TopicPdfAttachment {
   uploadedAt: string;
   url?: string;
   storageKey?: string;
+  type?: 'pdf' | 'telegram' | 'link';
+  telegramUrl?: string;
+  channelName?: string;
 }
 
 export interface LectureTimestamp {
@@ -37,6 +40,9 @@ export interface TopicLecture {
   id: string;
   title: string;
   youtubeUrl: string;
+  platform?: 'youtube' | 'telegram';
+  telegramUrl?: string;
+  channelName?: string;
   addedAt: string;
   duration?: string;
   notes?: string;

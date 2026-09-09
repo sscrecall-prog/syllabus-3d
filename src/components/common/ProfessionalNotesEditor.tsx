@@ -82,6 +82,7 @@ import {
   extractGeminiShareUrl
 } from '../../utils/quizUtils';
 import { NotionAiNotesStudioModal } from '../modals/NotionAiNotesStudioModal';
+import { TelegramIcon } from '../../utils/telegramUtils';
 
 interface ProfessionalNotesEditorProps {
   initialContent: string;
@@ -4519,6 +4520,17 @@ const NoteTabsTrack: React.FC<NoteTabsTrackProps> = ({
             >
               <Clock className="w-3.5 h-3.5" />
               <span>+ Timestamp</span>
+            </button>
+
+            {/* Telegram Link Quick-Insert Button */}
+            <button
+              type="button"
+              onClick={() => insertText('[✈️ Telegram: Channel / Resource](', ')', 'https://t.me/...')}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#229ED9]/10 text-[#0088cc] dark:text-[#64B5F6] hover:bg-[#229ED9]/20 border border-[#229ED9]/30 flex items-center gap-1 cursor-pointer"
+              title="Insert Clickable Telegram Link (e.g. https://t.me/...)"
+            >
+              <TelegramIcon className="w-3.5 h-3.5 fill-current" />
+              <span>+ Telegram</span>
             </button>
 
             {/* Image Upload Input */}

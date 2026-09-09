@@ -151,16 +151,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`hidden md:flex flex-col w-64 h-screen fixed top-0 left-0 bg-white/90 dark:bg-[#0A0D16]/95 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] p-3 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
+      className={`hidden md:flex flex-col w-[250px] h-screen fixed top-0 left-0 bg-white/90 dark:bg-[#0A0D16]/95 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] p-2.5 justify-between transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30 select-none overflow-y-auto custom-scrollbar ${
         isCollapsed ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100 shadow-[1px_0_20px_rgba(15,23,42,0.04)]'
       }`}
     >
 
-      <div className="space-y-2.5">
+      <div className="space-y-1.5">
         {/* Tradewise-Style Header Branding & Collapse Button */}
-        <div className="flex items-center justify-between gap-2 px-1 py-1">
+        <div className="flex items-center justify-between gap-1.5 px-0.5 py-0.5">
           <div
-            className="flex items-center gap-2.5 min-w-0 group cursor-pointer"
+            className="flex items-center gap-2 min-w-0 group cursor-pointer"
             onClick={() => {
               soundManager.playClick();
               onSelectView('overview');
@@ -172,14 +172,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <h1 className="text-sm font-black tracking-wide text-[#11120F] dark:text-[#F5F5F7] uppercase font-serif group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none truncate">
+                <h1 className="text-[13px] font-black tracking-tight text-[#11120F] dark:text-[#F5F5F7] uppercase group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-none shrink-0">
                   SYLLABUS 3D
                 </h1>
-                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black tracking-widest font-mono">
+                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black tracking-widest font-mono shrink-0">
                   PRO
                 </span>
               </div>
-              <p className="text-[11px] font-medium text-slate-500 dark:text-[#94A3B8] mt-0.5 truncate">
+              <p className="text-[10.5px] font-medium text-slate-500 dark:text-[#94A3B8] mt-0.5 truncate">
                 Discipline & Mastery
               </p>
             </div>
@@ -203,11 +203,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Action Buttons: Add Custom Topic & 3D Focus Chamber */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
-              className="group relative w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:bg-[#7AA2F7] text-white font-bold text-[13px] shadow-[0_2px_8px_rgba(15,23,42,0.12)] dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-blue-700 dark:border-transparent tap-bounce"
+              className="group relative w-full py-1.5 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:bg-[#7AA2F7] text-white font-bold text-[12.5px] shadow-[0_2px_8px_rgba(15,23,42,0.12)] dark:shadow-[0_4px_16px_rgba(37,99,235,0.35)] flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95 overflow-hidden border border-blue-700 dark:border-transparent tap-bounce"
               title="Add Custom Topic"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -221,15 +221,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 soundManager.playClick();
                 onOpenFocus();
               }}
-              className="group relative w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 hover:from-blue-100 hover:to-indigo-100 dark:bg-[#141A2E] dark:hover:bg-[#1B2340] text-blue-700 dark:text-[#93C5FD] border border-blue-200/80 dark:border-[#7AA2F7]/40 text-[13px] font-extrabold shadow-[0_1px_3px_rgba(37,99,235,0.06)] transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
+              className="group relative w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-50/90 to-indigo-50/70 hover:from-blue-100 hover:to-indigo-100 dark:bg-[#141A2E] dark:hover:bg-[#1B2340] text-blue-700 dark:text-[#93C5FD] border border-blue-200/80 dark:border-[#7AA2F7]/40 text-[12.5px] font-extrabold shadow-[0_1px_3px_rgba(37,99,235,0.06)] transition-all duration-200 cursor-pointer active:scale-95 tap-bounce"
               title="3D Focus Chamber"
             >
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-[#7AA2F7] group-hover:bg-blue-700 dark:group-hover:bg-white animate-pulse" />
-                <Timer className="w-3.5 h-3.5 text-blue-600 dark:text-[#93C5FD]" />
-                <span>3D Focus Chamber</span>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-[#7AA2F7] group-hover:bg-blue-700 dark:group-hover:bg-white animate-pulse shrink-0" />
+                <Timer className="w-3.5 h-3.5 text-blue-600 dark:text-[#93C5FD] shrink-0" />
+                <span className="truncate">3D Focus Chamber</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded text-[11px] font-mono font-bold bg-white/80 dark:bg-[#7AA2F7]/25 text-blue-700 dark:text-[#93C5FD] border border-blue-200/50 dark:border-transparent">
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-white/80 dark:bg-[#7AA2F7]/25 text-blue-700 dark:text-[#93C5FD] border border-blue-200/50 dark:border-transparent shrink-0">
                 Timer
               </span>
             </button>
@@ -237,10 +237,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Categorized Navigation List (Tradewise Pro Aesthetic) */}
-        <div className="space-y-3 pt-1 border-t border-[#E2E8F0] dark:border-[#232430]">
+        <div className="space-y-2 pt-1 border-t border-[#E2E8F0] dark:border-[#232430]">
           {navSections.map(section => (
             <div key={section.title} className="space-y-0.5">
-              <div className="px-2 pt-1 pb-1 text-[10px] font-medium tracking-wider text-slate-400 dark:text-slate-500 uppercase">
+              <div className="px-2 pt-0.5 pb-0.5 text-[9.5px] font-medium tracking-wider text-slate-400 dark:text-slate-500 uppercase">
                 {section.title}
               </div>
               <nav className="space-y-0.5">
@@ -254,7 +254,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         soundManager.playClick();
                         onSelectView(item.id);
                       }}
-                      className={`group relative w-full flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-bold transition-all duration-150 cursor-pointer ${
+                      className={`group relative w-full flex items-center justify-between px-2.5 py-1 rounded-xl text-[12px] font-bold transition-all duration-150 cursor-pointer ${
                         isActive
                           ? 'bg-blue-50 text-blue-700 font-black border border-blue-200/60 shadow-sm dark:bg-gradient-to-r dark:from-blue-600/20 dark:to-indigo-600/15 dark:text-[#93C5FD] dark:border dark:border-[#7AA2F7]/30'
                           : 'text-slate-600 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white'
@@ -308,24 +308,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Cards Area */}
-      <div className="space-y-2 pt-2 border-t border-[#E2E8F0] dark:border-[#232430]">
+      <div className="space-y-1.5 pt-1.5 border-t border-[#E2E8F0] dark:border-[#232430]">
         {/* Tradewise-Style Discipline Score Progress Card */}
-        <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-[#141520] border border-slate-200/80 dark:border-[#272738] space-y-1.5 shadow-2xs">
+        <div className="p-2 rounded-xl bg-[#F8FAFC] dark:bg-[#141520] border border-slate-200/80 dark:border-[#272738] space-y-1 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
+            <span className="text-[10.5px] font-bold text-slate-700 dark:text-slate-200">
               Discipline Score
             </span>
-            <span className="text-xs font-black font-mono text-emerald-600 dark:text-emerald-400">
+            <span className="text-[11px] font-black font-mono text-emerald-600 dark:text-emerald-400">
               {overallStats.completionPercentage}/100
             </span>
           </div>
-          <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-[#232433] overflow-hidden">
+          <div className="w-full h-1 rounded-full bg-slate-200 dark:bg-[#232433] overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 dark:from-emerald-400 dark:to-lime-400 rounded-full transition-all duration-500"
               style={{ width: `${Math.max(5, overallStats.completionPercentage)}%` }}
             />
           </div>
-          <p className="text-[10px] text-slate-500 dark:text-slate-300 leading-tight">
+          <p className="text-[9.5px] text-slate-500 dark:text-slate-300 leading-tight truncate">
             Keep pushing — consistency beats intensity.
           </p>
         </div>
@@ -335,28 +335,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           href="https://mock-percentile-tracker.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="group w-full flex items-center justify-between p-2 px-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shadow-2xs active:scale-98"
+          className="group w-full flex items-center justify-between p-1.5 px-2 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shadow-2xs active:scale-98"
         >
-          <div className="flex items-center gap-2 min-w-0">
-            <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-5 h-5 shrink-0 object-contain rounded-md" />
+          <div className="flex items-center gap-1.5 min-w-0">
+            <img src="/mock_tracker_logo.png" alt="Mock Tracker" className="w-4 h-4 shrink-0 object-contain rounded-md" />
             <div className="min-w-0">
-              <span className="text-[13px] font-bold text-[#191A17] dark:text-white block leading-tight group-hover:text-[#2563EB] dark:group-hover:text-[#93C5FD] truncate">
+              <span className="text-[12px] font-bold text-[#191A17] dark:text-white block leading-tight group-hover:text-[#2563EB] dark:group-hover:text-[#93C5FD] truncate">
                 Mock Tracker
               </span>
-              <span className="text-[11px] text-[#65675F] dark:text-slate-300 block leading-none truncate">Score &amp; Percentiles</span>
+              <span className="text-[10px] text-[#65675F] dark:text-slate-300 block leading-none truncate">Score &amp; Percentiles</span>
             </div>
           </div>
-          <ExternalLink className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#93C5FD] shrink-0" />
+          <ExternalLink className="w-3 h-3 text-[#2563EB] dark:text-[#93C5FD] shrink-0" />
         </a>
 
         {/* User Profile & Level Card */}
-        <div className="p-2.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] space-y-1.5 shadow-2xs">
+        <div className="p-1.5 px-2 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] space-y-1 shadow-2xs">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0">
               <div
-                className={`w-7 h-7 rounded-lg bg-gradient-to-br ${
+                className={`w-6 h-6 rounded-lg bg-gradient-to-br ${
                   profile.avatarColor || 'from-[#2563EB] to-indigo-600'
-                } text-white dark:text-black font-black flex items-center justify-center text-[13px] shrink-0 shadow-2xs overflow-hidden`}
+                } text-white dark:text-black font-black flex items-center justify-center text-[11px] shrink-0 shadow-2xs overflow-hidden`}
               >
                 {(profile.avatarUrl || user?.avatarUrl) ? (
                   <img
@@ -365,23 +365,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     className="w-full h-full object-cover"
                   />
                 ) : profile.avatarEmoji ? (
-                  <span className="text-[13px] leading-none drop-shadow">{profile.avatarEmoji}</span>
+                  <span className="text-[11px] leading-none drop-shadow">{profile.avatarEmoji}</span>
                 ) : (
                   (user?.name || profile.name ? (user?.name || profile.name).charAt(0).toUpperCase() : 'A')
                 )}
               </div>
               <div className="truncate">
-                <h4 className="text-[13px] font-bold text-[#191A17] dark:text-white truncate leading-tight">
+                <h4 className="text-[12px] font-bold text-[#191A17] dark:text-white truncate leading-tight">
                   {user?.name || profile.name}
                 </h4>
-                <p className="text-[11px] text-[#65675F] dark:text-slate-300 leading-none">
+                <p className="text-[10px] text-[#65675F] dark:text-slate-300 leading-none truncate">
                   {profile.levelTitle}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-1 shrink-0">
-              <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-md bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] font-mono border border-[#BFDBFE] dark:border-[#7AA2F7]/30">
+              <span className="px-1 py-0.5 text-[10px] font-bold rounded-md bg-[#EFF6FF] dark:bg-[#7AA2F7]/20 text-[#1D4ED8] dark:text-[#7AA2F7] font-mono border border-[#BFDBFE] dark:border-[#7AA2F7]/30 leading-none">
                 Lvl {profile.level}
               </span>
 
@@ -397,13 +397,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title="Switch Study Profile"
                   aria-label="Switch Study Profile"
                 >
-                  <Users className="w-3.5 h-3.5" />
+                  <Users className="w-3 h-3" />
                 </button>
               )}
             </div>
           </div>
-
-
         </div>
 
         {/* Keyboard Shortcuts Trigger */}
@@ -414,12 +412,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               haptics.selection();
               onOpenShortcuts();
             }}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-[#65675F] hover:text-[#0F172A] dark:text-[#CBD5E1] dark:hover:text-white transition-all cursor-pointer text-xs font-semibold active:scale-98 tap-bounce shadow-2xs"
+            className="w-full flex items-center gap-2 px-2 py-1 rounded-xl bg-white dark:bg-[#161720] border border-[#E2E8F0] dark:border-[#272732] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] text-[#65675F] hover:text-[#0F172A] dark:text-[#CBD5E1] dark:hover:text-white transition-all cursor-pointer text-xs font-semibold active:scale-98 tap-bounce shadow-2xs"
             title="Keyboard Shortcuts Cheatsheet"
             aria-label="Keyboard Shortcuts Cheatsheet"
           >
             <Keyboard className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#7AA2F7]" />
-            <span className="text-[12px] font-semibold">Keyboard Shortcuts</span>
+            <span className="text-[11.5px] font-semibold">Keyboard Shortcuts</span>
           </button>
         )}
       </div>

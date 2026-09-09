@@ -36,6 +36,7 @@ import {
   formatSecondsToTimestamp,
   extractTimestampsFromText
 } from '../../utils/youtubeUtils';
+import { TelegramIcon, isTelegramUrl, cleanTelegramUrl, parseTelegramDetails } from '../../utils/telegramUtils';
 import { soundManager } from '../../utils/soundEffects';
 import { YoutubeIcon } from './TopicLecturesSection';
 
@@ -279,6 +280,9 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
   if (!isOpen) return null;
 
   const currentLecture = lectures.find(l => l.id === selectedLectureId) || lectures[0];
+  const isCurrentTelegram = currentLecture
+    ? (currentLecture.platform === 'telegram' || isTelegramUrl(currentLecture.youtubeUrl))
+    : false;
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -595,15 +599,30 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
           </div>
 
           {currentLecture && (
-            <button
-              onClick={() => openYouTubeLectureInNewTab(currentLecture.youtubeUrl, seekSeconds)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600/15 hover:bg-red-600/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
-              title="Open video in YouTube at current timestamp"
-            >
-              <YoutubeIcon className="w-3.5 h-3.5 fill-red-400" />
-              <span className="hidden md:inline">YouTube</span>
-              <ExternalLink className="w-3 h-3" />
-            </button>
+            isCurrentTelegram ? (
+              <button
+                onClick={() => {
+                  const tgUrl = cleanTelegramUrl(currentLecture.telegramUrl || currentLecture.youtubeUrl);
+                  window.open(tgUrl, '_blank');
+                }}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#229ED9]/20 hover:bg-[#229ED9]/30 border border-[#229ED9]/40 text-[#229ED9] text-xs font-bold transition-all cursor-pointer"
+                title="Open video/channel in Telegram"
+              >
+                <TelegramIcon className="w-3.5 h-3.5 fill-[#229ED9]" />
+                <span className="hidden md:inline">Telegram</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            ) : (
+              <button
+                onClick={() => openYouTubeLectureInNewTab(currentLecture.youtubeUrl, seekSeconds)}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600/15 hover:bg-red-600/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
+                title="Open video in YouTube at current timestamp"
+              >
+                <YoutubeIcon className="w-3.5 h-3.5 fill-red-400" />
+                <span className="hidden md:inline">YouTube</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            )
           )}
 
           <button
@@ -648,27 +667,67 @@ export const SplitScreenLectureStudyModal: React.FC<SplitScreenLectureStudyModal
             isDragging ? 'transition-none' : 'duration-150'
           } ${mobileTab === 'video' ? 'flex w-full' : 'hidden lg:flex'}`}
         >
-          {/* Embedded YouTube Video Container with dynamic seek */}
-          <div className="relative w-full pb-[56.25%] bg-black shrink-0 shadow-lg">
-            {currentLecture && getYouTubeEmbedUrl(currentLecture.youtubeUrl, seekSeconds) ? (
-              <iframe
-                id="lecture-split-iframe"
-                ref={iframeRef}
-                key={currentLecture.id}
-                src={getYouTubeEmbedUrl(currentLecture.youtubeUrl, seekSeconds)!}
-                title={currentLecture.title}
-                className="absolute inset-0 w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                onLoad={handleIframeLoaded}
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-white text-center space-y-2">
-                <YoutubeIcon className="w-12 h-12 text-red-500" />
-                <p className="text-sm font-bold">No Lecture Video Selected</p>
+          {/* Video Player or Telegram Study Companion */}
+          {isCurrentTelegram ? (
+            <div className="relative p-6 bg-gradient-to-br from-[#182533] via-[#0E1621] to-[#17212B] flex flex-col items-center justify-center text-center overflow-hidden border-b border-[#292E42] shadow-lg shrink-0 min-h-[220px]">
+              {/* Background Logo Watermark */}
+              <div className="absolute -right-6 -bottom-6 w-36 h-36 text-white/[0.03] pointer-events-none">
+                <TelegramIcon className="w-full h-full fill-current" />
               </div>
-            )}
-          </div>
+
+              <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#229ED9] to-[#0088cc] text-white flex items-center justify-center shadow-lg mb-2.5">
+                <TelegramIcon className="w-7 h-7 fill-white" />
+              </div>
+
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#229ED9]/20 text-[#64B5F6] border border-[#229ED9]/30 mb-1.5">
+                Telegram Class & Notes Sync
+              </span>
+
+              <h4 className="text-sm sm:text-base font-bold text-white max-w-md line-clamp-2 mb-1">
+                {currentLecture?.title}
+              </h4>
+
+              <p className="text-[11px] text-[#94A3B8] max-w-sm mb-3.5">
+                Stream on Telegram App / Web while recording live timestamps and writing comprehensive notes here.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  const tgUrl = cleanTelegramUrl(currentLecture?.telegramUrl || currentLecture?.youtubeUrl);
+                  window.open(tgUrl, '_blank');
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#229ED9] hover:bg-[#1E88C7] text-white text-xs font-bold shadow-md cursor-pointer transition-all active:scale-95 tap-bounce"
+              >
+                <TelegramIcon className="w-4 h-4 fill-white" />
+                <span>Launch Telegram Video / Channel</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            /* Embedded YouTube Video Container with dynamic seek */
+            <div className="relative w-full pb-[56.25%] bg-black shrink-0 shadow-lg">
+              {currentLecture && getYouTubeEmbedUrl(currentLecture.youtubeUrl, seekSeconds) ? (
+                <iframe
+                  id="lecture-split-iframe"
+                  ref={iframeRef}
+                  key={currentLecture.id}
+                  src={getYouTubeEmbedUrl(currentLecture.youtubeUrl, seekSeconds)!}
+                  title={currentLecture.title}
+                  className="absolute inset-0 w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  onLoad={handleIframeLoaded}
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-white text-center space-y-2">
+                  <YoutubeIcon className="w-12 h-12 text-red-500" />
+                  <p className="text-sm font-bold">No Lecture Video Selected</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Quick Timestamp Sync Controls Bar */}
           <div className="p-3 bg-[#1F2335] border-b border-[#292E42] flex items-center justify-between gap-2 shrink-0 flex-wrap">

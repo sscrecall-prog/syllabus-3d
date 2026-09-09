@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { savePdfToStorage, getPdfBlobUrl, deletePdfFromStorage } from '../../utils/pdfStorage';
+import { TelegramIcon, isTelegramUrl, cleanTelegramUrl, parseTelegramDetails } from '../../utils/telegramUtils';
 import { soundManager } from '../../utils/soundEffects';
 import { InAppPdfReaderModal } from './InAppPdfReaderModal';
 
@@ -42,8 +43,12 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [showTelegramInput, setShowTelegramInput] = useState(false);
   const [urlName, setUrlName] = useState('');
   const [urlLink, setUrlLink] = useState('');
+  const [tgName, setTgName] = useState('');
+  const [tgUrl, setTgUrl] = useState('');
+  const [tgChannel, setTgChannel] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [viewingAttachmentId, setViewingAttachmentId] = useState<string | null>(null);
@@ -103,13 +108,20 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
     e.preventDefault();
     if (!urlLink.trim()) return;
 
-    const attachmentId = 'pdf_link_' + Date.now();
+    const isTg = isTelegramUrl(urlLink);
+    const attachmentId = (isTg ? 'tg_note_' : 'pdf_link_') + Date.now();
+    const cleanUrl = isTg ? cleanTelegramUrl(urlLink.trim()) : urlLink.trim();
+    const tgDetails = isTg ? parseTelegramDetails(cleanUrl) : null;
+
     const newAttachment: TopicPdfAttachment = {
       id: attachmentId,
-      name: urlName.trim() || `${topicName} Study PDF`,
+      name: urlName.trim() || (isTg ? `${topicName} Telegram Notes` : `${topicName} Study PDF`),
       fileSize: 0,
       uploadedAt: new Date().toISOString(),
-      url: urlLink.trim()
+      url: cleanUrl,
+      type: isTg ? 'telegram' : 'link',
+      telegramUrl: isTg ? cleanUrl : undefined,
+      channelName: isTg ? tgDetails?.channelOrGroup : undefined
     };
 
     onAddAttachment(newAttachment);
@@ -117,7 +129,36 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
     setUrlName('');
     setUrlLink('');
     setShowUrlInput(false);
-    setSuccessNotice('PDF link attached successfully!');
+    setSuccessNotice(isTg ? 'Telegram notes link attached successfully! ✈️' : 'PDF link attached successfully!');
+    setTimeout(() => setSuccessNotice(null), 3000);
+  };
+
+  const handleAddTelegramLink = (e: React.FormEvent) => {
+    e.preventDefault();
+    const raw = tgUrl.trim();
+    if (!raw) return;
+
+    const clean = cleanTelegramUrl(raw);
+    const details = parseTelegramDetails(raw);
+    const attachmentId = 'tg_note_' + Date.now();
+    const newAttachment: TopicPdfAttachment = {
+      id: attachmentId,
+      name: tgName.trim() || `${topicName} Telegram Notes`,
+      fileSize: 0,
+      uploadedAt: new Date().toISOString(),
+      type: 'telegram',
+      telegramUrl: clean,
+      url: clean,
+      channelName: tgChannel.trim() || details.channelOrGroup
+    };
+
+    onAddAttachment(newAttachment);
+    soundManager.playCompleteChime();
+    setTgName('');
+    setTgUrl('');
+    setTgChannel('');
+    setShowTelegramInput(false);
+    setSuccessNotice('Telegram notes attached successfully! ✈️');
     setTimeout(() => setSuccessNotice(null), 3000);
   };
 
@@ -185,7 +226,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0 flex-wrap">
           <input
             type="file"
             ref={fileInputRef}
@@ -206,7 +247,23 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
 
           <button
             type="button"
-            onClick={() => setShowUrlInput(p => !p)}
+            onClick={() => {
+              setShowTelegramInput(p => !p);
+              setShowUrlInput(false);
+            }}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#229ED9] hover:bg-[#1E88C7] text-white text-xs font-bold shadow-sm transition-all cursor-pointer active:scale-95"
+            title="Attach Telegram notes or PDF link"
+          >
+            <TelegramIcon className="w-3.5 h-3.5 fill-white" />
+            <span>+ Telegram Notes</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setShowUrlInput(p => !p);
+              setShowTelegramInput(false);
+            }}
             className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-all cursor-pointer"
             title="Attach PDF via link"
           >
@@ -229,6 +286,91 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
+      )}
+
+      {/* Telegram Input Form (when toggled) */}
+      {showTelegramInput && (
+        <form onSubmit={handleAddTelegramLink} className="p-3.5 sm:p-4 rounded-2xl bg-[#229ED9]/5 border border-[#229ED9]/30 space-y-3 animate-fade-in shadow-xs">
+          <div className="flex items-center justify-between pb-1.5 border-b border-[#229ED9]/20">
+            <span className="text-xs font-bold text-[#0088cc] dark:text-[#64B5F6] flex items-center gap-1.5 font-mono uppercase">
+              <TelegramIcon className="w-4 h-4 fill-current" />
+              <span>Attach Telegram Notes / PDF Channel Link</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowTelegramInput(false)}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label className="block text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
+                Notes Title
+              </label>
+              <input
+                type="text"
+                value={tgName}
+                onChange={e => setTgName(e.target.value)}
+                placeholder="e.g. Handwritten Class Notes & Formulas"
+                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-[#229ED9]/30 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#229ED9]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
+                Telegram Link / Handle <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={tgUrl}
+                onChange={e => {
+                  const val = e.target.value;
+                  setTgUrl(val);
+                  if (!tgChannel) {
+                    const d = parseTelegramDetails(val);
+                    if (d.channelOrGroup) setTgChannel(d.channelOrGroup);
+                  }
+                }}
+                placeholder="e.g. https://t.me/channel/123 or @channel"
+                required
+                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-[#229ED9]/30 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#229ED9]"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
+                Channel / Instructor Source (Optional)
+              </label>
+              <input
+                type="text"
+                value={tgChannel}
+                onChange={e => setTgChannel(e.target.value)}
+                placeholder="e.g. @SSC_Maths_Notes / Gagan Sir"
+                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-[#229ED9]/30 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#229ED9]"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setShowTelegramInput(false)}
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#229ED9] hover:bg-[#1E88C7] text-white text-xs font-bold cursor-pointer active:scale-95 shadow-xs transition-all"
+            >
+              <TelegramIcon className="w-3.5 h-3.5 fill-white" />
+              <span>Attach Telegram Notes</span>
+            </button>
+          </div>
+        </form>
       )}
 
       {/* URL Input Form (when toggled) */}
@@ -272,93 +414,175 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
         </form>
       )}
 
-      {/* PDF List */}
+      {/* PDF & Notes List */}
       {attachments.length === 0 ? (
-        <div className="py-6 px-4 text-center rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200 dark:border-slate-800 space-y-2">
-          <img src="/pdf_icon_3d.png" alt="No PDFs" className="w-12 h-12 object-contain mx-auto drop-shadow-md" />
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            No PDFs attached for this topic yet. Click <strong>+ Upload PDF</strong> to attach your study notes.
+        <div className="py-6 px-4 text-center rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="flex items-center justify-center -space-x-1">
+            <img src="/pdf_icon_3d.png" alt="PDF" className="w-10 h-10 object-contain drop-shadow-md" />
+            <div className="w-9 h-9 rounded-xl bg-[#229ED9] text-white flex items-center justify-center shadow-md">
+              <TelegramIcon className="w-5 h-5 fill-white" />
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+            No PDFs or Telegram notes attached yet. Upload a local PDF or link study materials directly from Telegram channels!
           </p>
+          <div className="flex items-center justify-center gap-2 flex-wrap pt-1">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3.5 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold cursor-pointer active:scale-95 shadow-xs"
+            >
+              + Upload PDF
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowTelegramInput(true);
+                setShowUrlInput(false);
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-[#229ED9] hover:bg-[#1E88C7] text-white text-xs font-bold cursor-pointer active:scale-95 shadow-xs flex items-center gap-1.5"
+            >
+              <TelegramIcon className="w-3.5 h-3.5 fill-white" />
+              <span>+ Telegram Notes</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-2">
-          {attachments.map(att => (
-            <div
-              key={att.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#141418] border border-slate-200 dark:border-[#272730] hover:border-rose-500/30 transition-all gap-2.5 sm:gap-3 group"
-            >
-              {/* File details */}
-              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-                  <img src="/pdf_icon_3d.png" alt="PDF Document" className="w-full h-full object-contain drop-shadow-sm group-hover:scale-105 transition-transform" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h5 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-500 transition-colors">
-                    {att.name}
-                  </h5>
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5 flex-wrap">
-                    <span className="px-1.5 py-0.2 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[10px] sm:text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">
-                      {formatFileSize(att.fileSize)}
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#85877E]" />
-                      <span>{new Date(att.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
-                    </span>
-                    {att.url && <span className="text-blue-400 font-bold">(Web Link)</span>}
+          {attachments.map(att => {
+            const isTg = att.type === 'telegram' || isTelegramUrl(att.url || att.telegramUrl);
+            const tgDetails = isTg ? parseTelegramDetails(att.telegramUrl || att.url) : null;
+
+            return (
+              <div
+                key={att.id}
+                className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#141418] border ${
+                  isTg
+                    ? 'border-slate-200 dark:border-[#272730] hover:border-[#229ED9]/40'
+                    : 'border-slate-200 dark:border-[#272730] hover:border-rose-500/30'
+                } transition-all gap-2.5 sm:gap-3 group`}
+              >
+                {/* File details */}
+                <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                  {isTg ? (
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-br from-[#229ED9] to-[#0088cc] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0 group-hover:scale-105 transition-transform">
+                      <TelegramIcon className="w-5 h-5 fill-white" />
+                    </div>
+                  ) : (
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                      <img src="/pdf_icon_3d.png" alt="PDF Document" className="w-full h-full object-contain drop-shadow-sm group-hover:scale-105 transition-transform" />
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <h5
+                      className={`text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate ${
+                        isTg ? 'group-hover:text-[#229ED9] dark:group-hover:text-[#64B5F6]' : 'group-hover:text-rose-500'
+                      } transition-colors`}
+                    >
+                      {att.name}
+                    </h5>
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5 flex-wrap">
+                      {isTg ? (
+                        <span className="px-1.5 py-0.2 rounded bg-[#229ED9]/15 text-[10px] sm:text-[11px] font-bold text-[#0088cc] dark:text-[#64B5F6] font-mono flex items-center gap-1">
+                          <TelegramIcon className="w-3 h-3 fill-current" />
+                          <span>Telegram Notes</span>
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.2 rounded bg-[#EEEEE8] dark:bg-[#23232A] text-[10px] sm:text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">
+                          {formatFileSize(att.fileSize)}
+                        </span>
+                      )}
+
+                      {(att.channelName || tgDetails?.channelOrGroup) && (
+                        <>
+                          <span>•</span>
+                          <span className="text-[#229ED9] dark:text-[#64B5F6] font-mono font-medium">
+                            {att.channelName || tgDetails?.channelOrGroup}
+                          </span>
+                        </>
+                      )}
+
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#85877E]" />
+                        <span>{new Date(att.uploadedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                      </span>
+                      {att.url && !isTg && <span className="text-blue-400 font-bold">(Web Link)</span>}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E2E8F0] dark:border-[#272730] justify-end flex-wrap w-full sm:w-auto">
-                {/* 0. Split-Screen Study Mode Button */}
-                {onOpenSplitStudy && (
+                {/* Action Buttons */}
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E2E8F0] dark:border-[#272730] justify-end flex-wrap w-full sm:w-auto">
+                  {/* Split-Screen Study Mode Button */}
+                  {onOpenSplitStudy && (
+                    <button
+                      type="button"
+                      onClick={() => onOpenSplitStudy(att.id)}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] dark:text-[#C4B5FD] border border-[#8B5CF6]/30 text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                      title="Open PDF/Material and Notes side-by-side in Split Study Mode"
+                    >
+                      <Columns className="w-3.5 h-3.5" />
+                      <span>Split Study</span>
+                    </button>
+                  )}
+
+                  {/* If Telegram: Open in Telegram Button */}
+                  {isTg ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        const targetUrl = cleanTelegramUrl(att.telegramUrl || att.url);
+                        window.open(targetUrl, '_blank');
+                      }}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-[#229ED9] hover:bg-[#1E88C7] text-white text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                      title="Open Telegram resource in app or browser"
+                    >
+                      <TelegramIcon className="w-3.5 h-3.5 fill-white" />
+                      <span>Open Telegram</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                  ) : (
+                    <>
+                      {/* In-App View PDF Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleOpenPdf(att)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-600 dark:text-blue-400 border border-blue-500/30 text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                        title="Read PDF in distraction-free In-App Viewer"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </button>
+
+                      {/* Download PDF Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadPdf(att)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
+                        title="Download PDF to device"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Download</span>
+                      </button>
+                    </>
+                  )}
+
+                  {/* Delete Attachment Button */}
                   <button
                     type="button"
-                    onClick={() => onOpenSplitStudy(att.id)}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-[#8B5CF6]/15 hover:bg-[#8B5CF6]/25 text-[#8B5CF6] dark:text-[#C4B5FD] border border-[#8B5CF6]/30 text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
-                    title="Open PDF and Notes side-by-side in Split Study Mode"
+                    onClick={() => handleDelete(att)}
+                    className="p-1.5 rounded-lg sm:rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer shrink-0"
+                    title="Remove Attachment"
                   >
-                    <Columns className="w-3.5 h-3.5" />
-                    <span>Split Study</span>
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
-                )}
-
-                {/* 1. In-App View PDF Button */}
-                <button
-                  type="button"
-                  onClick={() => handleOpenPdf(att)}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-600 dark:text-blue-400 border border-blue-500/30 text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
-                  title="Read PDF in distraction-free In-App Viewer"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>View</span>
-                </button>
-
-                {/* 2. Download PDF Button */}
-                <button
-                  type="button"
-                  onClick={() => handleDownloadPdf(att)}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
-                  title="Download PDF to device"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download</span>
-                </button>
-
-                {/* 3. Delete PDF Button */}
-                <button
-                  type="button"
-                  onClick={() => handleDelete(att)}
-                  className="p-1.5 rounded-lg sm:rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer shrink-0"
-                  title="Remove PDF"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

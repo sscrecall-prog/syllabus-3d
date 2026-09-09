@@ -73,19 +73,19 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
 
   return (
     <>
-      <div className="relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#141624] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] p-3.5 sm:p-5 overflow-hidden space-y-3">
+      <div className="relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#141624] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] p-3 sm:p-4 overflow-hidden space-y-2.5">
         {/* Subtle Ambient Radial Backlight */}
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-32 bg-blue-500/5 dark:bg-[#7AA2F7]/10 rounded-full blur-2xl pointer-events-none" />
 
         {/* Clean Meta Header with Quick Edit Trigger */}
         <div className="relative z-10 flex items-center justify-between gap-2 min-w-0">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
-              <Target className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.4]" />
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="w-7 h-7 sm:w-8.5 sm:h-8.5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-[#415C9E] text-white dark:text-[#0B0B0D] flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+              <Target className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 stroke-[2.4]" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-[#F5F5F7] uppercase tracking-wide truncate">
+                <h3 className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-[#F5F5F7] uppercase tracking-wide truncate">
                   {currentExam.name} COUNTDOWN
                 </h3>
                 <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
@@ -110,7 +110,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
               soundManager.playClick();
               setIsEditModalOpen(true);
             }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] border border-slate-200/80 dark:border-white/[0.08] text-slate-700 dark:text-slate-300 text-[11px] font-bold transition-all cursor-pointer shrink-0 active:scale-95"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] border border-slate-200/80 dark:border-white/[0.08] text-slate-700 dark:text-slate-300 text-[11px] font-bold transition-all cursor-pointer shrink-0 active:scale-95"
             title="Edit Exam Date & Target"
           >
             <Edit2 className="w-3 h-3 text-[#2563EB] dark:text-[#7AA2F7]" />
@@ -119,19 +119,19 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
         </div>
 
         {/* 4-Digit Modern Glass Flip-Clock Cards */}
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-3 relative z-10">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 relative z-10">
           {cards.map(c => (
             <div
               key={c.label}
-              className="relative py-2.5 sm:py-4 px-1 sm:px-2 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-[#1A1C2C] border border-slate-200/80 dark:border-white/[0.08] text-center shadow-xs flex flex-col items-center justify-center transition-all duration-200 hover:border-blue-500/40 dark:hover:border-[#7AA2F7]/40 group"
+              className="relative py-2 sm:py-3 px-1 sm:px-2 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-[#1A1C2C] border border-slate-200/80 dark:border-white/[0.08] text-center shadow-xs flex flex-col items-center justify-center transition-all duration-200 hover:border-blue-500/40 dark:hover:border-[#7AA2F7]/40 group"
             >
               {/* Split Horizontal Horizon Line */}
               <div className="absolute inset-x-0 top-1/2 h-[1px] bg-black/[0.04] dark:bg-white/[0.04] pointer-events-none" />
 
-              <span className={`text-xl sm:text-3xl md:text-4xl font-black font-mono tabular-nums tracking-tight block ${c.color} drop-shadow-xs transition-transform group-hover:scale-105`}>
+              <span className={`text-xl sm:text-2xl md:text-3xl font-black font-mono tabular-nums tracking-tight block ${c.color} drop-shadow-xs transition-transform group-hover:scale-105`}>
                 {String(c.value).padStart(2, '0')}
               </span>
-              <span className="text-[9px] sm:text-[11px] font-bold text-slate-500 dark:text-[#94A3B8] uppercase tracking-widest block font-mono mt-0.5 sm:mt-1">
+              <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-[#94A3B8] uppercase tracking-widest block font-mono mt-0.5">
                 {c.label}
               </span>
             </div>

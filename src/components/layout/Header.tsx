@@ -232,22 +232,6 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
 
-          {/* PWA Install Button (Shown when installable on desktop/mobile) */}
-          {isInstallable && !isInstalled && (
-            <button
-              onClick={async () => {
-                haptics.medium();
-                soundManager.playClick();
-                await triggerInstall();
-              }}
-              className="h-9 hidden sm:flex items-center gap-1.5 px-2.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1d4ed8] dark:from-[#7AA2F7] dark:to-[#5B8BF5] text-white dark:text-[#0B0B0D] text-xs font-black shadow-xs hover:opacity-95 transition-all cursor-pointer shrink-0 active:scale-95"
-              title="Install Syllabus 3D App on device"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Install App</span>
-            </button>
-          )}
-
           {/* Theme Toggle (Light <-> Dark) */}
           <button
             onClick={() => {
@@ -277,7 +261,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenSettings();
               }
             }}
-            className={`h-9 w-9 rounded-xl bg-gradient-to-tr ${
+            className={`h-9 w-9 rounded-full bg-gradient-to-tr ${
               profile.avatarColor || 'from-[#2563EB] to-indigo-600'
             } border border-slate-200/80 dark:border-white/[0.08] text-white font-bold flex items-center justify-center text-xs shadow-sm cursor-pointer overflow-hidden active:scale-95 hover:border-[#2563EB] dark:hover:border-[#7AA2F7] transition-all shrink-0`}
             title={`Active Profile: ${profile.name || 'Aspirant'} (Click to switch)`}

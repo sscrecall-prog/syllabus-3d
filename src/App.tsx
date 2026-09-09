@@ -672,7 +672,7 @@ export const App: React.FC = () => {
 
       {/* Main Workspace Frame (Gemini-Style Smooth Width Transition) */}
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
-        isSidebarCollapsed ? 'md:pl-0' : 'md:pl-64'
+        isSidebarCollapsed ? 'md:pl-0' : 'md:pl-[250px]'
       }`}>
         <Header
           onOpenSearch={() => {
@@ -694,7 +694,7 @@ export const App: React.FC = () => {
           onTouchStart={handleMainTouchStart}
           onTouchMove={handleMainTouchMove}
           onTouchEnd={handleMainTouchEnd}
-          className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-28 md:pb-8 touch-pan-y overscroll-contain focus:outline-none"
+          className="flex-1 p-3 sm:p-4 md:p-5 max-w-[1440px] w-full mx-auto pb-20 md:pb-6 touch-pan-y overscroll-contain focus:outline-none"
         >
           <div key={currentView} className="animate-view-fade">
             {/* Initial Dashboard View (Instant, Non-Lazy) */}
