@@ -7,6 +7,7 @@ import { SyllabusProvider } from './context/SyllabusContext';
 import { TimerProvider } from './context/TimerContext';
 import { RoutineProvider } from './context/RoutineContext';
 import { PinLockProvider } from './context/PinLockContext';
+import { GoogleDriveProvider } from './context/GoogleDriveContext';
 import './index.css';
 import 'katex/dist/katex.min.css';
 
@@ -80,13 +81,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <AuthProvider>
         <SyllabusProvider>
-          <RoutineProvider>
-            <TimerProvider>
-              <PinLockProvider>
-                <App />
-              </PinLockProvider>
-            </TimerProvider>
-          </RoutineProvider>
+          <GoogleDriveProvider>
+            <RoutineProvider>
+              <TimerProvider>
+                <PinLockProvider>
+                  <App />
+                </PinLockProvider>
+              </TimerProvider>
+            </RoutineProvider>
+          </GoogleDriveProvider>
         </SyllabusProvider>
       </AuthProvider>
     </ThemeProvider>

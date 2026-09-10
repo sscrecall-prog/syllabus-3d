@@ -52,6 +52,7 @@ import { CreateProfileModal } from '../modals/CreateProfileModal';
 import { SetPinModal } from '../security/SetPinModal';
 import { usePinLock } from '../../context/PinLockContext';
 import { UserProfileItem } from '../../types/syllabus';
+import { GoogleDriveBackupCard } from '../settings/GoogleDriveBackupCard';
 
 type SettingsTab = 'profiles' | 'exam' | 'appearance' | 'sound' | 'timer' | 'data' | 'security';
 
@@ -520,7 +521,7 @@ export const SettingsView: React.FC = () => {
               }}
               className={`flex-1 min-w-[95px] sm:min-w-[110px] py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap ${
                 isActive
-                  ? 'bg-[#11120F] dark:bg-white text-white dark:text-black shadow-xs font-black'
+                  ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-xs font-black'
                   : 'text-[#65675F] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#20212E] hover:text-[#11120F] dark:hover:text-white'
               }`}
             >
@@ -1380,6 +1381,9 @@ export const SettingsView: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Optional Google Drive Cloud Backup (Gmail) */}
+          <GoogleDriveBackupCard />
 
           {/* Dual-Tier IndexedDB Safety Snapshot Card */}
           <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] space-y-2.5 sm:space-y-3">
