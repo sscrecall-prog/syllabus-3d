@@ -18,6 +18,7 @@ import { haptics } from '../../utils/haptics';
 interface AddTopicModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenAiArchitect?: () => void;
   initialSubjectId?: string;
   initialChapterId?: string;
   defaultMode?: 'single' | 'bulk';
@@ -37,6 +38,7 @@ const PALETTE = [
 export const AddTopicModal: React.FC<AddTopicModalProps> = ({
   isOpen,
   onClose,
+  onOpenAiArchitect,
   initialSubjectId,
   initialChapterId,
   defaultMode = 'single'
@@ -274,7 +276,32 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({
 
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="px-5 sm:px-6 py-4 overflow-y-auto space-y-4 flex-1">
-          
+          {onOpenAiArchitect && (
+            <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 border border-blue-500/25 flex items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">Have an official syllabus PDF or document?</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">AI Architect creates Subjects, Chapters & Subtopics in 1-click</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  onClose();
+                  onOpenAiArchitect();
+                }}
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-black shadow-xs hover:shadow-md transition-all shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Launch AI</span>
+              </button>
+            </div>
+          )}
+
           {/* CURRICULUM PLACEMENT (Bento Section for Subject & Chapter) */}
           <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-[#171823] border border-slate-200/70 dark:border-[#252636] space-y-3.5">
             <div className="flex items-center justify-between">

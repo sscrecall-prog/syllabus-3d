@@ -37,6 +37,7 @@ import { calculatePacingForecast } from '../../utils/pacingCalculator';
 interface SyllabusViewProps {
   onOpenTopicDrawer: (topic: Topic, subName: string, chName: string) => void;
   onOpenAddTopic: (subjectId?: string, chapterId?: string) => void;
+  onOpenAiArchitect?: () => void;
   onOpenFocus?: (topicId?: string) => void;
   initialSubjectId?: string;
   onSelectSubjectId?: (id: string) => void;
@@ -47,6 +48,7 @@ interface SyllabusViewProps {
 export const SyllabusView: React.FC<SyllabusViewProps> = ({
   onOpenTopicDrawer,
   onOpenAddTopic,
+  onOpenAiArchitect,
   onOpenFocus,
   initialSubjectId,
   onSelectSubjectId,
@@ -1385,7 +1387,21 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              {onOpenAiArchitect && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    onOpenAiArchitect();
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-black transition-all cursor-pointer shadow-xs active:scale-[0.97] shrink-0 border border-white/20"
+                  title="Extract complete syllabus from PDF or text using AI"
+                >
+                  <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>AI Syllabus Architect</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
@@ -1440,17 +1456,30 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   Start building your custom exam curriculum. Add your first subject like Mathematics, General Studies, or English.
                 </p>
               </div>
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-sm mx-auto">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-md mx-auto flex-wrap">
+                {onOpenAiArchitect && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playClick();
+                      onOpenAiArchitect();
+                    }}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs sm:text-[13px] font-black shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                  >
+                    <Sparkles className="w-4 h-4 stroke-[2.5]" />
+                    <span>Upload Syllabus (PDF / AI)</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
                     soundManager.playClick();
                     setIsAddSubjectOpen(true);
                   }}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-indigo-600 dark:from-[#7AA2F7] dark:to-indigo-400 text-white dark:text-[#0B0C15] text-xs sm:text-[13px] font-black shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-600 dark:bg-[#7AA2F7] dark:hover:bg-[#6894f6] text-white dark:text-[#0B0C15] text-xs sm:text-[13px] font-black shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                 >
                   <Plus className="w-4 h-4 stroke-[3]" />
-                  <span>Add First Subject</span>
+                  <span>Add Subject</span>
                 </button>
                 {onOpenAddTopic && (
                   <button
@@ -1459,9 +1488,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                       soundManager.playClick();
                       onOpenAddTopic();
                     }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-200/80 dark:bg-[#25283D] text-slate-800 dark:text-[#E2E8F0] border border-slate-300/80 dark:border-white/[0.08] hover:border-[#2563EB] text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                    className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-slate-200/80 dark:bg-[#25283D] text-slate-800 dark:text-[#E2E8F0] border border-slate-300/80 dark:border-white/[0.08] hover:border-[#2563EB] text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                   >
-                    <span>Bulk Paste Topics</span>
+                    <span>Bulk Paste</span>
                   </button>
                 )}
               </div>

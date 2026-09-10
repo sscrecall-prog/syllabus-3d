@@ -30,6 +30,7 @@ import {
   Top3Target,
   DailyReflection
 } from '../types/syllabus';
+import { ExtractedSyllabusResult } from '../types/aiSyllabus';
 import { INITIAL_EXAMS, INITIAL_ACHIEVEMENTS, INITIAL_PROFILE, INITIAL_ACTIVITY_HISTORY } from '../data/initialData';
 import {
   calculateInitialRevisions,
@@ -305,6 +306,10 @@ interface SyllabusContextType {
   addTopic: (subjectId: string, chapterId: string, topicData: Partial<Topic> & { name: string }) => void;
   addCustomTopicWithHierarchy: (payload: CreateCustomTopicPayload) => void;
   addMultipleCustomTopicsWithHierarchy: (payload: CreateMultipleCustomTopicsPayload) => void;
+  importAiGeneratedSyllabus: (
+    payload: ExtractedSyllabusResult,
+    targetMode: 'new_exam' | 'merge_current'
+  ) => void;
 
   addSubject: (subjectData: { name: string; color?: string; icon?: string; initialChapterName?: string }) => void;
   editSubject: (subjectId: string, updates: { name?: string; color?: string; icon?: string }) => void;
@@ -1432,6 +1437,110 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     soundManager.playCompleteChime();
     confetti({ particleCount: 45, spread: 60, origin: { y: 0.8 } });
+  };
+
+  const importAiGeneratedSyllabus = (
+    payload: ExtractedSyllabusResult,
+    targetMode: 'new_exam' | 'merge_current'
+  ) => {
+    if (!payload.subjects || payload.subjects.length === 0) return;
+
+    // 1. Transform ExtractedSubjectItem[] to Subject[]
+    const transformedSubjects: Subject[] = payload.subjects.map((sub, sIdx) => {
+      const subId = 'sub_' + Date.now() + '_' + sIdx + '_' + Math.random().toString(36).substring(2, 6);
+      const transformedChapters: Chapter[] = sub.chapters.map((ch, cIdx) => {
+        const chId = 'ch_' + Date.now() + '_' + cIdx + '_' + Math.random().toString(36).substring(2, 6);
+        const transformedTopics: Topic[] = ch.topics.map((t, tIdx) => ({
+          id: 'top_' + Date.now() + '_' + tIdx + '_' + Math.random().toString(36).substring(2, 7),
+          name: t.name.trim(),
+          subtopics: t.subtopics && t.subtopics.length > 0 ? t.subtopics : ['Core Concepts'],
+          status: 'not_started' as TopicStatus,
+          completionPercentage: 0,
+          studyTimeMinutes: 0,
+          lastStudied: null,
+          nextRevision: null,
+          accuracy: 0,
+          mockAttempts: 0,
+          difficulty: t.difficulty || 'Medium',
+          isWeak: false,
+          weightage: t.weightage || 3,
+          notes: '',
+          mistakes: []
+        }));
+
+        return {
+          id: chId,
+          name: ch.name.trim(),
+          description: ch.description || 'Module unit',
+          topics: transformedTopics
+        };
+      });
+
+      return {
+        id: subId,
+        name: sub.name.trim(),
+        icon: sub.icon || '📚',
+        color: sub.color || '#3b82f6',
+        totalChapters: transformedChapters.length,
+        chapters: transformedChapters
+      };
+    });
+
+    if (targetMode === 'new_exam') {
+      const newExamId = 'exam_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      const newExam: Exam = {
+        id: newExamId,
+        name: payload.examName.trim() || 'Custom Exam Target',
+        code: (payload.examName.substring(0, 8).toUpperCase().replace(/\s+/g, '_')) || 'EXAM',
+        targetYear: payload.targetYear || new Date().getFullYear(),
+        examDate: `${payload.targetYear || new Date().getFullYear()}-12-31`,
+        subjects: transformedSubjects
+      };
+
+      setExams(prev => [...prev, newExam]);
+      updateProfile({ selectedExamId: newExamId });
+    } else {
+      // Merge into current exam
+      setExams(prevExams => {
+        const targetExamId = currentExam?.id || profile.selectedExamId || (prevExams[0]?.id);
+        return prevExams.map(exam => {
+          if (targetExamId && exam.id !== targetExamId) return exam;
+
+          let updatedSubjects = [...exam.subjects];
+
+          for (const newSub of transformedSubjects) {
+            const existingSubIndex = updatedSubjects.findIndex(
+              s => s.name.trim().toLowerCase() === newSub.name.trim().toLowerCase()
+            );
+
+            if (existingSubIndex >= 0) {
+              const existingSub = updatedSubjects[existingSubIndex];
+              const mergedChapters = [...existingSub.chapters, ...newSub.chapters];
+              updatedSubjects[existingSubIndex] = {
+                ...existingSub,
+                chapters: mergedChapters,
+                totalChapters: mergedChapters.length
+              };
+            } else {
+              updatedSubjects.push(newSub);
+            }
+          }
+
+          return {
+            ...exam,
+            subjects: updatedSubjects
+          };
+        });
+      });
+    }
+
+    soundManager.playCompleteChime();
+    haptics.success();
+    confetti({
+      particleCount: 65,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
   };
 
   const addSubject = (subjectData: { name: string; color?: string; icon?: string; initialChapterName?: string }) => {
@@ -2701,6 +2810,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     addTopic,
     addCustomTopicWithHierarchy,
     addMultipleCustomTopicsWithHierarchy,
+    importAiGeneratedSyllabus,
     addSubject,
     editSubject,
     deleteSubject,

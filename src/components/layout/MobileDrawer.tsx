@@ -16,7 +16,8 @@ import {
   ChevronRight,
   GraduationCap,
   Clock,
-  Users
+  Users,
+  Sparkles
 } from 'lucide-react';
 import { AppView } from './Sidebar';
 import { useSyllabus } from '../../context/SyllabusContext';
@@ -29,6 +30,7 @@ interface MobileDrawerProps {
   activeView: AppView;
   onSelectView: (view: AppView) => void;
   onOpenAddTopic?: () => void;
+  onOpenAiArchitect?: () => void;
   onOpenFocus?: () => void;
   onOpenSearch?: () => void;
   onOpenProfileSwitcher?: () => void;
@@ -40,6 +42,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   activeView,
   onSelectView,
   onOpenAddTopic,
+  onOpenAiArchitect,
   onOpenFocus,
   onOpenSearch,
   onOpenProfileSwitcher
@@ -283,8 +286,24 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             )}
           </div>
 
-          {/* 2. DUAL ACTION BUTTONS (ADD TARGET & FOCUS MODE) */}
-          <div className="grid grid-cols-2 gap-2 pt-1">
+          {/* 2. ACTION BUTTONS: AI ARCHITECT, ADD TARGET & FOCUS MODE */}
+          <div className="space-y-2 pt-1">
+            {onOpenAiArchitect && (
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  haptics.light();
+                  onClose();
+                  onOpenAiArchitect();
+                }}
+                className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all cursor-pointer border border-white/20 tap-bounce"
+              >
+                <Sparkles className="w-4 h-4 stroke-[2.5]" />
+                <span>AI Syllabus Architect (PDF / Text)</span>
+              </button>
+            )}
+
+            <div className="grid grid-cols-2 gap-2">
             {onOpenAddTopic && (
               <button
                 onClick={() => {
@@ -315,6 +334,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
               </button>
             )}
           </div>
+        </div>
 
           {/* 3. GROUPED NAVIGATION SECTIONS */}
           <div className="space-y-4 pt-1">

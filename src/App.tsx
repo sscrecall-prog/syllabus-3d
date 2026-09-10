@@ -43,6 +43,7 @@ const RevisionSessionModal = lazy(() => import('./components/modals/RevisionSess
 const PomodoroFocusModal = lazy(() => import('./components/focus/PomodoroFocusModal').then(m => ({ default: m.PomodoroFocusModal })));
 const CommandSearchModal = lazy(() => import('./components/modals/CommandSearchModal').then(m => ({ default: m.CommandSearchModal })));
 const AddTopicModal = lazy(() => import('./components/modals/AddTopicModal').then(m => ({ default: m.AddTopicModal })));
+const AiSyllabusArchitectModal = lazy(() => import('./components/modals/AiSyllabusArchitectModal').then(m => ({ default: m.AiSyllabusArchitectModal })));
 const FloatingTimerPermissionModal = lazy(() => import('./components/modals/FloatingTimerPermissionModal').then(m => ({ default: m.FloatingTimerPermissionModal })));
 const KeyboardShortcutsModal = lazy(() => import('./components/modals/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })));
 const ProfileSwitcherModal = lazy(() => import('./components/modals/ProfileSwitcherModal').then(m => ({ default: m.ProfileSwitcherModal })));
@@ -93,6 +94,7 @@ export const App: React.FC = () => {
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddTopicOpen, setIsAddTopicOpen] = useState(false);
+  const [isAiArchitectOpen, setIsAiArchitectOpen] = useState(false);
   const [addTopicTarget, setAddTopicTarget] = useState<{ subjectId?: string; chapterId?: string } | null>(null);
   const [isRevisionSessionOpen, setIsRevisionSessionOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
@@ -114,6 +116,15 @@ export const App: React.FC = () => {
   const handleCloseAddTopic = useCallback(() => {
     setIsAddTopicOpen(false);
     setAddTopicTarget(null);
+  }, []);
+
+  const handleOpenAiArchitect = useCallback(() => {
+    setIsAiArchitectOpen(true);
+    window.history.pushState({ modal: 'ai_architect' }, '');
+  }, []);
+
+  const handleCloseAiArchitect = useCallback(() => {
+    setIsAiArchitectOpen(false);
   }, []);
 
   const showShortcutToast = useCallback((msg: string) => {
@@ -181,6 +192,10 @@ export const App: React.FC = () => {
       setIsSearchOpen(false);
       return;
     }
+    if (isAiArchitectOpen) {
+      setIsAiArchitectOpen(false);
+      return;
+    }
     if (isAddTopicOpen) {
       handleCloseAddTopic();
       return;
@@ -222,6 +237,7 @@ export const App: React.FC = () => {
   }, [
     selectedTopic,
     isSearchOpen,
+    isAiArchitectOpen,
     isAddTopicOpen,
     isRevisionSessionOpen,
     isFullModalOpen,
@@ -240,6 +256,10 @@ export const App: React.FC = () => {
       }
       if (isSearchOpen) {
         setIsSearchOpen(false);
+        return;
+      }
+      if (isAiArchitectOpen) {
+        setIsAiArchitectOpen(false);
         return;
       }
       if (isAddTopicOpen) {
@@ -337,6 +357,10 @@ export const App: React.FC = () => {
         }
         if (isSearchOpen) {
           setIsSearchOpen(false);
+          return;
+        }
+        if (isAiArchitectOpen) {
+          setIsAiArchitectOpen(false);
           return;
         }
         if (isAddTopicOpen) {
@@ -639,6 +663,7 @@ export const App: React.FC = () => {
         activeView={currentView}
         onSelectView={handleNavigate}
         onOpenAddTopic={() => handleOpenAddTopic()}
+        onOpenAiArchitect={handleOpenAiArchitect}
         onOpenFocus={() => handleLaunchFocus(undefined)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenProfileSwitcher={() => setIsProfileSwitcherOpen(true)}
@@ -658,6 +683,10 @@ export const App: React.FC = () => {
         onOpenAddTopic={() => {
           setIsMobileDrawerOpen(false);
           handleOpenAddTopic();
+        }}
+        onOpenAiArchitect={() => {
+          setIsMobileDrawerOpen(false);
+          handleOpenAiArchitect();
         }}
         onOpenFocus={() => {
           setIsMobileDrawerOpen(false);
@@ -739,6 +768,7 @@ export const App: React.FC = () => {
                   <SyllabusView
                     onOpenTopicDrawer={handleOpenTopicDrawer}
                     onOpenAddTopic={handleOpenAddTopic}
+                    onOpenAiArchitect={handleOpenAiArchitect}
                     initialSubjectId={targetSubjectId}
                     onSelectSubjectId={setTargetSubjectId}
                     onBackToDashboard={() => handleNavigate('overview')}
@@ -877,8 +907,18 @@ export const App: React.FC = () => {
             <AddTopicModal
               isOpen={isAddTopicOpen}
               onClose={handleCloseAddTopic}
+              onOpenAiArchitect={handleOpenAiArchitect}
               initialSubjectId={addTopicTarget?.subjectId}
               initialChapterId={addTopicTarget?.chapterId}
+            />
+          </ViewErrorBoundary>
+        )}
+
+        {isAiArchitectOpen && (
+          <ViewErrorBoundary sectionName="AI Syllabus Architect Modal" onReset={handleCloseAiArchitect}>
+            <AiSyllabusArchitectModal
+              isOpen={isAiArchitectOpen}
+              onClose={handleCloseAiArchitect}
             />
           </ViewErrorBoundary>
         )}

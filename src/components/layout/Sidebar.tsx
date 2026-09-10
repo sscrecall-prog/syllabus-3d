@@ -15,7 +15,8 @@ import {
   Keyboard,
   Clock,
   Users,
-  PanelLeftClose
+  PanelLeftClose,
+  Sparkles
 } from 'lucide-react';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { useAuth } from '../../context/AuthContext';
@@ -40,6 +41,7 @@ interface SidebarProps {
   activeView: AppView;
   onSelectView: (view: AppView) => void;
   onOpenAddTopic?: () => void;
+  onOpenAiArchitect?: () => void;
   onOpenFocus?: () => void;
   onOpenShortcuts?: () => void;
   onOpenProfileSwitcher?: () => void;
@@ -51,6 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeView,
   onSelectView,
   onOpenAddTopic,
+  onOpenAiArchitect,
   onOpenFocus,
   onOpenShortcuts,
   onOpenProfileSwitcher,
@@ -202,8 +205,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Action Buttons: Add Custom Topic & 3D Focus Chamber */}
+        {/* Action Buttons: AI Architect, Add Custom Topic & 3D Focus Chamber */}
         <div className="space-y-1">
+          {onOpenAiArchitect && (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onOpenAiArchitect();
+              }}
+              className="group relative w-full py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-blue-600/15 via-indigo-600/15 to-purple-600/15 hover:from-blue-600/25 hover:to-purple-600/25 text-blue-700 dark:text-[#93C5FD] border border-blue-500/30 dark:border-[#7AA2F7]/30 font-bold text-[12px] shadow-2xs flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-95 tap-bounce"
+              title="AI Syllabus Architect (PDF & Text)"
+            >
+              <div className="flex items-center gap-1.5 min-w-0">
+                <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-[#7AA2F7] shrink-0" />
+                <span className="truncate">AI Architect</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-black bg-blue-600 text-white dark:bg-[#7AA2F7] dark:text-[#0B0C15] shrink-0">
+                PDF
+              </span>
+            </button>
+          )}
+
           {onOpenAddTopic && (
             <button
               onClick={onOpenAddTopic}
