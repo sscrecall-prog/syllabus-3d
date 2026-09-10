@@ -695,6 +695,62 @@ html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-bl
   color: #93C5FD !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   WEAK AREAS & EXAMINER TRAPS HERO DASHBOARD BANNER
+   ══════════════════════════════════════════════════════════════════ */
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner,
+.weak-traps-hero-banner {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner h1,
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-banner-title,
+.weak-traps-hero-banner h1,
+.weak-traps-hero-banner .weak-banner-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner p,
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-banner-subtitle,
+.weak-traps-hero-banner p,
+.weak-traps-hero-banner .weak-banner-subtitle {
+  color: #CBD5E1 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-section-label,
+.weak-traps-hero-banner .weak-section-label {
+  color: #94A3B8 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner h4,
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-tile-count,
+.weak-traps-hero-banner h4,
+.weak-traps-hero-banner .weak-tile-count {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-pill-rose,
+.weak-traps-hero-banner .weak-pill-rose {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+  border: 1px solid rgba(244, 63, 94, 0.35) !important;
+  color: #FDA4AF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-pill-amber,
+.weak-traps-hero-banner .weak-pill-amber {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  color: #FCD34D !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-tile-btn,
+.weak-traps-hero-banner .weak-tile-btn {
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+
 
 
 

@@ -112,14 +112,14 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
     <div className="space-y-3.5 sm:space-y-6 pb-8 sm:pb-12 max-w-5xl mx-auto font-sans animate-fade-in">
       
       {/* 1. TOP HEADER DIAGNOSTICS BANNER WITH 3D CYBER CHESS TRAP MAZE BACKGROUND */}
-      <div className="p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0A0B12] border border-slate-200/80 dark:border-[#272738] shadow-2xl relative overflow-hidden text-slate-900 dark:text-white space-y-3 sm:space-y-4">
+      <div className="weak-traps-hero-banner p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0B0F19] via-[#0F1424] to-[#0A0C16] border border-white/[0.12] ring-1 ring-white/[0.06] shadow-2xl relative overflow-hidden text-white space-y-3 sm:space-y-4">
         
         {/* Full Uncropped High-Fidelity 3D Strategy & Diagnostics Artwork */}
         <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
           <img
             src="/weak_traps_banner.png"
             alt="Weak Areas & Examiner Traps Diagnostics 3D"
-            className="h-full w-auto max-w-none object-contain object-right opacity-60 sm:opacity-95 select-none"
+            className="h-full w-auto max-w-none object-contain object-right opacity-35 sm:opacity-80 select-none"
             loading="eager"
             decoding="async"
             width={600}
@@ -127,35 +127,38 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
           />
         </div>
 
-        {/* Multi-layered Glass Gradients for 100% Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0B12] via-[#0A0B12]/85 md:via-[#0A0B12]/40 to-transparent pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0B12]/80 via-transparent to-transparent pointer-events-none z-0" />
+        {/* Multi-layered High-Contrast Protection Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/95 sm:via-[#0B0F19]/85 md:via-[#0B0F19]/60 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/90 via-transparent to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none z-0" />
         
         {/* Subtle Ambient Glow Orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-rose-500/20 border border-rose-500/35 text-rose-400 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-rose-500/25 to-rose-600/15 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(244,63,94,0.25)]">
               <ShieldAlert className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-sm xs:text-base sm:text-xl font-black text-slate-900 dark:text-white font-sans uppercase tracking-tight drop-shadow-sm truncate">
+              <h1 className="weak-banner-title text-sm xs:text-base sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm truncate">
                 Weak Areas & Examiner Traps
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-[#C5C8D8] line-clamp-1 sm:line-clamp-none font-medium">
+              <p className="weak-banner-subtitle text-[11px] sm:text-xs text-slate-300 line-clamp-1 sm:line-clamp-none font-medium mt-0.5">
                 Targeted mistake analytics to eliminate blindspots and convert errors into marks.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-0.5 sm:pt-0">
-            <div className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-[10px] sm:text-xs font-mono font-bold backdrop-blur-md">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-0.5 sm:pt-0 font-mono font-bold text-[10px] sm:text-xs">
+            <div className="weak-pill-rose px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl backdrop-blur-md shadow-xs flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
               <span>{weakTopics.length} Weak Topics</span>
             </div>
-            <div className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] sm:text-xs font-mono font-bold backdrop-blur-md">
+            <div className="weak-pill-amber px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl backdrop-blur-md shadow-xs flex items-center gap-1.5">
+              <span>⚠️</span>
               <span>{fallacyStats.totalTraps} Logged Traps</span>
             </div>
           </div>
@@ -164,7 +167,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
         {/* 2. ROOT-CAUSE FALLACY INTERACTIVE TILES */}
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-            <span className="text-[10px] sm:text-[11px] font-bold text-[#C5C8D8] uppercase tracking-wider font-mono">
+            <span className="weak-section-label text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">
               Root-Cause Fallacy Breakdown
             </span>
             {selectedFallacy !== 'all' && (
@@ -173,7 +176,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                   soundManager.playClick();
                   setSelectedFallacy('all');
                 }}
-                className="text-[10px] sm:text-[11px] font-bold text-[#7AA2F7] hover:underline cursor-pointer"
+                className="text-[10px] sm:text-[11px] font-bold text-sky-400 hover:text-sky-300 hover:underline cursor-pointer font-mono"
               >
                 Clear Filter
               </button>
@@ -199,7 +202,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                     setSelectedFallacy(prev => (prev === tile.id ? 'all' : tile.id));
                   }}
                   aria-pressed={isSelected}
-                  className={`min-w-[96px] sm:min-w-0 flex-1 shrink-0 p-2 sm:p-3 rounded-xl sm:rounded-2xl border backdrop-blur-xl transition-all cursor-pointer text-center relative active:scale-95 ${tile.color} ${
+                  className={`weak-tile-btn min-w-[96px] sm:min-w-0 flex-1 shrink-0 p-2 sm:p-3 rounded-xl sm:rounded-2xl border backdrop-blur-xl transition-all cursor-pointer text-center relative active:scale-95 ${tile.color} ${
                     isSelected ? 'ring-2 ring-current shadow-lg scale-[1.02] bg-white/20' : 'shadow-sm'
                   }`}
                 >
@@ -209,7 +212,7 @@ export const WeakTopicsView: React.FC<WeakTopicsViewProps> = ({
                       {tile.label}
                     </span>
                   </div>
-                  <h4 className="text-lg sm:text-2xl font-black font-mono tracking-tight text-slate-900 dark:text-white tabular-nums">
+                  <h4 className="weak-tile-count text-lg sm:text-2xl font-black font-mono tracking-tight text-white tabular-nums">
                     {tile.count}
                   </h4>
                 </button>
