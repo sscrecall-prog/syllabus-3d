@@ -335,33 +335,34 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
       </div>
 
       {/* ═══════════════ 1. CONCISE & ATTRACTIVE HERO DASHBOARD WITH 3D GLASS CALENDAR BACKGROUND ═══════════════ */}
-      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0B0F19] via-[#101424] to-[#0A0C14] border border-white/[0.12] ring-1 ring-white/[0.06] shadow-2xl relative overflow-hidden text-white space-y-3.5 sm:space-y-4">
+      <div className="planner-hero-banner p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0B0F19] via-[#0F1424] to-[#0A0C16] border border-white/[0.12] ring-1 ring-white/[0.06] shadow-2xl relative overflow-hidden text-white space-y-3.5 sm:space-y-4">
         
-        {/* Full High-Fidelity 3D Planner & Stopwatch Artwork */}
+        {/* Modern Clean Planner Artwork Accent (Carefully positioned on right side) */}
         <div 
-          className="absolute inset-0 bg-cover bg-right pointer-events-none opacity-40 sm:opacity-85 mix-blend-screen scale-102 transition-transform duration-1000"
+          className="absolute -top-4 -right-4 sm:right-0 w-full sm:w-[50%] h-full bg-contain bg-right bg-no-repeat pointer-events-none opacity-25 sm:opacity-40 mix-blend-screen transition-transform duration-1000"
           style={{ backgroundImage: `url('/planner_banner.png')` }}
         />
 
-        {/* Multi-layered Glass Gradients for 100% Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/90 sm:via-[#0B0F19]/80 md:via-[#0B0F19]/40 to-transparent pointer-events-none" />
+        {/* Multi-layered High-Contrast Protection Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/95 sm:via-[#0B0F19]/85 md:via-[#0B0F19]/60 to-transparent pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/90 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none" />
         
-        {/* Subtle Ambient Glow Orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle Ambient Luminous Orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row */}
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 sm:w-11 h-9 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#FACC15] to-[#CA8A04] text-black flex items-center justify-center font-bold shadow-md shrink-0 border border-white/20">
-              <CalendarCheck className="w-4.5 sm:w-5 h-4.5 sm:h-5 stroke-[2.5]" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 sm:w-11 h-10 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-500/20 shrink-0 border border-amber-300/30">
+              <CalendarCheck className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-xl font-black text-white font-sans uppercase tracking-tight drop-shadow-sm">
+              <h1 className="planner-banner-title text-base sm:text-xl font-black text-white font-sans uppercase tracking-tight">
                 Daily Study Planner
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-300">
+              <p className="planner-banner-subtitle text-xs text-slate-300 font-medium">
                 Target tracking, daily sprints, and study queue
               </p>
             </div>
@@ -374,7 +375,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
               setTargetDate(getTodayDateString());
               setShowAddModal(true);
             }}
-            className="group relative w-full sm:w-auto justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#FACC15] via-[#EAB308] to-[#CA8A04] hover:from-[#fde047] hover:to-[#eab308] text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(250,204,21,0.35)] hover:shadow-[0_0_30px_rgba(250,204,21,0.55)] transition-all active:scale-95 cursor-pointer shrink-0 flex items-center gap-2 overflow-hidden border border-white/25"
+            className="planner-add-target-btn group relative w-full sm:w-auto justify-center px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-[13px] shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all active:scale-95 cursor-pointer shrink-0 flex items-center gap-2 overflow-hidden border border-amber-300/30"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <Plus className="w-4 h-4 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
@@ -383,63 +384,69 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         </div>
 
         {/* Concise Metric Bento Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 relative z-10">
           
           {/* Today's Velocity */}
-          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/[0.06] hover:bg-white/[0.09] backdrop-blur-xl border border-white/[0.1] hover:border-emerald-500/40 transition-all flex items-center justify-between shadow-lg group">
-            <div className="space-y-0.5">
-              <span className="text-[9.5px] sm:text-[11px] font-bold text-slate-400 uppercase font-mono tracking-wider">Velocity</span>
-              <h4 className="text-lg sm:text-xl font-black font-mono text-white leading-none tabular-nums">
+          <div className="planner-bento-card p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all flex items-center justify-between shadow-lg group">
+            <div className="space-y-1">
+              <span className="planner-stat-label text-[10px] sm:text-[11px] font-bold uppercase font-mono tracking-wider">Velocity</span>
+              <h4 className="planner-stat-val-white text-lg sm:text-2xl font-black font-mono leading-none tabular-nums">
                 {todayProgressPercent}%
               </h4>
-              <span className="text-[9.5px] sm:text-[11px] text-slate-400 font-mono tabular-nums">
+              <span className="planner-stat-sub-emerald text-[10px] sm:text-[11px] font-mono tabular-nums font-semibold">
                 {completedTodayCount}/{totalTodayCount} Done
               </span>
             </div>
-            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30 group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.5]" />
+            <div className="w-9 sm:w-11 h-9 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/25 group-hover:scale-110 transition-transform shrink-0">
+              <CheckCircle2 className="w-4.5 sm:w-5 h-4.5 sm:h-5 stroke-[2.5]" />
             </div>
           </div>
 
           {/* Daily Streak */}
-          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/[0.06] hover:bg-white/[0.09] backdrop-blur-xl border border-white/[0.1] hover:border-orange-500/40 transition-all flex items-center justify-between shadow-lg group">
-            <div className="space-y-0.5">
-              <span className="text-[9.5px] sm:text-[11px] font-bold text-slate-400 uppercase font-mono tracking-wider">Streak</span>
-              <h4 className="text-lg sm:text-xl font-black font-mono text-orange-400 leading-none tabular-nums">
-                {profile.currentStreak} <span className="text-[10px] sm:text-xs font-sans text-slate-400">days</span>
+          <div className="planner-bento-card p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all flex items-center justify-between shadow-lg group">
+            <div className="space-y-1">
+              <span className="planner-stat-label text-[10px] sm:text-[11px] font-bold uppercase font-mono tracking-wider">Streak</span>
+              <h4 className="planner-stat-val-amber text-lg sm:text-2xl font-black font-mono leading-none tabular-nums flex items-baseline gap-1">
+                {profile.currentStreak} <span className="planner-stat-label text-[10px] sm:text-xs font-sans font-medium">days</span>
               </h4>
-              <span className="text-[9.5px] sm:text-[11px] text-orange-400/80 font-medium font-mono tabular-nums">Best: {profile.longestStreak}d</span>
+              <span className="planner-stat-sub-amber text-[10px] sm:text-[11px] font-mono tabular-nums font-semibold">
+                Best: {profile.longestStreak}d
+              </span>
             </div>
-            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30 group-hover:scale-110 transition-transform">
-              <Flame className="w-4 sm:w-5 h-4 sm:h-5 animate-pulse" />
+            <div className="w-9 sm:w-11 h-9 sm:h-11 rounded-lg sm:rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center border border-amber-500/25 group-hover:scale-110 transition-transform shrink-0">
+              <Flame className="w-4.5 sm:w-5 h-4.5 sm:h-5 animate-pulse" />
             </div>
           </div>
 
           {/* Study Time */}
-          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/[0.06] hover:bg-white/[0.09] backdrop-blur-xl border border-white/[0.1] hover:border-blue-500/40 transition-all flex items-center justify-between shadow-lg group">
-            <div className="space-y-0.5">
-              <span className="text-[9.5px] sm:text-[11px] font-bold text-slate-400 uppercase font-mono tracking-wider">Planned</span>
-              <h4 className="text-lg sm:text-xl font-black font-mono text-white leading-none tabular-nums">
-                {(totalPlannedMinutes / 60).toFixed(1)} <span className="text-[10px] sm:text-xs font-sans text-slate-400">hrs</span>
+          <div className="planner-bento-card p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all flex items-center justify-between shadow-lg group">
+            <div className="space-y-1">
+              <span className="planner-stat-label text-[10px] sm:text-[11px] font-bold uppercase font-mono tracking-wider">Planned</span>
+              <h4 className="planner-stat-val-white text-lg sm:text-2xl font-black font-mono leading-none tabular-nums flex items-baseline gap-1">
+                {(totalPlannedMinutes / 60).toFixed(1)} <span className="planner-stat-label text-[10px] sm:text-xs font-sans font-medium">hrs</span>
               </h4>
-              <span className="text-[9.5px] sm:text-[11px] text-emerald-400 font-medium font-mono tabular-nums">{(completedMinutes / 60).toFixed(1)}h finished</span>
+              <span className="planner-stat-sub-emerald text-[10px] sm:text-[11px] font-mono tabular-nums font-semibold">
+                {(completedMinutes / 60).toFixed(1)}h finished
+              </span>
             </div>
-            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center border border-blue-500/30 group-hover:scale-110 transition-transform">
-              <Clock className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.2]" />
+            <div className="w-9 sm:w-11 h-9 sm:h-11 rounded-lg sm:rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center border border-blue-500/25 group-hover:scale-110 transition-transform shrink-0">
+              <Clock className="w-4.5 sm:w-5 h-4.5 sm:h-5 stroke-[2.2]" />
             </div>
           </div>
 
           {/* Focus XP */}
-          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/[0.06] hover:bg-white/[0.09] backdrop-blur-xl border border-white/[0.1] hover:border-purple-500/40 transition-all flex items-center justify-between shadow-lg group">
-            <div className="space-y-0.5">
-              <span className="text-[9.5px] sm:text-[11px] font-bold text-slate-400 uppercase font-mono tracking-wider">XP Level</span>
-              <h4 className="text-lg sm:text-xl font-black font-mono text-purple-400 leading-none tabular-nums">
+          <div className="planner-bento-card p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all flex items-center justify-between shadow-lg group">
+            <div className="space-y-1">
+              <span className="planner-stat-label text-[10px] sm:text-[11px] font-bold uppercase font-mono tracking-wider">XP Level</span>
+              <h4 className="planner-stat-val-purple text-lg sm:text-2xl font-black font-mono leading-none tabular-nums">
                 Lvl {profile.level}
               </h4>
-              <span className="text-[9.5px] sm:text-[11px] text-purple-400 font-medium font-mono tabular-nums">{profile.xp} XP</span>
+              <span className="planner-stat-sub-purple text-[10px] sm:text-[11px] font-mono tabular-nums font-semibold">
+                {profile.xp} XP
+              </span>
             </div>
-            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
-              <Star className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.2]" />
+            <div className="w-9 sm:w-11 h-9 sm:h-11 rounded-lg sm:rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center border border-purple-500/25 group-hover:scale-110 transition-transform shrink-0">
+              <Star className="w-4.5 sm:w-5 h-4.5 sm:h-5 stroke-[2.2]" />
             </div>
           </div>
 
@@ -448,16 +455,16 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         {/* Smart Suggestions Chips (if any) */}
         {smartSuggestions.length > 0 && (
           <div className="relative z-10 flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 no-scrollbar pt-2.5 border-t border-white/10">
-            <span className="text-[10px] sm:text-[11px] tabular-nums font-bold text-slate-300 uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
+            <span className="planner-stat-label text-[10px] sm:text-[11px] tabular-nums font-bold uppercase font-mono tracking-wider shrink-0 flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Suggested:</span>
             </span>
             {smartSuggestions.map((sug, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-white/15 text-xs text-white shrink-0 shadow-sm backdrop-blur-md transition-all group"
+                className="planner-suggestion-chip flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs shrink-0 shadow-sm backdrop-blur-md transition-all group"
               >
-                <span className="text-[11px] sm:text-xs font-bold text-slate-200 truncate max-w-[140px] sm:max-w-[200px]">
+                <span className="planner-suggestion-text text-[11px] sm:text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">
                   {sug.topicName}
                 </span>
                 <button
@@ -472,6 +479,7 @@ export const PlannerView: React.FC<PlannerViewProps> = ({
         )}
 
       </div>
+
 
       {/* ═══════════════ TOP 3 NON-NEGOTIABLES & NIGHT STUDY REFLECTION ═══════════════ */}
       <Top3TargetsWidget />

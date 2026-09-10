@@ -530,6 +530,110 @@ html:not(.dark) :focus-visible {
   outline-offset: 2px !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   DAILY STUDY PLANNER HERO DASHBOARD BANNER (High Legibility & Modern Style)
+   ══════════════════════════════════════════════════════════════════ */
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner,
+.planner-hero-banner {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner h1,
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-banner-title,
+.planner-hero-banner h1,
+.planner-hero-banner .planner-banner-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner p,
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-banner-subtitle,
+.planner-hero-banner p,
+.planner-hero-banner .planner-banner-subtitle {
+  color: #CBD5E1 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-label,
+.planner-hero-banner .planner-stat-label {
+  color: #94A3B8 !important;
+  font-weight: 700 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner h4,
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-val-white,
+.planner-hero-banner h4,
+.planner-hero-banner .planner-stat-val-white {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-val-amber,
+.planner-hero-banner .planner-stat-val-amber {
+  color: #FBBF24 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-val-purple,
+.planner-hero-banner .planner-stat-val-purple {
+  color: #C084FC !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-sub-emerald,
+.planner-hero-banner .planner-stat-sub-emerald {
+  color: #34D399 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-sub-amber,
+.planner-hero-banner .planner-stat-sub-amber {
+  color: #FBBF24 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-sub-purple,
+.planner-hero-banner .planner-stat-sub-purple {
+  color: #C084FC !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-stat-sub,
+.planner-hero-banner .planner-stat-sub {
+  color: #64748B !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-bento-card,
+.planner-hero-banner .planner-bento-card {
+  background-color: rgba(15, 23, 42, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-bento-card:hover,
+.planner-hero-banner .planner-bento-card:hover {
+  background-color: rgba(22, 32, 54, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-add-target-btn,
+.planner-hero-banner .planner-add-target-btn {
+  color: #0F172A !important;
+  font-weight: 900 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-suggestion-chip,
+.planner-hero-banner .planner-suggestion-chip {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-suggestion-chip:hover,
+.planner-hero-banner .planner-suggestion-chip:hover {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-suggestion-text,
+.planner-hero-banner .planner-suggestion-text {
+  color: #E2E8F0 !important;
+}
+
+
+
 /* Dark Mode Palette Normalizers */
 .dark .dark\:bg-\[\#0B0B0D\],
 .dark .dark\:bg-\[\#0D0E0C\],
