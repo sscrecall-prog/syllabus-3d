@@ -750,6 +750,77 @@ html:not(.dark):not(.sepia):not(.luxury) .weak-traps-hero-banner .weak-tile-btn,
   -webkit-backdrop-filter: blur(16px) !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   HOME STUDY HERO BANNER SPECIFICITY OVERRIDES (LIGHT + DARK MODE)
+   ══════════════════════════════════════════════════════════════════ */
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner,
+.home-hero-banner {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner h1,
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-banner-title,
+.home-hero-banner h1,
+.home-hero-banner .home-banner-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-banner-eyebrow,
+.home-hero-banner .home-banner-eyebrow {
+  color: #7ED4B2 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner p,
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-banner-subtitle,
+.home-hero-banner p,
+.home-hero-banner .home-banner-subtitle {
+  color: #D1FAE5 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-banner-year,
+.home-hero-banner .home-banner-year {
+  color: #F5BE38 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-module-btn,
+.home-hero-banner .home-module-btn {
+  background-color: rgba(6, 30, 24, 0.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-module-btn:hover,
+.home-hero-banner .home-module-btn:hover {
+  background-color: rgba(14, 52, 42, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-pill-badge,
+.home-hero-banner .home-pill-badge {
+  background-color: rgba(4, 18, 14, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-pill-mastery,
+.home-hero-banner .home-pill-mastery {
+  background-color: rgba(30, 22, 8, 0.8) !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  color: #FCD34D !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+
 
 
 

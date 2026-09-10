@@ -13,7 +13,11 @@ import {
   Sparkles,
   ExternalLink,
   Flame,
-  TrendingUp
+  TrendingUp,
+  BookOpen,
+  BarChart2,
+  PieChart,
+  Trophy
 } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
@@ -60,8 +64,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (overallStats.completionPercentage / 100) * circumference;
 
-  const examName = currentExam?.name || 'Target Exam';
+  const examName = currentExam?.name || 'SSC CGL 2026';
   const examYear = currentExam?.targetYear || 2026;
+  const examYearStr = String(examYear);
+  const baseExamName = examName.includes(examYearStr)
+    ? examName.replace(examYearStr, '').trim()
+    : examName;
 
   // Executive Greeting & Time Status
   const now = new Date();
@@ -192,33 +200,121 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* 2. 3D VISUAL HERO ARTWORK BANNER (Hidden in print to save paper & ink) */}
-      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth bg-[#060810] group print:hidden">
-        <div className="relative w-full h-36 xs:h-40 sm:h-44 md:h-48 lg:h-[195px] xl:h-[205px] overflow-hidden flex items-center justify-center">
+      {/* 2. COZY STUDY DESK HERO BANNER & INTERACTIVE COMMAND MODULES (Hidden in print) */}
+      <div className="home-hero-banner relative rounded-2xl sm:rounded-3xl overflow-hidden border border-emerald-950/40 dark:border-white/[0.08] shadow-subtle-depth bg-[#061718] group print:hidden">
+        <div className="relative w-full min-h-[220px] xs:min-h-[235px] sm:min-h-[245px] md:min-h-[250px] overflow-hidden flex items-center">
+          
+          {/* Background Study Desk Artwork */}
           <img
-            src="/dashboard-hero.jpg"
-            alt="Focus Plan Achieve - Syllabus 3D Mastery"
-            className="w-full h-full object-cover object-[center_48%] transform transition-transform duration-700 group-hover:scale-[1.02]"
+            src="/home_hero_banner.png"
+            alt={`${examName} Study Hub`}
+            className="absolute inset-0 w-full h-full object-cover object-[right_center] sm:object-center select-none"
             loading="eager"
             decoding="async"
-            width={1200}
-            height={514}
+            width={1024}
+            height={246}
           />
-          {/* Subtle gradient vignette to blend seamlessly */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
-          
-          {/* Bottom Overlay Info Pills */}
-          <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-4 sm:right-4 flex items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
-            <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-xl bg-black/60 backdrop-blur-md border border-white/15 text-white shadow-lg min-w-0">
-              <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <span className="text-[11px] sm:text-[12.5px] font-mono font-bold tracking-wide truncate">
-                {examName} <span className="text-slate-400 font-normal">({examYear})</span>
-              </span>
-            </div>
+
+          {/* High-Contrast Multi-layered Ambient Protection Gradients */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#061718]/95 via-[#071F1F]/85 sm:via-[#071F1F]/40 to-transparent pointer-events-none z-0" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#061718]/70 via-transparent to-[#061718]/30 pointer-events-none z-0" />
+
+          {/* Main Hero Content & Action Buttons */}
+          <div className="relative z-10 w-full p-4 sm:p-6 lg:p-7 flex flex-col justify-between h-full space-y-3 sm:space-y-3.5">
             
-            <div className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-amber-500/20 backdrop-blur-md border border-amber-400/30 text-amber-300 text-[11px] sm:text-[12.5px] font-bold shadow-lg shrink-0">
-              <span>🏆 {overallStats.completionPercentage}% Mastered</span>
+            {/* Top Eyebrow + Title + Subtitle */}
+            <div className="max-w-xl">
+              {/* Eyebrow Tracking Line */}
+              <div className="home-banner-eyebrow flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.22em] text-[#7ED4B2] uppercase select-none">
+                <span>LEARN</span>
+                <span className="opacity-50">·</span>
+                <span>PRACTICE</span>
+                <span className="opacity-50">·</span>
+                <span>IMPROVE</span>
+                <span className="opacity-50">·</span>
+                <span>SUCCEED</span>
+              </div>
+
+              {/* Dynamic Exam Title with Gold/Amber Year */}
+              <h1 className="home-banner-title text-2xl xs:text-3xl sm:text-[34px] md:text-[38px] font-black tracking-tight text-white leading-tight mt-1 mb-1 font-sans">
+                {baseExamName} <span className="home-banner-year text-[#F5BE38] dark:text-[#FBBF24]">{examYearStr}</span>
+              </h1>
+
+              {/* Tagline Subtitle */}
+              <p className="home-banner-subtitle text-xs sm:text-[13px] md:text-sm font-medium text-emerald-100/90 tracking-wide select-none">
+                Smarter Preparation. Brighter Future.
+              </p>
             </div>
+
+            {/* 4 Interactive Glass Module Action Buttons */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-0.5 sm:pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  onNavigate('syllabus');
+                }}
+                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
+                title="Explore Complete Syllabus & Subject Breakdown"
+              >
+                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-emerald-300 shrink-0" />
+                <span>Concepts</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  onNavigate('planner');
+                }}
+                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
+                title="Daily Study Planner, Time Blocks & Focus Mode"
+              >
+                <BarChart2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-cyan-300 shrink-0" />
+                <span>Practice</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  onNavigate('analytics');
+                }}
+                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
+                title="Detailed Analytics, Mistake Logs & Heatmap"
+              >
+                <PieChart className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-sky-300 shrink-0" />
+                <span>Analysis</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  onNavigate('revision');
+                }}
+                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
+                title="Spaced Repetition & Revision Pipeline"
+              >
+                <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-amber-300 shrink-0" />
+                <span>Success</span>
+              </button>
+            </div>
+
+            {/* Bottom Info Pills: Live Status + Mastery */}
+            <div className="flex items-center justify-between gap-2 pt-1 sm:pt-2">
+              <div className="home-pill-badge flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-lg min-w-0">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="text-[11px] sm:text-xs font-mono font-bold tracking-wide truncate">
+                  {examName} <span className="home-banner-year text-amber-400 font-bold">({examYear})</span>
+                </span>
+              </div>
+
+              <div className="home-pill-mastery flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold shadow-lg shrink-0">
+                <span>🏆 {overallStats.completionPercentage}% Mastered</span>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
