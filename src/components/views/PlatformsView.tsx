@@ -170,14 +170,14 @@ export const PlatformsView: React.FC = () => {
     <div className="space-y-4 sm:space-y-6 animate-fade-in pb-8 sm:pb-12">
       
       {/* 1. HERO BENTO BANNER WITH 3D AMBIENT NODES */}
-      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#0B0C15] border border-[#242636] shadow-xl relative overflow-hidden text-white">
+      <div className="study-hub-hero-banner p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-[#080911] border border-white/[0.12] shadow-2xl relative overflow-hidden text-white">
         
-        {/* Full Uncropped High-Fidelity 3D Portal Artwork (Zero crop, fits card perfectly) */}
-        <div className="absolute right-0 top-0 bottom-0 w-full sm:w-3/4 md:w-3/5 lg:w-1/2 pointer-events-none overflow-hidden flex items-center justify-end z-0">
+        {/* Full High-Fidelity 3D Portal Artwork (Right-aligned with natural depth) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full sm:w-4/5 md:w-3/5 lg:w-[54%] pointer-events-none overflow-hidden flex items-center justify-end z-0">
           <img
             src="/study_hub_banner.png"
             alt="Connected Study Portals"
-            className="h-full w-auto max-w-none object-contain object-right opacity-35 sm:opacity-95 select-none"
+            className="h-[120%] sm:h-[135%] w-auto max-w-none object-contain object-right-bottom sm:object-right translate-y-1 sm:translate-y-0 opacity-40 sm:opacity-95 select-none"
             loading="eager"
             decoding="async"
             width={600}
@@ -185,114 +185,143 @@ export const PlatformsView: React.FC = () => {
           />
         </div>
 
-        {/* Ambient Gradient Overlays for 100% Text Legibility & Smooth Blend */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C15] via-[#0B0C15]/85 md:via-[#0B0C15]/40 to-transparent pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C15]/80 via-transparent to-transparent pointer-events-none z-0" />
+        {/* Multi-layered Vignette & Legibility Protection Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080911] via-[#080911]/90 md:via-[#080911]/55 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080911]/85 via-transparent to-transparent pointer-events-none z-0" />
         
         {/* Ambient Glow Accents */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#7AA2F7]/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-72 h-72 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-5">
-          <div className="space-y-2 sm:space-y-2.5 max-w-2xl">
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider bg-white/10 text-[#7AA2F7] border border-white/15 backdrop-blur-md flex items-center gap-1.5 shadow-xs">
-                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#7AA2F7] animate-pulse" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6">
+          <div className="space-y-2 sm:space-y-2.5 max-w-xl">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 backdrop-blur-md shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
                 Connected Study Hub
               </span>
-              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-bold text-[#A1A1B2] bg-white/5 border border-white/10 backdrop-blur-md">
-                {platforms.length} Platforms Linked
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono font-medium text-slate-300 bg-white/[0.06] border border-white/10 backdrop-blur-md">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span><strong className="text-white font-bold tabular-nums">{platforms.length}</strong> Platforms Linked</span>
               </span>
             </div>
 
-            <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-white font-sans tracking-tight">
+            <h1 className="study-hub-banner-title text-2xl sm:text-3xl lg:text-4xl font-black text-white font-sans tracking-tight leading-tight">
               Course Batches & Mock Portals
             </h1>
+            <p className="study-hub-banner-subtitle text-xs sm:text-[13.5px] text-slate-300 font-normal leading-relaxed">
+              Centralized launchpad for your linked courses, mock test platforms, and study portals.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+          <div className="flex items-center shrink-0">
             <button
               onClick={handleOpenAdd}
-              className="w-full sm:w-auto justify-center group relative px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#7AA2F7] to-[#8B5CF6] hover:from-[#6B96F5] hover:to-[#7C3AED] text-black font-extrabold text-xs sm:text-[13px] shadow-[0_0_20px_rgba(122,162,247,0.3)] hover:shadow-[0_0_28px_rgba(122,162,247,0.5)] transition-all duration-200 cursor-pointer active:scale-95 flex items-center gap-2 overflow-hidden tap-bounce"
+              className="study-hub-add-btn group relative px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white font-bold text-xs sm:text-[13px] shadow-[0_4px_20px_rgba(99,102,241,0.35)] hover:shadow-[0_6px_25px_rgba(99,102,241,0.5)] transition-all duration-200 cursor-pointer active:scale-95 flex items-center gap-2.5 border border-white/20 backdrop-blur-md tap-bounce"
             >
-              <Plus className="w-4 h-4 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
-              <span>Add Platform / Batch</span>
+              <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                <Plus className="w-3.5 h-3.5 stroke-[3] text-white group-hover:rotate-90 transition-transform duration-300" />
+              </div>
+              <span className="tracking-tight">Add Platform / Batch</span>
             </button>
           </div>
         </div>
 
         {/* Interactive KPI Filter Tiles */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3.5 mt-4 sm:mt-6 pt-3.5 sm:pt-5 border-t border-white/10 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 mt-5 sm:mt-7 pt-4 sm:pt-5 border-t border-white/10 relative z-10">
           
           {/* Courses */}
           <div
             onClick={() => handleKpiFilter('course')}
-            className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all flex items-center gap-2.5 sm:gap-3 cursor-pointer shadow-xs sm:shadow-md group active:scale-95 tap-bounce ${
+            title="Filter by Courses"
+            className={`study-hub-bento-tile p-3 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer shadow-sm group active:scale-95 tap-bounce border ${
               selectedCategory === 'course'
-                ? 'bg-purple-500/20 border-2 border-purple-400 ring-2 ring-purple-400/30'
-                : 'bg-[#141524]/80 backdrop-blur-md border border-white/10 hover:border-purple-500/40 hover:bg-[#181A2D]'
+                ? 'bg-purple-500/25 border-purple-400 ring-2 ring-purple-400/50 shadow-purple-500/20 shadow-lg'
+                : 'bg-[#121320]/75 hover:bg-[#18192a]/90 border-purple-500/20 hover:border-purple-500/45'
             }`}
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-purple-500/30">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-purple-500/30">
               <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
             </div>
             <div className="min-w-0">
-              <span className="text-sm sm:text-lg font-mono font-black tabular-nums text-white block leading-tight">{coursesCount}</span>
-              <span className="text-[9px] sm:text-[11px] font-bold uppercase font-mono text-[#A1A1B2] tracking-wider block truncate">Courses</span>
+              <span className="study-hub-tile-count text-base sm:text-xl font-mono font-black tabular-nums text-white block leading-tight">
+                {coursesCount}
+              </span>
+              <span className="study-hub-label-purple text-[10px] sm:text-[11px] font-bold uppercase font-mono text-purple-200/70 tracking-wider block truncate">
+                Courses
+              </span>
             </div>
           </div>
 
           {/* Mock Series */}
           <div
             onClick={() => handleKpiFilter('test_series')}
-            className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all flex items-center gap-2.5 sm:gap-3 cursor-pointer shadow-xs sm:shadow-md group active:scale-95 tap-bounce ${
+            title="Filter by Mock Series"
+            className={`study-hub-bento-tile p-3 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer shadow-sm group active:scale-95 tap-bounce border ${
               selectedCategory === 'test_series'
-                ? 'bg-sky-500/20 border-2 border-sky-400 ring-2 ring-sky-400/30'
-                : 'bg-[#141524]/80 backdrop-blur-md border border-white/10 hover:border-sky-500/40 hover:bg-[#181A2D]'
+                ? 'bg-sky-500/25 border-sky-400 ring-2 ring-sky-400/50 shadow-sky-500/20 shadow-lg'
+                : 'bg-[#121320]/75 hover:bg-[#18192a]/90 border-sky-500/20 hover:border-sky-500/45'
             }`}
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-sky-500/30">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-sky-500/30">
               <FileCheck2 className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
             </div>
             <div className="min-w-0">
-              <span className="text-sm sm:text-lg font-mono font-black tabular-nums text-white block leading-tight">{testsCount}</span>
-              <span className="text-[9px] sm:text-[11px] font-bold uppercase font-mono text-[#A1A1B2] tracking-wider block truncate">Mock Series</span>
+              <span className="study-hub-tile-count text-base sm:text-xl font-mono font-black tabular-nums text-white block leading-tight">
+                {testsCount}
+              </span>
+              <span className="study-hub-label-sky text-[10px] sm:text-[11px] font-bold uppercase font-mono text-sky-200/70 tracking-wider block truncate">
+                Mock Series
+              </span>
             </div>
           </div>
 
           {/* Pinned Links */}
           <div
             onClick={() => handleKpiFilter('pinned')}
-            className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all flex items-center gap-2.5 sm:gap-3 cursor-pointer shadow-xs sm:shadow-md group active:scale-95 tap-bounce ${
+            title="Filter by Pinned Platforms"
+            className={`study-hub-bento-tile p-3 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer shadow-sm group active:scale-95 tap-bounce border ${
               selectedCategory === 'pinned'
-                ? 'bg-amber-500/20 border-2 border-amber-400 ring-2 ring-amber-400/30'
-                : 'bg-[#141524]/80 backdrop-blur-md border border-white/10 hover:border-amber-500/40 hover:bg-[#181A2D]'
+                ? 'bg-amber-500/25 border-amber-400 ring-2 ring-amber-400/50 shadow-amber-500/20 shadow-lg'
+                : 'bg-[#121320]/75 hover:bg-[#18192a]/90 border-amber-500/20 hover:border-amber-500/45'
             }`}
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-amber-500/30">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-amber-500/30">
               <Bookmark className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
             </div>
             <div className="min-w-0">
-              <span className="text-sm sm:text-lg font-mono font-black tabular-nums text-white block leading-tight">{pinnedCount}</span>
-              <span className="text-[9px] sm:text-[11px] font-bold uppercase font-mono text-[#A1A1B2] tracking-wider block truncate">Pinned</span>
+              <span className="study-hub-tile-count text-base sm:text-xl font-mono font-black tabular-nums text-white block leading-tight">
+                {pinnedCount}
+              </span>
+              <span className="study-hub-label-amber text-[10px] sm:text-[11px] font-bold uppercase font-mono text-amber-200/70 tracking-wider block truncate">
+                Pinned
+              </span>
             </div>
           </div>
 
           {/* Custom Portals */}
           <div
             onClick={() => handleKpiFilter('custom')}
-            className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all flex items-center gap-2.5 sm:gap-3 cursor-pointer shadow-xs sm:shadow-md group active:scale-95 tap-bounce ${
+            title="Filter by Custom Portals"
+            className={`study-hub-bento-tile p-3 sm:p-3.5 rounded-xl sm:rounded-2xl transition-all duration-200 flex items-center gap-3 cursor-pointer shadow-sm group active:scale-95 tap-bounce border ${
               selectedCategory === 'custom'
-                ? 'bg-emerald-500/20 border-2 border-emerald-400 ring-2 ring-emerald-400/30'
-                : 'bg-[#141524]/80 backdrop-blur-md border border-white/10 hover:border-emerald-500/40 hover:bg-[#181A2D]'
+                ? 'bg-emerald-500/25 border-emerald-400 ring-2 ring-emerald-400/50 shadow-emerald-500/20 shadow-lg'
+                : 'bg-[#121320]/75 hover:bg-[#18192a]/90 border-emerald-500/20 hover:border-emerald-500/45'
             }`}
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-emerald-500/30">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-emerald-500/30">
               <PenTool className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
             </div>
             <div className="min-w-0">
-              <span className="text-sm sm:text-lg font-mono font-black tabular-nums text-white block leading-tight">{customCount}</span>
-              <span className="text-[9px] sm:text-[11px] font-bold uppercase font-mono text-[#A1A1B2] tracking-wider block truncate">Custom</span>
+              <span className="study-hub-tile-count text-base sm:text-xl font-mono font-black tabular-nums text-white block leading-tight">
+                {customCount}
+              </span>
+              <span className="study-hub-label-emerald text-[10px] sm:text-[11px] font-bold uppercase font-mono text-emerald-200/70 tracking-wider block truncate">
+                Custom
+              </span>
             </div>
           </div>
         </div>

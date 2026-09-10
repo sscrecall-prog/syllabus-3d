@@ -820,12 +820,75 @@ html:not(.dark):not(.sepia):not(.luxury) .home-hero-banner .home-pill-mastery,
   -webkit-backdrop-filter: blur(12px) !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   STUDY HUB & PLATFORMS HERO BANNER (High Legibility & Modern Bento)
+   ══════════════════════════════════════════════════════════════════ */
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner,
+.study-hub-hero-banner {
+  color: #FFFFFF !important;
+  background-color: #080911 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner h1,
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-banner-title,
+.study-hub-hero-banner h1,
+.study-hub-hero-banner .study-hub-banner-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner p,
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-banner-subtitle,
+.study-hub-hero-banner p,
+.study-hub-hero-banner .study-hub-banner-subtitle {
+  color: #CBD5E1 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-tile-count,
+.study-hub-hero-banner .study-hub-tile-count {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-label-purple,
+.study-hub-hero-banner .study-hub-label-purple {
+  color: #D8B4FE !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-label-sky,
+.study-hub-hero-banner .study-hub-label-sky {
+  color: #BAE6FD !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-label-amber,
+.study-hub-hero-banner .study-hub-label-amber {
+  color: #FDE68A !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-label-emerald,
+.study-hub-hero-banner .study-hub-label-emerald {
+  color: #A7F3D0 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-bento-tile,
+.study-hub-hero-banner .study-hub-bento-tile {
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-add-btn,
+.study-hub-hero-banner .study-hub-add-btn {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #2563EB 0%, #4F46E5 50%, #7C3AED 100%) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .study-hub-hero-banner .study-hub-add-btn *,
+.study-hub-hero-banner .study-hub-add-btn * {
+  color: #FFFFFF !important;
+}
 
 
-
-
-
-/* Dark Mode Palette Normalizers */
 .dark .dark\:bg-\[\#0B0B0D\],
 .dark .dark\:bg-\[\#0D0E0C\],
 .dark .dark\:bg-\[\#07080B\],
