@@ -949,6 +949,11 @@ export const App: React.FC = () => {
                 setEditingProfile(null);
               }}
               editingProfile={editingProfile}
+              onSuccess={() => {
+                setIsCreateProfileOpen(false);
+                setEditingProfile(null);
+                setIsProfileSwitcherOpen(true);
+              }}
             />
           </ViewErrorBoundary>
         )}

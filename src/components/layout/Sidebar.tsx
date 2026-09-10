@@ -361,18 +361,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {(profile.avatarUrl || user?.avatarUrl) ? (
                   <img
                     src={profile.avatarUrl || user?.avatarUrl}
-                    alt={user?.name || profile.name}
+                    alt={profile.name || user?.name}
                     className="w-full h-full object-cover"
                   />
                 ) : profile.avatarEmoji ? (
                   <span className="text-[11px] leading-none drop-shadow">{profile.avatarEmoji}</span>
                 ) : (
-                  (user?.name || profile.name ? (user?.name || profile.name).charAt(0).toUpperCase() : 'A')
+                  (profile.name || user?.name ? (profile.name || user?.name).charAt(0).toUpperCase() : 'A')
                 )}
               </div>
               <div className="truncate">
                 <h4 className="text-[12px] font-bold text-[#191A17] dark:text-white truncate leading-tight">
-                  {user?.name || profile.name}
+                  {profile.name || user?.name}
                 </h4>
                 <p className="text-[10px] text-[#65675F] dark:text-slate-300 leading-none truncate">
                   {profile.levelTitle}

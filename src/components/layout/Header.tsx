@@ -270,13 +270,13 @@ export const Header: React.FC<HeaderProps> = ({
             {(profile.avatarUrl || user?.avatarUrl) ? (
               <img
                 src={profile.avatarUrl || user?.avatarUrl}
-                alt={user?.name || profile.name || 'User'}
+                alt={profile.name || user?.name || 'User'}
                 className="w-full h-full object-cover"
               />
             ) : profile.avatarEmoji ? (
               <span className="text-[13px] leading-none drop-shadow">{profile.avatarEmoji}</span>
             ) : (
-              (user?.name || profile.name || 'A').charAt(0).toUpperCase()
+              (profile.name || user?.name || 'A').charAt(0).toUpperCase()
             )}
           </button>
         </div>

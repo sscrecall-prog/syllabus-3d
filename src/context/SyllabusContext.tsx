@@ -362,7 +362,7 @@ const loadInitialActiveDataset = () => {
 };
 
 export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, updateUserSession } = useAuth();
 
   const initialActiveDataset = useMemo(() => loadInitialActiveDataset(), []);
 
@@ -504,9 +504,9 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return INITIAL_PLANNER_TASKS;
   });
 
-  // Sync profile name with logged-in user
+  // Sync profile name with logged-in user on initial mount only if profile has default fallback name
   useEffect(() => {
-    if (user?.name && profile.name !== user.name) {
+    if (user?.name && (!profile.name || profile.name === 'Sunny Rise')) {
       setProfile(p => ({ ...p, name: user.name }));
     }
   }, [user]);
@@ -818,7 +818,31 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [currentExam]);
 
   const updateProfile = (updates: Partial<UserProgressProfile>) => {
-    setProfile(prev => ({ ...prev, ...updates }));
+    setProfile(prev => {
+      const next = { ...prev, ...updates };
+      try { localStorage.setItem('syllabus3d_profile', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (updates.name && updateUserSession) {
+      updateUserSession({ name: updates.name });
+    }
+    if (updates.avatarUrl !== undefined && updateUserSession) {
+      updateUserSession({ avatarUrl: updates.avatarUrl });
+    }
+
+    // Immediately synchronize with profiles list
+    setProfiles(prev => {
+      const updated = prev.map(p => p.id === activeProfileId ? {
+        ...p,
+        name: updates.name ?? p.name,
+        avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : p.avatarUrl,
+        avatarEmoji: updates.avatarEmoji ?? p.avatarEmoji,
+        avatarColor: updates.avatarColor ?? p.avatarColor
+      } : p);
+      try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
   };
 
   const setSelectedExamId = (examId: string) => {
@@ -2209,6 +2233,14 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       p.id === targetProfileId ? { ...p, lastActiveAt: new Date().toISOString() } : p
     ));
 
+    // Also sync Auth user session with the switched profile's name so all views update immediately
+    if (targetDataset.profile?.name && updateUserSession) {
+      updateUserSession({
+        name: targetDataset.profile.name,
+        avatarUrl: targetDataset.profile.avatarUrl
+      });
+    }
+
     soundManager.playCompleteChime();
     haptics.success();
     confetti({
@@ -2216,7 +2248,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       spread: 50,
       origin: { y: 0.6 }
     });
-  }, [activeProfileId, saveActiveProfileDataSynchronously, loadProfileDataById]);
+  }, [activeProfileId, saveActiveProfileDataSynchronously, loadProfileDataById, updateUserSession]);
 
   const createProfile = useCallback((profileData: {
     name: string;
@@ -2249,69 +2281,53 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       lastActiveAt: new Date().toISOString()
     };
 
-    const newProgressProfile: UserProgressProfile = {
-      id: newId,
-      name: newProfileItem.name,
-      avatarUrl: newProfileItem.avatarUrl,
-      avatarEmoji: newProfileItem.avatarEmoji,
-      avatarColor: newProfileItem.avatarColor,
-      targetExamDate: newProfileItem.targetExamDate,
-      currentStreak: 0,
-      longestStreak: 0,
-      level: 1,
-      levelTitle: 'Syllabus Recruit',
-      xp: 0,
-      soundEnabled: true,
-      selectedExamId: newProfileItem.targetExamId
-    };
-
-    let initialExamsForNewProfile: Exam[];
-    if (profileData.cloneCurrentSyllabus) {
-      initialExamsForNewProfile = JSON.parse(JSON.stringify(exams));
-    } else {
-      initialExamsForNewProfile = JSON.parse(JSON.stringify(INITIAL_EXAMS));
-    }
-
-    const initialDataset = {
-      exams: initialExamsForNewProfile,
-      profile: newProgressProfile,
-      achievements: JSON.parse(JSON.stringify(INITIAL_ACHIEVEMENTS)),
+    // 2. Build isolated dataset for new profile
+    const newDataset: ProfileData = {
+      exams: profileData.cloneCurrentSyllabus ? exams : [
+        {
+          id: profileData.targetExamId || 'exam_ssc_cgl_2025',
+          name: exams.find(e => e.id === profileData.targetExamId)?.name || 'Target Exam',
+          examDate: profileData.targetExamDate || '2026-10-15',
+          targetYear: 2026,
+          subjects: []
+        }
+      ],
+      profile: {
+        ...INITIAL_PROFILE,
+        id: newId,
+        name: newProfileItem.name,
+        avatarUrl: newProfileItem.avatarUrl,
+        avatarEmoji: newProfileItem.avatarEmoji,
+        avatarColor: newProfileItem.avatarColor,
+        targetExamDate: newProfileItem.targetExamDate,
+        currentStreak: 0,
+        longestStreak: 0,
+        level: 1,
+        levelTitle: 'Syllabus Recruit',
+        xp: 0,
+        soundEnabled: true,
+        selectedExamId: newProfileItem.targetExamId
+      },
+      achievements: INITIAL_ACHIEVEMENTS.map(a => ({ ...a, unlocked: false, unlockedAt: null, progress: 0 })),
       activityHistory: [],
       revisions: [],
       plannerTasks: [],
-      platforms: JSON.parse(JSON.stringify(INITIAL_PLATFORMS)),
-      top3Targets: [
-        { id: '1', text: '', completed: false },
-        { id: '2', text: '', completed: false },
-        { id: '3', text: '', completed: false }
-      ],
+      platforms: [],
+      top3Targets: [],
       reflectionsHistory: []
     };
 
+    // 3. Save new profile data synchronously
     try {
-      localStorage.setItem(`syllabus3d_profile_data_${newId}`, JSON.stringify(initialDataset));
+      localStorage.setItem(`syllabus3d_profile_data_${newId}`, JSON.stringify(newDataset));
     } catch (e) {}
 
-    // Update profiles list
+    // 4. Update profiles list
     setProfiles(prev => {
       const updated = [...prev, newProfileItem];
       try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(updated)); } catch (e) {}
       return updated;
     });
-
-    // Set new profile data in state
-    setExams(initialDataset.exams);
-    setProfile(initialDataset.profile);
-    setAchievements(initialDataset.achievements);
-    setActivityHistory(initialDataset.activityHistory);
-    setRevisions(initialDataset.revisions);
-    setPlannerTasks(initialDataset.plannerTasks);
-    setPlatforms(initialDataset.platforms);
-    setTop3Targets(initialDataset.top3Targets);
-    setReflectionsHistory(initialDataset.reflectionsHistory);
-
-    setActiveProfileId(newId);
-    try { localStorage.setItem('syllabus3d_active_profile_id', newId); } catch (e) {}
 
     soundManager.playCompleteChime();
     haptics.success();
@@ -2320,6 +2336,20 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       spread: 60,
       origin: { y: 0.6 }
     });
+
+    // Set new profile data in state
+    setExams(newDataset.exams);
+    setProfile(newDataset.profile);
+    setAchievements(newDataset.achievements);
+    setActivityHistory(newDataset.activityHistory);
+    setRevisions(newDataset.revisions);
+    setPlannerTasks(newDataset.plannerTasks);
+    setPlatforms(newDataset.platforms);
+    setTop3Targets(newDataset.top3Targets);
+    setReflectionsHistory(newDataset.reflectionsHistory);
+
+    setActiveProfileId(newId);
+    try { localStorage.setItem('syllabus3d_active_profile_id', newId); } catch (e) {}
 
     return newId;
   }, [activeProfileId, exams, saveActiveProfileDataSynchronously]);
@@ -2332,15 +2362,43 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
 
     if (profileId === activeProfileId) {
-      setProfile(prev => ({
-        ...prev,
-        name: updates.name ?? prev.name,
-        avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : prev.avatarUrl,
-        avatarEmoji: updates.avatarEmoji ?? prev.avatarEmoji,
-        avatarColor: updates.avatarColor ?? prev.avatarColor,
-        targetExamDate: updates.targetExamDate ?? prev.targetExamDate,
-        selectedExamId: updates.targetExamId ?? prev.selectedExamId
-      }));
+      const newName = updates.name !== undefined ? updates.name : undefined;
+      setProfile(prev => {
+        const next = {
+          ...prev,
+          name: newName ?? prev.name,
+          avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : prev.avatarUrl,
+          avatarEmoji: updates.avatarEmoji ?? prev.avatarEmoji,
+          avatarColor: updates.avatarColor ?? prev.avatarColor,
+          targetExamDate: updates.targetExamDate ?? prev.targetExamDate,
+          selectedExamId: updates.targetExamId ?? prev.selectedExamId
+        };
+        try { localStorage.setItem('syllabus3d_profile', JSON.stringify(next)); } catch (e) {}
+        return next;
+      });
+
+      // Synchronize auth session immediately so all views (Header, Sidebar, Overview, Settings) update
+      if (newName && updateUserSession) {
+        updateUserSession({ name: newName });
+      }
+      if (updates.avatarUrl !== undefined && updateUserSession) {
+        updateUserSession({ avatarUrl: updates.avatarUrl });
+      }
+
+      // Also persist to active profile dataset immediately
+      const activeData = loadProfileDataById(profileId);
+      if (activeData) {
+        activeData.profile = {
+          ...activeData.profile,
+          name: newName ?? activeData.profile.name,
+          avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : activeData.profile.avatarUrl,
+          avatarEmoji: updates.avatarEmoji ?? activeData.profile.avatarEmoji,
+          avatarColor: updates.avatarColor ?? activeData.profile.avatarColor,
+          targetExamDate: updates.targetExamDate ?? activeData.profile.targetExamDate,
+          selectedExamId: updates.targetExamId ?? activeData.profile.selectedExamId
+        };
+        try { localStorage.setItem(`syllabus3d_profile_data_${profileId}`, JSON.stringify(activeData)); } catch (e) {}
+      }
     } else {
       const existing = loadProfileDataById(profileId);
       if (existing) {
@@ -2358,7 +2416,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         } catch (e) {}
       }
     }
-  }, [activeProfileId, loadProfileDataById]);
+  }, [activeProfileId, loadProfileDataById, updateUserSession]);
 
   const deleteProfile = useCallback((profileId: string): boolean => {
     if (profiles.length <= 1) return false;

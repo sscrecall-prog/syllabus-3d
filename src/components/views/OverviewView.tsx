@@ -78,7 +78,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const greetingPhase = hour < 12 ? 'Morning Focus' : hour < 17 ? 'Afternoon Momentum' : 'Evening Mastery';
   const greetingIcon = hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
   const formattedDate = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  const userName = user?.name || user?.email?.split('@')[0] || profile.name || 'Scholar';
+  const userName = profile.name || user?.name || user?.email?.split('@')[0] || 'Scholar';
 
   return (
     <div className="space-y-3 sm:space-y-3.5 pb-24 sm:pb-12">

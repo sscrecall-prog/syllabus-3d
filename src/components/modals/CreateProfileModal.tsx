@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSyllabus } from '../../context/SyllabusContext';
+import { useAuth } from '../../context/AuthContext';
 import { UserProfileItem } from '../../types/syllabus';
 import { X, Sparkles, User, Calendar, Target, Copy, Plus, Check, Camera, Image, Trash2 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
@@ -40,7 +41,8 @@ export const CreateProfileModal: React.FC<CreateProfileModalProps> = ({
   editingProfile,
   onSuccess
 }) => {
-  const { createProfile, updateProfileById, exams } = useSyllabus();
+  const { createProfile, updateProfileById, activeProfileId, exams } = useSyllabus();
+  const { updateUserSession } = useAuth();
 
   const [name, setName] = useState('');
   const [selectedEmoji, setSelectedEmoji] = useState('🦁');
@@ -101,17 +103,25 @@ export const CreateProfileModal: React.FC<CreateProfileModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
 
     if (editingProfile) {
+      const newAvatarUrl = avatarTab === 'upload' ? avatarUrl : undefined;
       updateProfileById(editingProfile.id, {
-        name: name.trim(),
+        name: trimmedName,
         avatarEmoji: selectedEmoji,
         avatarColor: selectedColor,
-        avatarUrl: avatarTab === 'upload' ? avatarUrl : undefined,
+        avatarUrl: newAvatarUrl,
         targetExamId,
         targetExamDate
       });
+      if (editingProfile.id === activeProfileId) {
+        updateUserSession({
+          name: trimmedName,
+          avatarUrl: newAvatarUrl
+        });
+      }
       soundManager.playCompleteChime();
       haptics.success();
       onSuccess?.(editingProfile.id);

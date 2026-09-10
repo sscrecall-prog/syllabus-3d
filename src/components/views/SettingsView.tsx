@@ -93,9 +93,13 @@ export const SettingsView: React.FC = () => {
   const [profileToDelete, setProfileToDelete] = useState<UserProfileItem | null>(null);
 
   // Profile Edit State
-  const [name, setName] = useState(user?.name || profile.name);
+  const [name, setName] = useState(profile.name || user?.name || '');
   const [isEditingName, setIsEditingName] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+
+  useEffect(() => {
+    setName(profile.name || user?.name || '');
+  }, [profile.name, user?.name]);
 
   // Exam Countdown Settings state
   const [examName, setExamName] = useState(currentExam?.name || 'SSC CGL 2026');
@@ -402,7 +406,7 @@ export const SettingsView: React.FC = () => {
             ) : (
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <h2 className="text-sm xs:text-base sm:text-lg font-black text-[#11120F] dark:text-[#F5F5F7] tracking-tight uppercase truncate">
-                  {user?.name || profile.name || 'Aspirant'}
+                  {profile.name || user?.name || 'Aspirant'}
                 </h2>
                 <button
                   onClick={() => setIsEditingName(true)}
