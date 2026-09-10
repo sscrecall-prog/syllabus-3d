@@ -1331,8 +1331,8 @@ input, textarea, [contenteditable="true"], .selectable-text {
 }
 
 /* 6. Form Inputs, Search Bars & Textareas */
-.dark input:not([type="checkbox"]):not([type="radio"]),
-.dark textarea,
+.dark input:not([type="checkbox"]):not([type="radio"]):not(.bg-transparent):not([class*="bg-transparent"]),
+.dark textarea:not(.bg-transparent):not([class*="bg-transparent"]),
 .dark select {
   background-color: #0C101C !important;
   color: #FFFFFF !important;
@@ -1340,11 +1340,19 @@ input, textarea, [contenteditable="true"], .selectable-text {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
-.dark input:focus,
-.dark textarea:focus,
+.dark input:not(.bg-transparent):not([class*="bg-transparent"]):focus,
+.dark textarea:not(.bg-transparent):not([class*="bg-transparent"]):focus,
 .dark select:focus {
   border-color: #7AA2F7 !important;
   box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark input.bg-transparent,
+.dark input[class*="bg-transparent"],
+.dark textarea.bg-transparent,
+.dark textarea[class*="bg-transparent"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .dark input::placeholder,
@@ -1468,8 +1476,8 @@ html:not(.dark) [class*="text-blue-600"] {
 }
 
 /* 6. Form Inputs, Search Bars & Textareas */
-html:not(.dark) input:not([type="checkbox"]):not([type="radio"]),
-html:not(.dark) textarea,
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not(.bg-transparent):not([class*="bg-transparent"]),
+html:not(.dark) textarea:not(.bg-transparent):not([class*="bg-transparent"]),
 html:not(.dark) select {
   background-color: #FFFFFF !important;
   color: #0F172A !important;
@@ -1477,12 +1485,20 @@ html:not(.dark) select {
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), inset 0 1px 2px rgba(15, 23, 42, 0.02) !important;
 }
 
-html:not(.dark) input:focus,
-html:not(.dark) textarea:focus,
+html:not(.dark) input:not(.bg-transparent):not([class*="bg-transparent"]):focus,
+html:not(.dark) textarea:not(.bg-transparent):not([class*="bg-transparent"]):focus,
 html:not(.dark) select:focus {
   border-color: #2563EB !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 1px 2px rgba(15, 23, 42, 0.03) !important;
   outline: none !important;
+}
+
+html:not(.dark) input.bg-transparent,
+html:not(.dark) input[class*="bg-transparent"],
+html:not(.dark) textarea.bg-transparent,
+html:not(.dark) textarea[class*="bg-transparent"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 html:not(.dark) input::placeholder,

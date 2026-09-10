@@ -215,24 +215,24 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
 
   return (
     <div className="fixed inset-0 z-[100000] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="w-full max-w-4xl bg-[#0B0D17] border border-white/15 rounded-3xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden text-white relative">
+      <div className="w-full max-w-4xl bg-white dark:bg-[#0B0D17] border border-slate-200/90 dark:border-white/15 rounded-3xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden text-slate-900 dark:text-white relative">
         
         {/* Top Header */}
-        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-blue-600/15 via-cyan-500/10 to-transparent shrink-0">
+        <div className="px-5 py-4 border-b border-slate-200/80 dark:border-white/10 flex items-center justify-between bg-gradient-to-r from-blue-500/10 via-cyan-500/5 to-transparent dark:from-blue-600/15 dark:via-cyan-500/10 dark:to-transparent shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20 shrink-0">
               <Sparkles className="w-5 h-5 animate-[pulse_3s_ease-in-out_infinite]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-black tracking-tight text-white">
+                <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white">
                   AI Syllabus Architect
                 </h3>
-                <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-[10px] font-mono font-bold uppercase">
+                <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 dark:bg-cyan-500/20 border border-cyan-500/30 dark:border-cyan-400/30 text-cyan-600 dark:text-cyan-300 text-[10px] font-mono font-bold uppercase">
                   PDF & Text Parser
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Transform any raw syllabus into subjects, chapters, topics, and subtopics like a human expert.
               </p>
             </div>
@@ -243,10 +243,10 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
             <button
               type="button"
               onClick={() => setShowApiKeyModal(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
               title="Configure Google Gemini API Key"
             >
-              <Key className="w-3.5 h-3.5 text-amber-400" />
+              <Key className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               <span className="hidden sm:inline">
                 {apiKey ? 'API Key Active' : 'Configure Gemini Key'}
               </span>
@@ -258,7 +258,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                 soundManager.playClick();
                 onClose();
               }}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />
@@ -274,8 +274,8 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
               {/* Target Exam Name & Year */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-2 space-y-1">
-                  <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                     <span>Target Exam / Curriculum Name</span>
                   </label>
                   <input
@@ -283,22 +283,22 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     value={examName}
                     onChange={e => setExamName(e.target.value)}
                     placeholder="e.g. SSC CGL 2025, UPSC CSE GS, GATE CS, College Semester 4"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#121422] border border-slate-300 dark:border-white/15 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-[#0F111D] focus:ring-2 focus:ring-cyan-500/15"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-300">Target Year</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Target Year</label>
                   <input
                     type="number"
                     value={targetYear}
                     onChange={e => setTargetYear(parseInt(e.target.value) || new Date().getFullYear())}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#121422] border border-slate-300 dark:border-white/15 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-[#0F111D] focus:ring-2 focus:ring-cyan-500/15 font-mono"
                   />
                 </div>
               </div>
 
               {/* Mode Switcher Tabs */}
-              <div className="flex items-center gap-2 p-1 rounded-2xl bg-white/5 border border-white/10">
+              <div className="flex items-center gap-2 p-1 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => {
@@ -308,7 +308,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                   className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     inputMode === 'text'
                       ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md'
-                      : 'text-slate-400 hover:text-white'
+                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   <FileText className="w-4 h-4" />
@@ -323,7 +323,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                   className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     inputMode === 'pdf'
                       ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md'
-                      : 'text-slate-400 hover:text-white'
+                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   <Upload className="w-4 h-4" />
@@ -334,7 +334,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
               {/* Input Area: Text Mode */}
               {inputMode === 'text' && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-400">
+                  <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
                     <span>Paste syllabus text from notification, website, or notes:</span>
                     <div className="flex items-center gap-2">
                       <button
@@ -343,7 +343,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                           setRawText(SAMPLE_SYLLABUS);
                           soundManager.playClick();
                         }}
-                        className="text-cyan-400 hover:underline cursor-pointer"
+                        className="text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer font-semibold"
                       >
                         Load SSC CGL Sample
                       </button>
@@ -351,7 +351,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                         <button
                           type="button"
                           onClick={() => setRawText('')}
-                          className="text-slate-500 hover:text-rose-400"
+                          className="text-slate-400 hover:text-rose-500 transition-colors"
                         >
                           Clear
                         </button>
@@ -364,9 +364,9 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     value={rawText}
                     onChange={e => setRawText(e.target.value)}
                     placeholder="Paste topics, chapters, or official syllabus sections here..."
-                    className="w-full p-4 rounded-2xl bg-white/[0.04] border border-white/15 text-xs sm:text-sm text-slate-100 placeholder-slate-500 font-sans focus:outline-none focus:border-cyan-400 resize-y leading-relaxed"
+                    className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-[#121422] border border-slate-300 dark:border-white/15 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 font-sans focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-[#0F111D] focus:ring-2 focus:ring-cyan-500/15 resize-y leading-relaxed"
                   />
-                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
                     <span>
                       {rawText.trim().split(/\s+/).filter(Boolean).length} words ·{' '}
                       {rawText.length} characters
@@ -398,29 +398,29 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     }}
                     className={`border-2 border-dashed rounded-3xl p-8 sm:p-12 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-3 ${
                       uploadedPdf
-                        ? 'border-cyan-400 bg-cyan-500/10'
-                        : 'border-white/20 hover:border-cyan-400/60 hover:bg-white/[0.03]'
+                        ? 'border-cyan-500 bg-cyan-50/80 dark:border-cyan-400 dark:bg-cyan-500/10'
+                        : 'border-slate-300 hover:border-cyan-500 bg-slate-50/70 hover:bg-slate-100/70 dark:border-white/20 dark:hover:border-cyan-400/60 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]'
                     }`}
                   >
-                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-600 dark:bg-cyan-500/20 dark:border-cyan-500/40 dark:text-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/10 dark:shadow-cyan-500/20">
                       <Upload className="w-8 h-8 animate-bounce" />
                     </div>
 
                     {uploadedPdf ? (
                       <div>
-                        <span className="text-sm font-black text-cyan-300 block">
+                        <span className="text-sm font-black text-cyan-700 dark:text-cyan-300 block">
                           {uploadedPdf.name}
                         </span>
-                        <span className="text-xs text-slate-400 block mt-1">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 block mt-1">
                           {(uploadedPdf.size / (1024 * 1024)).toFixed(2)} MB · Click to change file
                         </span>
                       </div>
                     ) : (
                       <div>
-                        <span className="text-sm font-bold text-white block">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white block">
                           Drag & Drop your Syllabus PDF here, or Browse
                         </span>
-                        <span className="text-xs text-slate-400 block mt-1">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 block mt-1">
                           Supports official exam notifications, coaching PDFs, and college guides
                         </span>
                       </div>
@@ -431,7 +431,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
 
               {/* Error Notice */}
               {errorNotice && (
-                <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2.5">
+                <div className="p-3 rounded-2xl bg-rose-500/10 dark:bg-rose-500/15 border border-rose-500/25 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2.5">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{errorNotice}</span>
                 </div>
@@ -443,21 +443,21 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
           {step === 'processing' && (
             <div className="py-16 sm:py-24 text-center flex flex-col items-center justify-center space-y-6">
               <div className="relative w-24 h-24 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-2 border-cyan-400/20 border-t-cyan-400 animate-spin" />
+                <div className="absolute inset-0 rounded-full border-2 border-cyan-400/20 border-t-cyan-500 animate-spin" />
                 <div className="absolute inset-2 rounded-full border-2 border-blue-500/20 border-b-blue-500 animate-[spin_1.5s_linear_infinite_reverse]" />
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-xl shadow-cyan-500/40">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-xl shadow-cyan-500/30">
                   <Brain className="w-6 h-6 animate-pulse" />
                 </div>
               </div>
 
               <div className="space-y-2 max-w-sm">
-                <h4 className="text-lg font-black text-white">
+                <h4 className="text-lg font-black text-slate-900 dark:text-white">
                   Architecting Your Syllabus...
                 </h4>
-                <p className="text-xs text-cyan-300 font-mono animate-pulse">
+                <p className="text-xs text-cyan-600 dark:text-cyan-300 font-mono animate-pulse">
                   {statusMessage || 'Analyzing concepts, chapters & subtopics...'}
                 </p>
-                <p className="text-[11px] text-slate-400 mt-2">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
                   Building deep academic taxonomy, categorizing difficulties, and crafting granular checklists.
                 </p>
               </div>
@@ -469,37 +469,37 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
             <div className="space-y-5">
               {/* Review KPI Banner */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
-                  <span className="text-xl sm:text-2xl font-black text-cyan-400 font-mono">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-center shadow-xs">
+                  <span className="text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 font-mono">
                     {extractedResult.subjects.length}
                   </span>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">Subjects</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Subjects</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
-                  <span className="text-xl sm:text-2xl font-black text-blue-400 font-mono">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-center shadow-xs">
+                  <span className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">
                     {totalChapters}
                   </span>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">Chapters</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Chapters</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
-                  <span className="text-xl sm:text-2xl font-black text-emerald-400 font-mono">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-center shadow-xs">
+                  <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
                     {totalTopics}
                   </span>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">Topics</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Topics</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
-                  <span className="text-xl sm:text-2xl font-black text-amber-400 font-mono">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-center shadow-xs">
+                  <span className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">
                     {totalSubtopics}
                   </span>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">Subtopic Checklists</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Subtopic Checklists</span>
                 </div>
               </div>
 
               {/* Destination Selector */}
-              <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
                 <div className="flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs font-bold text-slate-200">Import Destination:</span>
+                  <Sliders className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Import Destination:</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -508,8 +508,8 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     onClick={() => setTargetDestination('new_exam')}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                       targetDestination === 'new_exam'
-                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
-                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                        ? 'bg-cyan-500/15 border-cyan-500 dark:border-cyan-400 text-cyan-700 dark:text-cyan-300 shadow-xs'
+                        : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
                     }`}
                   >
                     Create as New Exam Target
@@ -520,8 +520,8 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     onClick={() => setTargetDestination('merge_current')}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                       targetDestination === 'merge_current'
-                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
-                        : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                        ? 'bg-cyan-500/15 border-cyan-500 dark:border-cyan-400 text-cyan-700 dark:text-cyan-300 shadow-xs'
+                        : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
                     }`}
                   >
                     Merge into Current Exam ({currentExam?.name || 'Current'})
@@ -531,7 +531,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
 
               {/* Source & Notice */}
               {errorNotice && (
-                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
+                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-300 text-xs flex items-center gap-2">
                   <Info className="w-4 h-4 shrink-0" />
                   <span>{errorNotice}</span>
                 </div>
@@ -539,9 +539,9 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
 
               {/* Interactive Tree View */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 px-1">
                   <span>Interactive Curriculum Hierarchy (Click to edit names, difficulty or subtopics):</span>
-                  <span className="text-[11px] font-mono text-cyan-400">
+                  <span className="text-[11px] font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
                     Engine: {extractionSource === 'gemini' ? 'Gemini 1.5 Flash' : 'Smart Offline Parser'}
                   </span>
                 </div>
@@ -558,7 +558,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="px-5 py-4 border-t border-white/10 flex items-center justify-between gap-3 bg-black/30 shrink-0">
+        <div className="px-5 py-4 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between gap-3 bg-slate-50/90 dark:bg-black/30 shrink-0">
           {step === 'input' && (
             <>
               <button
@@ -567,7 +567,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                   soundManager.playClick();
                   onClose();
                 }}
-                className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -592,7 +592,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                   soundManager.playClick();
                   setStep('input');
                 }}
-                className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Back to Raw Input</span>
@@ -613,35 +613,35 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
         {/* API Key Modal / Popover */}
         {showApiKeyModal && (
           <div className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-[#121422] border border-white/20 rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div className="w-full max-w-md bg-white dark:bg-[#121422] border border-slate-200 dark:border-white/20 rounded-3xl p-6 space-y-4 shadow-2xl text-slate-900 dark:text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-500 dark:bg-amber-500/20 dark:text-amber-400 flex items-center justify-center">
                     <Key className="w-4 h-4" />
                   </div>
-                  <h4 className="text-base font-black text-white">Google Gemini API Key</h4>
+                  <h4 className="text-base font-black text-slate-900 dark:text-white">Google Gemini API Key</h4>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowApiKeyModal(false)}
-                  className="p-1 rounded text-slate-400 hover:text-white"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Enter your free Google Gemini API key to enable semantic analysis and subtopic expansion. Keys are stored safely in your browser&apos;s local storage.
               </p>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300">Gemini API Key</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Gemini API Key</label>
                 <input
                   type="password"
                   value={tempApiKey}
                   onChange={e => setTempApiKey(e.target.value)}
                   placeholder="AIzaSy..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-300 dark:border-white/15 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 font-mono focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-[#0F111D]"
                 />
               </div>
 
@@ -650,7 +650,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                   href="https://aistudio.google.com/app/apikey"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-cyan-400 hover:underline flex items-center gap-1"
+                  className="text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 font-semibold"
                 >
                   <span>Get Free Key at Google AI Studio</span>
                   <ExternalLink className="w-3 h-3" />
@@ -667,7 +667,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     setShowApiKeyModal(false);
                     soundManager.playClick();
                   }}
-                  className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-400"
+                  className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-400 transition-colors"
                 >
                   Remove Key
                 </button>
@@ -679,7 +679,7 @@ export const AiSyllabusArchitectModal: React.FC<AiSyllabusArchitectModalProps> =
                     setShowApiKeyModal(false);
                     soundManager.playSuccess();
                   }}
-                  className="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-xs font-black text-white shadow-md shadow-cyan-500/25"
+                  className="flex-1 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-xs font-black text-white shadow-md shadow-cyan-500/25 cursor-pointer"
                 >
                   Save API Key
                 </button>
