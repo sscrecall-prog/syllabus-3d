@@ -82,21 +82,21 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
       num: '01',
       title: 'Top Non-Negotiable Target',
       badge: 'Primary Priority',
-      badgeClass: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/25',
+      badgeClass: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
       accentGlow: 'hover:border-amber-500/40'
     },
     {
       num: '02',
       title: 'Core Practice & Problem Sprint',
       badge: 'Deep Practice',
-      badgeClass: 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/25',
+      badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-400 border-sky-500/25',
       accentGlow: 'hover:border-sky-500/40'
     },
     {
       num: '03',
       title: 'Revision or Supporting Milestone',
       badge: 'Speed Drill',
-      badgeClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/25',
+      badgeClass: 'bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/25',
       accentGlow: 'hover:border-purple-500/40'
     }
   ];
@@ -149,13 +149,13 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsHistoryModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A1B29] hover:bg-slate-100 dark:hover:bg-[#25283B] text-slate-600 dark:text-[#CBD5E1] border border-slate-200/70 dark:border-white/[0.06] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-[0.97] tap-bounce"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A1B29] hover:bg-slate-100 dark:hover:bg-[#25283B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200/80 dark:border-white/[0.06] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-[0.97] tap-bounce"
               title="View past reflection journal"
             >
-              <History className="w-3.5 h-3.5 text-purple-400" />
+              <History className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               <span>History</span>
               {reflectionsHistory.length > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30">
                   {reflectionsHistory.length}
                 </span>
               )}

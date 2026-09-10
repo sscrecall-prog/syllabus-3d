@@ -33,40 +33,40 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
   const getMoodBadge = (mood: DailyMood) => {
     switch (mood) {
       case 'fire':
-        return { label: 'Unstoppable', emoji: '🔥', color: 'text-orange-400 bg-orange-500/15 border-orange-500/30' };
+        return { label: 'Unstoppable', emoji: '🔥', color: 'text-orange-600 dark:text-orange-400 bg-orange-500/10 dark:bg-orange-500/15 border-orange-500/30' };
       case 'lightning':
-        return { label: 'Productive', emoji: '⚡', color: 'text-amber-400 bg-amber-500/15 border-amber-500/30' };
+        return { label: 'Productive', emoji: '⚡', color: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/30' };
       case 'happy':
-        return { label: 'Moderate', emoji: '🙂', color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' };
+        return { label: 'Moderate', emoji: '🙂', color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30' };
       case 'tired':
-        return { label: 'Distracted', emoji: '🥱', color: 'text-sky-400 bg-sky-500/15 border-sky-500/30' };
+        return { label: 'Distracted', emoji: '🥱', color: 'text-sky-600 dark:text-sky-400 bg-sky-500/10 dark:bg-sky-500/15 border-sky-500/30' };
       case 'stressed':
-        return { label: 'Low Energy', emoji: '😴', color: 'text-rose-400 bg-rose-500/15 border-rose-500/30' };
+        return { label: 'Low Energy', emoji: '😴', color: 'text-rose-600 dark:text-rose-400 bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/30' };
       default:
-        return { label: 'Completed', emoji: '✨', color: 'text-purple-400 bg-purple-500/15 border-purple-500/30' };
+        return { label: 'Completed', emoji: '✨', color: 'text-purple-600 dark:text-purple-400 bg-purple-500/10 dark:bg-purple-500/15 border-purple-500/30' };
     }
   };
 
   const getDistractionInfo = (reason: DistractionCategory) => {
     switch (reason) {
       case 'none':
-        return { label: '100% Focused • Zero Traps', emoji: '🏆', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+        return { label: '100% Focused • Zero Traps', emoji: '🏆', color: 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
       case 'social_media':
-        return { label: 'Social Media / Reels', emoji: '📱', color: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
+        return { label: 'Social Media / Reels', emoji: '📱', color: 'text-rose-700 dark:text-rose-400 bg-rose-500/10 border-rose-500/20' };
       case 'youtube':
-        return { label: 'YouTube Rabbit Hole', emoji: '📺', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
+        return { label: 'YouTube Rabbit Hole', emoji: '📺', color: 'text-cyan-700 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
       case 'overthinking':
-        return { label: 'Overthinking / Anxiety', emoji: '🧠', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+        return { label: 'Overthinking / Anxiety', emoji: '🧠', color: 'text-purple-700 dark:text-purple-400 bg-purple-500/10 border-purple-500/20' };
       case 'fatigue':
-        return { label: 'Fatigue / Sleepiness', emoji: '🥱', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+        return { label: 'Fatigue / Sleepiness', emoji: '🥱', color: 'text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20' };
       default:
-        return { label: 'Other Interruption', emoji: '⚠️', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
+        return { label: 'Other Interruption', emoji: '⚠️', color: 'text-indigo-700 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
     }
   };
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in font-sans overflow-hidden"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 dark:bg-black/80 backdrop-blur-md animate-fade-in font-sans overflow-hidden"
       onClick={() => {
         soundManager.playClick();
         haptics.light();
@@ -74,32 +74,32 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
       }}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[88vh] bg-[#0F101A] border-t sm:border border-[#2B2E42] rounded-t-3xl sm:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col text-white overscroll-contain animate-slide-up sm:animate-none"
+        className="relative w-full max-w-2xl max-h-[88vh] bg-white dark:bg-[#0F101A] border-t sm:border border-slate-200/90 dark:border-[#2B2E42] rounded-t-3xl sm:rounded-3xl shadow-2xl dark:shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col text-slate-900 dark:text-white overscroll-contain animate-slide-up sm:animate-none"
         onClick={e => e.stopPropagation()}
       >
         {/* Mobile Pull-Down Drag Handle Pill */}
-        <div className="sm:hidden pt-3 pb-1 flex items-center justify-center bg-[#1B1D30]">
-          <div className="w-12 h-1.5 rounded-full bg-slate-600 active:scale-95 transition-transform" />
+        <div className="sm:hidden pt-3 pb-1 flex items-center justify-center bg-slate-100 dark:bg-[#1B1D30]">
+          <div className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600 active:scale-95 transition-transform" />
         </div>
 
         {/* Top Header - Compact & Clean */}
-        <div className="p-4 sm:p-5 bg-gradient-to-br from-[#1B1D30] via-[#131422] to-[#0A0B12] text-white border-b border-[#282B3E] flex items-center justify-between gap-3 shrink-0 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="p-4 sm:p-5 bg-gradient-to-br from-purple-50/90 via-indigo-50/50 to-slate-50/90 dark:from-[#1B1D30] dark:via-[#131422] dark:to-[#0A0B12] text-slate-900 dark:text-white border-b border-slate-200/80 dark:border-[#282B3E] flex items-center justify-between gap-3 shrink-0 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/20 text-white flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] shrink-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-purple-400/30 dark:border-white/20 text-white flex items-center justify-center shadow-md shadow-purple-500/30 dark:shadow-[0_0_15px_rgba(168,85,247,0.4)] shrink-0">
               <History className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="px-1.5 py-0.2 rounded text-[11px] font-mono font-black uppercase bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-200 border border-purple-400/40">
+                <span className="px-1.5 py-0.2 rounded text-[11px] font-mono font-black uppercase bg-purple-100 dark:bg-gradient-to-r dark:from-purple-500/30 dark:to-indigo-500/30 text-purple-700 dark:text-purple-200 border border-purple-200 dark:border-purple-400/40">
                   JOURNAL LOG
                 </span>
-                <span className="text-[11px] font-mono font-bold text-[#A1A1B2] bg-white/5 px-1.5 py-0.2 rounded border border-white/10">
+                <span className="text-[11px] font-mono font-bold text-slate-600 dark:text-[#A1A1B2] bg-slate-100 dark:bg-white/5 px-1.5 py-0.2 rounded border border-slate-200 dark:border-white/10">
                   {reflectionsHistory.length} Days
                 </span>
               </div>
-              <h3 className="text-xs sm:text-base font-black font-serif uppercase tracking-tight text-white mt-0.5 truncate drop-shadow-sm">
+              <h3 className="text-xs sm:text-base font-black uppercase tracking-tight text-slate-900 dark:text-white mt-0.5 truncate">
                 Night Reflections History
               </h3>
             </div>
@@ -112,22 +112,22 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
               haptics.light();
               onClose();
             }}
-            className="relative z-10 p-2 sm:p-2 rounded-xl text-[#A1A1B2] hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
+            className="relative z-10 p-2 sm:p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-[#A1A1B2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all cursor-pointer shrink-0 tap-bounce touch-target-min flex items-center justify-center"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Timeline Log List */}
-        <div className="p-3 sm:p-5 overflow-y-auto custom-scrollbar space-y-3 flex-1 bg-[#0F101A]">
+        <div className="p-3 sm:p-5 overflow-y-auto custom-scrollbar space-y-3 flex-1 bg-slate-50/60 dark:bg-[#0F101A]">
           {reflectionsHistory.length === 0 ? (
             <div className="py-12 text-center space-y-3 px-3">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                 <Sparkles className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-xs sm:text-sm font-bold text-white">No reflections logged yet</h4>
-                <p className="text-[11px] sm:text-xs text-[#8E90A6] max-w-sm mx-auto leading-relaxed">
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">No reflections logged yet</h4>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-[#8E90A6] max-w-sm mx-auto leading-relaxed">
                   Take 1 minute every night to log your wins, eliminate distractions, and build unbreakable consistency!
                 </p>
               </div>
@@ -139,7 +139,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                     onClose();
                     onOpenNewReflection();
                   }}
-                  className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer inline-flex items-center gap-1.5 border border-white/20"
+                  className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/30 transition-all active:scale-95 cursor-pointer inline-flex items-center gap-1.5 border border-white/20"
                 >
                   <span>Log Tonight's Reflection</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -154,14 +154,14 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
               return (
                 <div
                   key={refl.id}
-                  className="p-3.5 sm:p-4 rounded-2xl bg-[#161726] border border-[#2B2E42] shadow-sm space-y-2.5 hover:border-purple-500/40 transition-colors group"
+                  className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#161726] border border-slate-200/90 dark:border-[#2B2E42] shadow-sm space-y-2.5 hover:border-purple-500/40 transition-colors group"
                 >
                   {/* Card Header Row: Date + Mood + Targets + Delete Button */}
-                  <div className="flex items-center justify-between gap-2 pb-2 border-b border-[#242738]">
+                  <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-[#242738]">
                     <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                      <div className="flex items-center gap-1 text-purple-400 shrink-0">
+                      <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400 shrink-0">
                         <Calendar className="w-3.5 h-3.5" />
-                        <span className="text-[11px] sm:text-xs font-bold font-mono text-white">
+                        <span className="text-[11px] sm:text-xs font-bold font-mono text-slate-900 dark:text-white">
                           {refl.date}
                         </span>
                       </div>
@@ -172,7 +172,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[11px] sm:text-[11px] font-mono font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md border border-amber-500/25">
+                      <span className="text-[11px] sm:text-[11px] font-mono font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md border border-amber-500/25">
                         {refl.targetsCompletedCount}/3 Targets
                       </span>
 
@@ -185,7 +185,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                             soundManager.playClick();
                           }
                         }}
-                        className="p-1.5 rounded-lg text-rose-400/80 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 transition-all cursor-pointer shrink-0 active:scale-95"
+                        className="p-1.5 rounded-lg text-rose-500 hover:text-rose-600 dark:text-rose-400/80 dark:hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 transition-all cursor-pointer shrink-0 active:scale-95"
                         title="Delete entry"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -197,22 +197,22 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     {/* Biggest Win */}
                     <div className="p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-                      <span className="text-[11px] sm:text-[11px] font-black text-emerald-400 uppercase font-mono tracking-wider flex items-center gap-1">
+                      <span className="text-[11px] sm:text-[11px] font-black text-emerald-700 dark:text-emerald-400 uppercase font-mono tracking-wider flex items-center gap-1">
                         <Trophy className="w-3 h-3" />
                         <span>Daily Win:</span>
                       </span>
-                      <p className="text-white font-semibold text-xs leading-snug break-words">
+                      <p className="text-slate-900 dark:text-white font-semibold text-xs leading-snug break-words">
                         {refl.biggestWin}
                       </p>
                     </div>
 
                     {/* Tomorrow's Goal */}
                     <div className="p-2.5 sm:p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-1">
-                      <span className="text-[11px] sm:text-[11px] font-black text-purple-400 uppercase font-mono tracking-wider flex items-center gap-1">
+                      <span className="text-[11px] sm:text-[11px] font-black text-purple-700 dark:text-purple-400 uppercase font-mono tracking-wider flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         <span>Tomorrow's #1 Goal:</span>
                       </span>
-                      <p className="text-white font-semibold text-xs leading-snug break-words">
+                      <p className="text-slate-900 dark:text-white font-semibold text-xs leading-snug break-words">
                         {refl.tomorrowPriority}
                       </p>
                     </div>
@@ -220,13 +220,13 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
 
                   {/* Focus Check / Distraction Pill */}
                   <div className="flex items-center gap-1.5 flex-wrap text-[11px] sm:text-[11px] font-mono pt-0.5">
-                    <span className="text-[#8E90A6] font-bold shrink-0">Focus Check:</span>
+                    <span className="text-slate-500 dark:text-[#8E90A6] font-bold shrink-0">Focus Check:</span>
                     <span className={`px-2 py-0.5 rounded-md border text-[11px] flex items-center gap-1 ${distMeta.color}`}>
                       <span>{distMeta.emoji}</span>
                       <span className="font-semibold">{distMeta.label}</span>
                     </span>
                     {refl.distractionNote && (
-                      <span className="text-[#A1A1B2] italic text-[11px] break-words">
+                      <span className="text-slate-600 dark:text-[#A1A1B2] italic text-[11px] break-words">
                         "{refl.distractionNote}"
                       </span>
                     )}
@@ -238,8 +238,8 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-3 sm:p-4 bg-[#12131F] border-t border-[#282B3E] flex items-center justify-between gap-2 shrink-0">
-          <span className="text-[11px] sm:text-xs text-[#8E90A6] font-mono truncate">
+        <div className="p-3 sm:p-4 bg-slate-50 dark:bg-[#12131F] border-t border-slate-200/80 dark:border-[#282B3E] flex items-center justify-between gap-2 shrink-0">
+          <span className="text-[11px] sm:text-xs text-slate-500 dark:text-[#8E90A6] font-mono truncate">
             {reflectionsHistory.length} entries saved
           </span>
 
@@ -251,7 +251,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
                   onClose();
                   onOpenNewReflection();
                 }}
-                className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold transition-all active:scale-95 cursor-pointer border border-white/20"
+                className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm border border-white/20"
               >
                 + New
               </button>
@@ -259,7 +259,7 @@ export const ReflectionHistoryModal: React.FC<ReflectionHistoryModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition-colors cursor-pointer border border-white/10"
+              className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-slate-200/80 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-white text-xs font-bold transition-colors cursor-pointer border border-slate-200 dark:border-white/10"
             >
               Close
             </button>
