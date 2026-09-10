@@ -632,6 +632,70 @@ html:not(.dark):not(.sepia):not(.luxury) .planner-hero-banner .planner-suggestio
   color: #E2E8F0 !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   SYLLABUS EXPLORER HERO DASHBOARD BANNER (High Legibility & Modern Style)
+   ══════════════════════════════════════════════════════════════════ */
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner,
+.syllabus-hero-banner {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner h1,
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-banner-title,
+.syllabus-hero-banner h1,
+.syllabus-hero-banner .syllabus-banner-title {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner p,
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-banner-subtitle,
+.syllabus-hero-banner p,
+.syllabus-hero-banner .syllabus-banner-subtitle {
+  color: #CBD5E1 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-meta-text,
+.syllabus-hero-banner .syllabus-meta-text {
+  color: #CBD5E1 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-telemetry-pill,
+.syllabus-hero-banner .syllabus-telemetry-pill {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #E2E8F0 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-amber,
+.syllabus-hero-banner .syllabus-pill-amber {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  color: #FCD34D !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-emerald,
+.syllabus-hero-banner .syllabus-pill-emerald {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  color: #6EE7B7 !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-rose,
+.syllabus-hero-banner .syllabus-pill-rose {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+  border: 1px solid rgba(244, 63, 94, 0.35) !important;
+  color: #FDA4AF !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-blue,
+.syllabus-hero-banner .syllabus-pill-blue {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.35) !important;
+  color: #93C5FD !important;
+}
+
+
 
 
 /* Dark Mode Palette Normalizers */
