@@ -26,6 +26,7 @@ import {
   Target,
   Sparkles,
   Calendar,
+  Trophy,
   FolderOpen
 } from 'lucide-react';
 import { EditSubjectModal } from '../modals/EditSubjectModal';
@@ -167,17 +168,17 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
   const completedTopicsCount = allTopicsInExam.filter(t => t.status === 'completed').length;
   const overallPercentage = totalTopicsCount > 0 ? Math.round((completedTopicsCount / totalTopicsCount) * 100) : 0;
 
-  // Formatted Date (e.g. 28 Sep, 2026) to prevent awkward word splitting on mobile
+  // Formatted Date (e.g. Sep 28, 2026) matching reference aesthetic
   const formattedExamDate = (() => {
-    if (!currentExam.examDate) return '29 Aug, 2027';
+    if (!currentExam.examDate) return 'Sep 28, 2026';
     try {
       const parts = currentExam.examDate.split('-');
       if (parts.length === 3) {
         const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-        return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       }
       const d = new Date(currentExam.examDate);
-      return isNaN(d.getTime()) ? currentExam.examDate : d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+      return isNaN(d.getTime()) ? currentExam.examDate : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     } catch {
       return currentExam.examDate;
     }
@@ -1239,94 +1240,131 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       </div>
 
       {/* 1. TOP EXAM HERO BANNER (Hidden in Print) */}
-      <div className="syllabus-hero-banner p-3.5 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0B0F19] via-[#0F1424] to-[#0A0C16] border border-white/[0.12] ring-1 ring-white/[0.06] shadow-2xl relative overflow-hidden text-white print:hidden">
+      <div className="syllabus-hero-banner relative p-3.5 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl bg-[#060912] border border-white/[0.12] ring-1 ring-white/[0.06] shadow-2xl overflow-hidden text-white print:hidden">
         
-        {/* Study Desk Background Image with Warm Lamp Glow (Gracefully positioned on the right) */}
-        <div 
-          className="absolute -top-6 -right-6 sm:right-0 w-full sm:w-[50%] h-full bg-contain bg-right bg-no-repeat pointer-events-none opacity-30 sm:opacity-55 mix-blend-screen transition-transform duration-1000"
-          style={{ backgroundImage: `url('/syllabus_explorer_banner.png')` }}
+        {/* Background Artwork - Cozy Study Desk & Warm Glow */}
+        <img
+          src="/syllabus_explorer_banner.png"
+          alt="Syllabus Explorer Banner"
+          className="absolute inset-0 w-full h-full object-cover object-right pointer-events-none select-none"
+          loading="eager"
+          decoding="async"
         />
 
         {/* Multi-layered High-Contrast Protection Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/95 sm:via-[#0B0F19]/90 md:via-[#0B0F19]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/90 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none" />
-        
-        {/* Subtle Ambient Luminous Orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060912] via-[#060912]/95 md:via-[#060912]/75 to-transparent pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#060912]/80 via-transparent to-[#060912]/30 pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none z-0" />
 
-        {/* Banner Content (Badge + Title + Telemetry Pills) */}
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 sm:gap-4 min-w-0">
+        {/* Banner Content (Badge + Title + 4 Bento Tiles) */}
+        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 sm:gap-4 min-w-0">
           
-          {/* Left: Badge + Exam Title & Subtitle Meta */}
+          {/* Left: Badge + Dynamic Exam Title & Meta Counts */}
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             {/* Visual Badge Banner */}
-            <div className="w-12 sm:w-16 h-12 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#101422] via-[#1A233D] to-[#0A0D15] border border-amber-400/25 backdrop-blur-xl flex flex-col items-center justify-center text-center p-1 shrink-0 shadow-lg relative overflow-hidden">
-              <span className="text-[8.5px] sm:text-[10px] font-black tracking-wider text-amber-400 drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)] uppercase leading-none font-sans">
+            <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-[#0C1322]/90 border border-slate-700/60 shadow-xl backdrop-blur-md flex flex-col items-center justify-center p-1.5 shrink-0 gap-0.5">
+              <svg className="w-5 sm:w-6 h-5 sm:h-6 shrink-0" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#goldGradTop)" stroke="#F59E0B" strokeWidth="0.5" />
+                <path d="M2 12L12 17L22 12" stroke="url(#goldGradMid)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 17L12 22L22 17" stroke="url(#goldGradBot)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                <defs>
+                  <linearGradient id="goldGradTop" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#FDE68A" />
+                    <stop offset="1" stopColor="#D97706" />
+                  </linearGradient>
+                  <linearGradient id="goldGradMid" x1="2" y1="12" x2="22" y2="17" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#FBBF24" />
+                    <stop offset="1" stopColor="#B45309" />
+                  </linearGradient>
+                  <linearGradient id="goldGradBot" x1="2" y1="17" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#F59E0B" />
+                    <stop offset="1" stopColor="#92400E" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span className="text-[9px] sm:text-[10px] font-black tracking-wider text-[#FBBF24] font-sans uppercase leading-none mt-0.5">
                 SYLLABUS
               </span>
-              <span className="text-[7.5px] sm:text-[9px] font-black tracking-widest text-[#7AA2F7] uppercase font-mono leading-none mt-0.5 sm:mt-1">
+              <span className="text-[7.5px] sm:text-[8.5px] font-black tracking-widest text-[#38BDF8] font-mono uppercase leading-none">
                 EXPLORER
               </span>
             </div>
 
             {/* Exam Title & Meta Counts */}
             <div className="min-w-0 flex-1">
-              <h1 className="syllabus-banner-title text-base sm:text-xl md:text-2xl font-black text-white tracking-tight uppercase leading-tight font-sans drop-shadow-sm truncate">
-                {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL 2026'}
+              <h1 className="syllabus-banner-title text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight font-sans drop-shadow-sm truncate">
+                {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL'}
               </h1>
-              <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono font-semibold text-slate-300 mt-0.5 sm:mt-1 flex-wrap">
-                <span className="syllabus-meta-text">{currentExam.subjects.length} Subjects</span>
-                <span className="text-slate-500">•</span>
-                <span className="syllabus-meta-text">{totalTopicsCount} Topics</span>
-                <span className="text-slate-500">•</span>
-                <span className="text-emerald-400 font-bold">{completedTopicsCount} Completed</span>
+              <div className="flex items-center gap-2.5 sm:gap-3 text-xs font-semibold text-slate-200 mt-1 sm:mt-1.5 flex-wrap">
+                <div className="flex items-center gap-1.5 text-slate-300">
+                  <Layers className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span className="syllabus-meta-text">{currentExam.subjects.length} Subjects</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-300">
+                  <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span className="syllabus-meta-text">{totalTopicsCount} Topics</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>{completedTopicsCount} Completed</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right: Telemetry Glass Pills */}
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-[10.5px] sm:text-xs font-mono font-bold">
-            {/* Exam Date */}
-            <span className="syllabus-telemetry-pill flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl backdrop-blur-md shadow-xs shrink-0">
-              <Calendar className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate">{formattedExamDate}</span>
-            </span>
+          {/* Right: 4 Bento Glass Metric Tiles (with breathing room for right desk artwork) */}
+          <div className="grid grid-cols-2 md:flex md:items-center gap-2 sm:gap-2.5 shrink-0 xl:mr-44 2xl:mr-56">
+            {/* Tile 1: Exam Date */}
+            <div className="syllabus-bento-tile syllabus-tile-date flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#131A2B]/80 backdrop-blur-md border border-slate-700/50 shadow-lg text-left">
+              <Calendar className="w-4 sm:w-5 h-4 sm:h-5 text-amber-400 shrink-0" />
+              <div className="min-w-0">
+                <div className="syllabus-tile-val text-xs sm:text-[13px] font-bold text-white leading-tight font-sans truncate">
+                  {formattedExamDate}
+                </div>
+                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5">
+                  Exam Date
+                </div>
+              </div>
+            </div>
 
-            {/* Days Remaining */}
-            <span className="syllabus-pill-amber flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl tabular-nums backdrop-blur-md shadow-xs shrink-0">
-              <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              <span>{daysRemaining > 0 ? `${daysRemaining}d left` : 'Target Exam'}</span>
-            </span>
+            {/* Tile 2: Time Remaining */}
+            <div className="syllabus-bento-tile syllabus-tile-remaining flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#191811]/80 backdrop-blur-md border border-amber-500/20 shadow-lg text-left">
+              <Zap className="w-4 sm:w-5 h-4 sm:h-5 text-amber-400 fill-amber-400 shrink-0" />
+              <div className="min-w-0">
+                <div className="syllabus-tile-val text-xs sm:text-[13px] font-black text-[#FBBF24] leading-tight font-sans tabular-nums truncate">
+                  {daysRemaining > 0 ? `${daysRemaining}d Left` : 'Exam Today'}
+                </div>
+                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5">
+                  Time Remaining
+                </div>
+              </div>
+            </div>
 
-            {/* Mastery % */}
-            <span className="syllabus-pill-emerald flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl tabular-nums backdrop-blur-md shadow-xs shrink-0">
-              <span>🏆</span>
-              <span>{overallPercentage}% Mastered</span>
-            </span>
+            {/* Tile 3: Your Progress */}
+            <div className="syllabus-bento-tile syllabus-tile-progress flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#072422]/80 backdrop-blur-md border border-teal-500/25 shadow-lg text-left">
+              <Trophy className="w-4 sm:w-5 h-4 sm:h-5 text-[#2DD4BF] shrink-0" />
+              <div className="min-w-0">
+                <div className="syllabus-tile-val text-xs sm:text-[13px] font-black text-[#2DD4BF] leading-tight font-sans tabular-nums truncate">
+                  {overallPercentage}% Mastered
+                </div>
+                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5">
+                  Your Progress
+                </div>
+              </div>
+            </div>
 
-            {/* Pacing Forecast */}
-            {pacingForecast ? (
-              <span
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl tabular-nums backdrop-blur-md shadow-xs shrink-0 ${
-                  pacingForecast.status === 'behind_critical'
-                    ? 'syllabus-pill-rose'
-                    : pacingForecast.status === 'behind_mild'
-                    ? 'syllabus-pill-amber'
-                    : 'syllabus-pill-blue'
-                }`}
-                title={`Required: ${pacingForecast.requiredDailyPace} topics/day | Actual: ${pacingForecast.actualDailyVelocity} topics/day | Finish: ${pacingForecast.finishLineForecastDate}`}
-              >
-                <span>{pacingForecast.statusTheme.icon}</span>
-                <span className="truncate">{pacingForecast.requiredDailyPace}/day req</span>
-                <span className="hidden xl:inline opacity-85">• Finish: {pacingForecast.finishLineForecastDate}</span>
-              </span>
-            ) : (
-              <span className="syllabus-telemetry-pill flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl tabular-nums shrink-0">
-                ⚡ Pace Active
-              </span>
-            )}
+            {/* Tile 4: Pacing Forecast & Finish */}
+            <div className="syllabus-bento-tile syllabus-tile-target flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#281019]/80 backdrop-blur-md border border-rose-500/25 shadow-lg text-left">
+              <Target className="w-4 sm:w-5 h-4 sm:h-5 text-rose-400 shrink-0" />
+              <div className="min-w-0">
+                <div className="syllabus-tile-val text-xs sm:text-[13px] font-black text-white leading-tight font-sans tabular-nums truncate">
+                  {pacingForecast ? `${pacingForecast.requiredDailyPace}/day req` : 'Pace Active'}
+                </div>
+                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5 truncate max-w-[120px]">
+                  Finish: {pacingForecast ? pacingForecast.finishLineForecastDate : formattedExamDate}
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>

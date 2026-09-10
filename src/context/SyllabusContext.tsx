@@ -2282,11 +2282,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     // 2. Build isolated dataset for new profile
-    const newDataset: ProfileData = {
+    const newDataset = {
       exams: profileData.cloneCurrentSyllabus ? exams : [
         {
           id: profileData.targetExamId || 'exam_ssc_cgl_2025',
           name: exams.find(e => e.id === profileData.targetExamId)?.name || 'Target Exam',
+          code: exams.find(e => e.id === profileData.targetExamId)?.code || 'SSC_CGL',
           examDate: profileData.targetExamDate || '2026-10-15',
           targetYear: 2026,
           subjects: []

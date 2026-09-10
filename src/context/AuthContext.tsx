@@ -68,14 +68,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateUserSession = (updates: Partial<AuthUser>) => {
     setUser(prev => {
-      const base = prev || {
+      const base: AuthUser = prev || {
         id: 'user_default',
         name: 'Scholar Aspirant',
         email: 'aspirant@syllabus3d.local',
         provider: 'email',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
       };
-      const updated = { ...base, ...updates };
+      const updated: AuthUser = {
+        ...base,
+        ...updates,
+        lastLoginAt: updates.lastLoginAt || base.lastLoginAt || new Date().toISOString()
+      };
       try {
         localStorage.setItem('syllabus3d_auth_session', JSON.stringify(updated));
         const usersDbRaw = localStorage.getItem('syllabus3d_users_db');

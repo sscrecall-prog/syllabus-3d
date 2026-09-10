@@ -645,7 +645,7 @@ html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-banner-
 .syllabus-hero-banner h1,
 .syllabus-hero-banner .syllabus-banner-title {
   color: #FFFFFF !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
 }
 
 html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner p,
@@ -660,39 +660,39 @@ html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-meta-te
   color: #CBD5E1 !important;
 }
 
-html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-telemetry-pill,
-.syllabus-hero-banner .syllabus-telemetry-pill {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  color: #E2E8F0 !important;
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-bento-tile,
+.syllabus-hero-banner .syllabus-bento-tile {
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
 }
 
-html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-amber,
-.syllabus-hero-banner .syllabus-pill-amber {
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  border: 1px solid rgba(245, 158, 11, 0.35) !important;
-  color: #FCD34D !important;
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-tile-date,
+.syllabus-hero-banner .syllabus-tile-date {
+  background-color: rgba(19, 26, 43, 0.85) !important;
+  border: 1px solid rgba(71, 85, 105, 0.5) !important;
 }
 
-html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-emerald,
-.syllabus-hero-banner .syllabus-pill-emerald {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-  border: 1px solid rgba(16, 185, 129, 0.35) !important;
-  color: #6EE7B7 !important;
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-tile-remaining,
+.syllabus-hero-banner .syllabus-tile-remaining {
+  background-color: rgba(25, 24, 17, 0.85) !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
 }
 
-html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-rose,
-.syllabus-hero-banner .syllabus-pill-rose {
-  background-color: rgba(244, 63, 94, 0.15) !important;
-  border: 1px solid rgba(244, 63, 94, 0.35) !important;
-  color: #FDA4AF !important;
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-tile-progress,
+.syllabus-hero-banner .syllabus-tile-progress {
+  background-color: rgba(7, 36, 34, 0.85) !important;
+  border: 1px solid rgba(20, 184, 166, 0.25) !important;
 }
 
-html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-pill-blue,
-.syllabus-hero-banner .syllabus-pill-blue {
-  background-color: rgba(59, 130, 246, 0.15) !important;
-  border: 1px solid rgba(59, 130, 246, 0.35) !important;
-  color: #93C5FD !important;
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-tile-target,
+.syllabus-hero-banner .syllabus-tile-target {
+  background-color: rgba(40, 16, 25, 0.85) !important;
+  border: 1px solid rgba(244, 63, 94, 0.25) !important;
+}
+
+html:not(.dark):not(.sepia):not(.luxury) .syllabus-hero-banner .syllabus-tile-sub,
+.syllabus-hero-banner .syllabus-tile-sub {
+  color: #94A3B8 !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════
