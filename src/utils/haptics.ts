@@ -81,6 +81,16 @@ class HapticsEngine {
       navigator.vibrate(6);
     } catch {}
   }
+
+  /**
+   * Triple error pulse ([35ms, 40ms, 35ms, 40ms, 35ms]) - Failed PIN, invalid action
+   */
+  public error() {
+    if (!this.isEnabled()) return;
+    try {
+      navigator.vibrate([35, 40, 35, 40, 35]);
+    } catch {}
+  }
 }
 
 export const haptics = new HapticsEngine();

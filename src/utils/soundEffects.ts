@@ -178,6 +178,32 @@ class SoundEffectManager {
       // Ignored
     }
   }
+
+  public playSuccess() {
+    this.playCompleteChime();
+  }
+
+  public playError() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      const volume = this.settings.masterVolume * 0.14;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.linearRampToValueAtTime(130, now + 0.16);
+      gain.gain.setValueAtTime(volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.16);
+    } catch {
+      // Ignored
+    }
+  }
 }
 
 export const soundManager = new SoundEffectManager();

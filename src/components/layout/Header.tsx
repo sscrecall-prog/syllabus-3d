@@ -17,8 +17,10 @@ import {
   Download,
   Settings2,
   PanelLeftOpen,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react';
+import { usePinLock } from '../../context/PinLockContext';
 import { soundManager } from '../../utils/soundEffects';
 import { EditExamTargetModal } from '../modals/EditExamTargetModal';
 
@@ -47,6 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { currentExam, exams, setSelectedExamId, profile } = useSyllabus();
   const { user } = useAuth();
+  const { isConfigured, lockApp } = usePinLock();
   const {
     isDark,
     toggleTheme: handleThemeToggle,
@@ -231,6 +234,22 @@ export const Header: React.FC<HeaderProps> = ({
               {profile.currentStreak}d
             </span>
           </div>
+
+          {/* Quick Safety PIN Lock Trigger */}
+          {isConfigured && (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                haptics.medium();
+                lockApp();
+              }}
+              className="h-9 w-9 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-subtle-depth active:scale-90 shrink-0 flex items-center justify-center"
+              title="Lock App Now (Safety PIN)"
+              aria-label="Lock app now"
+            >
+              <Lock className="w-4 h-4" />
+            </button>
+          )}
 
           {/* Theme Toggle (Light <-> Dark) */}
           <button

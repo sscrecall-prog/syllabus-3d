@@ -40,16 +40,20 @@ import {
   Users,
   UserPlus,
   ArrowRight,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  KeyRound
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
 import { usePWA } from '../../hooks/usePWA';
 import { PWAInstallModal } from '../modals/PWAInstallModal';
 import { CreateProfileModal } from '../modals/CreateProfileModal';
+import { SetPinModal } from '../security/SetPinModal';
+import { usePinLock } from '../../context/PinLockContext';
 import { UserProfileItem } from '../../types/syllabus';
 
-type SettingsTab = 'profiles' | 'exam' | 'appearance' | 'sound' | 'timer' | 'data';
+type SettingsTab = 'profiles' | 'exam' | 'appearance' | 'sound' | 'timer' | 'data' | 'security';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -86,6 +90,15 @@ export const SettingsView: React.FC = () => {
   const [showPwaModal, setShowPwaModal] = useState(false);
 
   const [activeTab, setActiveTab] = useState<SettingsTab>('profiles');
+
+  // Safety PIN Lock State
+  const { config: pinConfig, isConfigured: isPinConfigured, updateConfig: updatePinConfig, disablePin } = usePinLock();
+  const [isSetPinModalOpen, setIsSetPinModalOpen] = useState(false);
+  const [setPinModalMode, setSetPinModalMode] = useState<'enable' | 'change'>('enable');
+  const [showDisablePinDialog, setShowDisablePinDialog] = useState(false);
+  const [disablePinInput, setDisablePinInput] = useState('');
+  const [disablePinError, setDisablePinError] = useState<string | null>(null);
+  const [isDisablingPin, setIsDisablingPin] = useState(false);
 
   // Multi-Profile Management State
   const [isCreateProfileModalOpen, setIsCreateProfileModalOpen] = useState(false);
@@ -493,7 +506,8 @@ export const SettingsView: React.FC = () => {
           { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
           { id: 'sound' as SettingsTab, label: 'Sound & Audio', icon: Volume2 },
           { id: 'timer' as SettingsTab, label: 'Focus & Timer', icon: Clock },
-          { id: 'data' as SettingsTab, label: 'Backup & App', icon: Database }
+          { id: 'data' as SettingsTab, label: 'Backup & App', icon: Database },
+          { id: 'security' as SettingsTab, label: 'Safety Lock', icon: Lock }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1529,6 +1543,283 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════
+          TAB 6: APP SAFETY & PIN SECURITY
+          ═══════════════════════════════════════════════════ */}
+      {activeTab === 'security' && (
+        <div className="space-y-3.5 sm:space-y-4 animate-fade-in">
+          
+          {/* Card 1: Master PIN Security Status */}
+          <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-3 sm:pb-4">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/25 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-tight">
+                    Safety PIN Protection
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#94A3B8] font-medium">
+                    Lock your study syllabus, private notes, and daily schedules with a secure numeric PIN.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {isPinConfigured ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Active ({pinConfig.pinLength}-Digit)</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-slate-500/15 text-slate-600 dark:text-slate-400 border border-slate-500/25">
+                    Disabled
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Action Bar / Controls */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1">
+              <div>
+                <span className="text-xs sm:text-[13px] font-bold text-[#11120F] dark:text-white block">
+                  {isPinConfigured ? 'App Lock is Enabled' : 'Protect this Workspace'}
+                </span>
+                <span className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#94A3B8] block">
+                  {isPinConfigured
+                    ? 'Requires PIN on startup, after inactivity, and via the header lock button.'
+                    : 'Set up a 4 or 6 digit PIN with emergency recovery question.'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                {isPinConfigured ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        setSetPinModalMode('change');
+                        setIsSetPinModalOpen(true);
+                      }}
+                      className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] hover:bg-cyan-500/10 hover:text-cyan-500 border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#11120F] dark:text-white transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Change PIN</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        setDisablePinError(null);
+                        setDisablePinInput('');
+                        setShowDisablePinDialog(true);
+                      }}
+                      className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/25 text-xs font-bold text-rose-600 dark:text-rose-400 transition-all cursor-pointer active:scale-95"
+                    >
+                      Turn Off
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playClick();
+                      setSetPinModalMode('enable');
+                      setIsSetPinModalOpen(true);
+                    }}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-xs font-extrabold text-white transition-all shadow-md shadow-cyan-500/25 cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Set Up Safety PIN</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Auto-Lock & Idle Defense */}
+          <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-4">
+            <div className="flex items-center gap-2.5 sm:gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-3 sm:pb-4">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/25 flex items-center justify-center shrink-0">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+              </div>
+              <div>
+                <h3 className="text-xs sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-tight">
+                  Auto-Lock & Idle Defense
+                </h3>
+                <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#94A3B8] font-medium">
+                  Automatically lock the app when left idle or when switching tabs.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Timeout Duration Selector */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730]">
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                    Inactivity Auto-Lock
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8] block">
+                    How long before the lock screen appears after no keyboard or mouse activity.
+                  </span>
+                </div>
+
+                <select
+                  value={pinConfig.autoLockTimeout}
+                  disabled={!isPinConfigured}
+                  onChange={(e) => {
+                    soundManager.playClick();
+                    updatePinConfig({ autoLockTimeout: Number(e.target.value) });
+                  }}
+                  className="px-3 py-1.5 rounded-lg sm:rounded-xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] text-xs font-bold text-[#11120F] dark:text-white focus:outline-none focus:border-cyan-400 disabled:opacity-40 cursor-pointer"
+                >
+                  <option value={0}>Immediately when idle</option>
+                  <option value={1}>After 1 Minute</option>
+                  <option value={5}>After 5 Minutes (Recommended)</option>
+                  <option value={15}>After 15 Minutes</option>
+                  <option value={30}>After 30 Minutes</option>
+                  <option value={-1}>Never (Manual Lock Only)</option>
+                </select>
+              </div>
+
+              {/* Tab Switch Lock Toggle */}
+              <div className="flex items-center justify-between gap-2.5 p-3 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730]">
+                <div>
+                  <span className="text-xs font-bold text-[#11120F] dark:text-white block">
+                    Lock on Tab Switch
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-[#65675F] dark:text-[#94A3B8] block">
+                    Immediately triggers the lock screen whenever you minimize or switch to another browser tab.
+                  </span>
+                </div>
+
+                <ToggleSwitch
+                  checked={Boolean(pinConfig.lockOnTabSwitch && isPinConfigured)}
+                  onChange={(checked) => {
+                    if (!isPinConfigured) return;
+                    updatePinConfig({ lockOnTabSwitch: checked });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Recovery & Cryptographic Info */}
+          <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#18181D] border border-[#E2E8F0] dark:border-[#272730] shadow-subtle-depth space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2.5 sm:gap-3 border-b border-[#EEEEE8] dark:border-[#242533] pb-3 sm:pb-4">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25 flex items-center justify-center shrink-0">
+                <KeyRound className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+              </div>
+              <div>
+                <h3 className="text-xs sm:text-base font-black text-[#11120F] dark:text-[#F5F5F7] uppercase tracking-tight">
+                  Recovery & Privacy Architecture
+                </h3>
+                <p className="text-[11px] sm:text-xs text-[#65675F] dark:text-[#94A3B8] font-medium">
+                  Client-side salted SHA-256 hash protection.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              {isPinConfigured && (
+                <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#20212E] border border-[#E2E8F0] dark:border-[#272730] space-y-1">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+                    Active Recovery Question
+                  </span>
+                  <p className="text-xs font-semibold text-[#11120F] dark:text-white">
+                    {pinConfig.securityQuestion || 'What is your target exam or dream post?'}
+                  </p>
+                </div>
+              )}
+
+              <div className="p-3 rounded-xl bg-cyan-500/[0.06] border border-cyan-500/20 space-y-1 text-xs text-[#65675F] dark:text-slate-300">
+                <p className="font-semibold text-[#11120F] dark:text-white">
+                  🛡️ Zero Plaintext Storage Guarantee
+                </p>
+                <p className="text-[11px] leading-relaxed">
+                  Your PIN and security answer are hashed locally using the browser&apos;s native Web Crypto API. No PIN data or recovery answers are ever transmitted to any remote servers.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* Disable PIN Confirmation Dialog */}
+      {showDisablePinDialog && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
+          <div className="w-full max-w-sm bg-[#0F111A] border border-white/15 rounded-3xl shadow-2xl p-6 text-white space-y-4">
+            <div>
+              <h3 className="text-lg font-black tracking-tight text-white">Disable Safety PIN</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Please enter your current PIN to turn off safety protection.
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <input
+                type="password"
+                maxLength={pinConfig.pinLength || 4}
+                inputMode="numeric"
+                value={disablePinInput}
+                autoFocus
+                onChange={(e) => {
+                  setDisablePinInput(e.target.value.replace(/\D/g, ''));
+                  setDisablePinError(null);
+                }}
+                placeholder={`Current ${pinConfig.pinLength || 4} digits`}
+                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder-slate-500 text-center font-mono text-base tracking-widest focus:outline-none focus:border-rose-400"
+              />
+            </div>
+
+            {disablePinError && (
+              <div className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{disablePinError}</span>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowDisablePinDialog(false)}
+                className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDisablingPin || disablePinInput.length !== (pinConfig.pinLength || 4)}
+                onClick={async () => {
+                  setIsDisablingPin(true);
+                  const ok = await disablePin(disablePinInput);
+                  setIsDisablingPin(false);
+                  if (ok) {
+                    setShowDisablePinDialog(false);
+                  } else {
+                    setDisablePinError('Incorrect PIN. Please try again.');
+                  }
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-xs font-bold text-white transition-all disabled:opacity-50 cursor-pointer"
+              >
+                Confirm Turn Off
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Set / Change PIN Modal */}
+      <SetPinModal
+        isOpen={isSetPinModalOpen}
+        onClose={() => setIsSetPinModalOpen(false)}
+        mode={setPinModalMode}
+      />
 
       {/* PWA Install Modal */}
       <PWAInstallModal isOpen={showPwaModal} onClose={() => setShowPwaModal(false)} />

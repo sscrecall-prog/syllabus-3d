@@ -21,6 +21,8 @@ import { OfflineStatusIndicator } from './components/common/OfflineStatusIndicat
 import { ViewErrorBoundary } from './components/common/ViewErrorBoundary';
 import { storageManager } from './services/storageManager';
 import { useTheme } from './context/ThemeContext';
+import { PinLockScreen } from './components/security/PinLockScreen';
+import { useInactivityLock } from './hooks/useInactivityLock';
 
 // ⚡ Lazy Loaded Secondary Views (Code Splitting for Lightning-Fast Initial Load)
 const SyllabusView = lazy(() => import('./components/views/SyllabusView').then(m => ({ default: m.SyllabusView })));
@@ -66,6 +68,7 @@ const ViewLoadingFallback: React.FC = () => (
 export const App: React.FC = () => {
   const { isAuthenticated, isLoading, authView } = useAuth();
   const { isFullModalOpen, openFullModal, closeFullModal, setSessionTopic } = useTimer();
+  useInactivityLock();
   const [currentView, setCurrentView] = useState<AppView>('overview');
   const [viewHistory, setViewHistory] = useState<AppView[]>([]);
   const [targetSubjectId, setTargetSubjectId] = useState<string>('');
@@ -974,6 +977,9 @@ export const App: React.FC = () => {
           </span>
         </div>
       )}
+
+      {/* 🔒 Safety PIN Lock Screen Fullscreen Guard */}
+      <PinLockScreen />
     </div>
   );
 };
