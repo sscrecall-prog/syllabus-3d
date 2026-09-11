@@ -7,7 +7,7 @@ const DB_NAME = 'syllabus3d_pdf_store';
 const STORE_NAME = 'topic_pdfs';
 const DB_VERSION = 1;
 
-interface StoredPdfRecord {
+export interface StoredPdfRecord {
   id: string;
   blob: Blob;
   name: string;
@@ -180,5 +180,63 @@ export async function checkStorageQuota(): Promise<{ usageMB: number; quotaMB: n
     } catch {}
   }
   return { usageMB: 0, quotaMB: 0, percentUsed: 0 };
+}
+
+/**
+ * Retrieves all stored PDF records from IndexedDB for backup/sync
+ */
+export async function getAllStoredPdfRecords(): Promise<StoredPdfRecord[]> {
+  try {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+
+      req.onsuccess = () => {
+        resolve((req.result as StoredPdfRecord[]) || []);
+      };
+
+      req.onerror = () => {
+        reject(req.error || new Error('Failed to retrieve all PDF records from IndexedDB'));
+      };
+    });
+  } catch (err) {
+    console.error('Error getting all stored PDF records:', err);
+    return [];
+  }
+}
+
+/**
+ * Batch restores PDF records into IndexedDB
+ */
+export async function batchRestorePdfRecords(records: StoredPdfRecord[]): Promise<number> {
+  if (!records || records.length === 0) return 0;
+  try {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      let count = 0;
+
+      for (const record of records) {
+        if (record && record.id && record.blob) {
+          store.put(record);
+          count++;
+        }
+      }
+
+      tx.oncomplete = () => {
+        resolve(count);
+      };
+
+      tx.onerror = () => {
+        reject(tx.error || new Error('Failed to batch restore PDF records'));
+      };
+    });
+  } catch (err) {
+    console.error('Error batch restoring PDF records:', err);
+    return 0;
+  }
 }
 

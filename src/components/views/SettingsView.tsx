@@ -42,7 +42,8 @@ import {
   ArrowRight,
   AlertCircle,
   Lock,
-  KeyRound
+  KeyRound,
+  Cloud
 } from 'lucide-react';
 import { soundManager, AudioSettings } from '../../utils/soundEffects';
 import { haptics } from '../../utils/haptics';
@@ -52,6 +53,8 @@ import { CreateProfileModal } from '../modals/CreateProfileModal';
 import { SetPinModal } from '../security/SetPinModal';
 import { usePinLock } from '../../context/PinLockContext';
 import { UserProfileItem } from '../../types/syllabus';
+import { GoogleDriveBackupModal } from '../modals/GoogleDriveBackupModal';
+import { getValidAccessToken } from '../../utils/googleDriveClient';
 
 type SettingsTab = 'profiles' | 'exam' | 'appearance' | 'sound' | 'timer' | 'data' | 'security';
 
@@ -131,9 +134,14 @@ export const SettingsView: React.FC = () => {
   const [isRestoringSnapshot, setIsRestoringSnapshot] = useState(false);
   const [snapshotStatus, setSnapshotStatus] = useState<'idle' | 'success' | 'empty' | 'error'>('idle');
 
+  // Google Drive Cloud Backup Hub State
+  const [showGoogleDriveModal, setShowGoogleDriveModal] = useState(false);
+  const [gdriveConnected, setGdriveConnected] = useState(() => Boolean(getValidAccessToken()));
+
   useEffect(() => {
     if (activeTab === 'data') {
       setStorageMetrics(getStorageMetrics());
+      setGdriveConnected(Boolean(getValidAccessToken()));
     }
   }, [activeTab, lastSavedAt, exams, profile, plannerTasks, revisions, top3Targets, reflectionsHistory]);
 
@@ -1294,6 +1302,66 @@ export const SettingsView: React.FC = () => {
             </div>
           </div>
 
+          {/* ☁️ Google Drive Cloud Vault & Dedicated Media Sync Card */}
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 dark:from-blue-900/20 dark:via-indigo-900/15 dark:to-purple-900/10 border border-blue-500/25 dark:border-blue-500/35 space-y-3.5 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white dark:bg-[#1A1B2E] border border-blue-200 dark:border-blue-800 shadow-xs flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+                    <path d="M43.65 25 29.9 1.2c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44A8.9 8.9 0 0 0 0 53h27.5z" fill="#00ac47"/>
+                    <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 10.15z" fill="#ea4335"/>
+                    <path d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+                    <path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5l-25.4-44c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25z" fill="#ffba00"/>
+                    <path d="M27.5 53h46.05l-13.75 23.8c-1.35.8-2.9 1.2-4.5 1.2h-18.5c-1.6 0-3.15-.45-4.5-1.2z" fill="#2684fc"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-xs sm:text-[14px] font-black text-slate-900 dark:text-white">
+                      Google Drive Cloud Vault & Media Sync
+                    </h4>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                      gdriveConnected
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                    }`}>
+                      {gdriveConnected ? 'Connected ✓' : 'Cloud Sync'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    1-Click backup & restore for your full Syllabus database, attached PDF notes, and study diagram photos directly into your personal Google Drive.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowGoogleDriveModal(true)}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black shadow-md shadow-blue-500/20 transition-all cursor-pointer active:scale-95 shrink-0"
+              >
+                <Cloud className="w-4 h-4" />
+                <span>Open Google Drive Hub</span>
+              </button>
+            </div>
+
+            {/* Extra Backup Perks Badges */}
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-blue-200/50 dark:border-blue-900/40 text-[10px] sm:text-[11px] font-mono">
+              <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <span>Exams & Notes Vault</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <span>Extra PDF Docs Backup</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                <span>Photos & Diagrams</span>
+              </div>
+            </div>
+          </div>
+
           {/* Live Auto-Save & Debounce Engine Card */}
           <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#F8FAFC] dark:bg-[#1F2335] border border-[#E2E8F0] dark:border-[#292E42] space-y-2.5 sm:space-y-3.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1438,6 +1506,14 @@ export const SettingsView: React.FC = () => {
 
           {/* Backup Action Buttons */}
           <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 sm:gap-2.5 pt-0.5 sm:pt-1">
+            <button
+              onClick={() => setShowGoogleDriveModal(true)}
+              className="flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-[13px] font-black shadow-xs transition-all cursor-pointer active:scale-95"
+            >
+              <Cloud className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>Google Drive Backup & Media ☁️</span>
+            </button>
+
             <button
               onClick={handleExport}
               className="flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#7AA2F7] dark:hover:bg-[#6090F5] text-white dark:text-[#0B0B0D] text-xs sm:text-[13px] font-bold shadow-xs transition-all cursor-pointer active:scale-95"
@@ -1833,6 +1909,18 @@ export const SettingsView: React.FC = () => {
           setEditingProfileForModal(null);
         }}
         editingProfile={editingProfileForModal}
+      />
+
+      {/* Google Drive Cloud Vault & Media Sync Modal */}
+      <GoogleDriveBackupModal
+        isOpen={showGoogleDriveModal}
+        onClose={() => {
+          setShowGoogleDriveModal(false);
+          setGdriveConnected(Boolean(getValidAccessToken()));
+        }}
+        onRestoreSuccess={() => {
+          setStorageMetrics(getStorageMetrics());
+        }}
       />
     </div>
   );
