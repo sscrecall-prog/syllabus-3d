@@ -363,7 +363,9 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     if (tabBarRef.current) {
       const activeBtn = tabBarRef.current.querySelector<HTMLElement>(`[data-tab-id="${activeTab}"]`);
       if (activeBtn) {
-        activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        const container = tabBarRef.current;
+        const left = activeBtn.offsetLeft - container.clientWidth / 2 + activeBtn.clientWidth / 2;
+        container.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
       }
     }
   }, [activeTab]);
