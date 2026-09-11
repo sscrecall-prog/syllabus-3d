@@ -73,7 +73,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
 
   return (
     <>
-      <div className="relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#141624] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] p-3 sm:p-4 overflow-hidden space-y-2.5">
+      <div className="relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#141624] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth p-3 sm:p-4 overflow-hidden space-y-2.5">
         {/* Subtle Ambient Radial Backlight */}
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-32 bg-blue-500/5 dark:bg-[#7AA2F7]/10 rounded-full blur-2xl pointer-events-none" />
 

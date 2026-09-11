@@ -113,7 +113,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
   return (
     <>
-      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] space-y-3.5 sm:space-y-4 relative overflow-hidden">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth space-y-3.5 sm:space-y-4 relative overflow-hidden">
         
         {/* Subtle Ambient Background Gradient */}
         <div className="absolute -top-24 -right-24 w-80 h-80 bg-amber-500/[0.03] dark:bg-amber-500/[0.04] rounded-full blur-3xl pointer-events-none" />
@@ -365,26 +365,23 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                   )}
                 </div>
 
-                {/* Progress Status Line */}
-                <div className="pt-2.5 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs font-mono">
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500">Status:</span>
-                  {target.completed ? (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
-                      <CheckCircle2 className="w-3 h-3 stroke-[2.5]" />
-                      <span>Crushed & Done</span>
-                    </span>
-                  ) : hasText ? (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
-                      <Zap className="w-3 h-3 fill-current" />
-                      <span>In Progress</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.06] px-2 py-0.5 rounded-lg border border-slate-200/60 dark:border-white/[0.04]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
-                      <span>Slot Ready</span>
-                    </span>
-                  )}
-                </div>
+                {/* Progress Status Line (Only when target has text) */}
+                {hasText && (
+                  <div className="pt-2.5 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs font-mono">
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500">Status:</span>
+                    {target.completed ? (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                        <CheckCircle2 className="w-3 h-3 stroke-[2.5]" />
+                        <span>Crushed & Done</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
+                        <Zap className="w-3 h-3 fill-current" />
+                        <span>In Progress</span>
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}

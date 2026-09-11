@@ -13,11 +13,7 @@ import {
   Sparkles,
   ExternalLink,
   Flame,
-  TrendingUp,
-  BookOpen,
-  BarChart2,
-  PieChart,
-  Trophy
+  TrendingUp
 } from 'lucide-react';
 import { AppView } from '../layout/Sidebar';
 import { Topic } from '../../types/syllabus';
@@ -158,7 +154,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <div className="min-w-0">
               <h1 className="text-base sm:text-xl md:text-2xl font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight leading-tight flex items-center flex-wrap">
                 <span>{greeting},&nbsp;</span>
-                <span className="bg-gradient-to-r from-[#38370D] via-[#5C5006] to-[#8D7A02] dark:from-white dark:via-[#93C5FD] dark:to-[#818CF8] bg-clip-text text-transparent font-black">
+                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-white dark:via-blue-200 dark:to-indigo-300 bg-clip-text text-transparent font-black">
                   {userName}
                 </span>
               </h1>
@@ -200,126 +196,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* 2. COZY STUDY DESK HERO BANNER & INTERACTIVE COMMAND MODULES (Hidden in print) */}
-      <div className="home-hero-banner relative rounded-2xl sm:rounded-3xl overflow-hidden border border-emerald-950/40 dark:border-white/[0.08] shadow-subtle-depth bg-[#061718] group print:hidden">
-        <div className="relative w-full min-h-[220px] xs:min-h-[235px] sm:min-h-[245px] md:min-h-[250px] overflow-hidden flex items-center">
-          
-          {/* Background Study Desk Artwork */}
-          <img
-            src="/home_hero_banner.png"
-            alt={`${examName} Study Hub`}
-            className="absolute inset-0 w-full h-full object-cover object-[right_center] sm:object-center select-none"
-            loading="eager"
-            decoding="async"
-            width={1024}
-            height={246}
-          />
-
-          {/* High-Contrast Multi-layered Ambient Protection Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#061718]/95 via-[#071F1F]/85 sm:via-[#071F1F]/40 to-transparent pointer-events-none z-0" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#061718]/70 via-transparent to-[#061718]/30 pointer-events-none z-0" />
-
-          {/* Main Hero Content & Action Buttons */}
-          <div className="relative z-10 w-full p-4 sm:p-6 lg:p-7 flex flex-col justify-between h-full space-y-3 sm:space-y-3.5">
-            
-            {/* Top Eyebrow + Title + Subtitle */}
-            <div className="max-w-xl">
-              {/* Eyebrow Tracking Line */}
-              <div className="home-banner-eyebrow flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.22em] text-[#7ED4B2] uppercase select-none">
-                <span>LEARN</span>
-                <span className="opacity-50">·</span>
-                <span>PRACTICE</span>
-                <span className="opacity-50">·</span>
-                <span>IMPROVE</span>
-                <span className="opacity-50">·</span>
-                <span>SUCCEED</span>
-              </div>
-
-              {/* Dynamic Exam Title with Gold/Amber Year */}
-              <h1 className="home-banner-title text-2xl xs:text-3xl sm:text-[34px] md:text-[38px] font-black tracking-tight text-white leading-tight mt-1 mb-1 font-sans">
-                {baseExamName} <span className="home-banner-year text-[#F5BE38] dark:text-[#FBBF24]">{examYearStr}</span>
-              </h1>
-
-              {/* Tagline Subtitle */}
-              <p className="home-banner-subtitle text-xs sm:text-[13px] md:text-sm font-medium text-emerald-100/90 tracking-wide select-none">
-                Smarter Preparation. Brighter Future.
-              </p>
-            </div>
-
-            {/* 4 Interactive Glass Module Action Buttons */}
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-0.5 sm:pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  onNavigate('syllabus');
-                }}
-                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
-                title="Explore Complete Syllabus & Subject Breakdown"
-              >
-                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-emerald-300 shrink-0" />
-                <span>Concepts</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  onNavigate('planner');
-                }}
-                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
-                title="Daily Study Planner, Time Blocks & Focus Mode"
-              >
-                <BarChart2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-cyan-300 shrink-0" />
-                <span>Practice</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  onNavigate('analytics');
-                }}
-                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
-                title="Detailed Analytics, Mistake Logs & Heatmap"
-              >
-                <PieChart className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-sky-300 shrink-0" />
-                <span>Analysis</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  soundManager.playClick();
-                  onNavigate('revision');
-                }}
-                className="home-module-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-xs hover:shadow-md"
-                title="Spaced Repetition & Revision Pipeline"
-              >
-                <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] text-amber-300 shrink-0" />
-                <span>Success</span>
-              </button>
-            </div>
-
-            {/* Bottom Info Pills: Live Status + Mastery */}
-            <div className="flex items-center justify-between gap-2 pt-1 sm:pt-2">
-              <div className="home-pill-badge flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-lg min-w-0">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                <span className="text-[11px] sm:text-xs font-mono font-bold tracking-wide truncate">
-                  {examName} <span className="home-banner-year text-amber-400 font-bold">({examYear})</span>
-                </span>
-              </div>
-
-              <div className="home-pill-mastery flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold shadow-lg shrink-0">
-                <span>🏆 {overallStats.completionPercentage}% Mastered</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Clean Target Countdown Flip Clock */}
+      {/* 2. Clean Target Countdown Flip Clock */}
       <ExamCountdown3D />
 
       {/* 4. TOP 3 NON-NEGOTIABLES & NIGHT REFLECTION WIDGET */}
@@ -343,8 +220,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <h3 className="text-[15px] sm:text-base font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight">
                   Syllabus Mastery
                 </h3>
-                <span className="text-xs text-slate-500 dark:text-[#A1A1AA] font-medium">
-                  {examName} {examYear}
+                <span className="text-xs text-slate-500 dark:text-[#A1A1AA] font-medium font-mono">
+                  {baseExamName} • {examYear}
                 </span>
               </div>
             </div>
