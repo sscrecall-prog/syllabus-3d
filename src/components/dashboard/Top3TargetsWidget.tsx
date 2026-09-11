@@ -113,29 +113,26 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
   return (
     <>
-      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth space-y-3.5 sm:space-y-4 relative overflow-hidden">
+      <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-xs space-y-3.5 relative overflow-hidden">
         
-        {/* Subtle Ambient Background Gradient */}
-        <div className="absolute -top-24 -right-24 w-80 h-80 bg-amber-500/[0.03] dark:bg-amber-500/[0.04] rounded-full blur-3xl pointer-events-none" />
-
         {/* Top Header & Quick Actions */}
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 sm:pb-3.5 border-b border-slate-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/20 shrink-0">
-              <Target className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.4]" />
+            <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold shrink-0">
+              <Target className="w-4 h-4 stroke-[2.4]" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight uppercase">
-                  Top 3 Non-Negotiables<span className="hidden sm:inline"> Targets</span>
+                <h3 className="text-sm sm:text-[15px] font-bold text-slate-900 dark:text-white tracking-tight">
+                  Top 3 Non-Negotiable Targets
                 </h3>
                 {completedTargets.length === 3 ? (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
-                    🏆 3/3 CRUSHED!
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
+                    🏆 3/3 Crushed!
                   </span>
                 ) : completedTargets.length > 0 ? (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-black bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
-                    ⚡ {completedTargets.length}/3 DONE
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                    ⚡ {completedTargets.length}/3 Done
                   </span>
                 ) : null}
               </div>
@@ -149,7 +146,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsHistoryModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A1B29] hover:bg-slate-100 dark:hover:bg-[#25283B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200/80 dark:border-white/[0.06] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-[0.97] tap-bounce"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A1B29] hover:bg-slate-100 dark:hover:bg-[#25283B] text-slate-700 dark:text-[#CBD5E1] border border-slate-200/80 dark:border-white/[0.06] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-[0.97]"
               title="View past reflection journal"
             >
               <History className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
@@ -166,7 +163,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                 soundManager.playClick();
                 setIsReflectionModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all active:scale-[0.97] cursor-pointer tap-bounce"
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-all active:scale-[0.97] cursor-pointer"
             >
               <Moon className="w-3.5 h-3.5 text-amber-300" />
               <span>1-Min Journal</span>
@@ -191,12 +188,12 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
             return (
               <div
                 key={target.id}
-                className={`p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border transition-all duration-200 relative flex flex-col justify-between space-y-3 sm:space-y-3.5 group ${
+                className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 relative flex flex-col justify-between space-y-3 sm:space-y-3.5 group ${
                   target.completed
-                    ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] border-emerald-500/35 shadow-[0_2px_15px_rgba(16,185,129,0.1)]'
+                    ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] border-emerald-500/35 shadow-xs'
                     : hasText
-                    ? `bg-slate-50/90 dark:bg-[#1A1C28] border-slate-200/70 dark:border-white/[0.06] shadow-2xs ${meta.accentGlow}`
-                    : 'bg-slate-50/60 dark:bg-[#1A1B29] border border-dashed border-slate-200/90 dark:border-white/[0.08] hover:border-amber-500/40'
+                    ? `bg-slate-50/80 dark:bg-[#1A1C28] border-slate-200/80 dark:border-white/[0.08] shadow-2xs ${meta.accentGlow}`
+                    : 'bg-slate-50/50 dark:bg-[#1A1B29] border border-dashed border-slate-200 dark:border-white/[0.08] hover:border-amber-500/40'
                 }`}
               >
                 {/* Slot Header */}
@@ -388,22 +385,21 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
         </div>
 
         {/* Bottom Velocity Sprint Meter */}
-        <div className="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-slate-50/90 dark:bg-[#1A1B29] border border-slate-200/80 dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/80 dark:bg-[#1A1B29] border border-slate-200/70 dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-500 fill-current" />
               <span>Sprint Velocity:</span>
             </span>
-            <div className="flex-1 sm:w-48 h-2 sm:h-2.5 rounded-full bg-slate-200/80 dark:bg-[#11121A] overflow-hidden p-0.5 border border-slate-200/60 dark:border-white/[0.04]">
+            <div className="flex-1 sm:w-48 h-2 rounded-full bg-slate-200/80 dark:bg-[#11121A] overflow-hidden p-0.5 border border-slate-200/60 dark:border-white/[0.04]">
               <div
-                className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 rounded-full transition-all duration-500 shadow-sm"
+                className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 rounded-full transition-all duration-500"
                 style={{
-                  width: `${completionPercentage}%`,
-                  boxShadow: completionPercentage > 0 ? '0 0 10px rgba(245,158,11,0.5)' : 'none'
+                  width: `${completionPercentage}%`
                 }}
               />
             </div>
-            <span className="font-mono font-black text-xs text-slate-900 dark:text-white tabular-nums shrink-0">
+            <span className="font-mono font-bold text-xs text-slate-900 dark:text-white tabular-nums shrink-0">
               {completedTargets.length}/3 Done ({completionPercentage}%)
             </span>
           </div>
