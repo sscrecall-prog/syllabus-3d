@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { EXAM_PRESETS_CATALOG } from '../../data/initialData';
 import { X, Calendar, Sparkles, Check, Save, Target, ArrowRightLeft, PlusCircle } from 'lucide-react';
@@ -98,9 +99,22 @@ export const EditExamTargetModal: React.FC<EditExamTargetModalProps> = ({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto animate-fade-in">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#12131C] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          soundManager.playClick();
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#12131C] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col pointer-events-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/50 shrink-0">
           <div className="flex items-center gap-2.5">
@@ -267,7 +281,8 @@ export const EditExamTargetModal: React.FC<EditExamTargetModalProps> = ({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

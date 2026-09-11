@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSyllabus } from '../../context/SyllabusContext';
 import { EXAM_PRESETS_CATALOG, ExamPresetCatalogItem } from '../../data/initialData';
 import {
@@ -87,9 +88,22 @@ export const AddExamTargetModal: React.FC<AddExamTargetModalProps> = ({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto animate-fade-in">
-      <div className="relative w-full max-w-xl rounded-3xl bg-white dark:bg-[#12131C] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          soundManager.playClick();
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="relative w-full max-w-xl rounded-3xl bg-white dark:bg-[#12131C] border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col pointer-events-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/50 shrink-0">
           <div className="flex items-center gap-2.5">
@@ -285,6 +299,7 @@ export const AddExamTargetModal: React.FC<AddExamTargetModalProps> = ({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
