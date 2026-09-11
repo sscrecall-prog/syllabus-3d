@@ -797,10 +797,15 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // 2. Real-time subscription across tabs/devices
     const unsubscribe = subscribeUserCloudData(user.id, (incoming) => {
       if (!isMounted) return;
-      if (incoming && incoming.timestamp !== lastCloudSyncAt) {
-        applySnapshot(incoming);
-        setCloudSyncStatus('synced');
-        setLastCloudSyncAt(incoming.timestamp);
+      if (incoming && incoming.timestamp) {
+        setLastCloudSyncAt(prev => {
+          if (prev !== incoming.timestamp) {
+            applySnapshot(incoming);
+            setCloudSyncStatus('synced');
+            return incoming.timestamp;
+          }
+          return prev;
+        });
       }
     });
 
@@ -1400,7 +1405,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     })));
 
     // 4. Rewards, Audio & Haptic Feedback
-    if (status === 'completed') {
+    if (foundTopic && status === 'completed') {
       soundManager.playCompleteChime();
       haptics.success();
       confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
@@ -2486,12 +2491,16 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.removeItem('syllabus3d_revisions');
     localStorage.removeItem('syllabus3d_planner');
     localStorage.removeItem('syllabus3d_platforms');
+    localStorage.removeItem('syllabus3d_top3');
+    localStorage.removeItem('syllabus3d_daily_reflections');
     setExams(INITIAL_EXAMS);
     setProfile(INITIAL_PROFILE);
     setAchievements(INITIAL_ACHIEVEMENTS);
     setActivityHistory(INITIAL_ACTIVITY_HISTORY);
     setPlannerTasks(INITIAL_PLANNER_TASKS);
     setPlatforms(INITIAL_PLATFORMS);
+    setTop3Targets([]);
+    setReflectionsHistory([]);
 
     const initRevs: RevisionRecord[] = [];
     const ssc = INITIAL_EXAMS[0];
@@ -2525,6 +2534,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setActivityHistory([]);
     setPlannerTasks([]);
     setPlatforms([]);
+    setTop3Targets([]);
+    setReflectionsHistory([]);
     setProfile({
       ...profile,
       selectedExamId: 'custom_exam_blank',
@@ -2542,6 +2553,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       localStorage.setItem('syllabus3d_activity', JSON.stringify([]));
       localStorage.setItem('syllabus3d_planner', JSON.stringify([]));
       localStorage.setItem('syllabus3d_platforms', JSON.stringify([]));
+      localStorage.removeItem('syllabus3d_top3');
+      localStorage.removeItem('syllabus3d_daily_reflections');
       localStorage.setItem('syllabus3d_profile', JSON.stringify({
         ...profile,
         selectedExamId: 'custom_exam_blank',
@@ -2708,7 +2721,7 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // 2. Build isolated dataset for new profile
     const newDataset = {
-      exams: profileData.cloneCurrentSyllabus ? exams : [
+      exams: profileData.cloneCurrentSyllabus ? JSON.parse(JSON.stringify(exams)) : [
         {
           id: profileData.targetExamId || 'exam_ssc_cgl_2025',
           name: exams.find(e => e.id === profileData.targetExamId)?.name || 'Target Exam',
@@ -2879,7 +2892,11 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             const docId = key.replace('syllabus3d_pdf_highlights_', '');
             const raw = localStorage.getItem(key);
             if (raw) {
-              pdfHighlights[docId] = JSON.parse(raw);
+              try {
+                pdfHighlights[docId] = JSON.parse(raw);
+              } catch {
+                // Skip corrupted PDF highlight entry
+              }
             }
           }
         }

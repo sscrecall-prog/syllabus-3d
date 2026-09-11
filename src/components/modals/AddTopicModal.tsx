@@ -77,6 +77,14 @@ export const AddTopicModal: React.FC<AddTopicModalProps> = ({
   useEffect(() => {
     if (!isOpen || !currentExam) return;
 
+    // Reset text inputs on every open to avoid stale state
+    setSingleTopicName('');
+    setSingleSubtopicsText('');
+    setBulkTextInput('');
+    setNewSubjectName('');
+    setNewChapterName('');
+    setNewChapterDesc('');
+
     if (hasNoSubjects) {
       setIsNewSubject(true);
       setIsNewChapter(true);

@@ -296,12 +296,14 @@ export const App: React.FC = () => {
   }, [
     selectedTopic,
     isSearchOpen,
+    isAiArchitectOpen,
     isAddTopicOpen,
     isRevisionSessionOpen,
     isFullModalOpen,
     currentView,
     viewHistory,
-    closeFullModal
+    closeFullModal,
+    handleCloseAddTopic
   ]);
 
   const handleOpenTopicDrawer = (topic: Topic, subjectName: string, chapterName: string) => {
@@ -508,6 +510,7 @@ export const App: React.FC = () => {
   }, [
     isShortcutsOpen,
     isSearchOpen,
+    isAiArchitectOpen,
     isAddTopicOpen,
     isRevisionSessionOpen,
     selectedTopic,
@@ -516,7 +519,9 @@ export const App: React.FC = () => {
     handleNavigate,
     showShortcutToast,
     toggleTheme,
-    closeFullModal
+    closeFullModal,
+    handleLaunchFocus,
+    toggleDesktopSidebar
   ]);
 
   // 📱 Mobile Top-Level Horizontal View Swiping (Overview ⇄ Syllabus ⇄ Planner)

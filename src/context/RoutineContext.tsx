@@ -33,6 +33,7 @@ const dayIndexToRoutineDay: RoutineDay[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', '
 
 // Helper to convert "HH:MM" string to minutes from midnight
 export const timeToMinutes = (t: string): number => {
+  if (!t || typeof t !== 'string') return 0;
   const [h, m] = t.split(':').map(Number);
   return (h || 0) * 60 + (m || 0);
 };
@@ -170,7 +171,7 @@ export const RoutineProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Compute Adherence & Stats for Today
   const todayStudySlots = useMemo(() => {
     return routineSlots.filter(s => 
-      s.days.includes(currentDay) && s.category !== 'sleep' && s.category !== 'break'
+      (s.days || []).includes(currentDay) && s.category !== 'sleep' && s.category !== 'break'
     );
   }, [routineSlots, currentDay]);
 

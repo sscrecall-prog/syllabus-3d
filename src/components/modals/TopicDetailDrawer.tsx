@@ -179,6 +179,14 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
   const [timeSavedNotice, setTimeSavedNotice] = useState(false);
   const [editSavedNotice, setEditSavedNotice] = useState(false);
 
+  // Cleanup ref for notice timeouts to prevent memory leaks on unmount
+  const noticeTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => { noticeTimersRef.current.forEach(clearTimeout); }, []);
+  const scheduleNotice = (fn: () => void, ms: number) => {
+    const id = setTimeout(fn, ms);
+    noticeTimersRef.current = [...noticeTimersRef.current.filter(t => t !== id), id];
+  };
+
   // In-App Split-Screen PDF Study Mode state
   const [isSplitPdfOpen, setIsSplitPdfOpen] = useState(false);
   const [splitPdfAttachmentId, setSplitPdfAttachmentId] = useState<string | undefined>(undefined);
@@ -401,7 +409,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
         if (liveTopic) {
           updateTopicNotes(liveTopic.id, notes);
           setEditSavedNotice(true);
-          setTimeout(() => setEditSavedNotice(false), 2200);
+          scheduleNotice(() => setEditSavedNotice(false), 2200);
         }
         return;
       }
@@ -453,7 +461,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     }
     soundManager.playCompleteChime();
     setAccuracySavedNotice(true);
-    setTimeout(() => setAccuracySavedNotice(false), 2000);
+    scheduleNotice(() => setAccuracySavedNotice(false), 2000);
   };
 
   // Study Time Adders (+15m, +30m, etc.)
@@ -467,7 +475,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
     }
     soundManager.playCompleteChime();
     setTimeSavedNotice(true);
-    setTimeout(() => setTimeSavedNotice(false), 2000);
+    scheduleNotice(() => setTimeSavedNotice(false), 2000);
   };
 
   // Stop active Drawer stopwatch & log
@@ -497,7 +505,7 @@ export const TopicDetailDrawer: React.FC<TopicDetailDrawerProps> = ({
 
     soundManager.playCompleteChime();
     setEditSavedNotice(true);
-    setTimeout(() => setEditSavedNotice(false), 2500);
+    scheduleNotice(() => setEditSavedNotice(false), 2500);
     setIsEditing(false);
   };
 
