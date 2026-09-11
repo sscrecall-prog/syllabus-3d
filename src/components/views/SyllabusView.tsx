@@ -259,6 +259,23 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     };
   }, [activeChapter, activeSubject, allTopicsInExam]);
 
+  // Smart Title Case Formatter for High-End Typography
+  const formatTitleCase = (str: string) => {
+    if (!str) return '';
+    const minorWords = new Set(['and', 'or', 'of', 'in', 'to', 'for', 'with', 'the', 'a', 'an']);
+    const acronyms = new Set(['gk', 'gs', 'gk/gs', 'ai', 'pdf', 'ssc', 'cgl', 'chsl', 'mts', 'cpo', 'ch', 'pyq', 'mcq']);
+    const words = str.trim().split(/\s+/);
+    return words
+      .map((word, idx) => {
+        if (word === '&') return '&';
+        const lower = word.toLowerCase();
+        if (acronyms.has(lower)) return lower.toUpperCase();
+        if (idx > 0 && minorWords.has(lower)) return lower;
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+      })
+      .join(' ');
+  };
+
   // 1. Subject Badge Helper (Level 1)
   const getSubjectBadgeStyle = (subjectName: string) => {
     const lower = subjectName.toLowerCase();
@@ -266,16 +283,16 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       return {
         badgeText: 'MATH',
         icon: Calculator,
-        containerClass: 'bg-gradient-to-br from-[#3b0b11] via-[#5c131c] to-[#25070b] border border-red-500/40 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.25)]',
-        accentColor: '#EF4444',
-        accentBg: 'bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400'
+        containerClass: 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200/80 dark:border-rose-500/25 text-rose-600 dark:text-rose-400',
+        accentColor: '#F43F5E',
+        accentBg: 'bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400'
       };
     }
     if (lower.includes('gk') || lower.includes('general awareness') || lower.includes('general knowledge') || lower.includes('gs')) {
       return {
         badgeText: 'GK/GS',
         icon: Globe,
-        containerClass: 'bg-gradient-to-br from-[#0c2340] via-[#113563] to-[#08172c] border border-sky-500/40 text-sky-300 shadow-[0_0_15px_rgba(14,165,233,0.25)]',
+        containerClass: 'bg-sky-50 dark:bg-sky-500/10 border border-sky-200/80 dark:border-sky-500/25 text-sky-600 dark:text-sky-400',
         accentColor: '#0EA5E9',
         accentBg: 'bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400'
       };
@@ -284,16 +301,16 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       return {
         badgeText: 'REAS',
         icon: BrainCircuit,
-        containerClass: 'bg-gradient-to-br from-[#2a134a] via-[#3e1a6e] to-[#1a0c2e] border border-purple-500/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.25)]',
-        accentColor: '#A855F7',
-        accentBg: 'bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400'
+        containerClass: 'bg-violet-50 dark:bg-violet-500/10 border border-violet-200/80 dark:border-violet-500/25 text-violet-600 dark:text-violet-400',
+        accentColor: '#8B5CF6',
+        accentBg: 'bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400'
       };
     }
     if (lower.includes('english') || lower.includes('comprehension')) {
       return {
         badgeText: 'ENG',
         icon: BookOpen,
-        containerClass: 'bg-gradient-to-br from-[#0a3225] via-[#104b38] to-[#062017] border border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)]',
+        containerClass: 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/80 dark:border-emerald-500/25 text-emerald-600 dark:text-emerald-400',
         accentColor: '#10B981',
         accentBg: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
       };
@@ -301,9 +318,9 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
     return {
       badgeText: subjectName.slice(0, 4).toUpperCase(),
       icon: Layers,
-      containerClass: 'bg-gradient-to-br from-[#181926] via-[#24263a] to-[#12131d] border border-[#3b3d56] text-indigo-300 shadow-[0_0_15px_rgba(122,162,247,0.25)]',
-      accentColor: '#7AA2F7',
-      accentBg: 'bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400'
+      containerClass: 'bg-blue-50 dark:bg-blue-500/10 border border-blue-200/80 dark:border-blue-500/25 text-blue-600 dark:text-blue-400',
+      accentColor: '#3B82F6',
+      accentBg: 'bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'
     };
   };
 
@@ -317,15 +334,15 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       return {
         badgeText,
         icon: Calculator,
-        containerClass: 'bg-gradient-to-br from-[#3b0b11] via-[#5c131c] to-[#25070b] border border-red-500/40 text-red-300 shadow-[0_0_12px_rgba(239,68,68,0.25)]',
-        accentColor: '#EF4444'
+        containerClass: 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200/80 dark:border-rose-500/25 text-rose-600 dark:text-rose-400',
+        accentColor: '#F43F5E'
       };
     }
     if (lower.includes('gk') || lower.includes('general awareness') || lower.includes('general knowledge') || lower.includes('gs')) {
       return {
         badgeText,
         icon: Globe,
-        containerClass: 'bg-gradient-to-br from-[#0c2340] via-[#113563] to-[#08172c] border border-sky-500/40 text-sky-300 shadow-[0_0_12px_rgba(14,165,233,0.25)]',
+        containerClass: 'bg-sky-50 dark:bg-sky-500/10 border border-sky-200/80 dark:border-sky-500/25 text-sky-600 dark:text-sky-400',
         accentColor: '#0EA5E9'
       };
     }
@@ -333,23 +350,23 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
       return {
         badgeText,
         icon: BrainCircuit,
-        containerClass: 'bg-gradient-to-br from-[#2a134a] via-[#3e1a6e] to-[#1a0c2e] border border-purple-500/40 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.25)]',
-        accentColor: '#A855F7'
+        containerClass: 'bg-violet-50 dark:bg-violet-500/10 border border-violet-200/80 dark:border-violet-500/25 text-violet-600 dark:text-violet-400',
+        accentColor: '#8B5CF6'
       };
     }
     if (lower.includes('english') || lower.includes('comprehension')) {
       return {
         badgeText,
         icon: BookOpen,
-        containerClass: 'bg-gradient-to-br from-[#0a3225] via-[#104b38] to-[#062017] border border-emerald-500/40 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]',
+        containerClass: 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/80 dark:border-emerald-500/25 text-emerald-600 dark:text-emerald-400',
         accentColor: '#10B981'
       };
     }
     return {
       badgeText,
       icon: FolderOpen,
-      containerClass: 'bg-gradient-to-br from-[#181926] via-[#24263a] to-[#12131d] border border-[#3b3d56] text-indigo-300 shadow-md',
-      accentColor: '#7AA2F7'
+      containerClass: 'bg-blue-50 dark:bg-blue-500/10 border border-blue-200/80 dark:border-blue-500/25 text-blue-600 dark:text-blue-400',
+      accentColor: '#3B82F6'
     };
   };
 
@@ -362,11 +379,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           badgeNum: formattedNum,
           badgeLabel: 'Mastered',
           badgeIcon: CheckCircle2,
-          boxClass: 'bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]',
-          cardBorderClass: 'bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-emerald-500/60 shadow-2xs hover:shadow-md',
+          boxClass: 'bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200/80 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400',
+          cardBorderClass: 'bg-white dark:bg-[#1A1B29] hover:bg-slate-50/70 dark:hover:bg-[#1E2032] border border-slate-200/80 dark:border-white/[0.08] hover:border-emerald-500/60 shadow-2xs hover:shadow-sm',
           accentColor: '#10B981',
           titleColor: 'text-slate-900 dark:text-white',
-          statusPillClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 font-bold',
+          statusPillClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold',
           btnClasses: 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs',
           btnLabel: 'Mastered ✓'
         };
@@ -375,11 +392,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           badgeNum: formattedNum,
           badgeLabel: 'In Progress',
           badgeIcon: Zap,
-          boxClass: 'bg-amber-950/80 border border-amber-500/50 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]',
-          cardBorderClass: 'bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-amber-500/60 shadow-2xs hover:shadow-md',
+          boxClass: 'bg-amber-50 dark:bg-amber-500/15 border border-amber-200/80 dark:border-amber-500/30 text-amber-600 dark:text-amber-400',
+          cardBorderClass: 'bg-white dark:bg-[#1A1B29] hover:bg-slate-50/70 dark:hover:bg-[#1E2032] border border-slate-200/80 dark:border-white/[0.08] hover:border-amber-500/60 shadow-2xs hover:shadow-sm',
           accentColor: '#F59E0B',
           titleColor: 'text-slate-900 dark:text-white',
-          statusPillClass: 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/40 font-bold',
+          statusPillClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold',
           btnClasses: 'bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-xs',
           btnLabel: 'Mark Done ✓'
         };
@@ -388,11 +405,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           badgeNum: formattedNum,
           badgeLabel: 'Weak Focus',
           badgeIcon: AlertTriangle,
-          boxClass: 'bg-rose-950/80 border border-rose-500/50 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)]',
-          cardBorderClass: 'bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-rose-500/60 shadow-2xs hover:shadow-md',
+          boxClass: 'bg-rose-50 dark:bg-rose-500/15 border border-rose-200/80 dark:border-rose-500/30 text-rose-600 dark:text-rose-400',
+          cardBorderClass: 'bg-white dark:bg-[#1A1B29] hover:bg-slate-50/70 dark:hover:bg-[#1E2032] border border-slate-200/80 dark:border-white/[0.08] hover:border-rose-500/60 shadow-2xs hover:shadow-sm',
           accentColor: '#F43F5E',
           titleColor: 'text-slate-900 dark:text-white',
-          statusPillClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/40 font-bold',
+          statusPillClass: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold',
           btnClasses: 'bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-xs',
           btnLabel: 'Fix Weak'
         };
@@ -401,11 +418,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           badgeNum: formattedNum,
           badgeLabel: 'Revise Due',
           badgeIcon: Clock,
-          boxClass: 'bg-purple-950/80 border border-purple-500/50 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.3)]',
-          cardBorderClass: 'bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-purple-500/60 shadow-2xs hover:shadow-md',
+          boxClass: 'bg-purple-50 dark:bg-purple-500/15 border border-purple-200/80 dark:border-purple-500/30 text-purple-600 dark:text-purple-400',
+          cardBorderClass: 'bg-white dark:bg-[#1A1B29] hover:bg-slate-50/70 dark:hover:bg-[#1E2032] border border-slate-200/80 dark:border-white/[0.08] hover:border-purple-500/60 shadow-2xs hover:shadow-sm',
           accentColor: '#A855F7',
           titleColor: 'text-slate-900 dark:text-white',
-          statusPillClass: 'bg-purple-500/15 text-purple-600 dark:text-purple-300 border border-purple-500/40 font-bold',
+          statusPillClass: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 font-bold',
           btnClasses: 'bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-xs',
           btnLabel: 'Revise Now'
         };
@@ -414,12 +431,12 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           badgeNum: formattedNum,
           badgeLabel: 'Not Started',
           badgeIcon: BookOpen,
-          boxClass: 'bg-[#1C1E2F] border border-[#3E4264] text-slate-100 shadow-sm',
-          cardBorderClass: 'bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-2xs hover:shadow-md',
+          boxClass: 'bg-slate-50 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/[0.08] text-slate-600 dark:text-slate-400',
+          cardBorderClass: 'bg-white dark:bg-[#1A1B29] hover:bg-slate-50/70 dark:hover:bg-[#1E2032] border border-slate-200/80 dark:border-white/[0.08] hover:border-[#2563EB] dark:hover:border-[#7AA2F7] shadow-2xs hover:shadow-sm',
           accentColor: '#2563EB',
           titleColor: 'text-slate-900 dark:text-white',
-          statusPillClass: 'bg-white dark:bg-[#202234] text-slate-700 dark:text-[#E2E8F0] border border-slate-200/80 dark:border-[#383A52] font-semibold hover:dark:bg-[#282A3E]',
-          btnClasses: 'bg-[#0F172A] dark:bg-white text-white dark:text-black hover:bg-[#2563EB] dark:hover:bg-[#7AA2F7] font-bold shadow-xs',
+          statusPillClass: 'bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-white/[0.08] font-semibold',
+          btnClasses: 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-blue-600 dark:hover:bg-blue-400 font-bold shadow-xs',
           btnLabel: 'Start Topic →'
         };
     }
@@ -464,28 +481,31 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 1. TOP CHAPTER HERO BANNER */}
-        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
+        <div className="relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-3.5 sm:space-y-4 overflow-hidden print:p-0 print:border-none print:shadow-none">
+          {/* Subtle Top Accent Line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 opacity-80" />
+
           <div className="flex items-start sm:items-center justify-between gap-2.5 sm:gap-3 flex-wrap">
-            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
               
               {/* Left Visual Badge Thumbnail */}
-              <div className={`w-12 sm:w-15 h-12 sm:h-15 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-md relative overflow-hidden ${chapterBadge.containerClass}`}>
+              <div className={`w-12 sm:w-14 h-12 sm:h-14 rounded-2xl flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-2xs relative overflow-hidden ${chapterBadge.containerClass}`}>
                 <ChapterBadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                <span className="text-[9px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                <span className="text-[9px] sm:text-[10.5px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                   {chapterBadge.badgeText}
                 </span>
               </div>
 
               {/* Banner Meta & Title */}
-              <div className="min-w-0 space-y-0.5 sm:space-y-1">
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wide text-[#2563EB] dark:text-[#7AA2F7]">
-                  <span>{activeSubject.name}</span>
-                  <span>•</span>
-                  <span>Ch {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
+              <div className="min-w-0 space-y-0.5">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                  <span>{formatTitleCase(activeSubject.name)}</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span>Chapter {currentChapterIndex + 1} of {activeSubject.chapters.length}</span>
                 </div>
 
-                <h1 className="text-sm sm:text-xl font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight uppercase break-words line-clamp-2 leading-snug">
-                  {activeChapter.name}
+                <h1 className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight break-words line-clamp-2 leading-snug">
+                  {formatTitleCase(activeChapter.name)}
                 </h1>
               </div>
             </div>
@@ -581,7 +601,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 2. TOPICS CONTENT CONTAINER */}
-        <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
+        <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
           
           {/* Header Bar: Tab, Search & Add Topic */}
           <div className="space-y-3 sm:space-y-3.5 pb-3 sm:pb-3.5 border-b border-slate-100 dark:border-white/[0.06] no-print">
@@ -731,7 +751,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={topic.id}
                     onClick={() => onOpenTopicDrawer(topic, activeSubject.name, activeChapter.name)}
-                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-[#2563EB]/50 dark:hover:border-[#7AA2F7]/50 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3 tap-bounce"
+                    className="group relative p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] hover:bg-slate-50/60 dark:hover:bg-[#151726] border border-slate-200/80 dark:border-white/[0.08] hover:border-blue-400/60 dark:hover:border-blue-500/40 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-3 tap-bounce"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -743,20 +763,20 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
 
                     {/* Top Row: Squircle Thumbnail + Topic Title + Right Action */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
-                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-                        {/* 3D Squircle Thumbnail Badge (No raw emojis - Hidden in print) */}
-                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden print:hidden ${design.boxClass}`}>
-                          <BadgeIcon className="w-4.5 sm:w-6 h-4.5 sm:h-6 stroke-[2.2] mb-0.5" />
-                          <span className="text-[8px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none">
+                      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                        {/* Squircle Thumbnail Badge */}
+                        <div className={`w-10 sm:w-12 h-10 sm:h-12 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-2xs relative overflow-hidden print:hidden ${design.boxClass}`}>
+                          <BadgeIcon className="w-4 sm:w-5 h-4 sm:h-5 stroke-[2.2] mb-0.5" />
+                          <span className="text-[8px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none">
                             {design.badgeNum}
                           </span>
                         </div>
 
-                        {/* Title & Subtitle with Desk Checkbox in Print */}
+                        {/* Title in Clean Title Case */}
                         <div className="min-w-0 flex-1">
-                          <h4 className={`text-[13px] sm:text-base font-black ${design.titleColor} group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors leading-snug break-words line-clamp-2`}>
+                          <h4 className={`text-[13px] sm:text-[15px] font-black ${design.titleColor} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug break-words line-clamp-2`}>
                             <span className={`hidden print:inline-block desk-checkbox ${topic.status === 'completed' ? 'is-checked' : ''}`} />
-                            {topic.name}
+                            {formatTitleCase(topic.name)}
                           </h4>
                         </div>
                       </div>
@@ -891,28 +911,31 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 1. TOP SUBJECT HERO BANNER */}
-        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
+        <div className="relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-3.5 sm:space-y-4 overflow-hidden print:p-0 print:border-none print:shadow-none">
+          {/* Subtle Top Accent Line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 opacity-80" />
+
           <div className="flex items-start sm:items-center justify-between gap-2.5 sm:gap-3 flex-wrap">
-            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
               
               {/* Left Visual Badge Thumbnail */}
-              <div className={`w-12 sm:w-15 h-12 sm:h-15 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 sm:p-1.5 shrink-0 shadow-md relative overflow-hidden ${subjectBadge.containerClass}`}>
+              <div className={`w-12 sm:w-14 h-12 sm:h-14 rounded-2xl flex flex-col items-center justify-center text-center p-1.5 shrink-0 shadow-2xs relative overflow-hidden ${subjectBadge.containerClass}`}>
                 <SubjectBadgeIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] mb-0.5" />
-                <span className="text-[9px] sm:text-[11px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                <span className="text-[9px] sm:text-[10.5px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                   {subjectBadge.badgeText}
                 </span>
               </div>
 
               {/* Banner Meta & Title */}
-              <div className="min-w-0 space-y-0.5 sm:space-y-1">
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-[#2563EB] dark:text-[#7AA2F7]">
+              <div className="min-w-0 space-y-0.5">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold text-blue-600 dark:text-blue-400">
                   <span>{currentExam.name}</span>
-                  <span>•</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
                   <span>Subject Content</span>
                 </div>
 
-                <h1 className="text-sm sm:text-xl font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight uppercase break-words line-clamp-2 leading-snug">
-                  {activeSubject.name} – CHAPTERS
+                <h1 className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight break-words line-clamp-2 leading-snug">
+                  {formatTitleCase(activeSubject.name)} – Chapters
                 </h1>
               </div>
             </div>
@@ -979,7 +1002,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
 
         {/* 2. CHAPTERS CONTENT CONTAINER */}
-        <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#151622] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth ring-1 ring-black/[0.02] dark:ring-white/[0.03] space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
+        <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-3.5 sm:space-y-4 print:p-0 print:border-none print:shadow-none">
           
           {/* Executive Header & Search Toolbar */}
           <div className="space-y-3 sm:space-y-3.5 pb-3 sm:pb-3.5 border-b border-slate-100 dark:border-white/[0.06] no-print">
@@ -1031,11 +1054,11 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
             </div>
           </div>
 
-          {/* 3. CHAPTER CARDS LIST (Executive Bento Architecture) */}
-          <div className="space-y-2.5 sm:space-y-3">
+          {/* 3. CHAPTER CARDS LIST (2-Column Modern Responsive Bento Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             {filteredChapters.length === 0 ? (
-              <div className="py-10 sm:py-14 px-4 text-center rounded-3xl bg-slate-50/70 dark:bg-[#151622] border border-dashed border-slate-200 dark:border-white/[0.08] space-y-3.5">
-                <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#1E2030] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
+              <div className="col-span-full py-10 sm:py-14 px-4 text-center rounded-2xl sm:rounded-3xl bg-slate-50/70 dark:bg-[#1A1B29] border border-dashed border-slate-200/80 dark:border-white/[0.08] space-y-3.5">
+                <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#202234] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
                   <FolderOpen className="w-7 h-7 stroke-[1.8]" />
                 </div>
                 <div className="space-y-1">
@@ -1046,7 +1069,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div className="pt-1">
                     <button
                       onClick={clearSearch}
-                      className="px-4 py-2 rounded-xl bg-white dark:bg-[#20212E] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-[#DBEAFE] dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-[0.97] shadow-2xs tap-bounce"
+                      className="px-4 py-2 rounded-xl bg-white dark:bg-[#202234] hover:bg-[#2563EB] hover:text-white dark:hover:bg-[#7AA2F7] dark:hover:text-black text-[#2563EB] dark:text-[#7AA2F7] border border-blue-200 dark:border-[#7AA2F7]/30 text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                     >
                       Clear Search
                     </button>
@@ -1070,7 +1093,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                   <div
                     key={chapter.id}
                     onClick={() => handleSelectChapter(chapter.id)}
-                    className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-[#2563EB]/50 dark:hover:border-[#7AA2F7]/50 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
+                    className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] hover:bg-slate-50/60 dark:hover:bg-[#151726] border border-slate-200/80 dark:border-white/[0.08] hover:border-blue-400/60 dark:hover:border-blue-500/40 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] flex flex-col justify-between gap-3.5 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
                   >
                     {/* Subtle Top Glow Accent */}
                     <div
@@ -1081,115 +1104,100 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     />
 
                     {/* Top Row: Thumbnail + Title + Right Action */}
-                    <div className="flex items-center justify-between gap-2 sm:gap-3">
-                      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-                        {/* Modern 3D Squircle Chapter Badge */}
-                        <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${chapterBadge.containerClass}`}>
-                          <ChapterIcon className="w-4.5 sm:w-6 h-4.5 sm:h-6 stroke-[2.2] mb-0.5" />
-                          <span className="text-[8px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        {/* Modern Adaptive Squircle Chapter Badge */}
+                        <div className={`w-11 sm:w-12 h-11 sm:h-12 rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-2xs relative overflow-hidden ${chapterBadge.containerClass}`}>
+                          <ChapterIcon className="w-5 sm:w-5.5 h-5 sm:h-5.5 stroke-[2.2] mb-0.5" />
+                          <span className="text-[8.5px] sm:text-[9.5px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                             {chapterBadge.badgeText}
                           </span>
                         </div>
 
                         {/* Chapter Title & Meta */}
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-[13px] sm:text-base font-black text-slate-900 dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors break-words line-clamp-2 leading-snug">
-                            {chapter.name}
+                          <h3 className="text-[14px] sm:text-[15px] font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                            {formatTitleCase(chapter.name)}
                           </h3>
+                          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
+                            <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
+                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                            <span>{completedInChapter} Mastered</span>
+                          </p>
                         </div>
                       </div>
 
                       {/* Right: Status Pill & Action Chevron */}
-                      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {/* Status Pill */}
-                        <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                        <div className={`px-2 sm:px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 shrink-0 ${
                           isChapterMastered
-                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
                             : hasChapterStarted
-                            ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                            : 'bg-white dark:bg-[#202234] text-slate-700 dark:text-[#CBD5E1] border border-slate-200/80 dark:border-[#383A52]'
+                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                            : 'bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-400 border border-slate-200/70 dark:border-white/[0.06]'
                         }`}>
                           {isChapterMastered ? (
                             <>
                               <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2.5]" />
-                              <span>100%<span className="hidden sm:inline"> Mastered</span></span>
+                              <span>100%</span>
                             </>
                           ) : hasChapterStarted ? (
                             <>
                               <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 fill-current" />
-                              <span>{chapterPercent}%<span className="hidden sm:inline"> Done</span></span>
+                              <span>{chapterPercent}%</span>
                             </>
                           ) : (
-                            <span>0%<span className="hidden sm:inline"> Not Started</span></span>
+                            <span>0%</span>
                           )}
                         </div>
 
                         {/* Action Chevron */}
-                        <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-white dark:bg-[#151622] border border-slate-200/70 dark:border-white/[0.06] flex items-center justify-center text-slate-500 dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
-                          <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[2.5]" />
+                        <div className="w-7 h-7 rounded-xl bg-slate-100/80 dark:bg-white/[0.06] flex items-center justify-center text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all">
+                          <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
                         </div>
                       </div>
                     </div>
 
-                    {/* Dedicated Meta Chips Row (Horizontal scroll on mobile, zero clumsy wrapping) */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
-                      <span className="flex items-center gap-1 bg-white dark:bg-[#151622] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-slate-200/70 dark:border-white/[0.06] text-slate-800 dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
-                        <FileText className="w-3 h-3 text-slate-400 dark:text-indigo-400" />
-                        <span>{totalInChapter} {totalInChapter === 1 ? 'Topic' : 'Topics'}</span>
-                      </span>
-
-                      {completedInChapter > 0 && (
-                        <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-emerald-500/20 font-bold shrink-0 whitespace-nowrap">
-                          <CheckCircle2 className="w-3 h-3" />
-                          <span>{completedInChapter} Mastered</span>
-                        </span>
-                      )}
-
-                      {inProgressInChapter > 0 && (
-                        <span className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-amber-500/20 font-bold shrink-0 whitespace-nowrap">
-                          <Zap className="w-3 h-3" />
-                          <span>{inProgressInChapter} In Progress</span>
-                        </span>
-                      )}
-
-                      {weakInChapter > 0 && (
-                        <span className="flex items-center gap-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-rose-500/20 font-bold shrink-0 whitespace-nowrap">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>{weakInChapter} Weak</span>
-                        </span>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          soundManager.playClick();
-                          onOpenAddTopic(activeSubject.id, chapter.id);
-                        }}
-                        className="flex items-center gap-1 bg-indigo-50/80 dark:bg-indigo-500/15 hover:bg-indigo-100 dark:hover:bg-indigo-500/25 px-2 py-0.5 rounded-md sm:rounded-lg border border-indigo-200/70 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-[10px] sm:text-[11px] font-mono font-bold shrink-0 whitespace-nowrap cursor-pointer transition-colors tap-bounce"
-                        title={`Add new topic directly to ${chapter.name}`}
-                      >
-                        <Plus className="w-3 h-3 stroke-[3]" />
-                        <span>Add Topic</span>
-                      </button>
-                    </div>
-
-                    {/* Sleek Integrated Progress Track */}
-                    <div className="space-y-1 pt-0.5">
-                      <div className="flex items-center justify-between text-[10px] font-mono font-bold text-slate-400 dark:text-[#CBD5E1]">
-                        <span className="uppercase tracking-wider">Chapter Progress</span>
-                        <span className="tabular-nums">{chapterPercent}% ({completedInChapter}/{totalInChapter})</span>
-                      </div>
-
-                      <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-200/80 dark:bg-[#11121A] overflow-hidden p-0.5 border border-slate-200/50 dark:border-white/[0.04]">
+                    {/* Progress Bar & Bottom Meta */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-100 dark:bg-slate-800/80 overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{
                             width: `${chapterPercent}%`,
-                            backgroundColor: accentColor,
-                            boxShadow: chapterPercent > 0 ? `0 0 10px ${accentColor}80` : 'none'
+                            backgroundColor: accentColor
                           }}
                         />
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] font-mono pt-0.5">
+                        <div className="flex items-center gap-2">
+                          {weakInChapter > 0 ? (
+                            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-bold bg-rose-50 dark:bg-rose-500/10 px-2 py-0.5 rounded-lg border border-rose-200/60 dark:border-rose-500/20 text-[10px]">
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>{weakInChapter} Weak</span>
+                            </span>
+                          ) : (
+                            <span className="text-slate-500 dark:text-slate-400 text-[10px]">
+                              {completedInChapter}/{totalInChapter} Mastered
+                            </span>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            soundManager.playClick();
+                            onOpenAddTopic(activeSubject.id, chapter.id);
+                          }}
+                          className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold text-[11px] cursor-pointer"
+                          title={`Add new topic to ${chapter.name}`}
+                        >
+                          <Plus className="w-3 h-3 stroke-[3]" />
+                          <span>Add Topic</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1241,135 +1249,146 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
         </div>
       </div>
 
-      {/* 1. TOP EXAM HERO BANNER (Hidden in Print) */}
-      <div className="syllabus-hero-banner relative p-3.5 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl bg-[#060912] border border-white/[0.12] ring-1 ring-white/[0.06] shadow-2xl overflow-hidden text-white print:hidden">
+      {/* 1. EXECUTIVE STUDY COMMAND BAR (Clean & Modern Adaptive Header) */}
+      <div className="relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0E101B] border border-slate-200/80 dark:border-white/[0.08] shadow-sm overflow-hidden text-slate-900 dark:text-white print:hidden space-y-4 sm:space-y-5">
         
-        {/* Background Artwork - Cozy Study Desk & Warm Glow */}
-        <img
-          src="/syllabus_explorer_banner.png"
-          alt="Syllabus Explorer Banner"
-          className="absolute inset-0 w-full h-full object-cover object-right pointer-events-none select-none"
-          loading="eager"
-          decoding="async"
-        />
+        {/* Subtle Top Gradient Line */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 opacity-90" />
 
-        {/* Multi-layered High-Contrast Protection Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#060912] via-[#060912]/95 md:via-[#060912]/75 to-transparent pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060912]/80 via-transparent to-[#060912]/30 pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none z-0" />
-
-        {/* Banner Content (Badge + Title + 4 Bento Tiles) */}
-        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 sm:gap-4 min-w-0">
-          
-          {/* Left: Badge + Dynamic Exam Title & Meta Counts */}
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-            {/* Visual Badge Banner */}
-            <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-[#0C1322]/90 border border-slate-700/60 shadow-xl backdrop-blur-md flex flex-col items-center justify-center p-1.5 shrink-0 gap-0.5">
-              <svg className="w-5 sm:w-6 h-5 sm:h-6 shrink-0" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#goldGradTop)" stroke="#F59E0B" strokeWidth="0.5" />
-                <path d="M2 12L12 17L22 12" stroke="url(#goldGradMid)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M2 17L12 22L22 17" stroke="url(#goldGradBot)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                <defs>
-                  <linearGradient id="goldGradTop" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FDE68A" />
-                    <stop offset="1" stopColor="#D97706" />
-                  </linearGradient>
-                  <linearGradient id="goldGradMid" x1="2" y1="12" x2="22" y2="17" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FBBF24" />
-                    <stop offset="1" stopColor="#B45309" />
-                  </linearGradient>
-                  <linearGradient id="goldGradBot" x1="2" y1="17" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#F59E0B" />
-                    <stop offset="1" stopColor="#92400E" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <span className="text-[9px] sm:text-[10px] font-black tracking-wider text-[#FBBF24] font-sans uppercase leading-none mt-0.5">
-                SYLLABUS
+        {/* Top Row: Exam Context Pill & Title + Progress Ring */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 min-w-0">
+            {/* Live Indicator Pill */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/15 border border-blue-200/70 dark:border-blue-500/30 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" />
+                <span>Syllabus Explorer</span>
+                <span className="text-slate-300 dark:text-slate-600">•</span>
+                <span className="font-mono">{currentExam.targetYear ? `${currentExam.targetYear}` : '2026'}</span>
               </span>
-              <span className="text-[7.5px] sm:text-[8.5px] font-black tracking-widest text-[#38BDF8] font-mono uppercase leading-none">
-                EXPLORER
+
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.06] text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300">
+                <span>{currentExam.subjects.length} Subjects</span>
               </span>
             </div>
 
-            {/* Exam Title & Meta Counts */}
-            <div className="min-w-0 flex-1">
-              <h1 className="syllabus-banner-title text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight font-sans drop-shadow-sm truncate">
-                {currentExam.name ? currentExam.name.toUpperCase() : 'SSC CGL'}
-              </h1>
-              <div className="flex items-center gap-2.5 sm:gap-3 text-xs font-semibold text-slate-200 mt-1 sm:mt-1.5 flex-wrap">
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <Layers className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span className="syllabus-meta-text">{currentExam.subjects.length} Subjects</span>
+            {/* Exam Name Title (No truncation!) */}
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+              {currentExam.name ? formatTitleCase(currentExam.name) : 'SSC CGL'} Mastery Hub
+            </h1>
+
+            <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-medium">
+              Complete exam curriculum, chapter breakdown, mastery tracking, and pacing forecast.
+            </p>
+          </div>
+
+          {/* Quick Progress Ring Callout */}
+          <div className="flex items-center gap-3 self-start lg:self-center shrink-0">
+            <div className="flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/70 dark:border-white/[0.06]">
+              {/* Circular Gauge Miniature */}
+              <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r="18"
+                    className="stroke-slate-200 dark:stroke-slate-800"
+                    strokeWidth="3.5"
+                    fill="none"
+                  />
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r="18"
+                    stroke="#10B981"
+                    strokeWidth="3.5"
+                    strokeDasharray={113}
+                    strokeDashoffset={113 - (113 * Math.min(overallPercentage, 100)) / 100}
+                    strokeLinecap="round"
+                    fill="none"
+                    className="transition-all duration-700 ease-out"
+                  />
+                </svg>
+                <span className="absolute text-[11px] font-black font-mono tabular-nums text-slate-900 dark:text-white">
+                  {overallPercentage}%
+                </span>
+              </div>
+
+              <div>
+                <div className="text-[12px] font-bold text-slate-900 dark:text-white leading-tight">
+                  {completedTopicsCount} of {totalTopicsCount} Done
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span className="syllabus-meta-text">{totalTopicsCount} Topics</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>{completedTopicsCount} Completed</span>
+                <div className="text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                  Overall Curriculum
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Right: 4 Bento Glass Metric Tiles (with breathing room for right desk artwork) */}
-          <div className="grid grid-cols-2 md:flex md:items-center gap-2 sm:gap-2.5 shrink-0 xl:mr-44 2xl:mr-56">
-            {/* Tile 1: Exam Date */}
-            <div className="syllabus-bento-tile syllabus-tile-date flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#131A2B]/80 backdrop-blur-md border border-slate-700/50 shadow-lg text-left">
-              <Calendar className="w-4 sm:w-5 h-4 sm:h-5 text-amber-400 shrink-0" />
-              <div className="min-w-0">
-                <div className="syllabus-tile-val text-xs sm:text-[13px] font-bold text-white leading-tight font-sans truncate">
-                  {formattedExamDate}
-                </div>
-                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5">
-                  Exam Date
-                </div>
-              </div>
-            </div>
-
-            {/* Tile 2: Time Remaining */}
-            <div className="syllabus-bento-tile syllabus-tile-remaining flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#191811]/80 backdrop-blur-md border border-amber-500/20 shadow-lg text-left">
-              <Zap className="w-4 sm:w-5 h-4 sm:h-5 text-amber-400 fill-amber-400 shrink-0" />
-              <div className="min-w-0">
-                <div className="syllabus-tile-val text-xs sm:text-[13px] font-black text-[#FBBF24] leading-tight font-sans tabular-nums truncate">
-                  {daysRemaining > 0 ? `${daysRemaining}d Left` : 'Exam Today'}
-                </div>
-                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5">
-                  Time Remaining
-                </div>
-              </div>
-            </div>
-
-            {/* Tile 3: Your Progress */}
-            <div className="syllabus-bento-tile syllabus-tile-progress flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#072422]/80 backdrop-blur-md border border-teal-500/25 shadow-lg text-left">
-              <Trophy className="w-4 sm:w-5 h-4 sm:h-5 text-[#2DD4BF] shrink-0" />
-              <div className="min-w-0">
-                <div className="syllabus-tile-val text-xs sm:text-[13px] font-black text-[#2DD4BF] leading-tight font-sans tabular-nums truncate">
-                  {overallPercentage}% Mastered
-                </div>
-                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5">
-                  Your Progress
-                </div>
-              </div>
-            </div>
-
-            {/* Tile 4: Pacing Forecast & Finish */}
-            <div className="syllabus-bento-tile syllabus-tile-target flex items-center gap-2.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-[#281019]/80 backdrop-blur-md border border-rose-500/25 shadow-lg text-left">
-              <Target className="w-4 sm:w-5 h-4 sm:h-5 text-rose-400 shrink-0" />
-              <div className="min-w-0">
-                <div className="syllabus-tile-val text-xs sm:text-[13px] font-black text-white leading-tight font-sans tabular-nums truncate">
-                  {pacingForecast ? `${pacingForecast.requiredDailyPace}/day req` : 'Pace Active'}
-                </div>
-                <div className="syllabus-tile-sub text-[9.5px] sm:text-[10px] text-slate-400 font-medium font-sans leading-tight mt-0.5 truncate max-w-[120px]">
-                  Finish: {pacingForecast ? pacingForecast.finishLineForecastDate : formattedExamDate}
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        {/* Bottom Bento Metric Strip (4 Clean KPI Tiles) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 pt-2 border-t border-slate-100 dark:border-white/[0.06]">
+          {/* Metric 1: Exam Date */}
+          <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs sm:text-[13px] font-bold text-slate-900 dark:text-white truncate">
+                {formattedExamDate}
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                Target Exam Date
+              </div>
+            </div>
+          </div>
+
+          {/* Metric 2: Days Left */}
+          <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Zap className="w-4 h-4 fill-current" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs sm:text-[13px] font-black font-mono tabular-nums text-amber-600 dark:text-amber-400 truncate">
+                {daysRemaining > 0 ? `${daysRemaining} Days Left` : 'Exam Today'}
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                Runway Remaining
+              </div>
+            </div>
+          </div>
+
+          {/* Metric 3: Pacing Forecast */}
+          <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+              <Target className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs sm:text-[13px] font-black font-mono tabular-nums text-slate-900 dark:text-white truncate">
+                {pacingForecast ? `${pacingForecast.requiredDailyPace} / day` : 'On Track'}
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
+                {pacingForecast ? `Finish: ${pacingForecast.finishLineForecastDate}` : 'Required Pace'}
+              </div>
+            </div>
+          </div>
+
+          {/* Metric 4: Total Chapters */}
+          <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <Layers className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs sm:text-[13px] font-black font-mono tabular-nums text-slate-900 dark:text-white truncate">
+                {currentExam.subjects.reduce((sum, s) => sum + s.chapters.length, 0)} Chapters
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                Across {currentExam.subjects.length} Modules
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* 2. PORTAL CONTENT CONTAINER */}
@@ -1441,10 +1460,10 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
           </div>
         </div>
 
-        {/* 3. DYNAMIC SUBJECT CARDS LIST (Executive Bento Architecture) */}
-        <div className="space-y-2.5 sm:space-y-3">
+        {/* 3. DYNAMIC SUBJECT CARDS LIST (2-Column Modern Responsive Bento Grid) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
           {currentExam.subjects.length === 0 ? (
-            <div className="py-12 sm:py-16 px-4 text-center rounded-2xl sm:rounded-3xl bg-slate-50/80 dark:bg-[#1A1B29] border-2 border-dashed border-slate-200/80 dark:border-white/[0.08] shadow-xs space-y-4">
+            <div className="col-span-full py-12 sm:py-16 px-4 text-center rounded-2xl sm:rounded-3xl bg-slate-50/80 dark:bg-[#1A1B29] border-2 border-dashed border-slate-200/80 dark:border-white/[0.08] shadow-xs space-y-4">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500/15 to-indigo-500/15 border border-blue-500/30 flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-sm">
                 <Sparkles className="w-8 h-8 stroke-[2]" />
               </div>
@@ -1496,7 +1515,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               </div>
             </div>
           ) : filteredSubjects.length === 0 ? (
-            <div className="py-10 sm:py-14 px-4 text-center rounded-2xl sm:rounded-3xl bg-slate-50/70 dark:bg-[#1A1B29] border border-dashed border-slate-200/80 dark:border-white/[0.08] space-y-3.5">
+            <div className="col-span-full py-10 sm:py-14 px-4 text-center rounded-2xl sm:rounded-3xl bg-slate-50/70 dark:bg-[#1A1B29] border border-dashed border-slate-200/80 dark:border-white/[0.08] space-y-3.5">
               <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#202234] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-center mx-auto text-[#2563EB] dark:text-[#7AA2F7] shadow-2xs">
                 <BookOpen className="w-7 h-7 stroke-[1.8]" />
               </div>
@@ -1522,6 +1541,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
               const subjectTotalTopics = subject.chapters.reduce((a, c) => a + c.topics.length, 0);
               const subjectCompletedTopics = subject.chapters.reduce((a, c) => a + c.topics.filter(t => t.status === 'completed').length, 0);
               const subjectInProgressTopics = subject.chapters.reduce((a, c) => a + c.topics.filter(t => t.status === 'in_progress').length, 0);
+              const weakTopicsInSubject = subject.chapters.reduce((a, c) => a + c.topics.filter(t => t.status === 'weak').length, 0);
               const percent = subjectTotalTopics > 0 ? Math.round((subjectCompletedTopics / subjectTotalTopics) * 100) : 0;
               const isMastered = percent === 100;
               const hasStarted = percent > 0 || subjectInProgressTopics > 0;
@@ -1532,7 +1552,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                 <div
                   key={subject.id}
                   onClick={() => handleSelectSubject(subject.id)}
-                  className="group relative p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-50/90 dark:bg-[#1A1B29] hover:bg-white dark:hover:bg-[#1E2032] border border-slate-200/70 dark:border-white/[0.06] hover:border-[#2563EB]/50 dark:hover:border-[#7AA2F7]/50 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98] space-y-2.5 sm:space-y-3 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
+                  className="group relative p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11131F] hover:bg-slate-50/60 dark:hover:bg-[#151726] border border-slate-200/80 dark:border-white/[0.08] hover:border-blue-400/60 dark:hover:border-blue-500/40 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] flex flex-col justify-between gap-3.5 overflow-hidden print-avoid-break print:border print:border-black print:rounded-lg print:p-4 tap-bounce"
                 >
                   {/* Subtle Top Glow Accent */}
                   <div
@@ -1542,47 +1562,52 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                     }}
                   />
 
-                  {/* Top Row: Thumbnail + Title + Right Action */}
-                  <div className="flex items-center justify-between gap-2 sm:gap-3">
-                    <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-                      {/* Modern 3D/Glass Squircle Thumbnail */}
-                      <div className={`w-11 sm:w-14 h-11 sm:h-14 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-sm relative overflow-hidden ${badgeStyle.containerClass}`}>
-                        <BadgeIcon className="w-4.5 sm:w-6 h-4.5 sm:h-6 stroke-[2.2] mb-0.5" />
-                        <span className="text-[8px] sm:text-[10px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
+                  {/* Top Row: Thumbnail Squircle + Title & Chapters + Right Action */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {/* Modern Adaptive Squircle Thumbnail */}
+                      <div className={`w-11 sm:w-12 h-11 sm:h-12 rounded-2xl flex flex-col items-center justify-center text-center p-1 shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-2xs ${badgeStyle.containerClass}`}>
+                        <BadgeIcon className="w-5 sm:w-5.5 h-5 sm:h-5.5 stroke-[2.2] mb-0.5" />
+                        <span className="text-[8.5px] sm:text-[9.5px] font-black tracking-wider uppercase font-mono leading-none truncate max-w-full">
                           {badgeStyle.badgeText}
                         </span>
                       </div>
 
-                      {/* Subject Name (Never brutally truncated) */}
+                      {/* Subject Name (Title Case) & Chapter Meta */}
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-[13px] sm:text-base font-black text-slate-900 dark:text-[#F5F5F7] uppercase tracking-wide group-hover:text-[#2563EB] dark:group-hover:text-[#7AA2F7] transition-colors break-words line-clamp-2 leading-snug">
-                          {subject.name}
+                        <h3 className="text-[14px] sm:text-[15px] font-black text-slate-900 dark:text-[#F5F5F7] tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                          {formatTitleCase(subject.name)}
                         </h3>
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
+                          <span>{subject.chapters.length} {subject.chapters.length === 1 ? 'Chapter' : 'Chapters'}</span>
+                          <span className="text-slate-300 dark:text-slate-600">•</span>
+                          <span>{subjectTotalTopics} Topics</span>
+                        </p>
                       </div>
                     </div>
 
-                    {/* Right: Progress Status Pill & Action Chevron */}
-                    <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                    {/* Right: Progress Status Pill & Quick Controls */}
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {/* Status Pill */}
-                      <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 sm:gap-1.5 shrink-0 ${
+                      <div className={`px-2 sm:px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-mono tabular-nums font-bold flex items-center gap-1 shrink-0 ${
                         isMastered
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black'
                           : hasStarted
-                          ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                          : 'bg-white dark:bg-[#202234] text-slate-700 dark:text-[#CBD5E1] border border-slate-200/80 dark:border-[#383A52]'
+                          ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                          : 'bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-400 border border-slate-200/70 dark:border-white/[0.06]'
                       }`}>
                         {isMastered ? (
                           <>
                             <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2.5]" />
-                            <span>100%<span className="hidden sm:inline"> Mastered</span></span>
+                            <span>100%</span>
                           </>
                         ) : hasStarted ? (
                           <>
                             <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 fill-current" />
-                            <span>{percent}%<span className="hidden sm:inline"> Done</span></span>
+                            <span>{percent}%</span>
                           </>
                         ) : (
-                          <span>0%<span className="hidden sm:inline"> Not Started</span></span>
+                          <span>0%</span>
                         )}
                       </div>
 
@@ -1593,56 +1618,48 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({
                           e.stopPropagation();
                           setEditingSubject(subject);
                         }}
-                        className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-white dark:bg-[#151622] border border-slate-200/70 dark:border-white/[0.06] flex items-center justify-center text-slate-500 dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#7AA2F7] hover:border-[#2563EB]/40 transition-colors shadow-2xs shrink-0"
+                        className="w-7 h-7 rounded-xl bg-slate-100/80 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                         title="Edit Subject"
                         aria-label={`Edit ${subject.name}`}
                       >
-                        <Edit2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 stroke-[2]" />
+                        <Edit2 className="w-3.5 h-3.5 stroke-[2]" />
                       </button>
 
                       {/* Action Chevron */}
-                      <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-lg sm:rounded-xl bg-white dark:bg-[#151622] border border-slate-200/70 dark:border-white/[0.06] flex items-center justify-center text-slate-500 dark:text-[#CBD5E1] group-hover:bg-[#11120F] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all group-hover:translate-x-0.5 shadow-2xs shrink-0">
-                        <ChevronRight className="w-3.5 sm:w-4 h-3.5 sm:h-4 stroke-[2.5]" />
+                      <div className="hidden sm:flex w-7 h-7 rounded-xl bg-slate-100/80 dark:bg-white/[0.06] items-center justify-center text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all">
+                        <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Dedicated Meta Chips Row (Horizontal scroll on mobile, zero clumsy wrapping) */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-[#CBD5E1] overflow-x-auto no-scrollbar pt-0.5">
-                    <span className="flex items-center gap-1 bg-white dark:bg-[#151622] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-slate-200/70 dark:border-white/[0.06] text-slate-800 dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
-                      <Layers className="w-3 h-3 text-[#2563EB] dark:text-indigo-400" />
-                      <span>{subject.chapters.length} {subject.chapters.length === 1 ? 'Chapter' : 'Chapters'}</span>
-                    </span>
-
-                    <span className="flex items-center gap-1 bg-white dark:bg-[#151622] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-slate-200/70 dark:border-white/[0.06] text-slate-800 dark:text-[#E2E8F0] shrink-0 whitespace-nowrap">
-                      <FileText className="w-3 h-3 text-slate-400 dark:text-indigo-400" />
-                      <span>{subjectTotalTopics} Topics</span>
-                    </span>
-
-                    {subjectCompletedTopics > 0 && (
-                      <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg border border-emerald-500/20 font-bold shrink-0 whitespace-nowrap">
-                        <CheckCircle2 className="w-3 h-3" />
-                        <span>{subjectCompletedTopics} Mastered</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Sleek Integrated Progress Track */}
-                  <div className="space-y-1 pt-0.5">
-                    <div className="flex items-center justify-between text-[10px] font-mono font-bold text-slate-400 dark:text-[#CBD5E1]">
-                      <span className="uppercase tracking-wider">Mastery Completion</span>
-                      <span className="tabular-nums">{percent}% ({subjectCompletedTopics}/{subjectTotalTopics})</span>
-                    </div>
-
-                    <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-200/80 dark:bg-[#11121A] overflow-hidden p-0.5 border border-slate-200/50 dark:border-white/[0.04]">
+                  {/* Progress Bar & Bottom Meta */}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-100 dark:bg-slate-800/80 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
                           width: `${percent}%`,
-                          backgroundColor: accentColor,
-                          boxShadow: percent > 0 ? `0 0 10px ${accentColor}80` : 'none'
+                          backgroundColor: accentColor
                         }}
                       />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] font-mono pt-0.5">
+                      <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-semibold">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>{subjectCompletedTopics}/{subjectTotalTopics} Mastered</span>
+                      </span>
+
+                      {weakTopicsInSubject > 0 ? (
+                        <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-bold bg-rose-50 dark:bg-rose-500/10 px-2 py-0.5 rounded-lg border border-rose-200/60 dark:border-rose-500/20 text-[10px]">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>{weakTopicsInSubject} Weak</span>
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 dark:text-slate-500 text-[10px]">
+                          {percent}% Completed
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
