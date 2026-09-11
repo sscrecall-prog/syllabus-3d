@@ -3,6 +3,9 @@ dist
 dist-ssr
 *.local
 .log
+.env
+.env.local
+.env.*.local
 
 .system_generated 
 scratch/
