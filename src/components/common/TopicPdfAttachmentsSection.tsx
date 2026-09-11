@@ -591,6 +591,7 @@ export const TopicPdfAttachmentsSection: React.FC<TopicPdfAttachmentsSectionProp
         <InAppPdfReaderModal
           isOpen={Boolean(viewingAttachmentId)}
           onClose={() => setViewingAttachmentId(null)}
+          topicId={topicId}
           topicName={topicName}
           subjectName={subjectName}
           chapterName={chapterName}

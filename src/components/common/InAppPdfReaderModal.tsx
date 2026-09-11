@@ -24,7 +24,12 @@ import {
   RotateCcw,
   Trash2,
   Sparkles,
-  Palette
+  Palette,
+  MessageSquare,
+  MessageSquarePlus,
+  StickyNote,
+  Search,
+  Copy
 } from 'lucide-react';
 import { TopicPdfAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl } from '../../utils/pdfStorage';
@@ -40,10 +45,23 @@ import {
   savePdfHighlights,
   clearPdfHighlights
 } from '../../utils/pdfHighlightStorage';
+import {
+  PdfComment,
+  CommentColor,
+  CommentCategory,
+  COMMENT_COLORS,
+  COMMENT_CATEGORIES,
+  loadPdfComments,
+  savePdfComments,
+  updatePdfCommentInList,
+  deletePdfCommentFromList
+} from '../../utils/pdfCommentStorage';
+import { useSyllabus } from '../../context/SyllabusContext';
 
 interface InAppPdfReaderModalProps {
   isOpen: boolean;
   onClose: () => void;
+  topicId?: string;
   topicName: string;
   subjectName?: string;
   chapterName?: string;
@@ -55,6 +73,7 @@ interface InAppPdfReaderModalProps {
 export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   isOpen,
   onClose,
+  topicId,
   topicName,
   subjectName,
   chapterName,
@@ -101,6 +120,16 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
   const [highlights, setHighlights] = useState<PdfHighlight[]>([]);
   const [showColorPalette, setShowColorPalette] = useState<boolean>(false);
 
+  const { exams, updateTopicNotes } = useSyllabus();
+
+  // Sticky Notes / Comment Annotations State
+  const [isCommentMode, setIsCommentMode] = useState<boolean>(false);
+  const [comments, setComments] = useState<PdfComment[]>([]);
+  const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
+  const [showCommentsSidebar, setShowCommentsSidebar] = useState<boolean>(false);
+  const [commentSearchQuery, setCommentSearchQuery] = useState<string>('');
+  const [commentCategoryFilter, setCommentCategoryFilter] = useState<CommentCategory | 'all'>('all');
+
   // Sync selected attachment when initialAttachmentId changes
   useEffect(() => {
     if (initialAttachmentId) {
@@ -110,11 +139,13 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
     }
   }, [initialAttachmentId, attachments]);
 
-  // Load Saved Highlights when attachment changes
+  // Load Saved Highlights & Comments when attachment changes
   useEffect(() => {
     if (selectedAttachmentId) {
-      const loaded = loadPdfHighlights(selectedAttachmentId);
-      setHighlights(loaded);
+      const loadedHl = loadPdfHighlights(selectedAttachmentId);
+      setHighlights(loadedHl);
+      const loadedCmt = loadPdfComments(selectedAttachmentId);
+      setComments(loadedCmt);
     }
   }, [selectedAttachmentId]);
 
@@ -221,7 +252,21 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         // Toggle highlight mode if not focusing an input
         if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
           soundManager.playClick();
-          setIsHighlightMode(prev => !prev);
+          setIsHighlightMode(prev => {
+            const next = !prev;
+            if (next) setIsCommentMode(false);
+            return next;
+          });
+        }
+      } else if (e.key === 'n' || e.key === 'N') {
+        // Toggle sticky notes / comment mode
+        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          soundManager.playClick();
+          setIsCommentMode(prev => {
+            const next = !prev;
+            if (next) setIsHighlightMode(false);
+            return next;
+          });
         }
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
         // Undo last highlight
@@ -232,6 +277,79 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, isFullscreen, highlights, selectedAttachmentId]);
+
+  // Sticky Notes Handlers
+  const handleAddComment = (newComment: PdfComment) => {
+    setComments(prev => {
+      const updated = [...prev, newComment];
+      savePdfComments(selectedAttachmentId, updated);
+      return updated;
+    });
+    setActiveCommentId(newComment.id);
+  };
+
+  const handleUpdateComment = (commentId: string, updates: Partial<PdfComment>) => {
+    setComments(prev => {
+      const updated = updatePdfCommentInList(prev, commentId, updates);
+      savePdfComments(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    soundManager.playClick();
+    setComments(prev => {
+      const updated = deletePdfCommentFromList(prev, commentId);
+      savePdfComments(selectedAttachmentId, updated);
+      return updated;
+    });
+    if (activeCommentId === commentId) {
+      setActiveCommentId(null);
+    }
+  };
+
+  const handlePushCommentToNotes = (comment: PdfComment) => {
+    if (!comment.text) return;
+    const catLabel = COMMENT_CATEGORIES[comment.category]?.label || 'Study Note';
+    const catIcon = COMMENT_CATEGORIES[comment.category]?.icon || '📌';
+    const citation = `\n\n> ${catIcon} **[PDF Page ${comment.pageNum} - ${catLabel}]:**\n> ${comment.text.split('\n').join('\n> ')}\n`;
+
+    const targetTopicId = topicId || (attachments.length > 0 ? (attachments[0] as any).topicId : undefined);
+
+    let updated = false;
+    for (const exam of exams) {
+      for (const subj of exam.subjects) {
+        for (const chap of subj.chapters) {
+          const found = chap.topics.find(
+            t => (targetTopicId && t.id === targetTopicId) || (topicName && t.name.toLowerCase() === topicName.toLowerCase())
+          );
+          if (found) {
+            const currentNotes = found.notes || '';
+            updateTopicNotes(found.id, currentNotes + citation);
+            soundManager.playClick();
+            updated = true;
+            break;
+          }
+        }
+        if (updated) break;
+      }
+      if (updated) break;
+    }
+  };
+
+  // Filtered comments for sidebar drawer
+  const filteredComments = comments.filter(c => {
+    const matchesSearch =
+      !commentSearchQuery ||
+      c.text.toLowerCase().includes(commentSearchQuery.toLowerCase()) ||
+      COMMENT_CATEGORIES[c.category]?.label.toLowerCase().includes(commentSearchQuery.toLowerCase()) ||
+      `page ${c.pageNum}`.includes(commentSearchQuery.toLowerCase());
+
+    const matchesCategory =
+      commentCategoryFilter === 'all' || c.category === commentCategoryFilter;
+
+    return matchesSearch && matchesCategory;
+  }).sort((a, b) => a.pageNum - b.pageNum);
 
   // Highlighter Handlers
   const handleAddHighlight = (newHighlight: PdfHighlight) => {
@@ -425,7 +543,11 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               type="button"
               onClick={() => {
                 soundManager.playClick();
-                setIsHighlightMode(prev => !prev);
+                setIsHighlightMode(prev => {
+                  const next = !prev;
+                  if (next) setIsCommentMode(false);
+                  return next;
+                });
               }}
               className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
                 isHighlightMode
@@ -442,6 +564,58 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
                 }`}>
                   {highlights.length}
                 </span>
+              )}
+            </button>
+
+            {/* STICKY NOTE / COMMENT MAIN TOGGLE */}
+            <button
+              type="button"
+              data-testid="pdf-note-tool-btn"
+              onClick={() => {
+                soundManager.playClick();
+                setIsCommentMode(prev => {
+                  const next = !prev;
+                  if (next) setIsHighlightMode(false);
+                  return next;
+                });
+              }}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
+                isCommentMode
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-400 font-black shadow-[0_0_18px_rgba(59,130,246,0.5)]'
+                  : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
+              }`}
+              title="Add Sticky Note or Comment anywhere on PDF (Shortcut: N)"
+            >
+              <MessageSquarePlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+              <span className="hidden sm:inline">Note</span>
+              {comments.length > 0 && (
+                <span className={`px-1.5 py-0.2 rounded-full text-[11px] font-mono font-bold ${
+                  isCommentMode ? 'bg-white text-blue-700' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                }`}>
+                  {comments.length}
+                </span>
+              )}
+            </button>
+
+            {/* ALL NOTES SIDEBAR DRAWER TOGGLE */}
+            <button
+              type="button"
+              data-testid="pdf-all-notes-btn"
+              onClick={() => {
+                soundManager.playClick();
+                setShowCommentsSidebar(prev => !prev);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
+                showCommentsSidebar
+                  ? 'bg-blue-600/30 text-[#93C5FD] border-blue-500/50'
+                  : 'bg-[#24283B] hover:bg-[#2F354D] text-[#A9B1D6] hover:text-white border-[#292E42]'
+              }`}
+              title="View all sticky notes & comments across pages"
+            >
+              <StickyNote className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">All Notes</span>
+              {comments.length > 0 && (
+                <span className="text-[10px] font-mono text-blue-300">({comments.length})</span>
               )}
             </button>
 
@@ -720,6 +894,38 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
         </div>
       )}
 
+      {/* 2.5 DEDICATED STICKY NOTE COMMENT MODE BANNER (HIDDEN IN FULLSCREEN) */}
+      {!isFullscreen && isCommentMode && (
+        <div className="px-3 sm:px-5 py-2 bg-gradient-to-r from-blue-950/90 via-[#1F2335] to-indigo-950/90 border-b border-blue-500/30 flex items-center justify-between gap-3 shrink-0 z-25 shadow-lg animate-fade-in flex-wrap">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+            <span className="text-xs font-bold text-blue-200 flex items-center gap-1.5">
+              <span>💬 Click anywhere on any page to drop a sticky note pin</span>
+            </span>
+            <span className="hidden sm:inline text-[11px] text-blue-300/80 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
+              Drag pins to move · 5 High-yield tags · 1-click Push to Notes
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowCommentsSidebar(true)}
+              className="text-xs font-bold text-blue-300 hover:text-white px-2.5 py-1 rounded-lg bg-blue-600/25 hover:bg-blue-600/40 border border-blue-500/30 flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <StickyNote className="w-3.5 h-3.5" />
+              <span>All Notes ({comments.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCommentMode(false)}
+              className="text-xs font-semibold text-slate-400 hover:text-white px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Exit Mode
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 3. SLEEK FLOATING ZEN CONTROLS HUD (ONLY VISIBLE IN FULLSCREEN) */}
       {isFullscreen && (
         <div
@@ -815,6 +1021,51 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
             </button>
           </div>
 
+          {/* Note Mode Toggle in Fullscreen HUD */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setIsCommentMode(prev => {
+                const next = !prev;
+                if (next) setIsHighlightMode(false);
+                return next;
+              });
+            }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              isCommentMode
+                ? 'bg-blue-500 text-white font-black shadow-[0_0_12px_rgba(59,130,246,0.6)]'
+                : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+            title="Toggle PDF Sticky Notes (Shortcut: N - Click anywhere on page)"
+          >
+            <MessageSquarePlus className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Note</span>
+            {comments.length > 0 && (
+              <span className="text-[10px] font-mono opacity-90 font-bold bg-white/20 px-1.5 py-0.2 rounded-full">
+                {comments.length}
+              </span>
+            )}
+          </button>
+
+          {/* All Notes Sidebar Toggle in Fullscreen HUD */}
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              setShowCommentsSidebar(prev => !prev);
+            }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              showCommentsSidebar
+                ? 'bg-blue-600/60 text-white border border-blue-400'
+                : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+            title="All Notes Drawer"
+          >
+            <StickyNote className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Notes</span>
+          </button>
+
           <div className="w-[1px] h-4 bg-white/20 mx-0.5" />
 
           {/* Exit Fullscreen Button */}
@@ -905,6 +1156,14 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
               highlights={highlights}
               onAddHighlight={handleAddHighlight}
               onDeleteHighlight={handleDeleteHighlight}
+              isCommentMode={isCommentMode}
+              comments={comments}
+              onAddComment={handleAddComment}
+              onUpdateComment={handleUpdateComment}
+              onDeleteComment={handleDeleteComment}
+              activeCommentId={activeCommentId}
+              onSelectComment={setActiveCommentId}
+              onPushCommentToNotes={handlePushCommentToNotes}
               showInlineControls={false}
               className="flex-1 min-h-0 w-full h-full"
             />
@@ -916,6 +1175,251 @@ export const InAppPdfReaderModal: React.FC<InAppPdfReaderModalProps> = ({
           </div>
         )}
       </div>
+
+      {/* 5. SLIDE-OVER ALL NOTES SIDEBAR DRAWER */}
+      {showCommentsSidebar && (
+        <div
+          className="fixed inset-y-0 right-0 z-50 w-full max-w-sm sm:max-w-md bg-[#161927] border-l border-[#292E42] shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col animate-fade-in"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-[#1A1D2D] border-b border-[#292E42]">
+            <div className="flex items-center gap-2">
+              <StickyNote className="w-4 h-4 text-blue-400" />
+              <h3 className="text-sm font-bold text-white">All Sticky Notes</h3>
+              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                {comments.length}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setIsCommentMode(true);
+                  setIsHighlightMode(false);
+                }}
+                className={`text-xs px-2.5 py-1 rounded-lg font-bold border transition-colors flex items-center gap-1 cursor-pointer ${
+                  isCommentMode
+                    ? 'bg-blue-600 text-white border-blue-500'
+                    : 'bg-[#24283B] text-slate-300 hover:text-white border-[#2E334D]'
+                }`}
+                title="Toggle Drop Note Mode"
+              >
+                <MessageSquarePlus className="w-3.5 h-3.5" />
+                <span>Add Note</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCommentsSidebar(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                title="Close Notes Sidebar"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Search & Filter Bar */}
+          <div className="p-3 border-b border-[#24283B] space-y-2 bg-[#141622]">
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-400" />
+              <input
+                type="text"
+                value={commentSearchQuery}
+                onChange={e => setCommentSearchQuery(e.target.value)}
+                placeholder="Search notes, formulas, traps..."
+                className="w-full pl-8 pr-8 py-1.5 rounded-xl bg-[#1D2032] border border-[#2B304A] text-xs text-white placeholder-slate-400 focus:outline-hidden focus:border-blue-500"
+              />
+              {commentSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setCommentSearchQuery('')}
+                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[11px]">
+              <button
+                type="button"
+                onClick={() => setCommentCategoryFilter('all')}
+                className={`px-2 py-0.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                  commentCategoryFilter === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-[#1F2336] text-slate-400 hover:text-white'
+                }`}
+              >
+                All ({comments.length})
+              </button>
+              {(Object.keys(COMMENT_CATEGORIES) as CommentCategory[]).map(catKey => {
+                const cat = COMMENT_CATEGORIES[catKey];
+                const count = comments.filter(c => c.category === catKey).length;
+                const isSelected = commentCategoryFilter === catKey;
+                return (
+                  <button
+                    key={catKey}
+                    type="button"
+                    onClick={() => setCommentCategoryFilter(catKey)}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded-full font-bold whitespace-nowrap border transition-colors cursor-pointer ${
+                      isSelected
+                        ? 'bg-blue-600 text-white border-blue-500'
+                        : `${cat.badgeClass} ${cat.badgeBorder} opacity-80 hover:opacity-100`
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                    {count > 0 && <span className="text-[10px] opacity-75">({count})</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Notes List Container */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2.5">
+            {filteredComments.length === 0 ? (
+              <div className="text-center py-12 px-4 space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center mx-auto">
+                  <StickyNote className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white">
+                    {commentSearchQuery || commentCategoryFilter !== 'all'
+                      ? 'No matching notes found'
+                      : 'No sticky notes yet'}
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    {commentSearchQuery || commentCategoryFilter !== 'all'
+                      ? 'Try clearing your search query or tag filter.'
+                      : 'Click anywhere on the PDF pages in Note mode to drop interactive notes, trap alerts, and doubt tags!'}
+                  </p>
+                </div>
+                {comments.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCommentMode(true);
+                      setIsHighlightMode(false);
+                      setShowCommentsSidebar(false);
+                      soundManager.playClick();
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg transition-all cursor-pointer"
+                  >
+                    💬 Start Adding Notes
+                  </button>
+                )}
+              </div>
+            ) : (
+              filteredComments.map(c => {
+                const colorMeta = COMMENT_COLORS[c.color] || COMMENT_COLORS.yellow;
+                const catMeta = COMMENT_CATEGORIES[c.category] || COMMENT_CATEGORIES.note;
+                const isActive = activeCommentId === c.id;
+
+                return (
+                  <div
+                    key={c.id}
+                    className={`group rounded-xl border transition-all p-3 space-y-2 ${
+                      isActive
+                        ? 'bg-[#1F2338] border-blue-500 shadow-lg ring-1 ring-blue-500/50'
+                        : 'bg-[#1B1E2E] hover:bg-[#222538] border-[#292E45]'
+                    }`}
+                  >
+                    {/* Note Card Top Info */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: colorMeta.hex }}
+                        />
+                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${catMeta.badgeClass} ${catMeta.badgeBorder}`}>
+                          {catMeta.icon} {catMeta.label}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            scrollToPage(c.pageNum);
+                            setActiveCommentId(c.id);
+                            handleUpdateComment(c.id, { isOpen: true });
+                          }}
+                          className="px-1.5 py-0.5 rounded bg-blue-500/15 hover:bg-blue-500/30 text-blue-300 font-mono text-[10px] font-bold flex items-center gap-0.5 transition-colors cursor-pointer"
+                          title="Scroll to page in PDF"
+                        >
+                          Pg {c.pageNum} ↗
+                        </button>
+                      </div>
+
+                      {/* Actions: Copy, Push, Delete */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!c.text) return;
+                            navigator.clipboard.writeText(c.text);
+                            soundManager.playClick();
+                          }}
+                          className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                          title="Copy text"
+                        >
+                          <Copy className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handlePushCommentToNotes(c)}
+                          className="p-1 rounded text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 cursor-pointer"
+                          title="Push note to Topic Notes"
+                        >
+                          <Sparkles className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteComment(c.id)}
+                          className="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 cursor-pointer"
+                          title="Delete note"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Note Content */}
+                    <div
+                      onClick={() => {
+                        scrollToPage(c.pageNum);
+                        setActiveCommentId(c.id);
+                        handleUpdateComment(c.id, { isOpen: true });
+                      }}
+                      className="text-xs text-slate-200 leading-relaxed cursor-pointer font-sans whitespace-pre-wrap hover:text-white"
+                    >
+                      {c.text || <span className="text-slate-500 italic">Empty sticky note</span>}
+                    </div>
+
+                    {/* Footer Date / Time */}
+                    <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-1 border-t border-white/5">
+                      <span>{new Date(c.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          scrollToPage(c.pageNum);
+                          setActiveCommentId(c.id);
+                          handleUpdateComment(c.id, { isOpen: true });
+                        }}
+                        className="text-blue-400 hover:underline font-sans font-medium cursor-pointer"
+                      >
+                        View on page →
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 5. FLOATING QUICK-BACK PILL FOR MOBILE (HIDDEN IN FULLSCREEN) */}
       {!isFullscreen && (

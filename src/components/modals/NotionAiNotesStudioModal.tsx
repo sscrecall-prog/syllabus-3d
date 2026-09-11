@@ -25,7 +25,16 @@ import {
   Minimize2,
   CheckCircle2,
   Sigma,
-  Table as TableIcon
+  Table as TableIcon,
+  BookA,
+  Landmark,
+  CheckSquare,
+  Mic,
+  MicOff,
+  Printer,
+  Lightbulb,
+  AlertTriangle,
+  RotateCw
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import {
@@ -35,7 +44,13 @@ import {
   verifyDataIntegrity,
   getSavedGeminiApiKey,
   saveGeminiApiKey,
-  generateNotesWithLiveGemini
+  generateNotesWithLiveGemini,
+  detectContentType,
+  generateSmartSubjectTemplate,
+  generatePyqTrapAlerts,
+  generateMnemonicsAndPegs,
+  generateHinglishExplainer,
+  ContentDetectionResult
 } from '../../utils/notionAiArchitect';
 import { MathBlock, InlineMath } from '../../utils/mathRenderer';
 
@@ -70,6 +85,42 @@ const FORMAT_OPTIONS: FormatCardOption[] = [
     icon: Sparkles,
     accentColor: 'from-violet-500 to-indigo-600',
     bestFor: '10/10 Complete Exam Study'
+  },
+  {
+    id: 'vocab_master',
+    title: 'Vocab Power Cards',
+    badge: 'VOCAB & ENGLISH',
+    description: 'Active recall word cards, Hindi meaning, Syn/Ant tables, mnemonics & exam traps.',
+    icon: BookA,
+    accentColor: 'from-amber-500 to-yellow-600',
+    bestFor: 'Vocabulary, Idioms & English'
+  },
+  {
+    id: 'gs_matrix',
+    title: 'GS & Polity Matrix',
+    badge: 'TIMELINES & TRAPS',
+    description: 'Chronological milestones, constitutional articles, PYQ pointers & negative marking traps.',
+    icon: Landmark,
+    accentColor: 'from-emerald-500 to-teal-600',
+    bestFor: 'Polity, History, Geography, GK'
+  },
+  {
+    id: 'math_studio',
+    title: 'Maths Formula Studio',
+    badge: 'FORMULA MATRIX',
+    description: 'KaTeX display equations, variable parameter breakdown, 5-sec tricks & solved models.',
+    icon: Sigma,
+    accentColor: 'from-blue-600 to-indigo-600',
+    bestFor: 'Quant, Math & Advance Formulas'
+  },
+  {
+    id: 'interactive_quiz',
+    title: '5-MCQ Quiz Deck',
+    badge: 'CLICK-TO-REVEAL',
+    description: 'Self-testing 4-option MCQs with interactive spoiler answers and trap explanations.',
+    icon: CheckSquare,
+    accentColor: 'from-rose-500 to-pink-600',
+    bestFor: 'Self-Testing & Active Recall'
   },
   {
     id: 'cornell',
@@ -138,11 +189,76 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
   const [copied, setCopied] = useState<boolean>(false);
   const [isMaximized, setIsMaximized] = useState<boolean>(false);
 
-  // Gemini API Key State
+  // Gemini API Key State & Model Selection
   const [geminiApiKey, setGeminiApiKey] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<'gemini-2.0-flash' | 'gemini-1.5-flash'>('gemini-2.0-flash');
   const [showApiKeyDrawer, setShowApiKeyDrawer] = useState<boolean>(false);
   const [isGeneratingLive, setIsGeneratingLive] = useState<boolean>(false);
   const [liveError, setLiveError] = useState<string | null>(null);
+
+  // Real-time Voice Typing State
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const recognitionRef = useRef<any>(null);
+
+  // Smart Subject & Content Auto-Detection
+  const detectedContent = useMemo(() => {
+    return detectContentType(rawText);
+  }, [rawText]);
+
+  // Voice Typing Handler
+  const toggleVoiceTyping = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      soundManager.playClick();
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-IN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        soundManager.playClick();
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = '';
+        for (let idx = event.resultIndex; idx < event.results.length; idx++) {
+          transcript += event.results[idx][0].transcript;
+        }
+        if (transcript.trim()) {
+          setRawText(prev => (prev ? `${prev} ${transcript}` : transcript));
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+      setIsListening(false);
+    }
+  };
 
   // Initialize input text when opened
   useEffect(() => {
@@ -190,6 +306,46 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Handle Print Exam Revision Sheet
+  const handlePrintNotes = () => {
+    soundManager.playClick();
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${topicName} — Exam Revision Sheet</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; color: #111; line-height: 1.5; font-size: 13px; }
+            h1 { font-size: 20px; border-bottom: 2px solid #2563EB; padding-bottom: 6px; margin-bottom: 12px; }
+            h2 { font-size: 16px; margin-top: 16px; margin-bottom: 8px; color: #1e3a8a; }
+            h3 { font-size: 14px; margin-top: 12px; margin-bottom: 6px; }
+            table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+            th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; }
+            th { background-color: #f1f5f9; font-weight: bold; }
+            blockquote { margin: 10px 0; padding: 8px 14px; border-left: 4px solid #2563EB; background: #f8fafc; border-radius: 4px; }
+            details { margin: 10px 0; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; }
+            summary { font-weight: bold; cursor: pointer; }
+            @media print { body { padding: 0; } }
+          </style>
+        </head>
+        <body>
+          <h1>${topicName} (${examName || 'Competitive Exams'})</h1>
+          <pre style="white-space: pre-wrap; font-family: inherit;">${formattedNotes}</pre>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
   // Handle Apply to Note
   const handleApply = (mode: 'replace' | 'append') => {
     if (!formattedNotes.trim()) return;
@@ -213,6 +369,7 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
         chapterName,
         examName,
         format: selectedFormat,
+        model: selectedModel,
         customPrompt,
         apiKey: geminiApiKey
       });
@@ -255,6 +412,24 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
       );
     }
 
+    // Inline Markdown Renderer (bolds, italics, math formulas)
+    const renderInlineMarkdown = (text: string) => {
+      if (!text) return null;
+      const parts = text.split(/(\*\*.*?\*\*|\$.*?\$|\*.*?\*)/g);
+      return parts.map((part, idx) => {
+        if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+          return <strong key={idx} className="font-bold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+          return <em key={idx} className="italic text-slate-700 dark:text-slate-300">{part.slice(1, -1)}</em>;
+        }
+        if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
+          return <InlineMath key={idx} latex={part.slice(1, -1)} />;
+        }
+        return part;
+      });
+    };
+
     const lines = textToRender.split('\n');
     const elements: React.ReactNode[] = [];
     let i = 0;
@@ -265,6 +440,50 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
 
       if (!trimmed) {
         i++;
+        continue;
+      }
+
+      // 0. Collapsible Accordions (<details> ... </details>)
+      if (trimmed.startsWith('<details>') || trimmed.startsWith('<details')) {
+        const detailsLines: string[] = [line];
+        i++;
+        while (i < lines.length) {
+          const next = lines[i];
+          detailsLines.push(next);
+          if (next.trim().includes('</details>')) {
+            i++;
+            break;
+          }
+          i++;
+        }
+
+        const fullBlock = detailsLines.join('\n');
+        const summaryMatch = fullBlock.match(/<summary>([\s\S]*?)<\/summary>/i);
+        const rawSummary = summaryMatch ? summaryMatch[1].replace(/<\/?b>/gi, '').trim() : 'Click to View Details';
+        const bodyContent = fullBlock
+          .replace(/<details[^>]*>/gi, '')
+          .replace(/<\/details>/gi, '')
+          .replace(/<summary>[\s\S]*?<\/summary>/gi, '')
+          .trim();
+
+        elements.push(
+          <details
+            key={`details-${i}`}
+            className="my-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#181926]/70 overflow-hidden group shadow-2xs transition-all"
+          >
+            <summary className="px-4 py-3 font-bold text-xs sm:text-[13px] text-slate-800 dark:text-slate-200 cursor-pointer select-none flex items-center justify-between hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="flex items-center gap-2">
+                <span>{renderInlineMarkdown(rawSummary)}</span>
+              </span>
+              <ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" />
+            </summary>
+            <div className="px-4 py-3.5 border-t border-slate-200/80 dark:border-white/5 text-xs sm:text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed space-y-2 bg-white/60 dark:bg-[#12131C]/60">
+              {bodyContent.split('\n').map((bLine, bIdx) => (
+                <p key={bIdx}>{renderInlineMarkdown(bLine.replace(/^>\s*/, ''))}</p>
+              ))}
+            </div>
+          </details>
+        );
         continue;
       }
 
@@ -295,7 +514,7 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
 
       // 2. Callout Block (> [!TYPE])
       if (trimmed.startsWith('> [!')) {
-        const typeMatch = trimmed.match(/^>\s*\[!([A-Z]+)\]/i);
+        const typeMatch = trimmed.match(/^>\s*\[!([A-Z0-9_\-]+)(?:\s+([^\\]*))?\]/i);
         const cType = typeMatch ? typeMatch[1].toUpperCase() : 'NOTE';
         const calloutLines: string[] = [];
         i++;
@@ -311,7 +530,9 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
           TIP: { bg: 'bg-emerald-500/10 dark:bg-emerald-950/20', border: 'border-emerald-500/30', text: 'text-emerald-700 dark:text-emerald-300', icon: '⚡', title: 'Pro Shortcut' },
           WARNING: { bg: 'bg-rose-500/10 dark:bg-rose-950/20', border: 'border-rose-500/30', text: 'text-rose-700 dark:text-rose-300', icon: '⚠️', title: 'Exam Trap / Caution' },
           EXAMPLE: { bg: 'bg-amber-500/10 dark:bg-amber-950/20', border: 'border-amber-500/30', text: 'text-amber-700 dark:text-amber-300', icon: '📝', title: 'Solved Example' },
-          CUE: { bg: 'bg-cyan-500/10 dark:bg-cyan-950/20', border: 'border-cyan-500/30', text: 'text-cyan-700 dark:text-cyan-300', icon: '📌', title: 'Recall Trigger Questions' }
+          CUE: { bg: 'bg-cyan-500/10 dark:bg-cyan-950/20', border: 'border-cyan-500/30', text: 'text-cyan-700 dark:text-cyan-300', icon: '📌', title: 'Recall Trigger Questions' },
+          VOCAB: { bg: 'bg-amber-500/10 dark:bg-amber-950/20', border: 'border-amber-500/30', text: 'text-amber-700 dark:text-amber-300', icon: '🔤', title: 'Vocabulary Word Card' },
+          QUIZ: { bg: 'bg-rose-500/10 dark:bg-rose-950/20', border: 'border-rose-500/30', text: 'text-rose-700 dark:text-rose-300', icon: '❓', title: 'Active Self-Testing Question' }
         };
 
         const style = calloutStyles[cType] || calloutStyles.NOTE;
@@ -327,7 +548,7 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
             </div>
             <div className="text-xs sm:text-[13px] text-slate-800 dark:text-slate-200 leading-relaxed space-y-1">
               {calloutLines.map((cL, idx) => (
-                <p key={idx}>{cL}</p>
+                <p key={idx}>{renderInlineMarkdown(cL)}</p>
               ))}
             </div>
           </div>
@@ -474,8 +695,8 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
                 <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight truncate">
                   Notion AI Note Studio
                 </h2>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20 shrink-0">
-                  AI Architect 2.0
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-black bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-xs shrink-0">
+                  AI Architect 3.0 Interactive
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
@@ -485,6 +706,15 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handlePrintNotes}
+              disabled={!formattedNotes.trim()}
+              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all cursor-pointer disabled:opacity-40"
+              title="Print 1-Page Exam Revision Sheet"
+            >
+              <Printer className="w-4 h-4" />
+            </button>
             <button
               type="button"
               onClick={() => setIsMaximized(!isMaximized)}
@@ -542,6 +772,125 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
               );
             })}
           </div>
+        </div>
+
+        {/* SMART AUTO-DETECTION BANNER */}
+        {detectedContent.confidence >= 40 && rawText.trim() && (
+          <div className="px-4 sm:px-6 py-2 bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-transparent border-b border-violet-500/20 flex items-center justify-between gap-2 flex-wrap shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-md bg-violet-600 text-white font-mono text-[10px] font-black">
+                {detectedContent.badge}
+              </span>
+              <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                Detected: <strong className="text-violet-600 dark:text-violet-400">{detectedContent.label}</strong> ({detectedContent.reasons[0] || 'High alignment'})
+              </span>
+            </div>
+            {selectedFormat !== detectedContent.recommendedFormat && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  setSelectedFormat(detectedContent.recommendedFormat);
+                }}
+                className="px-2.5 py-1 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
+              >
+                Apply {detectedContent.label} Format →
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* QUICK AI SUPERPOWERS ACTION CHIPS */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1.5 px-4 sm:px-6 bg-slate-100/60 dark:bg-[#151624] border-b border-slate-200/60 dark:border-white/5 shrink-0">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mr-1 shrink-0">
+            Quick AI Superpowers:
+          </span>
+          <button
+            type="button"
+            onClick={() => { setSelectedFormat('vocab_master'); soundManager.playClick(); }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 cursor-pointer transition-all ${
+              selectedFormat === 'vocab_master'
+                ? 'bg-amber-500 text-white shadow-xs'
+                : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/20'
+            }`}
+          >
+            <BookA className="w-3 h-3" />
+            <span>Vocab Cards</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setSelectedFormat('gs_matrix'); soundManager.playClick(); }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 cursor-pointer transition-all ${
+              selectedFormat === 'gs_matrix'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+            }`}
+          >
+            <Landmark className="w-3 h-3" />
+            <span>GS & Polity Matrix</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setSelectedFormat('math_studio'); soundManager.playClick(); }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 cursor-pointer transition-all ${
+              selectedFormat === 'math_studio'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/20'
+            }`}
+          >
+            <Sigma className="w-3 h-3" />
+            <span>Maths Formula Studio</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setSelectedFormat('interactive_quiz'); soundManager.playClick(); }}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 cursor-pointer transition-all ${
+              selectedFormat === 'interactive_quiz'
+                ? 'bg-rose-600 text-white shadow-xs'
+                : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/20'
+            }`}
+          >
+            <CheckSquare className="w-3 h-3" />
+            <span>5-MCQ Quiz</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const traps = generatePyqTrapAlerts(rawText, { topicName });
+              setRawText(prev => (prev.trim() ? `${prev.trim()}\n${traps}` : traps));
+              soundManager.playClick();
+            }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-700 dark:text-red-300 border border-red-500/20 text-[11px] font-bold shrink-0 cursor-pointer"
+            title="Extract examiner negative-marking traps"
+          >
+            <AlertTriangle className="w-3 h-3 text-red-500" />
+            <span>+ Add Traps</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const mnemonics = generateMnemonicsAndPegs(rawText, { topicName });
+              setRawText(prev => (prev.trim() ? `${prev.trim()}\n${mnemonics}` : mnemonics));
+              soundManager.playClick();
+            }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/20 text-[11px] font-bold shrink-0 cursor-pointer"
+            title="Generate memory pegs and mnemonic tricks"
+          >
+            <Lightbulb className="w-3 h-3 text-purple-500" />
+            <span>+ Add Mnemonics</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const hinglish = generateHinglishExplainer(rawText, { topicName });
+              setRawText(prev => (prev.trim() ? `${prev.trim()}\n${hinglish}` : hinglish));
+              soundManager.playClick();
+            }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-700 dark:text-orange-300 border border-orange-500/20 text-[11px] font-bold shrink-0 cursor-pointer"
+            title="Add simple bilingual concept explanation"
+          >
+            <span>🇮🇳 + Hinglish Explainer</span>
+          </button>
         </div>
 
         {/* SUB-TOOLBAR: DENSITY SELECTOR & DATA INTEGRITY AUDIT BAR */}
@@ -628,22 +977,53 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
 
         {/* OPTIONAL GEMINI API KEY DRAWER */}
         {showApiKeyDrawer && (
-          <div className="p-3.5 sm:p-4 bg-purple-50/50 dark:bg-[#161426] border-b border-purple-200/80 dark:border-purple-900/40 space-y-2.5 animate-slide-in shrink-0">
-            <div className="flex items-center justify-between">
+          <div className="p-3.5 sm:p-4 bg-purple-50/60 dark:bg-[#161426] border-b border-purple-200/80 dark:border-purple-900/40 space-y-3 animate-slide-in shrink-0">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <Key className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                  Optional: Free Google Gemini 1.5 Flash Live Rewrite
+                  Live Gemini AI Neural Rewrite (Optional)
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-[10px] font-mono font-bold">
+                  {selectedModel}
                 </span>
               </div>
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium"
-              >
-                Get Free Gemini API Key →
-              </a>
+              <div className="flex items-center gap-2">
+                {/* Model Selector Toggle */}
+                <div className="flex items-center p-0.5 rounded-lg bg-purple-100 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-[10px] font-bold font-mono">
+                  <button
+                    type="button"
+                    onClick={() => { setSelectedModel('gemini-2.0-flash'); soundManager.playClick(); }}
+                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                      selectedModel === 'gemini-2.0-flash'
+                        ? 'bg-purple-600 text-white shadow-2xs'
+                        : 'text-purple-700 dark:text-purple-300 hover:text-purple-900'
+                    }`}
+                  >
+                    2.0 Flash (Fastest)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setSelectedModel('gemini-1.5-flash'); soundManager.playClick(); }}
+                    className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                      selectedModel === 'gemini-1.5-flash'
+                        ? 'bg-purple-600 text-white shadow-2xs'
+                        : 'text-purple-700 dark:text-purple-300 hover:text-purple-900'
+                    }`}
+                  >
+                    1.5 Flash
+                  </button>
+                </div>
+
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                >
+                  Get Free Key →
+                </a>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -661,8 +1041,13 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
                 className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 transition-all cursor-pointer shadow-xs"
               >
                 <Sparkles className={`w-3.5 h-3.5 ${isGeneratingLive ? 'animate-spin' : ''}`} />
-                <span>{isGeneratingLive ? 'Generating...' : 'Run Gemini Live AI'}</span>
+                <span>{isGeneratingLive ? 'Generating...' : `Run ${selectedModel}`}</span>
               </button>
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+              <span>💡 Offline AI Architect works 100% free with 0 latency even without an API key.</span>
+              {geminiApiKey && <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Key Saved</span>}
             </div>
 
             {liveError && (
@@ -733,33 +1118,148 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
           )}
 
           {activeTab === 'input' && (
-            <div className="max-w-3xl mx-auto space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="max-w-3xl mx-auto space-y-4">
+              {/* Empty state Starter Pack */}
+              {!rawText.trim() && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-violet-500/10 via-indigo-500/5 to-purple-500/10 border border-violet-500/20 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-violet-900 dark:text-violet-200 flex items-center gap-1.5 font-mono uppercase tracking-wider">
+                      <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+                      Instant Subject Starter Templates for "{topicName || 'Exam Topic'}"
+                    </span>
+                    <span className="text-[10px] text-slate-400">Click to Load & Experiment</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRawText(generateSmartSubjectTemplate('english', topicName));
+                        setSelectedFormat('vocab_master');
+                        soundManager.playClick();
+                      }}
+                      className="p-3 rounded-xl bg-white dark:bg-[#181926] border border-amber-500/30 hover:border-amber-500 text-left transition-all hover:shadow-xs cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <BookA className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">Load Vocab Cards Template</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Interactive root words, click-to-reveal Hindi meaning, mnemonics & exam traps.
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRawText(generateSmartSubjectTemplate('gs', topicName));
+                        setSelectedFormat('gs_matrix');
+                        soundManager.playClick();
+                      }}
+                      className="p-3 rounded-xl bg-white dark:bg-[#181926] border border-emerald-500/30 hover:border-emerald-500 text-left transition-all hover:shadow-xs cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Landmark className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">Load GS & Polity Matrix</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Chronological milestones, constitutional articles, PYQ pointers & traps.
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRawText(generateSmartSubjectTemplate('math', topicName));
+                        setSelectedFormat('math_studio');
+                        soundManager.playClick();
+                      }}
+                      className="p-3 rounded-xl bg-white dark:bg-[#181926] border border-blue-500/30 hover:border-blue-500 text-left transition-all hover:shadow-xs cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Sigma className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">Load Maths Formula Studio</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        KaTeX display formulas, 5-second topper shortcuts, worked PYQ models.
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRawText(generateSmartSubjectTemplate('reasoning', topicName));
+                        setSelectedFormat('interactive_quiz');
+                        soundManager.playClick();
+                      }}
+                      className="p-3 rounded-xl bg-white dark:bg-[#181926] border border-rose-500/30 hover:border-rose-500 text-left transition-all hover:shadow-xs cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <CheckSquare className="w-4 h-4 text-rose-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">Load 5-MCQ Quiz Deck</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Click-to-reveal answer spoilers, 4-option test, trap explanations.
+                      </p>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                   Paste Notes from Gemini, ChatGPT, Claude, DeepSeek, or Textbooks:
                 </label>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const text = await navigator.clipboard.readText();
-                      if (text) {
-                        setRawText(text);
-                        soundManager.playClick();
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={toggleVoiceTyping}
+                    className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                      isListening
+                        ? 'bg-rose-500 text-white animate-pulse'
+                        : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200'
+                    }`}
+                    title="Voice dictation in English / Hinglish"
+                  >
+                    {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                    <span>{isListening ? 'Stop Listening' : 'Voice Dictate'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+                        if (text) {
+                          setRawText(text);
+                          soundManager.playClick();
+                        }
+                      } catch (e) {
+                        console.warn('Clipboard read permission denied', e);
                       }
-                    } catch (e) {
-                      console.warn('Clipboard read permission denied', e);
-                    }
-                  }}
-                  className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold cursor-pointer"
-                >
-                  Paste from Clipboard (Ctrl+V)
-                </button>
+                    }}
+                    className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-bold cursor-pointer"
+                  >
+                    Paste from Clipboard (Ctrl+V)
+                  </button>
+
+                  {rawText.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRawText('');
+                        soundManager.playClick();
+                      }}
+                      className="text-[11px] text-slate-400 hover:text-rose-500 font-bold transition-colors cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
               </div>
               <textarea
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Paste raw notes here... Tables, formulas, bullet points, and definitions will be automatically identified and structured."
+                placeholder="Paste raw notes here... Tables, formulas, bullet points, vocabulary lists, and definitions will be automatically detected and formatted into interactive study blocks."
                 className="w-full h-80 p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161724] text-xs sm:text-[13px] text-slate-900 dark:text-white font-mono outline-none focus:ring-2 focus:ring-violet-500 leading-relaxed resize-y"
               />
               <div className="flex items-center justify-between text-xs text-slate-500">
@@ -787,6 +1287,17 @@ export const NotionAiNotesStudioModal: React.FC<NotionAiNotesStudioModalProps> =
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied to Clipboard' : 'Copy Markdown'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handlePrintNotes}
+              disabled={!formattedNotes.trim()}
+              title="Print 1-page clean revision sheet"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] text-slate-700 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Printer className="w-3.5 h-3.5 text-slate-500" />
+              <span>Print Sheet</span>
             </button>
           </div>
 

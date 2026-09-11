@@ -28,7 +28,9 @@ import {
   Highlighter,
   Square,
   PenTool,
-  Eraser
+  Eraser,
+  MessageSquarePlus,
+  StickyNote
 } from 'lucide-react';
 import { TopicPdfAttachment, TopicImageAttachment } from '../../types/syllabus';
 import { getPdfBlobUrl, openPdfInNewTab, downloadPdfFile } from '../../utils/pdfStorage';
@@ -42,6 +44,14 @@ import {
   savePdfHighlights,
   clearPdfHighlights
 } from '../../utils/pdfHighlightStorage';
+import {
+  PdfComment,
+  COMMENT_CATEGORIES,
+  loadPdfComments,
+  savePdfComments,
+  updatePdfCommentInList,
+  deletePdfCommentFromList
+} from '../../utils/pdfCommentStorage';
 
 const PdfCanvasViewer = React.lazy(() => import('./PdfCanvasViewer').then(m => ({ default: m.PdfCanvasViewer })));
 
@@ -127,6 +137,61 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
       clearPdfHighlights(selectedAttachmentId);
       setHighlights([]);
     }
+  };
+
+  // Sticky Notes State
+  const [isCommentMode, setIsCommentMode] = useState<boolean>(false);
+  const [comments, setComments] = useState<PdfComment[]>([]);
+  const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
+
+  // Load Saved Comments when attachment changes
+  useEffect(() => {
+    if (selectedAttachmentId) {
+      const loaded = loadPdfComments(selectedAttachmentId);
+      setComments(loaded);
+    }
+  }, [selectedAttachmentId]);
+
+  const handleAddComment = (newComment: PdfComment) => {
+    setComments(prev => {
+      const updated = [...prev, newComment];
+      savePdfComments(selectedAttachmentId, updated);
+      return updated;
+    });
+    setActiveCommentId(newComment.id);
+  };
+
+  const handleUpdateComment = (commentId: string, updates: Partial<PdfComment>) => {
+    setComments(prev => {
+      const updated = updatePdfCommentInList(prev, commentId, updates);
+      savePdfComments(selectedAttachmentId, updated);
+      return updated;
+    });
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    soundManager.playClick();
+    setComments(prev => {
+      const updated = deletePdfCommentFromList(prev, commentId);
+      savePdfComments(selectedAttachmentId, updated);
+      return updated;
+    });
+    if (activeCommentId === commentId) {
+      setActiveCommentId(null);
+    }
+  };
+
+  const handlePushCommentToNotes = (comment: PdfComment) => {
+    if (!comment.text) return;
+    const catLabel = COMMENT_CATEGORIES[comment.category]?.label || 'Study Note';
+    const catIcon = COMMENT_CATEGORIES[comment.category]?.icon || '📌';
+    const citation = `\n\n> ${catIcon} **[PDF Page ${comment.pageNum} - ${catLabel}]:**\n> ${comment.text.split('\n').join('\n> ')}\n`;
+    setNotesContent(prev => {
+      const next = prev + citation;
+      onSaveNotes(next);
+      return next;
+    });
+    soundManager.playClick();
   };
 
   // Notes Editor State
@@ -480,7 +545,11 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                     type="button"
                     onClick={() => {
                       soundManager.playClick();
-                      setIsHighlightMode(prev => !prev);
+                      setIsHighlightMode(prev => {
+                        const next = !prev;
+                        if (next) setIsCommentMode(false);
+                        return next;
+                      });
                     }}
                     className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
                       isHighlightMode
@@ -493,6 +562,31 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                     <span className="hidden sm:inline">Highlight</span>
                     {highlights.length > 0 && (
                       <span className="text-[11px] font-mono opacity-80">({highlights.length})</span>
+                    )}
+                  </button>
+
+                  {/* Note Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundManager.playClick();
+                      setIsCommentMode(prev => {
+                        const next = !prev;
+                        if (next) setIsHighlightMode(false);
+                        return next;
+                      });
+                    }}
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                      isCommentMode
+                        ? 'bg-blue-600 text-white border-blue-400 font-black shadow-[0_0_12px_rgba(59,130,246,0.5)]'
+                        : 'bg-[#23232A] hover:bg-[#2E2E38] text-[#A1A1AA] hover:text-white border-[#272730]'
+                    }`}
+                    title="Toggle Sticky Notes (Click anywhere on PDF to add note)"
+                  >
+                    <MessageSquarePlus className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Note</span>
+                    {comments.length > 0 && (
+                      <span className="text-[11px] font-mono opacity-80">({comments.length})</span>
                     )}
                   </button>
 
@@ -636,6 +730,14 @@ export const SplitScreenPdfStudyModal: React.FC<SplitScreenPdfStudyModalProps> =
                   highlights={highlights}
                   onAddHighlight={handleAddHighlight}
                   onDeleteHighlight={handleDeleteHighlight}
+                  isCommentMode={isCommentMode}
+                  comments={comments}
+                  onAddComment={handleAddComment}
+                  onUpdateComment={handleUpdateComment}
+                  onDeleteComment={handleDeleteComment}
+                  activeCommentId={activeCommentId}
+                  onSelectComment={setActiveCommentId}
+                  onPushCommentToNotes={handlePushCommentToNotes}
                   className="flex-1 min-h-0"
                 />
               </React.Suspense>

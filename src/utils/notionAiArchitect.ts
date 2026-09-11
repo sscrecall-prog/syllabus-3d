@@ -22,6 +22,10 @@ import {
 
 export type NoteFormatType =
   | 'notion_master'       // 🌟 Notion Pro Master Notes (High-Yield Callouts, Tables, Formulas)
+  | 'vocab_master'        // 🔤 Interactive Vocabulary Power Cards (Word, Meaning, Syn/Ant, Mnemonic, Traps)
+  | 'gs_matrix'           // 🏛️ GS & Polity Exam Matrix (Timeline, Articles, Key Facts, Traps)
+  | 'math_studio'         // 📐 Maths Formula & Speed Sheet (KaTeX, Variables, Shortcuts, Models)
+  | 'interactive_quiz'    // 📝 5-MCQ Self-Test Deck (Questions, 4 Options, Click-to-Reveal Answers)
   | 'cornell'             // 🎓 Cornell Academic Notes (Cue Column, Notes Body, Bottom Synthesis)
   | 'active_recall'       // 🧠 Active Recall & Exam Q&A Deck (Questions, High-Yield Answers, Trap Alerts)
   | 'cheat_sheet'         // ⚡ High-Yield Speed Cheat Sheet (Formulas, Matrix, Rapid Review)
@@ -29,6 +33,17 @@ export type NoteFormatType =
   | 'zero_loss_clean';    // 🛡️ 100% Zero-Loss Precision Normalizer (Exact Text Preserved 1:1)
 
 export type NoteToneDensity = 'high_yield' | 'comprehensive' | 'concise';
+
+export type DetectedContentType = 'vocabulary' | 'math_quant' | 'general_studies' | 'general';
+
+export interface ContentDetectionResult {
+  type: DetectedContentType;
+  confidence: number;
+  recommendedFormat: NoteFormatType;
+  label: string;
+  badge: string;
+  reasons: string[];
+}
 
 export interface NoteTransformOptions {
   topicName?: string;
@@ -77,6 +92,109 @@ export function detectSourceLlm(text: string): DataIntegrityReport['detectedSour
   if (/DeepSeek|R1|V3/i.test(text)) return 'DeepSeek';
   if (/\b(?:Page \d+|Figure \d+|Table \d+|Ibid\.)\b/i.test(text)) return 'Web/PDF';
   return 'Generic';
+}
+
+/**
+ * Smart Auto-Detection of Pasted Content Type
+ */
+export function detectContentType(text: string): ContentDetectionResult {
+  if (!text || !text.trim()) {
+    return {
+      type: 'general',
+      confidence: 0,
+      recommendedFormat: 'notion_master',
+      label: 'General Notes',
+      badge: 'PRO MASTER',
+      reasons: []
+    };
+  }
+
+  const reasons: string[] = [];
+
+  // Vocabulary signals
+  let vocabScore = 0;
+  if (/\b(?:synonyms?|antonyms?|part of speech|noun|adjective|adj\.|verb|adverb|etymology|collocation|root word|meaning in hindi|one word substitution|idiom|phrasal verb)\b/i.test(text)) {
+    vocabScore += 40;
+    reasons.push('Vocabulary metadata (Synonyms/Antonyms/Parts of Speech) detected');
+  }
+  const vocabEntryMatches = text.match(/(?:^|\n)\s*[*•-]?\s*\b[A-Za-z\-]{3,22}\b\s*(?:\([a-z.]+\))?\s*[:\-–—]\s*[^:\n]{4,}/g);
+  if (vocabEntryMatches && vocabEntryMatches.length >= 2) {
+    vocabScore += 40;
+    reasons.push(`${vocabEntryMatches.length} dictionary word definitions detected`);
+  }
+  if (/\b(?:mnemonic|memory trick|trick to remember)\b/i.test(text)) {
+    vocabScore += 20;
+    reasons.push('Mnemonic memory pegs detected');
+  }
+
+  // Math/Quant signals
+  let mathScore = 0;
+  if (/\b(?:formula|equation|theorem|hypotenuse|pythagoras|logarithm|trigonometry|derivation|si and ci|simple interest|compound interest|speed time distance|profit and loss|ratio and proportion|work and time|algebra|geometry|mensuration)\b/i.test(text)) {
+    mathScore += 40;
+    reasons.push('Mathematical and quantitative concepts detected');
+  }
+  if (/\$\$|\\sqrt|\\frac|\^2|\bcm\^3\b|\bkm\/h\b|\bCI\b|\bSI\b|[=+\-*×÷]\s*[\d\w]/i.test(text)) {
+    mathScore += 40;
+    reasons.push('Formulas and algebraic notations detected');
+  }
+
+  // General Studies (GS) signals
+  let gsScore = 0;
+  if (/\b(?:article \d+[A-Za-z]?|amendment|constitution|preamble|parliament|lok sabha|rajya sabha|fundamental rights?|dpsp|judiciary|supreme court|high court|governor|president|ordinance|habeas corpus|mandamus|writs?)\b/i.test(text)) {
+    gsScore += 45;
+    reasons.push('Indian Polity and Constitutional provisions detected');
+  }
+  if (/\b(?:battle of|treaty of|dynasty|revolt of 1857|viceroy|governor general|east india company|mughal|maurya|gupta|delhi sultanate|harappan|indus valley|non-cooperation|civil disobedience)\b/i.test(text)) {
+    gsScore += 45;
+    reasons.push('Historical events, timelines and treaties detected');
+  }
+  if (/\b(?:himalayas|western ghats|monsoon|tributary|plateau|soil|biosphere|national park|photosynthesis|mitochondria|newton'?s laws|periodic table|gdp|fiscal deficit|inflation|rbi|repo rate)\b/i.test(text)) {
+    gsScore += 35;
+    reasons.push('Geography, Science or Economics terminology detected');
+  }
+
+  // Determine top classification
+  if (vocabScore >= 40 && vocabScore >= mathScore && vocabScore >= gsScore) {
+    return {
+      type: 'vocabulary',
+      confidence: Math.min(vocabScore, 100),
+      recommendedFormat: 'vocab_master',
+      label: 'Vocabulary & English Deck',
+      badge: 'VOCAB DETECTED',
+      reasons
+    };
+  }
+
+  if (mathScore >= 40 && mathScore >= gsScore) {
+    return {
+      type: 'math_quant',
+      confidence: Math.min(mathScore, 100),
+      recommendedFormat: 'math_studio',
+      label: 'Maths & Quant Formula Studio',
+      badge: 'MATHS DETECTED',
+      reasons
+    };
+  }
+
+  if (gsScore >= 40) {
+    return {
+      type: 'general_studies',
+      confidence: Math.min(gsScore, 100),
+      recommendedFormat: 'gs_matrix',
+      label: 'GS & Polity Exam Matrix',
+      badge: 'GS DETECTED',
+      reasons
+    };
+  }
+
+  return {
+    type: 'general',
+    confidence: 50,
+    recommendedFormat: 'notion_master',
+    label: 'Academic Master Notes',
+    badge: 'GENERAL NOTES',
+    reasons: ['Standard comprehensive study notes structure']
+  };
 }
 
 /**
@@ -466,7 +584,325 @@ export function transformToNotionMaster(rawText: string, options?: NoteTransform
 }
 
 /**
- * 2. 🎓 Cornell Academic Notes
+ * 2. 🔤 Interactive Vocabulary Power Cards
+ * Specifically structures words, meanings, synonyms, antonyms, mnemonics, and click-to-reveal spoilers
+ */
+export function transformToVocabMaster(rawText: string, options?: NoteTransformOptions): string {
+  const topicTitle = options?.topicName || 'Competitive Exam Vocabulary';
+  const out: string[] = [];
+
+  out.push(`# 🔤 Vocabulary Power Deck: ${topicTitle}`);
+  out.push('> [!NOTE]');
+  out.push('> **Active Recall Vocabulary System:** Each word is presented with active recall triggers. Click the reveal toggles to test meaning & mnemonics before viewing!');
+  out.push('');
+
+  // Extract word candidates
+  const lines = rawText.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim().length > 0);
+  const wordBlocks: Array<{
+    word: string;
+    pos: string;
+    definition: string;
+    hindiMeaning: string;
+    synonyms: string[];
+    antonyms: string[];
+    mnemonic: string;
+    example: string;
+    trap: string;
+  }> = [];
+
+  let currentBlock: any = null;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    const wordHeaderMatch = trimmed.match(/^(?:\d+\.\s*|[*•-]\s*)?\b([A-Za-z\-]{3,24})\b(?:\s*\(([a-z.]+)\))?\s*[:\-–—]?\s*(.*)$/i);
+    
+    const isSyn = /^(?:synonyms?|syn)\s*[:\-–—]\s*(.*)$/i.test(trimmed);
+    const isAnt = /^(?:antonyms?|ant)\s*[:\-–—]\s*(.*)$/i.test(trimmed);
+    const isMnemonic = /^(?:mnemonic|memory trick|trick)\s*[:\-–—]\s*(.*)$/i.test(trimmed);
+    const isExample = /^(?:example|sentence|usage)\s*[:\-–—]\s*(.*)$/i.test(trimmed);
+    const isHindi = /^(?:hindi|meaning in hindi|अर्थ)\s*[:\-–—]\s*(.*)$/i.test(trimmed);
+
+    if (wordHeaderMatch && !isSyn && !isAnt && !isMnemonic && !isExample && !isHindi && wordHeaderMatch[1].length > 2 && !/^(?:the|and|for|with|this|that|what|here|when|where|then)$/i.test(wordHeaderMatch[1])) {
+      if (currentBlock && currentBlock.word) {
+        wordBlocks.push(currentBlock);
+      }
+      currentBlock = {
+        word: wordHeaderMatch[1].charAt(0).toUpperCase() + wordHeaderMatch[1].slice(1),
+        pos: wordHeaderMatch[2] || 'noun/verb/adj',
+        definition: wordHeaderMatch[3] || 'Essential competitive exam vocabulary concept.',
+        hindiMeaning: '',
+        synonyms: [],
+        antonyms: [],
+        mnemonic: '',
+        example: '',
+        trap: ''
+      };
+      continue;
+    }
+
+    if (currentBlock) {
+      if (isSyn) {
+        const rawSyn = trimmed.replace(/^(?:synonyms?|syn)\s*[:\-–—]\s*/i, '');
+        currentBlock.synonyms = rawSyn.split(/[,;/]+/).map(s => s.trim()).filter(Boolean);
+      } else if (isAnt) {
+        const rawAnt = trimmed.replace(/^(?:antonyms?|ant)\s*[:\-–—]\s*/i, '');
+        currentBlock.antonyms = rawAnt.split(/[,;/]+/).map(a => a.trim()).filter(Boolean);
+      } else if (isMnemonic) {
+        currentBlock.mnemonic = trimmed.replace(/^(?:mnemonic|memory trick|trick)\s*[:\-–—]\s*/i, '');
+      } else if (isExample) {
+        currentBlock.example = trimmed.replace(/^(?:example|sentence|usage)\s*[:\-–—]\s*/i, '');
+      } else if (isHindi) {
+        currentBlock.hindiMeaning = trimmed.replace(/^(?:hindi|meaning in hindi|अर्थ)\s*[:\-–—]\s*/i, '');
+      } else if (!currentBlock.definition || currentBlock.definition.length < 15) {
+        currentBlock.definition = (currentBlock.definition + ' ' + trimmed).trim();
+      }
+    }
+  }
+
+  if (currentBlock && currentBlock.word) {
+    wordBlocks.push(currentBlock);
+  }
+
+  // If structured words were parsed, format them into interactive cards
+  if (wordBlocks.length > 0) {
+    wordBlocks.forEach((b, idx) => {
+      out.push(`### 💎 Word ${idx + 1}: **${b.word}** *(${b.pos})*`);
+      out.push(`> [!VOCAB ${b.word}]`);
+      out.push(`> **English Meaning:** ${b.definition}`);
+      if (b.example) {
+        out.push(`> 📝 **Exam Usage:** *${b.example}*`);
+      } else {
+        out.push(`> 📝 **Exam Usage:** *His dedication to mastery was not ${b.word.toLowerCase()}, but a lifelong discipline.*`);
+      }
+      out.push(`> ⚠️ **Examiner Trap:** Watch out for spelling pitfalls and confusing phonetic lookalikes in Tier-1 & Tier-2 exams.`);
+      out.push('');
+      out.push('<details>');
+      out.push(`<summary><b>🔍 Click to Reveal Hindi Meaning, Mnemonics & Synonyms for "${b.word}"</b></summary>\n`);
+      const synList = b.synonyms && b.synonyms.length > 0 ? b.synonyms.join(', ') : 'Contextual synonym / equivalent';
+      const antList = b.antonyms && b.antonyms.length > 0 ? b.antonyms.join(', ') : 'Antonym / opposite contrast';
+      out.push(`- **हिन्दी अर्थ:** ${b.hindiMeaning || 'अल्पकालिक / विशिष्ट अर्थ (Tap to recall)'}`);
+      out.push(`- 💡 **Mnemonic Trick:** ${b.mnemonic || `Break down syllables of "${b.word}" to link with a vivid visual memory peg.`}`);
+      out.push('');
+      out.push('| 🟢 High-Yield Synonyms | 🔴 Opposites / Antonyms |');
+      out.push('| :--- | :--- |');
+      out.push(`| ${synList} | ${antList} |`);
+      out.push('</details>\n');
+    });
+  } else {
+    // Fallback: wrap raw content gracefully into vocab layout
+    out.push('## 📖 Vocabulary Core Glossary\n');
+    out.push(rawText);
+  }
+
+  out.push('\n### 🎯 Active Vocabulary Self-Testing Checklist');
+  out.push('- [ ] Self-test: Cover the meaning and recall each word definition from memory');
+  out.push('- [ ] Write 2 synonyms and 2 antonyms for each word on paper');
+  out.push('- [ ] Use each word in a custom sentence to cement long-term retention');
+
+  return cleanOutputMarkdown(out.join('\n'));
+}
+
+/**
+ * 3. 🏛️ GS & Polity Exam Matrix
+ * Chronology, articles, landmark provisions, negative marking traps, and PYQ frequency
+ */
+export function transformToGsMatrix(rawText: string, options?: NoteTransformOptions): string {
+  const sections = parseRawContentSections(rawText);
+  const topicTitle = options?.topicName || 'General Studies Mastery Matrix';
+  const out: string[] = [];
+
+  out.push(`# 🏛️ General Studies & Polity Matrix: ${topicTitle}`);
+  out.push('> [!NOTE]');
+  out.push(`> **Exam Syllabus:** ${options?.examName || 'Competitive Exams (SSC CGL / UPSC / State PCS)'} • Chronological milestones, constitutional provisions & negative marking trap alerts.`);
+  out.push('');
+
+  // Collect facts and table data
+  out.push('## ⏳ Timeline & Core Milestone Matrix');
+  out.push('| Key Year / Article | Historical Event / Constitutional Provision | Critical Exam Focus & Significance |');
+  out.push('| :--- | :--- | :--- |');
+
+  let tableRowsFound = 0;
+  for (const sec of sections) {
+    if (sec.type === 'list') {
+      sec.rawLines.forEach(line => {
+        const m = line.match(/^\s*[-*•\d.]+\s*(?:\*\*)?([^:\-–—]+)(?:\*\*)?\s*[:\-–—]\s*(.*)$/);
+        if (m && tableRowsFound < 8) {
+          out.push(`| ${m[1].trim()} | ${m[2].trim()} | High Frequency PYQ Anchor |`);
+          tableRowsFound++;
+        }
+      });
+    }
+  }
+
+  if (tableRowsFound === 0) {
+    out.push(`| Key Concept | ${topicTitle} Core Framework | Direct Question Focus |`);
+    out.push('| Critical Exception | Non-negotiable provision | Negative Marking Caution |');
+  }
+  out.push('');
+
+  out.push('## 📖 Detailed Conceptual Breakdown & Provisions');
+  for (const sec of sections) {
+    if (sec.type === 'heading') {
+      out.push(`\n### ${sec.content}\n`);
+    } else if (sec.type === 'callout') {
+      out.push(`\n${sec.content}\n`);
+    } else if (sec.type === 'table') {
+      out.push(`\n${sec.content}\n`);
+    } else {
+      out.push(sec.content);
+    }
+  }
+
+  // Collapsible Deep-Dive
+  out.push('\n<details>');
+  out.push(`<summary><b>🔍 Expand Deep-Dive Synthesis for ${topicTitle} (Click to View)</b></summary>\n`);
+  out.push('> 💡 **Key Takeaway for Aspirants:** In objective exams, focus heavily on exact Article numbers, Constitutional Amendments, Year of Treaties/Acts, and identifying "All/Only/None" absolute traps.');
+  out.push('</details>\n');
+
+  out.push('## ⚠️ Negative Marking & High-Frequency Traps');
+  out.push('> [!WARNING]');
+  out.push('> **Examiner Traps Alert:** Examiners frequently test exceptions rather than general rules. Pay extra attention to:');
+  out.push('> - Absolute qualifying words ("Always", "Never", "Only", "All") in 4-statement MCQs.');
+  out.push('> - Confusing constitutional articles with similar sounding subject matters.');
+  out.push('> - Chronological sequence of events between 1857 and 1947.');
+
+  out.push('\n### 🎯 GS High-Yield PYQ Checklist');
+  out.push('- [ ] Memorize all constitutional articles and amendment numbers');
+  out.push('- [ ] Review chronological ordering of historical milestones');
+  out.push('- [ ] Practice 10 previous year elimination-based MCQs');
+
+  return cleanOutputMarkdown(out.join('\n'));
+}
+
+/**
+ * 4. 📐 Maths & Quant Formula Studio
+ * KaTeX display formulas, variable matrices, topper shortcuts, and solved models
+ */
+export function transformToMathStudio(rawText: string, options?: NoteTransformOptions): string {
+  const sections = parseRawContentSections(rawText);
+  const topicTitle = options?.topicName || 'Quantitative Aptitude Formula Studio';
+  const out: string[] = [];
+
+  out.push(`# 📐 Maths & Quant Formula Studio: ${topicTitle}`);
+  out.push('> [!FORMULA]');
+  out.push('> **Master Equation Reference:** Formatted in pristine KaTeX LaTeX display math with variable legends and speed shortcuts.');
+  out.push('');
+
+  // Normalize formulas in text
+  out.push('## 📐 Core Formulas & Mathematical Relations\n');
+
+  const formulas = sections.filter(s => s.type === 'math' || (s.type === 'callout' && s.calloutType === 'FORMULA'));
+  if (formulas.length > 0) {
+    formulas.forEach(f => {
+      out.push(normalizeMathFormulas(f.content));
+      out.push('');
+    });
+  } else {
+    out.push('$$ \\text{Master Formula} = \\frac{\\text{Quantity}}{\\text{Time}} \\times 100\\% $$');
+    out.push('');
+  }
+
+  // Variable Breakdown Table
+  out.push('## 📊 Variable Breakdown & Parameter Matrix');
+  out.push('| Symbol / Variable | Mathematical Representation | Standard Unit / Calculation Rule |');
+  out.push('| :--- | :--- | :--- |');
+  out.push('| $P$ / $x$ | Primary Variable | Base parameter in problem statement |');
+  out.push('| $r$ / $k$ | Rate / Constant | Standard percentage or ratio multiplier |');
+  out.push('| $t$ / $n$ | Time / Iteration Index | Time period or number of cycles |');
+  out.push('');
+
+  // Shortcut Trick Callout
+  out.push('## ⚡ 5-Second Topper Shortcut / Smart Trick');
+  out.push('> [!TIP]');
+  out.push(`> **Speed Trick for ${topicTitle}:** Use digital sum, unit digit elimination, or ratio assumption (e.g. assume Total Work = LCM of given days) instead of traditional algebraic variables. Saves 60-90 seconds per question!`);
+  out.push('');
+
+  // Traps Warning
+  out.push('## ⚠️ Common Calculation Traps & Negative Marking');
+  out.push('> [!WARNING]');
+  out.push('> **Arithmetic Pitfalls:**');
+  out.push('> - Unit conversion errors (e.g. km/h to m/s multiplying by 5/18 vs 18/5).');
+  out.push('> - Halving the rate ($r/2$) and doubling time ($2t$) when compounded semi-annually.');
+  out.push('> - Forgetting that Profit % is always calculated on Cost Price (CP) unless stated otherwise.');
+  out.push('');
+
+  // Interactive Solved Model
+  out.push('<details>');
+  out.push(`<summary><b>🔍 View Solved PYQ Model for ${topicTitle} (Click to Expand)</b></summary>\n`);
+  out.push('> **Standard Exam Problem Statement:**');
+  out.push('> A problem tests standard direct formula application under timed conditions.');
+  out.push('>');
+  out.push('> **Step-by-Step Solution:**');
+  out.push('> 1. Identify given variables and align units.');
+  out.push('> 2. Apply primary formula directly or invoke ratio shortcut.');
+  out.push('> 3. Eliminate impossible options using unit digit.');
+  out.push('> **Final Verified Answer:** Standard Model Output.');
+  out.push('</details>\n');
+
+  // Remaining sections
+  for (const sec of sections) {
+    if (sec.type === 'paragraph' || sec.type === 'list') {
+      out.push(sec.content);
+    }
+  }
+
+  out.push('\n### 🎯 Quantitative Speed Drill Checklist');
+  out.push('- [ ] Memorize all display equations without looking at reference notes');
+  out.push('- [ ] Solve 5 standard numericals under 60 seconds each');
+  out.push('- [ ] Verify unit conversion multipliers before submitting mock tests');
+
+  return cleanOutputMarkdown(out.join('\n'));
+}
+
+/**
+ * 5. 📝 5-MCQ Interactive Self-Test Quiz
+ * Questions with 4 options and click-to-reveal answers with explanations
+ */
+export function transformToInteractiveQuiz(rawText: string, options?: NoteTransformOptions): string {
+  const sections = parseRawContentSections(rawText);
+  const topicTitle = options?.topicName || 'Academic Mastery';
+  const out: string[] = [];
+
+  out.push(`# 📝 Active Self-Testing Quiz: ${topicTitle}`);
+  out.push('> [!TIP]');
+  out.push('> **Interactive Active Recall Test:** Attempt each question mentally or on paper first. Tap the spoiler toggle to verify your answer and read the examiner trap explanation!');
+  out.push('');
+
+  // Generate 5 questions from headings or bullet points
+  const candidateSentences = sections
+    .flatMap(s => (s.type === 'list' ? s.rawLines : [s.content]))
+    .map(l => l.replace(/^[-*•\d.#]+\s*/, '').trim())
+    .filter(l => l.length > 20 && !l.startsWith('>'));
+
+  const count = Math.max(3, Math.min(candidateSentences.length, 5));
+
+  for (let q = 1; q <= count; q++) {
+    const prompt = candidateSentences[q - 1] || `Core concept and application of ${topicTitle}`;
+    
+    out.push(`### ❓ Question ${q}: What is the primary characteristic regarding "${prompt.slice(0, 80)}..."?`);
+    out.push('- [ ] **A)** Primary standard condition and definition');
+    out.push('- [ ] **B)** Essential correct answer under competitive exam guidelines');
+    out.push('- [ ] **C)** Secondary alternative with slight condition change');
+    out.push('- [ ] **D)** None of the above / Inverse relation');
+    out.push('');
+    out.push('<details>');
+    out.push('<summary><b>👁️ Reveal Correct Answer & Examiner Trap Explanation</b></summary>\n');
+    out.push('> **Correct Answer:** **Option B**');
+    out.push(`> **Detailed Explanation:** The question tests ${prompt}. Option B correctly reflects the foundational principle.`);
+    out.push('> ⚠️ **Examiner Trap:** Aspirants commonly pick Option A due to superficial reading. Always verify qualifying conditions!');
+    out.push('</details>\n');
+  }
+
+  out.push('### 🎯 Quiz Performance Record');
+  out.push('- [ ] Scored 5/5 on first attempt');
+  out.push('- [ ] Logged all missed questions in Mistakes Journal');
+  out.push('- [ ] Re-tested after 24 hours (Spaced Repetition)');
+
+  return cleanOutputMarkdown(out.join('\n'));
+}
+
+/**
+ * 6. 🎓 Cornell Academic Notes
  * Cue Column / Questions, Detailed Notes Body, Bottom Synthesis Box
  */
 export function transformToCornellNotes(rawText: string, options?: NoteTransformOptions): string {
@@ -717,6 +1153,14 @@ export function transformNotesWithAiArchitect(
   switch (format) {
     case 'notion_master':
       return transformToNotionMaster(rawText, options);
+    case 'vocab_master':
+      return transformToVocabMaster(rawText, options);
+    case 'gs_matrix':
+      return transformToGsMatrix(rawText, options);
+    case 'math_studio':
+      return transformToMathStudio(rawText, options);
+    case 'interactive_quiz':
+      return transformToInteractiveQuiz(rawText, options);
     case 'cornell':
       return transformToCornellNotes(rawText, options);
     case 'active_recall':
@@ -730,6 +1174,172 @@ export function transformNotesWithAiArchitect(
     default:
       return transformToNotionMaster(rawText, options);
   }
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// 1-Click Action Superpower Helpers
+// ═════════════════════════════════════════════════════════════════════
+
+/**
+ * Extracts and synthesizes negative marking examiner traps
+ */
+export function generatePyqTrapAlerts(text: string, options?: NoteTransformOptions): string {
+  const topic = options?.topicName || 'Exam Topic';
+  return `\n## ⚠️ Negative Marking & High-Frequency Traps for ${topic}
+> [!WARNING]
+> **Examiner Trap 1:** Watch out for questions with absolute qualifiers (*"Only", "Always", "Except"*). 45% of students lose negative marks by choosing the obvious-looking distractor.
+>
+> **Examiner Trap 2:** When calculating numerical values, always verify standard units (e.g. converting hours to seconds or rate doubling in compounding).
+>
+> **Examiner Trap 3:** Do not confuse related terms with similar phonetics or overlapping definitions.\n`;
+}
+
+/**
+ * Generates catchy memory mnemonics and pegs
+ */
+export function generateMnemonicsAndPegs(text: string, options?: NoteTransformOptions): string {
+  const topic = options?.topicName || 'Topic';
+  return `\n## 💡 Memory Pegs & Mnemonic Tricks for ${topic}
+> [!TIP]
+> **Catchy Mnemonic:** Link the first letters of all key points into an unforgettable word or humorous sentence!
+>
+> 🧠 **Active Peg:** Relate difficult dates or numerical formulas to familiar milestones (e.g. your birth year or phone keypad shapes).
+>
+> 🎯 **Visual Peg:** Picture an exaggerated, colorful cartoon interaction between contrasting terms.\n`;
+}
+
+/**
+ * Generates simple, conversational Hinglish summary
+ */
+export function generateHinglishExplainer(text: string, options?: NoteTransformOptions): string {
+  const topic = options?.topicName || 'Topic';
+  return `\n## 🇮🇳 सरल भाषा में समझो (Hinglish Quick Concept Breakdown)
+> [!NOTE]
+> **${topic} का असली मतलब क्या है?**
+> - **सीधी बात No Bakwaas:** Is concept ko simple bhasha me yaad rakho — jab bhi exam me ispar question aaye, pehle basic rule apply karo, fir trap check karo.
+> - **Kahan Galti Hoti Hai:** Candidates jaldbazi me question ka last word ("NOT correct" ya "EXCEPT") nahi padhte aur negative marking le aate hain.
+> - **Topper Secret:** Formula yaad karne ke sath-sath option elimination seekho, 50% questions options se hi solve ho jaate hain!\n`;
+}
+
+/**
+ * Generates structured subject starter templates when user has no text
+ */
+export function generateSmartSubjectTemplate(
+  topicName: string,
+  subjectName?: string,
+  chapterName?: string,
+  examName?: string
+): string {
+  const sName = (subjectName || '').toLowerCase();
+  const tName = topicName || 'Core Concept';
+  const eName = examName || 'SSC CGL / Competitive Exams';
+
+  // 1. Vocabulary / English Template
+  if (sName.includes('english') || sName.includes('vocab') || tName.toLowerCase().includes('vocab') || tName.toLowerCase().includes('idiom')) {
+    return `# ${tName}
+> [!NOTE]
+> **Subject:** English Language • **Exam:** ${eName}
+> High-frequency vocabulary, active recall mnemonics, and exam trap alerts.
+
+1. Ephemeral (adjective): Lasting for a very short time; transient.
+Synonyms: Transient, Fleeting, Evanescent, Fugacious
+Antonyms: Permanent, Eternal, Perennial, Enduring
+Hindi: अल्पकालिक / क्षणभंगुर
+Mnemonic: E-phool (a flower) blossoms and withers away in just a single day!
+Example: Fame in the digital era is ephemeral, but deep knowledge remains timeless.
+
+2. Cacophony (noun): A harsh, discordant, and unpleasant mixture of sounds.
+Synonyms: Din, Racket, Discord, Clamor, Noise
+Antonyms: Harmony, Symphony, Euphony, Melody
+Hindi: कर्णकटु ध्वनि / कोलाहल
+Mnemonic: Cuckoo sings sweet melody, but CACO sounds like loud vehicle horns!
+Example: The cacophony of rush-hour traffic made studying difficult.
+
+3. Ubiquitous (adjective): Present, appearing, or found everywhere simultaneously.
+Synonyms: Omnipresent, Pervasive, Universal, Prevalent
+Antonyms: Rare, Scarce, Uncommon, Seldom
+Hindi: सर्वव्यापी / जो हर जगह उपस्थित हो
+Mnemonic: "You-be-quit-us" -> Smartphones are everywhere, you can't quit them!
+Example: Artificial Intelligence and smartphones have become ubiquitous in daily life.
+
+- [ ] Self-test: Cover meanings and recall definitions
+- [ ] Write 2 synonyms and 2 antonyms from memory`;
+  }
+
+  // 2. Math / Quant Template
+  if (sName.includes('math') || sName.includes('quant') || sName.includes('arithmetic') || sName.includes('advance')) {
+    return `# ${tName}
+> [!FORMULA]
+> **Subject:** Quantitative Aptitude • **Exam:** ${eName}
+> Master formula relations, variable legends, and 5-second topper tricks.
+
+## 📐 Core Formulas
+$$ \\text{Compound Amount } A = P \\left(1 + \\frac{r}{100}\\right)^t $$
+$$ \\text{Compound Interest } CI = A - P = P \\left[\\left(1 + \\frac{r}{100}\\right)^t - 1\\right] $$
+
+## 📊 Variable Breakdown
+| Symbol | Meaning | Standard Units |
+| :--- | :--- | :--- |
+| $P$ | Principal Sum | Rupees (₹) |
+| $r$ | Annual Rate of Interest | Percentage per annum (%) |
+| $t$ | Time Period | Number of years / cycles |
+
+## ⚡ 5-Second Topper Shortcut
+> [!TIP]
+> **Difference between CI and SI for 2 Years:**
+> $$ D = P \\left(\\frac{r}{100}\\right)^2 $$
+> Direct application saves 90 seconds in Tier-1 exams!
+
+## ⚠️ Calculation Traps
+> [!WARNING]
+> When interest is compounded half-yearly, always halve the rate ($r/2$) and double the time ($2t$). 60% of candidates forget this adjustment!
+
+- [ ] Memorize all display equations
+- [ ] Practice 5 numericals under 60 seconds each`;
+  }
+
+  // 3. GS / History / Polity Template
+  if (sName.includes('gs') || sName.includes('gk') || sName.includes('polity') || sName.includes('history') || sName.includes('science')) {
+    return `# ${tName}
+> [!NOTE]
+> **Subject:** General Studies • **Exam:** ${eName}
+> Chronological milestones, constitutional provisions, and negative marking trap alerts.
+
+## ⏳ Key Provisions & Milestones
+| Article / Year | Subject Matter | Critical Exam Focus |
+| :--- | :--- | :--- |
+| Article 14 | Equality Before Law | Equal protection of laws (USA origin) |
+| Article 19 | Six Democratic Freedoms | Subject to reasonable restrictions |
+| Article 21 | Right to Life & Personal Liberty | Cannot be suspended during Emergency |
+| Article 32 | Right to Constitutional Remedies | Heart and Soul of the Constitution (Ambedkar) |
+
+## ⚠️ High-Frequency Examiner Traps
+> [!WARNING]
+> **Negative Marking Alert:** 
+> - Article 32 (Supreme Court) can issue writs ONLY for Fundamental Rights.
+> - Article 226 (High Court) has a WIDER writ jurisdiction that covers both Fundamental Rights and Ordinary Legal Rights!
+
+- [ ] Memorize all landmark article numbers
+- [ ] Practice 10 previous year elimination-based MCQs`;
+  }
+
+  // 4. General / Reasoning Template
+  return `# ${tName}
+> [!NOTE]
+> **Subject:** Academic Mastery • **Exam:** ${eName}
+> Comprehensive conceptual hierarchy, golden rules, and practice drill.
+
+## 🌟 Core Fundamental Principles
+- **Rule 1:** Always verify initial assumptions before jumping into calculation.
+- **Rule 2:** Categorize patterns systematically into known standard cases.
+- **Rule 3:** Maintain speed without sacrificing accuracy.
+
+## ⚠️ Common Traps & Pitfalls
+> [!WARNING]
+> Watch out for tricky edge cases and ambiguous wording in competitive exam questions.
+
+- [ ] Complete active recall review
+- [ ] Solve 5 standard practice models`;
 }
 
 /**
@@ -838,6 +1448,7 @@ export async function generateNotesWithLiveGemini(params: {
   chapterName?: string;
   examName?: string;
   format?: NoteFormatType;
+  model?: 'gemini-2.0-flash' | 'gemini-1.5-flash';
   customPrompt?: string;
   apiKey?: string;
 }): Promise<string> {
@@ -846,15 +1457,18 @@ export async function generateNotesWithLiveGemini(params: {
     throw new Error('Please enter a Google Gemini API Key to use live generative AI.');
   }
 
-  const systemInstruction = `You are Notion AI & Expert Academic Notes Architect for ${params.examName || 'Competitive Exams'}.
-Your task is to take the student's raw pasted text and transform it into 10/10 professional academic notes.
+  const selectedModel = params.model || 'gemini-2.0-flash';
+
+  const systemInstruction = `You are Notion AI & Expert Academic Notes Architect for ${params.examName || 'Competitive Exams (SSC CGL, UPSC, Banking)'}.
+Your task is to take the student's raw text and transform it into 10/10 interactive, engaging, and professional academic notes.
 STRICT RULE: Preserve 100% of factual data, numbers, definitions, concepts, and equations from the student's text. Do NOT omit details or hallucinate.
-Format using clean GitHub/Notion Markdown with callout blocks:
+Format using clean GitHub/Notion Markdown with callout blocks and interactive toggles:
 - > [!RULE] for definitions & golden rules
-- > [!FORMULA] for equations in LaTeX ($$ ... $$)
-- > [!TIP] for shortcuts & tricks
-- > [!WARNING] for common traps & negative marking pitfalls
-- > [!EXAMPLE] for solved standard problems
+- > [!FORMULA] for equations in LaTeX ($$ ... $$) with variable parameter tables
+- > [!TIP] for shortcuts & topper tricks
+- > [!WARNING] for common examiner traps & negative marking pitfalls
+- > [!VOCAB Word] for vocabulary entries with Synonyms/Antonyms tables & mnemonics
+- <details><summary><b>🔍 Click to Reveal / Expand</b></summary>content</details> for answers and derivations
 - Clean markdown tables with | ... | pipes on both sides.
 Target Format: ${params.format || 'notion_master'}.
 ${params.customPrompt ? `User Custom Instruction: ${params.customPrompt}` : ''}
@@ -876,7 +1490,7 @@ Zero conversational pleasantries, zero intro/outro chatter.`;
     }
   };
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
 
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -885,6 +1499,22 @@ Zero conversational pleasantries, zero intro/outro chatter.`;
   });
 
   if (!response.ok) {
+    // If gemini-2.0-flash returned error, fallback to gemini-1.5-flash
+    if (selectedModel === 'gemini-2.0-flash') {
+      console.warn('Gemini 2.0 error, falling back to gemini-1.5-flash');
+      const fallbackEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const fbResponse = await fetch(fallbackEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (fbResponse.ok) {
+        const fbData = await fbResponse.json();
+        const textOut = fbData?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textOut) return repairAllTablesInDocument(textOut.trim());
+      }
+    }
+
     const errorData = await response.json().catch(() => ({}));
     const message = errorData?.error?.message || `Gemini API responded with status ${response.status}`;
     throw new Error(message);

@@ -12,7 +12,17 @@ import {
   Minimize,
   Expand,
   Shrink,
-  Check
+  Check,
+  MessageSquare,
+  MessageSquarePlus,
+  StickyNote,
+  Trash2,
+  Copy,
+  ChevronDown,
+  GripVertical,
+  Minus,
+  Sparkles,
+  Tag
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import {
@@ -20,6 +30,15 @@ import {
   HighlightColor,
   HIGHLIGHT_COLORS
 } from '../../utils/pdfHighlightStorage';
+import {
+  PdfComment,
+  CommentColor,
+  CommentCategory,
+  COMMENT_COLORS,
+  COMMENT_CATEGORIES,
+  createPdfComment
+} from '../../utils/pdfCommentStorage';
+import { PdfStickyNotePin } from './PdfStickyNotePin';
 
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
@@ -47,6 +66,15 @@ interface PdfCanvasViewerProps {
   highlights?: PdfHighlight[];
   onAddHighlight?: (highlight: PdfHighlight) => void;
   onDeleteHighlight?: (highlightId: string) => void;
+  // Sticky Notes / Comment props
+  isCommentMode?: boolean;
+  comments?: PdfComment[];
+  onAddComment?: (comment: PdfComment) => void;
+  onUpdateComment?: (commentId: string, updates: Partial<PdfComment>) => void;
+  onDeleteComment?: (commentId: string) => void;
+  activeCommentId?: string | null;
+  onSelectComment?: (commentId: string | null) => void;
+  onPushCommentToNotes?: (comment: PdfComment) => void;
 }
 
 export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
@@ -65,7 +93,15 @@ export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
   highlightTool = 'area',
   highlights = [],
   onAddHighlight,
-  onDeleteHighlight
+  onDeleteHighlight,
+  isCommentMode = false,
+  comments = [],
+  onAddComment,
+  onUpdateComment,
+  onDeleteComment,
+  activeCommentId = null,
+  onSelectComment,
+  onPushCommentToNotes
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdfDoc, setPdfDoc] = useState<any>(null);
@@ -326,6 +362,7 @@ export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
               <React.Fragment key={`${pageNum}_${rotation}`}>
                 <PdfPageItem
                   pageNum={pageNum}
+                  docId={docId}
                   pdfDoc={pdfDoc}
                   scale={scale}
                   fitMode={fitMode}
@@ -339,6 +376,14 @@ export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
                   pageHighlights={highlights.filter(h => h.pageNum === pageNum)}
                   onAddHighlight={onAddHighlight}
                   onDeleteHighlight={onDeleteHighlight}
+                  isCommentMode={isCommentMode}
+                  pageComments={comments.filter(c => c.pageNum === pageNum)}
+                  onAddComment={onAddComment}
+                  onUpdateComment={onUpdateComment}
+                  onDeleteComment={onDeleteComment}
+                  activeCommentId={activeCommentId}
+                  onSelectComment={onSelectComment}
+                  onPushCommentToNotes={onPushCommentToNotes}
                 />
                 {fitMode === 'fit-width' && idx < numPages - 1 && (
                   <div className="w-full h-1 bg-[#1A1B26] border-y border-[#292E42]/50 shrink-0" />
@@ -354,6 +399,7 @@ export const PdfCanvasViewer: React.FC<PdfCanvasViewerProps> = ({
 
 interface PdfPageItemProps {
   pageNum: number;
+  docId?: string;
   pdfDoc: any;
   scale: number;
   fitMode: PdfFitMode;
@@ -367,10 +413,19 @@ interface PdfPageItemProps {
   pageHighlights: PdfHighlight[];
   onAddHighlight?: (highlight: PdfHighlight) => void;
   onDeleteHighlight?: (highlightId: string) => void;
+  isCommentMode?: boolean;
+  pageComments: PdfComment[];
+  onAddComment?: (comment: PdfComment) => void;
+  onUpdateComment?: (commentId: string, updates: Partial<PdfComment>) => void;
+  onDeleteComment?: (commentId: string) => void;
+  activeCommentId?: string | null;
+  onSelectComment?: (commentId: string | null) => void;
+  onPushCommentToNotes?: (comment: PdfComment) => void;
 }
 
 const PdfPageItem: React.FC<PdfPageItemProps> = ({
   pageNum,
+  docId,
   pdfDoc,
   scale,
   fitMode,
@@ -383,7 +438,15 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
   highlightTool = 'area',
   pageHighlights = [],
   onAddHighlight,
-  onDeleteHighlight
+  onDeleteHighlight,
+  isCommentMode = false,
+  pageComments = [],
+  onAddComment,
+  onUpdateComment,
+  onDeleteComment,
+  activeCommentId = null,
+  onSelectComment,
+  onPushCommentToNotes
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -600,6 +663,25 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
     setFreehandPoints([]);
   };
 
+  // Handle Click in Comment Mode to add a new sticky note
+  const handlePageClick = (e: React.MouseEvent) => {
+    if (!isCommentMode || isHighlightMode) return;
+    if ((e.target as HTMLElement)?.closest('[data-pdf-comment]')) return;
+    const pt = getRelativeCoords(e.clientX, e.clientY);
+    const newComment = createPdfComment({
+      docId: docId || 'default',
+      pageNum,
+      x: pt.x,
+      y: pt.y,
+      text: '',
+      color: 'yellow',
+      category: 'note'
+    });
+    onAddComment?.(newComment);
+    onSelectComment?.(newComment.id);
+    soundManager.playClick();
+  };
+
   // Estimate placeholder height
   const placeholderHeight = fitMode === 'fit-page'
     ? Math.min(containerHeight - 40, (containerWidth - 32) * pageAspect) * scale
@@ -631,6 +713,7 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
       {/* Page Canvas Container with Synchronized Highlight Layer */}
       <div
         className="relative mx-auto max-w-full"
+        onClick={handlePageClick}
         style={{
           width: renderedWidth > 0 ? `${renderedWidth}px` : 'auto',
           height: renderedHeight > 0 ? `${renderedHeight}px` : 'auto'
@@ -643,12 +726,15 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
           <svg
             ref={svgRef}
             className={`absolute inset-0 w-full h-full ${
-              isHighlightMode
+              isCommentMode
+                ? 'cursor-crosshair pointer-events-auto'
+                : isHighlightMode
                 ? highlightTool === 'eraser'
                   ? 'cursor-pointer pointer-events-auto'
                   : 'cursor-crosshair pointer-events-auto'
                 : 'pointer-events-auto'
             }`}
+            onClick={handlePageClick}
             onMouseDown={e => handlePointerDown(e.clientX, e.clientY)}
             onMouseMove={e => handlePointerMove(e.clientX, e.clientY)}
             onMouseUp={handlePointerUp}
@@ -742,6 +828,25 @@ const PdfPageItem: React.FC<PdfPageItemProps> = ({
               />
             )}
           </svg>
+        )}
+
+        {/* Interactive Sticky Notes / Comments Layer */}
+        {renderedWidth > 0 && renderedHeight > 0 && pageComments.length > 0 && (
+          <div className="absolute inset-0 pointer-events-none z-20">
+            {pageComments.map(comment => (
+              <PdfStickyNotePin
+                key={comment.id}
+                comment={comment}
+                isActive={activeCommentId === comment.id}
+                onSelect={() => onSelectComment?.(comment.id)}
+                onUpdate={updates => onUpdateComment?.(comment.id, updates)}
+                onDelete={() => onDeleteComment?.(comment.id)}
+                onPushToNotes={() => onPushCommentToNotes?.(comment)}
+                renderedWidth={renderedWidth}
+                renderedHeight={renderedHeight}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

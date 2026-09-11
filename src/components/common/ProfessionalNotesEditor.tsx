@@ -58,7 +58,10 @@ import {
   XCircle,
   ExternalLink,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  BookA,
+  Landmark
 } from 'lucide-react';
 import { soundManager } from '../../utils/soundEffects';
 import { generateAndOpenNotesPdf } from '../../utils/pdfGenerator';
@@ -2061,8 +2064,52 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
         continue;
       }
 
-      // 1.5. Display / Block Math Formulas ($$ ... $$ or \[ ... \])
+      // 1.4. Interactive Collapsible Accordions (<details> ... </details>)
       const trimmedLine = line.trim();
+      if (trimmedLine.startsWith('<details>') || trimmedLine.startsWith('<details')) {
+        const detailsLines: string[] = [line];
+        i++;
+        while (i < lines.length) {
+          const next = lines[i];
+          detailsLines.push(next);
+          if (next.trim().includes('</details>')) {
+            i++;
+            break;
+          }
+          i++;
+        }
+
+        const fullBlock = detailsLines.join('\n');
+        const summaryMatch = fullBlock.match(/<summary>([\s\S]*?)<\/summary>/i);
+        const rawSummary = summaryMatch ? summaryMatch[1].replace(/<\/?b>/gi, '').trim() : 'Click to View Details';
+        const bodyContent = fullBlock
+          .replace(/<details[^>]*>/gi, '')
+          .replace(/<\/details>/gi, '')
+          .replace(/<summary>[\s\S]*?<\/summary>/gi, '')
+          .trim();
+
+        elements.push(
+          <details
+            key={`details-${i}`}
+            className="my-3 rounded-2xl border border-slate-200 dark:border-[#272738] bg-slate-50/80 dark:bg-[#151622]/80 overflow-hidden group shadow-2xs transition-all [break-inside:avoid]"
+          >
+            <summary className="px-4 py-3 font-bold text-xs sm:text-[13px] text-slate-800 dark:text-slate-200 cursor-pointer select-none flex items-center justify-between hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+              <span className="flex items-center gap-2">
+                <span>{parseInlineMarkdown(rawSummary, `sum-${i}`)}</span>
+              </span>
+              <ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" />
+            </summary>
+            <div className="px-4 py-3.5 border-t border-slate-200/80 dark:border-white/5 text-xs sm:text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed space-y-2 bg-white/70 dark:bg-[#10111A]/70">
+              {bodyContent.split('\n').map((bLine, bIdx) => (
+                <p key={bIdx}>{parseInlineMarkdown(bLine.replace(/^>\s*/, ''), `det-body-${i}-${bIdx}`)}</p>
+              ))}
+            </div>
+          </details>
+        );
+        continue;
+      }
+
+      // 1.5. Display / Block Math Formulas ($$ ... $$ or \[ ... \])
       const isBlockMathStart = trimmedLine.startsWith('$$') || trimmedLine.startsWith('\\[');
       if (isBlockMathStart) {
         const isSingleLine =
@@ -2258,6 +2305,18 @@ export const ProfessionalNotesEditor: React.FC<ProfessionalNotesEditorProps> = (
           borderCol = 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300';
           IconComp = Sparkles;
           title = 'Solved Exam Example';
+        } else if (calloutType === 'VOCAB' || calloutType === 'WORD') {
+          borderCol = 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200';
+          IconComp = BookA;
+          title = 'Vocabulary Card';
+        } else if (calloutType === 'QUIZ') {
+          borderCol = 'border-purple-500/40 bg-purple-500/10 text-purple-700 dark:text-purple-300';
+          IconComp = CheckSquare;
+          title = 'Active Recall Quiz';
+        } else if (calloutType === 'GS' || calloutType === 'POLITY' || calloutType === 'MATRIX') {
+          borderCol = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300';
+          IconComp = Landmark;
+          title = 'GS & Constitutional Pointer';
         }
 
         elements.push(
