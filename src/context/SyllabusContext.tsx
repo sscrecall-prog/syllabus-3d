@@ -249,6 +249,9 @@ interface SyllabusContextType {
   selectedExamId: string;
   setSelectedExamId: (id: string) => void;
   updateCurrentExamDetails: (updates: { name?: string; examDate?: string; targetYear?: number }) => void;
+  updateExamById: (examId: string, updates: { name?: string; examDate?: string; targetYear?: number }) => void;
+  addExam: (examData: { name: string; code?: string; examDate: string; targetYear?: number; subjects?: Subject[] }) => string;
+  deleteExam: (examId: string) => boolean;
   profile: UserProgressProfile;
   updateProfile: (updates: Partial<UserProgressProfile>) => void;
   profiles: UserProfileItem[];
@@ -1026,7 +1029,8 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         name: updates.name ?? p.name,
         avatarUrl: updates.avatarUrl !== undefined ? updates.avatarUrl : p.avatarUrl,
         avatarEmoji: updates.avatarEmoji ?? p.avatarEmoji,
-        avatarColor: updates.avatarColor ?? p.avatarColor
+        targetExamId: updates.selectedExamId ?? p.targetExamId,
+        targetExamDate: updates.targetExamDate ?? p.targetExamDate
       } : p);
       try { localStorage.setItem('syllabus3d_profiles', JSON.stringify(updated)); } catch (e) {}
       return updated;
@@ -1034,23 +1038,152 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const setSelectedExamId = (examId: string) => {
-    updateProfile({ selectedExamId: examId });
+    const matchingExam = exams.find(e => e.id === examId);
+    updateProfile({
+      selectedExamId: examId,
+      targetExamDate: matchingExam?.examDate || profile.targetExamDate
+    });
   };
 
   const updateCurrentExamDetails = (updates: { name?: string; examDate?: string; targetYear?: number }) => {
     if (!currentExam) return;
-    setExams(prev => prev.map(e => {
-      if (e.id !== currentExam.id) return e;
-      return {
-        ...e,
-        name: updates.name !== undefined ? updates.name : e.name,
-        examDate: updates.examDate !== undefined ? updates.examDate : e.examDate,
-        targetYear: updates.targetYear !== undefined ? updates.targetYear : e.targetYear
-      };
-    }));
+    const targetId = currentExam.id;
+    setExams(prev => {
+      const next = prev.map(e => {
+        if (e.id !== targetId) return e;
+        return {
+          ...e,
+          name: updates.name !== undefined ? updates.name : e.name,
+          examDate: updates.examDate !== undefined ? updates.examDate : e.examDate,
+          targetYear: updates.targetYear !== undefined ? updates.targetYear : e.targetYear
+        };
+      });
+      try {
+        if (activeProfileId === 'profile_default') {
+          localStorage.setItem('syllabus3d_exams', JSON.stringify(next));
+        } else {
+          const raw = localStorage.getItem(`syllabus3d_profile_data_${activeProfileId}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            parsed.exams = next;
+            localStorage.setItem(`syllabus3d_profile_data_${activeProfileId}`, JSON.stringify(parsed));
+          }
+        }
+      } catch (e) {}
+      return next;
+    });
     if (updates.examDate) {
       updateProfile({ targetExamDate: updates.examDate });
     }
+  };
+
+  const updateExamById = (examId: string, updates: { name?: string; examDate?: string; targetYear?: number }) => {
+    setExams(prev => {
+      const next = prev.map(e => {
+        if (e.id !== examId) return e;
+        return {
+          ...e,
+          name: updates.name !== undefined ? updates.name : e.name,
+          examDate: updates.examDate !== undefined ? updates.examDate : e.examDate,
+          targetYear: updates.targetYear !== undefined ? updates.targetYear : e.targetYear
+        };
+      });
+      try {
+        if (activeProfileId === 'profile_default') {
+          localStorage.setItem('syllabus3d_exams', JSON.stringify(next));
+        } else {
+          const raw = localStorage.getItem(`syllabus3d_profile_data_${activeProfileId}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            parsed.exams = next;
+            localStorage.setItem(`syllabus3d_profile_data_${activeProfileId}`, JSON.stringify(parsed));
+          }
+        }
+      } catch (e) {}
+      return next;
+    });
+
+    if (currentExam?.id === examId && updates.examDate) {
+      updateProfile({ targetExamDate: updates.examDate });
+    }
+  };
+
+  const addExam = (examData: {
+    name: string;
+    code?: string;
+    examDate: string;
+    targetYear?: number;
+    subjects?: Subject[];
+  }): string => {
+    const cleanName = examData.name.trim() || 'Target Exam';
+    const newId = 'exam_' + cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + Date.now().toString(36);
+    const newExam: Exam = {
+      id: newId,
+      name: cleanName,
+      code: examData.code || cleanName.toUpperCase().replace(/[^A-Z0-9]+/g, '_').slice(0, 10) || 'CUSTOM',
+      targetYear: examData.targetYear || (examData.examDate ? new Date(examData.examDate).getFullYear() : 2026),
+      examDate: examData.examDate || '2026-10-15',
+      subjects: examData.subjects && examData.subjects.length > 0
+        ? JSON.parse(JSON.stringify(examData.subjects))
+        : []
+    };
+
+    setExams(prev => {
+      const next = [...prev, newExam];
+      try {
+        if (activeProfileId === 'profile_default') {
+          localStorage.setItem('syllabus3d_exams', JSON.stringify(next));
+        } else {
+          const raw = localStorage.getItem(`syllabus3d_profile_data_${activeProfileId}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            parsed.exams = next;
+            localStorage.setItem(`syllabus3d_profile_data_${activeProfileId}`, JSON.stringify(parsed));
+          }
+        }
+      } catch (e) {}
+      return next;
+    });
+
+    // Automatically switch to the newly created exam
+    updateProfile({
+      selectedExamId: newId,
+      targetExamDate: newExam.examDate
+    });
+
+    soundManager.playCompleteChime();
+    confetti({ particleCount: 35, spread: 50, origin: { y: 0.7 } });
+    return newId;
+  };
+
+  const deleteExam = (examId: string): boolean => {
+    if (exams.length <= 1) return false;
+    const remaining = exams.filter(e => e.id !== examId);
+    setExams(remaining);
+
+    try {
+      if (activeProfileId === 'profile_default') {
+        localStorage.setItem('syllabus3d_exams', JSON.stringify(remaining));
+      } else {
+        const raw = localStorage.getItem(`syllabus3d_profile_data_${activeProfileId}`);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          parsed.exams = remaining;
+          localStorage.setItem(`syllabus3d_profile_data_${activeProfileId}`, JSON.stringify(parsed));
+        }
+      }
+    } catch (e) {}
+
+    if (currentExam?.id === examId) {
+      const nextActive = remaining[0];
+      updateProfile({
+        selectedExamId: nextActive.id,
+        targetExamDate: nextActive.examDate
+      });
+    }
+
+    soundManager.playClick();
+    return true;
   };
 
   // Planner Methods
@@ -2947,6 +3080,9 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     selectedExamId: profile.selectedExamId,
     setSelectedExamId,
     updateCurrentExamDetails,
+    updateExamById,
+    addExam,
+    deleteExam,
     profile,
     updateProfile,
     profiles,

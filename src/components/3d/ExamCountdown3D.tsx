@@ -18,21 +18,38 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0, isProjected: false });
 
   useEffect(() => {
+    if (!currentExam) return;
+
     const calculateTime = () => {
       const now = new Date().getTime();
-      let examTime = new Date(currentExam.examDate).getTime();
+      const rawDateStr = currentExam.examDate || '2026-10-15';
+      
+      let targetYr = currentExam.targetYear || 2026;
+      let month = 9; // Oct default (0-indexed)
+      let day = 15;
+
+      if (rawDateStr.includes('-')) {
+        const parts = rawDateStr.split('-').map(Number);
+        if (parts.length >= 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+          targetYr = parts[0];
+          month = parts[1] - 1;
+          day = parts[2];
+        }
+      }
+
+      const parsedDate = new Date(targetYr, month, day, 9, 0, 0);
+      let examTime = parsedDate.getTime();
       let projected = false;
 
-      // If examDate is invalid or has passed, intelligently project to upcoming exam cycle
+      // If exam date has passed in the past, roll over to the exact same month/day in the next upcoming cycle
       if (isNaN(examTime) || examTime <= now) {
         projected = true;
-        const targetYr = Math.max(new Date().getFullYear(), currentExam.targetYear || 2026);
-        // Upcoming exam window: Oct 15 of current/target year
-        let projectedDate = new Date(`${targetYr}-10-15T09:00:00`).getTime();
-        if (projectedDate <= now) {
-          projectedDate = new Date(`${targetYr + 1}-10-15T09:00:00`).getTime();
+        const currentYear = new Date().getFullYear();
+        let nextCycleDate = new Date(Math.max(targetYr, currentYear), month, day, 9, 0, 0);
+        if (nextCycleDate.getTime() <= now) {
+          nextCycleDate = new Date(Math.max(targetYr, currentYear) + 1, month, day, 9, 0, 0);
         }
-        examTime = projectedDate;
+        examTime = nextCycleDate.getTime();
       }
 
       const difference = Math.max(0, examTime - now);
@@ -52,7 +69,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
     calculateTime();
     const interval = setInterval(calculateTime, 1000);
     return () => clearInterval(interval);
-  }, [currentExam.examDate, currentExam.targetYear]);
+  }, [currentExam?.examDate, currentExam?.targetYear, currentExam?.name]);
 
   const cards = useMemo(() => [
     { label: 'DAYS', value: timeLeft.days, color: 'text-amber-500 dark:text-amber-400', glow: 'shadow-amber-500/10' },
@@ -63,13 +80,21 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
 
   const formattedDate = useMemo(() => {
     try {
+      if (!currentExam?.examDate) return 'Oct 15, 2026';
+      if (currentExam.examDate.includes('-')) {
+        const parts = currentExam.examDate.split('-').map(Number);
+        if (parts.length >= 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+          const d = new Date(parts[0], parts[1] - 1, parts[2]);
+          return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+      }
       const d = new Date(currentExam.examDate);
-      if (isNaN(d.getTime())) return currentExam.examDate || 'Oct 15, 2026';
+      if (isNaN(d.getTime())) return currentExam.examDate;
       return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch {
-      return currentExam.examDate || 'Oct 15, 2026';
+      return currentExam?.examDate || 'Oct 15, 2026';
     }
-  }, [currentExam.examDate]);
+  }, [currentExam?.examDate]);
 
   return (
     <>
