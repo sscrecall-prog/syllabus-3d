@@ -53,6 +53,12 @@ import { haptics } from '../utils/haptics';
 import { useAuth } from './AuthContext';
 import confetti from 'canvas-confetti';
 import { storageManager, StorageHealthMetrics, FullAppSnapshot } from '../services/storageManager';
+import {
+  fetchUserCloudData,
+  saveUserCloudData,
+  subscribeUserCloudData,
+  CloudSyncStatus
+} from '../services/cloudSyncService';
 
 export interface CreateCustomTopicPayload {
   isNewSubject: boolean;
@@ -351,6 +357,11 @@ interface SyllabusContextType {
   getStorageMetrics: () => StorageHealthMetrics;
   lastSavedAt: string;
   isAutoSaving: boolean;
+  cloudSyncStatus: CloudSyncStatus;
+  lastCloudSyncAt: string | null;
+  cloudSyncError: string | null;
+  manualCloudSync: () => Promise<{ success: boolean; error?: string }>;
+  manualCloudRestore: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const SyllabusContext = createContext<SyllabusContextType | undefined>(undefined);
@@ -692,6 +703,178 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     return () => clearTimeout(timer);
   }, [exams, profile, achievements, activityHistory, revisions, plannerTasks, platforms, top3Targets, reflectionsHistory]);
+
+  // ──── GOOGLE CLOUD SERVER SYNC & CROSS-DEVICE AUTO-RECOVERY ENGINE ────
+  const [cloudSyncStatus, setCloudSyncStatus] = useState<CloudSyncStatus>(() => {
+    return user?.id ? 'synced' : 'local_only';
+  });
+  const [lastCloudSyncAt, setLastCloudSyncAt] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('syllabus3d_last_cloud_sync_at');
+    }
+    return null;
+  });
+  const [cloudSyncError, setCloudSyncError] = useState<string | null>(null);
+
+  // Helper to package the entire current state into a FullAppSnapshot
+  const getCurrentSnapshot = useCallback((): FullAppSnapshot => {
+    return {
+      version: '3.0.0',
+      timestamp: new Date().toISOString(),
+      exams,
+      profile,
+      achievements,
+      activityHistory,
+      revisions,
+      plannerTasks,
+      platforms,
+      top3Targets,
+      reflectionsHistory
+    };
+  }, [exams, profile, achievements, activityHistory, revisions, plannerTasks, platforms, top3Targets, reflectionsHistory]);
+
+  // Helper to hydrate entire app from a FullAppSnapshot
+  const applySnapshot = useCallback((snap: FullAppSnapshot) => {
+    if (!snap) return;
+    if (Array.isArray(snap.exams) && snap.exams.length > 0) setExams(snap.exams);
+    if (snap.profile) setProfile(snap.profile);
+    if (Array.isArray(snap.achievements)) setAchievements(snap.achievements);
+    if (Array.isArray(snap.activityHistory)) setActivityHistory(snap.activityHistory);
+    if (Array.isArray(snap.revisions)) setRevisions(snap.revisions);
+    if (Array.isArray(snap.plannerTasks)) setPlannerTasks(snap.plannerTasks);
+    if (Array.isArray(snap.platforms)) setPlatforms(snap.platforms);
+    if (Array.isArray(snap.top3Targets)) setTop3Targets(snap.top3Targets);
+    if (Array.isArray(snap.reflectionsHistory)) setReflectionsHistory(snap.reflectionsHistory);
+  }, []);
+
+  // 1. On User Login / Change: Fetch Cloud Server Data & Auto-Recover
+  useEffect(() => {
+    let isMounted = true;
+    if (!user?.id) {
+      setCloudSyncStatus('local_only');
+      return;
+    }
+
+    const loadCloudData = async () => {
+      setCloudSyncStatus('syncing');
+      try {
+        const cloudData = await fetchUserCloudData(user.id);
+        if (!isMounted) return;
+
+        if (cloudData && Array.isArray(cloudData.exams) && cloudData.exams.length > 0) {
+          applySnapshot(cloudData);
+          setCloudSyncStatus('synced');
+          const syncTime = cloudData.timestamp || new Date().toISOString();
+          setLastCloudSyncAt(syncTime);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('syllabus3d_last_cloud_sync_at', syncTime);
+          }
+          soundManager.playCompleteChime();
+        } else {
+          // Cloud empty / first time login for this account: auto-upload current dataset
+          const currentSnap = getCurrentSnapshot();
+          await saveUserCloudData(user.id, currentSnap);
+          if (!isMounted) return;
+          setCloudSyncStatus('synced');
+          const now = new Date().toISOString();
+          setLastCloudSyncAt(now);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('syllabus3d_last_cloud_sync_at', now);
+          }
+        }
+      } catch (err: any) {
+        if (!isMounted) return;
+        setCloudSyncStatus('error');
+        setCloudSyncError(err?.message || 'Failed to sync with cloud server');
+      }
+    };
+
+    loadCloudData();
+
+    // 2. Real-time subscription across tabs/devices
+    const unsubscribe = subscribeUserCloudData(user.id, (incoming) => {
+      if (!isMounted) return;
+      if (incoming && incoming.timestamp !== lastCloudSyncAt) {
+        applySnapshot(incoming);
+        setCloudSyncStatus('synced');
+        setLastCloudSyncAt(incoming.timestamp);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
+  }, [user?.id]);
+
+  // 3. Debounced Auto-Sync to Cloud Server on Every State Change (Idle 3s)
+  useEffect(() => {
+    if (!user?.id) return;
+
+    setCloudSyncStatus('syncing');
+    const timer = setTimeout(async () => {
+      const snap = getCurrentSnapshot();
+      const res = await saveUserCloudData(user.id, snap);
+      if (res.success) {
+        setCloudSyncStatus('synced');
+        setLastCloudSyncAt(res.timestamp || new Date().toISOString());
+        setCloudSyncError(null);
+        if (typeof window !== 'undefined' && res.timestamp) {
+          localStorage.setItem('syllabus3d_last_cloud_sync_at', res.timestamp);
+        }
+      } else {
+        setCloudSyncStatus('error');
+        setCloudSyncError(res.error || 'Sync failed');
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [user?.id, exams, profile, achievements, activityHistory, revisions, plannerTasks, platforms, top3Targets, reflectionsHistory]);
+
+  const manualCloudSync = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+    if (!user?.id) {
+      return { success: false, error: 'Please sign in with your Google/Gmail account to sync.' };
+    }
+    setCloudSyncStatus('syncing');
+    const snap = getCurrentSnapshot();
+    const res = await saveUserCloudData(user.id, snap);
+    if (res.success) {
+      setCloudSyncStatus('synced');
+      setLastCloudSyncAt(res.timestamp || new Date().toISOString());
+      setCloudSyncError(null);
+      soundManager.playCompleteChime();
+      return { success: true };
+    } else {
+      setCloudSyncStatus('error');
+      setCloudSyncError(res.error || 'Failed to sync to cloud');
+      return { success: false, error: res.error };
+    }
+  }, [user?.id, getCurrentSnapshot]);
+
+  const manualCloudRestore = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+    if (!user?.id) {
+      return { success: false, error: 'Please sign in with your Google/Gmail account to restore.' };
+    }
+    setCloudSyncStatus('syncing');
+    try {
+      const cloudData = await fetchUserCloudData(user.id);
+      if (cloudData) {
+        applySnapshot(cloudData);
+        setCloudSyncStatus('synced');
+        setLastCloudSyncAt(cloudData.timestamp || new Date().toISOString());
+        setCloudSyncError(null);
+        soundManager.playCompleteChime();
+        return { success: true };
+      } else {
+        setCloudSyncStatus('synced');
+        return { success: false, error: 'No backup found on cloud server for this account.' };
+      }
+    } catch (err: any) {
+      setCloudSyncStatus('error');
+      setCloudSyncError(err?.message || 'Restore failed');
+      return { success: false, error: err?.message };
+    }
+  }, [user?.id, applySnapshot]);
 
   const currentExam = useMemo(() => {
     if (exams.length === 0) return undefined;
@@ -2841,7 +3024,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     restoreSafetySnapshot,
     getStorageMetrics,
     lastSavedAt,
-    isAutoSaving
+    isAutoSaving,
+    cloudSyncStatus,
+    lastCloudSyncAt,
+    cloudSyncError,
+    manualCloudSync,
+    manualCloudRestore
   }), [
     exams,
     currentExam,
@@ -2866,7 +3054,12 @@ export const SyllabusProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     top3Targets,
     reflectionsHistory,
     lastSavedAt,
-    isAutoSaving
+    isAutoSaving,
+    cloudSyncStatus,
+    lastCloudSyncAt,
+    cloudSyncError,
+    manualCloudSync,
+    manualCloudRestore
   ]);
 
   return (

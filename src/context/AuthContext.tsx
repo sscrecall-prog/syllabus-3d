@@ -25,6 +25,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let isMounted = true;
+
+    // 1. Check local session
     authService.getSession().then((session) => {
       if (isMounted) {
         setUser(session);
@@ -36,8 +38,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
       }
     });
+
+    // 2. Listen to Firebase Auth state if configured
+    let unsubscribeFirebase: (() => void) | undefined;
+    import('../services/firebase').then(({ initFirebase }) => {
+      const { auth, isConfigured } = initFirebase();
+      if (isConfigured && auth) {
+        import('firebase/auth').then(({ onAuthStateChanged }) => {
+          unsubscribeFirebase = onAuthStateChanged(auth, (firebaseUser) => {
+            if (!isMounted) return;
+            if (firebaseUser) {
+              const googleUser: AuthUser = {
+                id: firebaseUser.uid,
+                name: firebaseUser.displayName || 'Google Scholar',
+                email: firebaseUser.email || 'scholar@gmail.com',
+                avatarUrl: firebaseUser.photoURL || undefined,
+                provider: 'google',
+                createdAt: firebaseUser.metadata.creationTime || new Date().toISOString(),
+                lastLoginAt: new Date().toISOString()
+              };
+              setUser(googleUser);
+              try {
+                localStorage.setItem('syllabus3d_auth_session', JSON.stringify(googleUser));
+              } catch {}
+            }
+          });
+        });
+      }
+    }).catch(() => {});
+
     return () => {
       isMounted = false;
+      if (unsubscribeFirebase) unsubscribeFirebase();
     };
   }, []);
 

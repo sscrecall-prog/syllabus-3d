@@ -53,6 +53,7 @@ import { SetPinModal } from '../security/SetPinModal';
 import { usePinLock } from '../../context/PinLockContext';
 import { UserProfileItem } from '../../types/syllabus';
 import { GoogleDriveBackupCard } from '../settings/GoogleDriveBackupCard';
+import { CloudServerSyncCard } from '../settings/CloudServerSyncCard';
 
 type SettingsTab = 'profiles' | 'exam' | 'appearance' | 'sound' | 'timer' | 'data' | 'security';
 
@@ -507,7 +508,7 @@ export const SettingsView: React.FC = () => {
           { id: 'appearance' as SettingsTab, label: 'Appearance', icon: Palette },
           { id: 'sound' as SettingsTab, label: 'Sound & Audio', icon: Volume2 },
           { id: 'timer' as SettingsTab, label: 'Focus & Timer', icon: Clock },
-          { id: 'data' as SettingsTab, label: 'Backup & App', icon: Database },
+          { id: 'data' as SettingsTab, label: 'Cloud & Data', icon: Database },
           { id: 'security' as SettingsTab, label: 'Safety Lock', icon: Lock }
         ].map(tab => {
           const Icon = tab.icon;
@@ -1381,6 +1382,9 @@ export const SettingsView: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Google Cloud Server Database & Gmail Auto-Recovery */}
+          <CloudServerSyncCard />
 
           {/* Optional Google Drive Cloud Backup (Gmail) */}
           <GoogleDriveBackupCard />

@@ -186,6 +186,36 @@ export const authService: AuthAdapter & {
   },
 
   async loginWithGoogle(): Promise<AuthUser> {
+    const { auth, provider, isConfigured } = (await import('./firebase')).initFirebase();
+
+    if (isConfigured && auth && provider) {
+      try {
+        const { signInWithPopup } = await import('firebase/auth');
+        const cred = await signInWithPopup(auth, provider);
+        const firebaseUser = cred.user;
+
+        const authUser: AuthUser = {
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || 'Google Scholar',
+          email: firebaseUser.email || 'scholar@gmail.com',
+          avatarUrl: firebaseUser.photoURL || undefined,
+          provider: 'google',
+          createdAt: firebaseUser.metadata.creationTime || new Date().toISOString(),
+          lastLoginAt: new Date().toISOString()
+        };
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+        }
+        return authUser;
+      } catch (err: any) {
+        if (err?.code === 'auth/popup-closed-by-user') {
+          throw new Error('Google Sign-In was cancelled.');
+        }
+        console.warn('Firebase Google Sign-In error, falling back to simulated OAuth:', err?.message);
+      }
+    }
+
     return this.loginWithOAuth('google');
   },
 
@@ -195,6 +225,13 @@ export const authService: AuthAdapter & {
 
   async logout(): Promise<void> {
     await new Promise(r => setTimeout(r, 50));
+    try {
+      const { auth, isConfigured } = (await import('./firebase')).initFirebase();
+      if (isConfigured && auth) {
+        const { signOut } = await import('firebase/auth');
+        await signOut(auth);
+      }
+    } catch {}
     if (typeof window !== 'undefined') {
       localStorage.removeItem(SESSION_STORAGE_KEY);
     }
