@@ -19,6 +19,7 @@ export interface FirebaseConfig {
   storageBucket?: string;
   messagingSenderId?: string;
   appId: string;
+  measurementId?: string;
 }
 
 const FIREBASE_LOCAL_CONFIG_KEY = 'syllabus3d_firebase_config';
@@ -28,21 +29,7 @@ const FIREBASE_LOCAL_CONFIG_KEY = 'syllabus3d_firebase_config';
  * or from user-provided config in localStorage.
  */
 export function getFirebaseConfig(): FirebaseConfig | null {
-  // 1. Check Vite Environment Variables
-  const envConfig: FirebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || ''
-  };
-
-  if (envConfig.apiKey && envConfig.projectId) {
-    return envConfig;
-  }
-
-  // 2. Check Local Storage User-Configured Keys (from Settings View)
+  // 1. Check Local Storage User-Configured Keys (Overrides defaults if provided)
   if (typeof window !== 'undefined') {
     try {
       const stored = localStorage.getItem(FIREBASE_LOCAL_CONFIG_KEY);
@@ -53,6 +40,21 @@ export function getFirebaseConfig(): FirebaseConfig | null {
         }
       }
     } catch {}
+  }
+
+  // 2. Check Vite Environment Variables
+  const envConfig: FirebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''
+  };
+
+  if (envConfig.apiKey && envConfig.projectId) {
+    return envConfig;
   }
 
   return null;
