@@ -11,6 +11,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  sendPhoneOtp: (phoneNumber: string) => Promise<boolean>;
+  verifyPhoneOtp: (otp: string, fallbackPhone?: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUserSession: (updates: Partial<AuthUser>) => void;
@@ -48,18 +50,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           unsubscribeFirebase = onAuthStateChanged(auth, (firebaseUser) => {
             if (!isMounted) return;
             if (firebaseUser) {
-              const googleUser: AuthUser = {
+              const isPhone = Boolean(firebaseUser.phoneNumber && !firebaseUser.email);
+              const phoneDisplay = firebaseUser.phoneNumber || '';
+              const authUser: AuthUser = {
                 id: firebaseUser.uid,
-                name: firebaseUser.displayName || 'Google Scholar',
-                email: firebaseUser.email || 'scholar@gmail.com',
+                name: firebaseUser.displayName || (isPhone ? `Aspirant (${phoneDisplay.slice(-4)})` : 'Google Scholar'),
+                email: firebaseUser.email || (isPhone ? `${phoneDisplay.replace(/\D/g, '')}@syllabus.local` : 'scholar@gmail.com'),
                 avatarUrl: firebaseUser.photoURL || undefined,
-                provider: 'google',
+                phoneNumber: firebaseUser.phoneNumber || undefined,
+                provider: isPhone ? 'phone' : 'google',
                 createdAt: firebaseUser.metadata.creationTime || new Date().toISOString(),
                 lastLoginAt: new Date().toISOString()
               };
-              setUser(googleUser);
+              setUser(authUser);
               try {
-                localStorage.setItem('syllabus3d_auth_session', JSON.stringify(googleUser));
+                localStorage.setItem('syllabus3d_auth_session', JSON.stringify(authUser));
               } catch {}
             }
           });
@@ -85,6 +90,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithGoogle = async () => {
     const authUser = await authService.loginWithGoogle();
+    setUser(authUser);
+  };
+
+  const sendPhoneOtp = async (phoneNumber: string) => {
+    return await authService.sendPhoneOtp(phoneNumber);
+  };
+
+  const verifyPhoneOtp = async (otp: string, fallbackPhone?: string) => {
+    const authUser = await authService.verifyPhoneOtp(otp, fallbackPhone);
     setUser(authUser);
   };
 
@@ -139,6 +153,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         signup,
         loginWithGoogle,
+        sendPhoneOtp,
+        verifyPhoneOtp,
         resetPassword,
         logout,
         updateUserSession

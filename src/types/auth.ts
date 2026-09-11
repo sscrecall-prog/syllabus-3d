@@ -3,7 +3,8 @@ export interface AuthUser {
   name: string;
   email: string;
   avatarUrl?: string;
-  provider: 'email' | 'google';
+  phoneNumber?: string;
+  provider: 'email' | 'google' | 'phone';
   createdAt: string;
   lastLoginAt: string;
 }

@@ -38,6 +38,8 @@ export const authService: AuthAdapter & {
   login: (email: string, password?: string) => Promise<AuthUser>;
   signup: (name: string, email: string, password?: string) => Promise<AuthUser>;
   loginWithGoogle: () => Promise<AuthUser>;
+  sendPhoneOtp: (phoneNumber: string, containerId?: string) => Promise<boolean>;
+  verifyPhoneOtp: (otp: string, fallbackPhone?: string) => Promise<AuthUser>;
 } = {
   async getSession(): Promise<AuthUser | null> {
     await new Promise(r => setTimeout(r, 80));
@@ -217,6 +219,95 @@ export const authService: AuthAdapter & {
     }
 
     return this.loginWithOAuth('google');
+  },
+
+  async sendPhoneOtp(phoneNumber: string, containerId: string = 'recaptcha-container'): Promise<boolean> {
+    const { auth, isConfigured } = (await import('./firebase')).initFirebase();
+    const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber.replace(/\D/g, '')}`;
+
+    if (isConfigured && auth) {
+      try {
+        const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth');
+
+        // Check if RecaptchaVerifier already exists on window, or create
+        if (!(window as any).recaptchaVerifier) {
+          (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+            size: 'invisible',
+            callback: () => {}
+          });
+        }
+
+        const appVerifier = (window as any).recaptchaVerifier;
+        const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+        (window as any).confirmationResult = confirmationResult;
+        return true;
+      } catch (err: any) {
+        console.error('Firebase Phone Auth error:', err);
+        if ((window as any).recaptchaVerifier) {
+          try {
+            (window as any).recaptchaVerifier.clear();
+          } catch {}
+          (window as any).recaptchaVerifier = null;
+        }
+        throw new Error(err?.message || 'Failed to send SMS verification. Please check the number.');
+      }
+    }
+
+    // Offline / Simulated OTP mode
+    await new Promise(r => setTimeout(r, 600));
+    return true;
+  },
+
+  async verifyPhoneOtp(otp: string, fallbackPhone?: string): Promise<AuthUser> {
+    const { auth, isConfigured } = (await import('./firebase')).initFirebase();
+    const phoneDisplay = fallbackPhone || '+91 9876543210';
+
+    if (isConfigured && auth && (window as any).confirmationResult) {
+      try {
+        const cred = await (window as any).confirmationResult.confirm(otp);
+        const firebaseUser = cred.user;
+        const finalPhone = firebaseUser.phoneNumber || phoneDisplay;
+
+        const authUser: AuthUser = {
+          id: firebaseUser.uid,
+          name: `Aspirant (${finalPhone.slice(-4)})`,
+          email: `${finalPhone.replace(/\D/g, '')}@syllabus.local`,
+          phoneNumber: finalPhone,
+          provider: 'phone',
+          createdAt: firebaseUser.metadata.creationTime || new Date().toISOString(),
+          lastLoginAt: new Date().toISOString()
+        };
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+        }
+        return authUser;
+      } catch (err: any) {
+        console.error('OTP confirmation failed:', err);
+        throw new Error(err?.message || 'Invalid OTP verification code.');
+      }
+    }
+
+    // Simulation / Testing Mode (e.g. code: 123456)
+    await new Promise(r => setTimeout(r, 400));
+    if (otp !== '123456' && otp.length < 6) {
+      throw new Error('Invalid verification code. (Test Code: 123456)');
+    }
+
+    const authUser: AuthUser = {
+      id: `phone_user_${phoneDisplay.replace(/\D/g, '')}`,
+      name: `Aspirant (${phoneDisplay.slice(-4)})`,
+      email: `${phoneDisplay.replace(/\D/g, '')}@syllabus.local`,
+      phoneNumber: phoneDisplay,
+      provider: 'phone',
+      createdAt: new Date().toISOString(),
+      lastLoginAt: new Date().toISOString()
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(authUser));
+    }
+    return authUser;
   },
 
   async resetPassword(email: string): Promise<void> {
