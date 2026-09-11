@@ -28,22 +28,23 @@
   }
 
   .dark {
-    /* 🌌 Ultra-Advanced Obsidian Dark System */
-    --color-background: #090B10;
+    /* 🌌 Ultra-Advanced High-Visibility Obsidian & Deep Navy System */
+    --color-background: #0B0F19;
     --color-primary: #FFFFFF;
-    --color-primary-accent: #7AA2F7;
-    --color-accent-light: #7DCFFF;
-    --color-secondary-accent: #BB9AF7;
-    --color-surface: #101422;
-    --color-surface-soft: #171C2E;
-    --color-border: rgba(255, 255, 255, 0.09);
+    --color-primary-accent: #60A5FA;
+    --color-accent-light: #93C5FD;
+    --color-secondary-accent: #C084FC;
+    --color-surface: #13192B;
+    --color-surface-soft: #1B243B;
+    --color-border: rgba(148, 163, 184, 0.20);
     --color-text-primary: #FFFFFF;
-    --color-text-secondary: #CBD5E1;
+    --color-text-secondary: #E2E8F0;
     --color-text-muted: #94A3B8;
     --color-success: #34D399;
     --color-warning: #FBBF24;
     --color-error: #FB7185;
   }
+
 
   ::selection {
     background-color: rgba(225, 168, 55, 0.35);
@@ -91,13 +92,13 @@
   }
 
   .dark body {
-    background-color: #090B10 !important;
+    background-color: #0B0F19 !important;
     background-image: 
-      radial-gradient(ellipse at 50% -20%, rgba(59, 130, 246, 0.12) 0%, transparent 65%),
-      radial-gradient(ellipse at 95% 45%, rgba(99, 102, 241, 0.07) 0%, transparent 55%),
-      radial-gradient(ellipse at 5% 85%, rgba(14, 165, 233, 0.05) 0%, transparent 50%) !important;
+      radial-gradient(ellipse at 50% -20%, rgba(59, 130, 246, 0.16) 0%, transparent 65%),
+      radial-gradient(ellipse at 95% 45%, rgba(99, 102, 241, 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse at 5% 85%, rgba(14, 165, 233, 0.08) 0%, transparent 50%) !important;
     background-attachment: fixed !important;
-    color: #F1F5F9 !important;
+    color: #F8FAFC !important;
   }
 
   /* App Titles & Headings → Plus Jakarta Sans Bold with editorial tracking */
@@ -1121,7 +1122,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
    - Custom ultra-sleek translucent scrollbars
    ═══════════════════════════════════════════════════════════════ */
 
-/* 1. Frosted Specular Elevated Dark Cards & Containers */
+/* 1. Frosted Specular Elevated Dark Cards & Primary Containers */
 .dark .bg-white,
 .dark [class*="dark:bg-[#18181D]"],
 .dark [class*="dark:bg-[#16161E]"],
@@ -1140,12 +1141,12 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark [class*="dark:bg-slate-900"],
 .dark [class*="dark:bg-slate-800"],
 .dark [class*="dark:bg-[#12141A]"] {
-  background-color: #101422 !important;
-  border-color: rgba(255, 255, 255, 0.09) !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+  background-color: #13192B !important;
+  border-color: rgba(148, 163, 184, 0.20) !important;
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 2. Secondary Sub-cards, Nested Containers & Active Pills */
+/* 2. Secondary Sub-cards, Nested Containers, Flip-Clock Boxes & Wells */
 .dark [class*="dark:bg-[#20212E]"],
 .dark [class*="dark:bg-[#1A1C2C]"],
 .dark [class*="dark:bg-[#1B1C28]"],
@@ -1154,9 +1155,11 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark [class*="dark:bg-[#202028]"],
 .dark [class*="dark:bg-[#292E42]"],
 .dark [class*="dark:bg-slate-800/50"],
-.dark [class*="dark:bg-white/[0.03]"] {
-  background-color: #151A2C !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+.dark [class*="dark:bg-white/[0.03]"],
+.dark [class*="dark:bg-white/[0.06]"] {
+  background-color: #1B243B !important;
+  border-color: rgba(148, 163, 184, 0.25) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 /* 3. Specular Micro-Borders in Dark Mode */
@@ -1170,8 +1173,10 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark [class*="dark:border-[#24283B]"],
 .dark [class*="dark:border-[#242533]"],
 .dark [class*="dark:border-slate-800"],
-.dark [class*="dark:border-slate-700"] {
-  border-color: rgba(255, 255, 255, 0.09) !important;
+.dark [class*="dark:border-slate-700"],
+.dark [class*="dark:border-white/[0.08]"],
+.dark [class*="dark:border-white/[0.06]"] {
+  border-color: rgba(148, 163, 184, 0.22) !important;
 }
 
 /* 4. Razor-Sharp High-Contrast Typography in Dark Mode */
@@ -1184,7 +1189,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark .font-heading,
 .dark .app-title {
   color: #FFFFFF !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 /* Primary High-Contrast Text in Dark Mode */
@@ -1195,6 +1200,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark [class*="text-slate-800"],
 .dark [class*="text-black"],
 .dark .dark\:text-white,
+.dark [class*="dark:text-white"],
 .dark [class*="dark:text-[#F5F5F7]"],
 .dark [class*="dark:text-[#C0CAF5]"] {
   color: #FFFFFF !important;
@@ -1204,6 +1210,7 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark [class*="text-[#65675F]"],
 .dark [class*="text-[#85877E]"],
 .dark [class*="text-[#454740]"],
+.dark [class*="text-[#6B6615]"],
 .dark [class*="text-slate-700"],
 .dark [class*="text-slate-600"],
 .dark [class*="text-slate-500"],
@@ -1217,16 +1224,50 @@ input, textarea, [contenteditable="true"], .selectable-text {
 .dark [class*="dark:text-slate-400"],
 .dark [class*="dark:text-[#A1A1AA]"],
 .dark [class*="dark:text-[#A1A1B2]"] {
-  color: #E2E8F0 !important;
+  color: #CBD5E1 !important;
 }
 
-/* 5. Luminous Interactive Accents (Electric Sky Blue with Aura Glow) */
+/* 5. Luminous Interactive Accents & Status Glows */
 .dark [class*="text-[#2563EB]"],
 .dark [class*="dark:text-[#7AA2F7]"],
 .dark [class*="dark:text-blue-400"] {
   color: #93C5FD !important;
   text-shadow: 0 0 12px rgba(147, 197, 253, 0.35);
 }
+
+.dark [class*="text-amber-400"],
+.dark [class*="dark:text-amber-400"] {
+  color: #FCD34D !important;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+}
+
+.dark [class*="text-emerald-400"],
+.dark [class*="dark:text-emerald-400"] {
+  color: #6EE7B7 !important;
+  text-shadow: 0 0 12px rgba(52, 211, 153, 0.35);
+}
+
+.dark [class*="text-rose-400"],
+.dark [class*="dark:text-rose-400"] {
+  color: #FDA4AF !important;
+  text-shadow: 0 0 12px rgba(251, 113, 133, 0.35);
+}
+
+/* High-Visibility Header and Sidebar Buttons in Dark Mode */
+.dark header button,
+.dark header [class*="dark:bg-[#18181D]"],
+.dark header [class*="dark:bg-[#151624]"] {
+  background-color: #162035 !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  color: #F8FAFC !important;
+}
+.dark header button:hover,
+.dark header [class*="dark:bg-[#18181D]"]:hover {
+  background-color: #1F2E4D !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  color: #FFFFFF !important;
+}
+
 
 /* 6. Form Inputs, Search Bars & Textareas */
 .dark input:not([type="checkbox"]):not([type="radio"]):not(.bg-transparent):not([class*="bg-transparent"]),

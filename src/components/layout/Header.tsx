@@ -372,10 +372,10 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <button
               onClick={onOpenSettings}
-              className="h-9 flex items-center gap-1.5 px-2 sm:px-2.5 rounded-xl bg-slate-100 dark:bg-[#1E2030] border border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-[11px] font-medium hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500/30 transition-all cursor-pointer shrink-0 shadow-xs active:scale-95 group"
+              className="h-9 flex items-center gap-1.5 px-2 sm:px-2.5 rounded-xl bg-slate-100 dark:bg-[#162035] border border-slate-200/80 dark:border-slate-700/70 text-slate-600 dark:text-slate-200 text-[11px] font-medium hover:text-blue-600 dark:hover:text-white hover:border-blue-300 dark:hover:border-blue-500/50 transition-all cursor-pointer shrink-0 shadow-xs active:scale-95 group"
               title="Local Mode: Sign in with Gmail to enable automatic cloud server backup and cross-device recovery."
             >
-              <Cloud className="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-blue-500 transition-colors" />
+              <Cloud className="w-3.5 h-3.5 shrink-0 text-slate-400 dark:text-slate-300 group-hover:text-blue-500 transition-colors" />
               <span className="hidden lg:inline">Local Only</span>
             </button>
           )}
@@ -383,19 +383,19 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Quick Search */}
           <button
             onClick={onOpenSearch}
-            className="h-9 w-9 md:w-auto p-0 md:px-3 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] text-[#65675F] dark:text-[#A1A1AA] hover:text-[#191A17] dark:hover:text-white transition-all flex items-center justify-center md:justify-start gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95"
+            className="h-9 w-9 md:w-auto p-0 md:px-3 rounded-xl bg-white dark:bg-[#162035] border border-slate-200/80 dark:border-slate-700/70 text-[#65675F] dark:text-slate-200 hover:text-[#191A17] dark:hover:text-white hover:border-blue-500/50 dark:hover:border-blue-400/50 transition-all flex items-center justify-center md:justify-start gap-1.5 cursor-pointer shadow-subtle-depth text-xs font-medium shrink-0 active:scale-95"
             title="Search Topics (Cmd + K)"
             aria-label="Search topics"
           >
-            <Search className="w-4 h-4 text-[#2563EB] dark:text-[#8B5CF6] shrink-0" />
+            <Search className="w-4 h-4 text-[#2563EB] dark:text-[#93C5FD] shrink-0" />
             <span className="hidden md:inline">Search...</span>
-            <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[11px] font-mono bg-[#EEEEE8] dark:bg-[#23232A] rounded text-[#85877E]">⌘K</kbd>
+            <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[11px] font-mono bg-[#EEEEE8] dark:bg-slate-700/80 rounded text-[#85877E] dark:text-slate-200 font-bold">⌘K</kbd>
           </button>
 
           {/* Streak Indicator */}
-          <div className="h-9 flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 rounded-xl bg-white dark:bg-[#18181D] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle-depth shrink-0">
+          <div className="h-9 flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2.5 rounded-xl bg-white dark:bg-[#162035] border border-slate-200/80 dark:border-slate-700/70 shadow-subtle-depth shrink-0">
             <Flame className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#C49A3A] fill-[#C49A3A] shrink-0" />
-            <span className="text-[11px] sm:text-xs tabular-nums font-black text-[#191A17] dark:text-[#F5F5F7] font-mono">
+            <span className="text-[11px] sm:text-xs tabular-nums font-black text-[#191A17] dark:text-white font-mono">
               {profile.currentStreak}d
             </span>
           </div>

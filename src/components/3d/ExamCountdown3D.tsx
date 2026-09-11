@@ -117,9 +117,9 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
                   Live
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-[#94A3B8] flex items-center gap-1.5 mt-0.5 font-mono">
+              <p className="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-300 flex items-center gap-1.5 mt-0.5 font-mono">
                 <Calendar className="w-3 h-3 text-[#2563EB] dark:text-[#7AA2F7] shrink-0" />
-                <span>Exam Date: {formattedDate}</span>
+                <span>Exam Date: <strong className="text-slate-700 dark:text-slate-200">{formattedDate}</strong></span>
                 {timeLeft.isProjected && (
                   <span className="text-amber-500 dark:text-amber-400 text-[9px] font-bold">
                     (Next Cycle)
@@ -135,7 +135,7 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
               soundManager.playClick();
               setIsEditModalOpen(true);
             }}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] border border-slate-200/80 dark:border-white/[0.08] text-slate-700 dark:text-slate-300 text-[11px] font-bold transition-all cursor-pointer shrink-0 active:scale-95"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-[#1E293B] hover:bg-slate-200 dark:hover:bg-[#25354D] border border-slate-200/80 dark:border-slate-600/60 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-all cursor-pointer shrink-0 active:scale-95"
             title="Edit Exam Date & Target"
           >
             <Edit2 className="w-3 h-3 text-[#2563EB] dark:text-[#7AA2F7]" />
@@ -148,15 +148,15 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
           {cards.map(c => (
             <div
               key={c.label}
-              className="relative py-2 sm:py-3 px-1 sm:px-2 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-[#1A1C2C] border border-slate-200/80 dark:border-white/[0.08] text-center shadow-xs flex flex-col items-center justify-center transition-all duration-200 hover:border-blue-500/40 dark:hover:border-[#7AA2F7]/40 group"
+              className="relative py-2 sm:py-3 px-1 sm:px-2 rounded-xl sm:rounded-2xl bg-slate-50/90 dark:bg-[#1B243B] border border-slate-200/80 dark:border-slate-600/60 text-center shadow-xs flex flex-col items-center justify-center transition-all duration-200 hover:border-blue-500/50 dark:hover:border-blue-400/60 group"
             >
               {/* Split Horizontal Horizon Line */}
-              <div className="absolute inset-x-0 top-1/2 h-[1px] bg-black/[0.04] dark:bg-white/[0.04] pointer-events-none" />
+              <div className="absolute inset-x-0 top-1/2 h-[1px] bg-black/[0.04] dark:bg-white/[0.06] pointer-events-none" />
 
               <span className={`text-xl sm:text-2xl md:text-3xl font-black font-mono tabular-nums tracking-tight block ${c.color} drop-shadow-xs transition-transform group-hover:scale-105`}>
                 {String(c.value).padStart(2, '0')}
               </span>
-              <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-[#94A3B8] uppercase tracking-widest block font-mono mt-0.5">
+              <span className="text-[9.5px] sm:text-[10.5px] font-bold text-slate-600 dark:text-slate-200 uppercase tracking-widest block font-mono mt-0.5">
                 {c.label}
               </span>
             </div>
@@ -164,11 +164,11 @@ export const ExamCountdown3D: React.FC = React.memo(() => {
         </div>
 
         {/* Bottom Study Runway Status Bar */}
-        <div className="pt-1 flex items-center justify-between gap-2 text-[10px] sm:text-[11px] font-mono text-slate-500 dark:text-[#94A3B8] border-t border-slate-100 dark:border-white/[0.06]">
+        <div className="pt-1 flex items-center justify-between gap-2 text-[10px] sm:text-[11px] font-mono text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-700/60">
           <div className="flex items-center gap-1.5 truncate">
             <Clock className="w-3 h-3 text-emerald-500 shrink-0" />
             <span className="truncate">
-              Runway: <strong className="text-slate-800 dark:text-slate-200 font-black">{timeLeft.days} Days</strong> to exam
+              Runway: <strong className="text-slate-900 dark:text-white font-black">{timeLeft.days} Days</strong> to exam
             </span>
           </div>
           <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">

@@ -302,9 +302,9 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleStartEdit(target.id, '')}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-[#202234] hover:bg-slate-100 dark:hover:bg-[#282B40] text-slate-800 dark:text-slate-200 border border-slate-200/90 dark:border-white/[0.08] text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce group/btn"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-[#202D47] hover:bg-slate-100 dark:hover:bg-[#283857] text-slate-800 dark:text-slate-100 border border-slate-200/90 dark:border-slate-600/70 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce group/btn"
                         >
-                          <Plus className="w-3.5 h-3.5 text-slate-500 group-hover/btn:text-slate-900 dark:text-slate-400 dark:group-hover/btn:text-white transition-colors" />
+                          <Plus className="w-3.5 h-3.5 text-slate-500 group-hover/btn:text-slate-900 dark:text-slate-300 dark:group-hover/btn:text-white transition-colors" />
                           <span>Custom Goal</span>
                         </button>
 
@@ -313,7 +313,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
                             setIsPickerOpen(isPicker ? null : target.id);
                             setPickerSearch('');
                           }}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-200 border border-amber-500/30 dark:border-amber-500/50 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-2xs tap-bounce"
                         >
                           <BookOpen className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                           <span>From Syllabus</span>
@@ -364,15 +364,15 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
 
                 {/* Progress Status Line (Only when target has text) */}
                 {hasText && (
-                  <div className="pt-2.5 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs font-mono">
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500">Status:</span>
+                  <div className="pt-2.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-mono">
+                    <span className="text-[11px] text-slate-500 dark:text-slate-300">Status:</span>
                     {target.completed ? (
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded-lg border border-emerald-500/20 dark:border-emerald-500/40">
                         <CheckCircle2 className="w-3 h-3 stroke-[2.5]" />
                         <span>Crushed & Done</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-500/20 dark:border-amber-500/40">
                         <Zap className="w-3 h-3 fill-current" />
                         <span>In Progress</span>
                       </span>
@@ -385,13 +385,13 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
         </div>
 
         {/* Bottom Velocity Sprint Meter */}
-        <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/80 dark:bg-[#1A1B29] border border-slate-200/70 dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/80 dark:bg-[#1B243B] border border-slate-200/70 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+            <span className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-500 fill-current" />
               <span>Sprint Velocity:</span>
             </span>
-            <div className="flex-1 sm:w-48 h-2 rounded-full bg-slate-200/80 dark:bg-[#11121A] overflow-hidden p-0.5 border border-slate-200/60 dark:border-white/[0.04]">
+            <div className="flex-1 sm:w-48 h-2.5 rounded-full bg-slate-200/80 dark:bg-[#0D1424] overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/60">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 rounded-full transition-all duration-500"
                 style={{
@@ -404,7 +404,7 @@ export const Top3TargetsWidget: React.FC<Top3TargetsWidgetProps> = ({ onNavigate
             </span>
           </div>
 
-          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 text-center sm:text-right">
+          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300 text-center sm:text-right">
             {completedTargets.length === 3
               ? '🎉 Outstanding work! All 3 non-negotiables crushed.'
               : completedTargets.length === 2
