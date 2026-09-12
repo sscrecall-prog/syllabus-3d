@@ -19,8 +19,6 @@ import {
   PanelLeftOpen,
   Sparkles,
   Lock,
-  Cloud,
-  RefreshCw,
   Plus,
   Trash2,
   Check,
@@ -54,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
   onGoBack,
   currentViewTitle = 'SYLLABUS 3D'
 }) => {
-  const { currentExam, exams, setSelectedExamId, deleteExam, profile, cloudSyncStatus, lastCloudSyncAt } = useSyllabus();
+  const { currentExam, exams, setSelectedExamId, deleteExam, profile } = useSyllabus();
   const { user } = useAuth();
   const { isConfigured, lockApp } = usePinLock();
   const {
@@ -351,34 +349,6 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          {/* Cloud Server Sync Status Badge */}
-          {cloudSyncStatus === 'syncing' ? (
-            <div
-              className="h-9 flex items-center gap-1.5 px-2 sm:px-2.5 rounded-xl bg-blue-500/10 dark:bg-blue-500/15 border border-blue-500/25 text-blue-600 dark:text-blue-400 text-[11px] font-bold shrink-0 animate-pulse cursor-help"
-              title="Syncing study progress to Cloud Server..."
-            >
-              <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0 text-blue-500" />
-              <span className="hidden lg:inline">Syncing</span>
-            </div>
-          ) : cloudSyncStatus === 'synced' ? (
-            <button
-              onClick={onOpenSettings}
-              className="h-9 flex items-center gap-1.5 px-2 sm:px-2.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold hover:bg-emerald-500/20 transition-all cursor-pointer shrink-0 shadow-xs active:scale-95 group"
-              title={`Cloud Server Synced: All study progress & notes backed up (${user?.email || 'Cloud Active'}). Click to view cloud settings.`}
-            >
-              <Cloud className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span className="hidden lg:inline">Cloud Synced</span>
-            </button>
-          ) : (
-            <button
-              onClick={onOpenSettings}
-              className="h-9 flex items-center gap-1.5 px-2 sm:px-2.5 rounded-xl bg-slate-100 dark:bg-[#162035] border border-slate-200/80 dark:border-slate-700/70 text-slate-600 dark:text-slate-200 text-[11px] font-medium hover:text-blue-600 dark:hover:text-white hover:border-blue-300 dark:hover:border-blue-500/50 transition-all cursor-pointer shrink-0 shadow-xs active:scale-95 group"
-              title="Local Mode: Sign in with Gmail to enable automatic cloud server backup and cross-device recovery."
-            >
-              <Cloud className="w-3.5 h-3.5 shrink-0 text-slate-400 dark:text-slate-300 group-hover:text-blue-500 transition-colors" />
-              <span className="hidden lg:inline">Local Only</span>
-            </button>
-          )}
 
           {/* Quick Search */}
           <button
